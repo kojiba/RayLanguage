@@ -1,0 +1,17 @@
+#ifndef __RAY_CHECK_FOUNDATION_H__
+#define __RAY_CHECK_FOUNDATION_H__
+
+// checking of defines in project
+#if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(startClock) || defined(stopClock)
+        #error "Some of working RayFoundation defines are already defined"
+    #elif defined($class) || defined($discipleOf) || defined($endOfClass)
+        #error "Some of core defines of RayFoundation are already defined"
+    #elif defined($method) || defined($constructor) || defined($destructor) || defined($printer) || defined($singleton) || defined($staticMethod)
+        #error "Some of declaration defines of RayFoundation are already defined"
+    #elif defined(c) || defined(d) || defined(p) || defined(m) || defined(sm) || defined(singleton)
+        #error "Some of function-call defines of RayFoundation are already defined"
+    #elif defined($) || defined($allocator) || defined($deallocator) || defined($master) || defined(forAll)
+        #error "Some of core-function-call defines of RayFoundation are already defined"
+    #endif
+
+#endif /*__RAY_CHECK_FOUNDATION_H__*/

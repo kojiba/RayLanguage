@@ -1,0 +1,60 @@
+/**
+* RayFoundation.h
+* A ray of light in the realm of darkness.
+* More slowly compilation, but it's old, classic fast and light C.
+* Author Kucheruavyu Ilya (kojiba@ro.ru)
+*/
+
+#ifndef __RAY_FOUNDATION__
+#define __RAY_FOUNDATION__
+
+#include <stdlib.h>
+#include <time.h>
+#include "RayCheckFoundation.h"
+
+// working defines
+#define _TOSTRING(x) #x
+#define toString(x) _TOSTRING(x)             // gets c-string from define or some code
+
+#define _splitUp(one, two) one##two
+#define splitUp(one, two) _splitUp(one, two) // splits up two words: splitUp(Hello,World) -> HelloWorld
+
+#define startClock clock_t start = clock(), diff;
+#define stopClock diff = clock() - start; int msec = diff * 1000 / CLOCKS_PER_SEC; printf("Time taken %d seconds %d milliseconds", msec/1000, msec%1000);
+// working defines
+
+// typedefs
+typedef void *pointer;
+typedef unsigned char byte;
+
+// declarations
+#define $class(className) typedef struct className { uint64_t classId;
+#define $discipleOf(className) className *splitUp(master,splitUp(className, Object));
+#define $endOfClass(className)  } className;
+
+#define $method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object
+#define $constructor(className) className* splitUp(constructorOf,className) (className *object
+#define $destructor(className) void splitUp(destructorOf,className) (className *object)
+#define $printer(className) void splitUp(printerOf,className) (className *object)
+#define $singleton(className) className* splitUp(singletonOf,className)(void)
+
+#define $staticMethod(returnValue, methodName, className) returnValue splitUp(splitUp(staticMethod, methodName), splitUp(Of, className))(className *deprecatedObject
+
+// calls
+#define c(className) splitUp(constructorOf, className)                                              // constructor function name
+#define d(className) splitUp(destructorOf, className)                                               // destructor function name
+#define p(className) splitUp(printerOf, className)                                                  // printer function name
+#define m(methodName, className) splitUp(methodName,className)                                      // some method function name
+#define sm(methodName, className) splitUp(splitUp(staticMethod,methodName),splitUp(Of,className))   // static method function name
+#define singleton(className) splitUp(singletonOf,className)()                                       // singleton call
+
+#define $(object, methodName)  methodName(object
+
+#define $allocator(className) malloc(sizeof(className))
+#define $deallocator(object) free(object); object = NULL
+#define $master(object, className) object->splitUp(master,splitUp(className, Object))
+
+#define forAll(iterator, count) for(iterator = 0; iterator < count; ++iterator)
+
+
+#endif /*__RAY_FOUNDATION__*/
