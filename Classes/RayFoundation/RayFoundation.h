@@ -1,7 +1,8 @@
 /**
 * RayFoundation.h
 * A ray of light in the realm of darkness.
-* More slowly compilation, but it's old, classic fast and light C.
+* Some additions to C.
+* If You don't like it, You can preprocess file, to get pure-C code.
 * Author Kucheruavyu Ilya (kojiba@ro.ru)
 */
 
@@ -14,10 +15,10 @@
 
 // working defines
 #define _TOSTRING(x) #x
-#define toString(x) _TOSTRING(x)             // gets c-string from define or some code
+#define toString(x) _TOSTRING(x)              // gets c-string from define or some code
 
 #define _splitUp(one, two) one##two
-#define splitUp(one, two) _splitUp(one, two) // splits up two words: splitUp(Hello,World) -> HelloWorld
+#define splitUp(one, two) _splitUp(one, two)  // splits up two words: splitUp(Hello,World) -> HelloWorld
 
 #define startClock clock_t start = clock(), diff;
 #define stopClock diff = clock() - start; int msec = diff * 1000 / CLOCKS_PER_SEC; printf("Time taken %d seconds %d milliseconds", msec/1000, msec%1000);

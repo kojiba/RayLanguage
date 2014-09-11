@@ -16,8 +16,6 @@ object;
 }
 
 $destructor(SimpleDisciple) {
-
-
     $($master(object, MyClass), d(MyClass)) );
     $deallocator($master(object, MyClass));
 

@@ -1,7 +1,11 @@
+/**
+* RDynamicArray.c
+* Implementation of C dynamic array, in Ray additions.
+* Author Kucheruavyu Ilya (kojiba@ro.ru)
+*/
+
 #include <stdio.h>
 #include "RDynamicArray.h"
-
-#define startSize 5
 
 byte RDynamicArrayStandartComporator(pointer first, pointer second) {
     // whats inside higher sort
@@ -28,8 +32,9 @@ $constructor(RDynamicArray), RDynamicArrayErrors *error) {
         return NULL;
 
     } else {
-
-        object->array = malloc(startSize * sizeof(pointer));
+        // default start size in elements
+        object->startSize = 100;
+        object->array = malloc(object->startSize * sizeof(pointer));
 
         if (object->array == NULL) {
             *error = allocation_error;
@@ -42,7 +47,7 @@ $constructor(RDynamicArray), RDynamicArrayErrors *error) {
             object->count = 0;
             object->destructor = NULL;
             object->printer = NULL;
-            object->freePlaces = startSize;
+            object->freePlaces = object->startSize;
 
             return object;
         }
@@ -144,7 +149,7 @@ $method(RDynamicArrayErrors, addObject, RDynamicArray), pointer src) {
 #if RAY_SHORT_DEBUG == 1
         printf("RDynamicArray %p needs additional allocation\n", object);
 #endif
-        errors = $(object, m(addSize, RDynamicArray)), object->count * 2);
+        errors = $(object, m(addSize, RDynamicArray)), object->count * object->sizeMultiplier);
     }
 
     // not need additional allocation
@@ -233,29 +238,29 @@ $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t la
 
     if (last > first) {
         pointer pivot = object->array[first];
-        uint64_t l = first;
-        uint64_t r = last;
-        while (l < r) {
-            if (comparator(object->array[l], pivot) != swap_objects) {
-                l += 1;
+        uint64_t left = first;
+        uint64_t right = last;
+        while (left < right) {
+            if (comparator(object->array[left], pivot) != swap_objects) {
+                left += 1;
             } else {
-                r -= 1;
+                right -= 1;
                 // swap
-                pointer temp = object->array[l];
-                object->array[l] = object->array[r];
-                object->array[r] = temp;
+                pointer temp = object->array[left];
+                object->array[left] = object->array[right];
+                object->array[right] = temp;
             }
         }
 
-        l -= 1;
+        left -= 1;
 
         // swap
         pointer temp = object->array[first];
-        object->array[first] = object->array[l];
-        object->array[l] = temp;
+        object->array[first] = object->array[left];
+        object->array[left] = temp;
 
-        quickSortWithDelegateRDynamicArray(object, first, l, comparator);
-        quickSortWithDelegateRDynamicArray(object, r, last, comparator);
+        quickSortWithDelegateRDynamicArray(object, first, left, comparator);
+        quickSortWithDelegateRDynamicArray(object, right, last, comparator);
     }
 }
 

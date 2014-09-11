@@ -1,7 +1,13 @@
+/**
+* RayFoundationCheck.h
+* A ray of light in the realm of darkness.
+* Checking of working defines.
+* Author Kucheruavyu Ilya (kojiba@ro.ru)
+*/
+
 #ifndef __RAY_CHECK_FOUNDATION_H__
 #define __RAY_CHECK_FOUNDATION_H__
 
-// checking of defines in project
 #if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(startClock) || defined(stopClock)
         #error "Some of working RayFoundation defines are already defined"
     #elif defined($class) || defined($discipleOf) || defined($endOfClass)

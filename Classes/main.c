@@ -1,7 +1,7 @@
 /**
 * main.c
-* Ray programing language test.
-* More slowly compilation, but it's old, classic fast and light C.
+* Ray additions test.
+* C additions like dynamic array.
 * Author Kucheruavyu Ilya (kojiba@ro.ru)
 */
 
@@ -42,10 +42,10 @@ int main(int argc, const char *argv[]) {
         $(dynamicArray, m(addObject, RDynamicArray)), a);
     }
 
-//        $(dynamicArray, p(RDynamicArray)) );
+    $(dynamicArray, p(RDynamicArray)));
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
-//        $(dynamicArray, m(sort, RDynamicArray)) );
+    $(dynamicArray, m(sort, RDynamicArray)));
 
     $(dynamicArray, p(RDynamicArray)));
 
