@@ -125,7 +125,7 @@ $method(RDynamicArrayErrors, addSize, RDynamicArray), uint64_t newSize) {
             }
 
             // add some free
-            object->freePlaces += newSize;
+            object->freePlaces = newSize - object->count;
 
             // delete temp pointer
             $deallocator(tempArray);
