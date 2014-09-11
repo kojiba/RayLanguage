@@ -1,11 +1,17 @@
 /**
-* RDynamicArray.c
-* Implementation of C dynamic array, in Ray additions.
-* Author Kucheruavyu Ilya (kojiba@ro.ru)
-*/
+ * @file RDynamicArray.c
+ * @brief Implementation of C dynamic array, in Ray additions.
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
 
 #include <stdio.h>
 #include "RDynamicArray.h"
+
+#define destroyElementAtIndex(index) if (object->destructor != NULL) object->destructor(object->array[index])
+#define printElemementAtIndex(index) if (object->printer != NULL) $(object->array[iterator], object->printer))
+#define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
+                                                object->array[index1] = object->array[index2]; \
+                                                object->array[index2] = temp;
 
 byte RDynamicArrayStandartComporator(pointer first, pointer second) {
     // whats inside higher sort
@@ -16,9 +22,9 @@ byte RDynamicArrayStandartComporator(pointer first, pointer second) {
     }
 }
 
-$constructor(RDynamicArray), RDynamicArrayErrors *error) {
+$constructor(RDynamicArray), RDynamicArrayFlags *error) {
 
-    object = $allocator(RDynamicArray);
+    object = allocator(RDynamicArray);
 
 #if RAY_SHORT_DEBUG == 1
     printf("RDynamicArray constructor of %p\n", object);
@@ -65,12 +71,10 @@ $destructor(RDynamicArray) {
         if (object->array != NULL) {
             forAll(iterator, object->count) {
                 // call destructors for all of objects in array
-                if (object->destructor != NULL) {
-                    object->destructor(object->array[iterator]);
-                }
+                destroyElementAtIndex(iterator);
             }
             // dealloc array pointer
-            $deallocator(object->array);
+            deallocator(object->array);
         }
 
         object->count = 0;
@@ -85,7 +89,7 @@ $destructor(RDynamicArray) {
 
 }
 
-$method(RDynamicArrayErrors, addSize, RDynamicArray), uint64_t newSize) {
+$method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
         printf("RDynamicArray %p addSize\n", object);
@@ -105,7 +109,7 @@ $method(RDynamicArrayErrors, addSize, RDynamicArray), uint64_t newSize) {
         }
 
         // delete old
-        $deallocator(object->array);
+        deallocator(object->array);
 
         // additional memory allocation
         object->array = malloc((size_t) (newSize * sizeof(pointer)));
@@ -115,11 +119,9 @@ $method(RDynamicArrayErrors, addSize, RDynamicArray), uint64_t newSize) {
 
             // cleanup on temp
             forAll(iterator, object->count) {
-                if (object->destructor != NULL) {
-                    object->destructor(tempArray[iterator]);
-                }
+                destroyElementAtIndex(iterator);
             }
-            $deallocator(tempArray);
+            deallocator(tempArray);
             return allocation_error;
 
             // if allocation successful
@@ -134,15 +136,15 @@ $method(RDynamicArrayErrors, addSize, RDynamicArray), uint64_t newSize) {
             object->freePlaces = newSize - object->count;
 
             // delete temp pointer
-            $deallocator(tempArray);
+            deallocator(tempArray);
 
             return no_error;
         }
     }
 }
 
-$method(RDynamicArrayErrors, addObject, RDynamicArray), pointer src) {
-    static RDynamicArrayErrors errors;
+$method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
+    static RDynamicArrayFlags errors;
     errors = no_error;
 
     // needs additional allocation of memory
@@ -172,7 +174,6 @@ $method(RDynamicArrayErrors, addObject, RDynamicArray), pointer src) {
 
 $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
     static uint64_t iterator;
-
 #if RAY_SHORT_DEBUG == 1
     printf("RDynamicArray findObjectWithDelegate of %p\n", object);
 #endif
@@ -212,16 +213,14 @@ $printer(RDynamicArray) {
 #if RAY_SHORT_DEBUG == 1
       printf("%s printer of %p \n", toString(RDynamicArray), object);
 #else
-
     static uint64_t iterator;
 
     printf("\n%s object %p: { \n", toString(RDynamicArray), object);
     forAll(iterator, object->count) {
         printf("\t %qu - ", iterator);
-        if (object->printer != NULL) {
-            $(object->array[iterator], object->printer));
-        } else {
-            printf("0x%p \n", object->array[iterator]);
+        printElemementAtIndex(iterator); // or print value
+        else {
+            printf("%p \n", object->array[iterator]);
         }
     }
     printf("} end of %s object %p \n\n", toString(RDynamicArray), object);
@@ -247,18 +246,14 @@ $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t la
             } else {
                 right -= 1;
                 // swap
-                pointer temp = object->array[left];
-                object->array[left] = object->array[right];
-                object->array[right] = temp;
+                swapElementsAtIndexes(left, right);
             }
         }
 
         left -= 1;
 
         // swap
-        pointer temp = object->array[first];
-        object->array[first] = object->array[left];
-        object->array[left] = temp;
+        swapElementsAtIndexes(first, right);
 
         quickSortWithDelegateRDynamicArray(object, first, left, comparator);
         quickSortWithDelegateRDynamicArray(object, right, last, comparator);
@@ -280,12 +275,10 @@ $method(void, flush, RDynamicArray)) {
         if (object->array != NULL) {
             forAll(iterator, object->count) {
                 // call destructors for all of objects in array
-                if (object->destructor != NULL) {
-                    object->destructor(object->array[iterator]);
-                }
+                destroyElementAtIndex(iterator); // or do nothing
             }
             // dealloc array pointer
-            $deallocator(object->array);
+            deallocator(object->array);
 
             object->array = malloc(100 * sizeof(pointer));
 
@@ -298,7 +291,7 @@ $method(void, flush, RDynamicArray)) {
         }
 
     } else {
-        printf("Flusting a NULL pointer");
+        printf("Warning. Flushing a NULL, do nothing, please delete function call, or fix it.");
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -314,13 +307,47 @@ $method(byte, checkIfIndexIn, RDynamicArray), uint64_t index) {
     }
 }
 
-$method(RDynamicArrayErrors, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
+$method(void, shift, RDynamicArray), byte side, uint64_t number) {
+#if RAY_SHORT_DEBUG == 1
+    char *side;
+    if(side == shift_left) {
+         side = "left";
+    } else {
+         side = "right";
+    } printf("RDynamicArray shift of %p on \n", object);
+#endif
+    uint64_t iterator;
+    uint64_t start;
+    uint64_t end;
+    if(number != 0) {
+
+        if (side == shift_left) {
+            start = 0;
+            end = object->count;
+        } else {
+            start = object->count - number - 1;
+            end = object->count;
+            return;
+        }
+
+        // destroying elements, that are rights
+        fromStartForAll(iterator, start, end) {
+            destroyElementAtIndex(iterator);
+        }
+
+        // shifting others
+        fromStartForAll(iterator, start, end - 1) {
+            swapElementsAtIndexes(iterator, iterator + 1)
+        }
+
+    } else {
+        printf("Warning. Shifts of RDynamicArray do nothing, please delete function call, or fix it.");
+    }
+}
+
+$method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
     if ($(object, m(checkIfIndexIn, RDynamicArray)), index) == index_exists) {
-
-        if (object->destructor != NULL)
-            object->destructor(object->array[index]);
-
-        object->array[index] = NULL;
+        destroyElementAtIndex(index);
 //  fixme
         return no_error;
 

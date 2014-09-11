@@ -1,12 +1,13 @@
 /**
-* main.c
-* Ray additions test.
-* C additions like dynamic array.
-* Author Kucheruavyu Ilya (kojiba@ro.ru)
-*/
+ * main.c
+ * Ray additions test.
+ * C additions like dynamic array.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
 
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RDynamicArray/RDynamicArray.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -28,21 +29,20 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-
 //    for(int j = 0; j < 10; ++j){
     RDynamicArray *dynamicArray = $(NULL, c(RDynamicArray)), NULL);
 
     dynamicArray->printer = printString;
     dynamicArray->destructor = free;
 
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 10000; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
         $(dynamicArray, m(addObject, RDynamicArray)), a);
     }
 
-    $(dynamicArray, p(RDynamicArray)));
+//    $(dynamicArray, p(RDynamicArray)));
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
     $(dynamicArray, m(sort, RDynamicArray)));
@@ -50,9 +50,8 @@ int main(int argc, const char *argv[]) {
     $(dynamicArray, p(RDynamicArray)));
 
     $(dynamicArray, d(RDynamicArray)));
-    $deallocator(dynamicArray);
+    deallocator(dynamicArray);
 //    }
-
     return 0;
 }
 
@@ -60,25 +59,21 @@ int main(int argc, const char *argv[]) {
 /*
 
 void RClassTableTest(void){
-    printRCTS;
-    RegisterClassOnce("Luke");
-    printRCTS;
-
-    RegisterClassOnce("Dart");
+    registerClassOnce("Luke");
     printRCTS;
 
-    RegisterClassOnce("Leia");
+    registerClassOnce("Dart");
     printRCTS;
 
-    RegisterClassOnce("Han Solo");
+    registerClassOnce("Leia");
     printRCTS;
 
+    registerClassOnce("Han Solo");
 
-    $($master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
-    $(RCTSingleton, p(RClassTable)) );
+    flushRCTS;
+    printRCTS;
 
-    d(RClassTable)(RCTSingleton);
-    $deallocator(RCTSingleton);
+    releaseRCTS;
 }
 
 void RClassNamePairTest(void){
@@ -89,7 +84,7 @@ void RClassNamePairTest(void){
     $(pair, p(RClassNamePair)) );
 
     $(pair, d(RClassNamePair)) );
-    $deallocator(pair);
+    deallocator(pair);
 }
 
 void printString(char *src){
@@ -98,29 +93,29 @@ void printString(char *src){
 
 
 void RDynamicArrayTest(void){
-    for(int j = 0; j < 10; ++j){
-        RDynamicArray *dynamicArray = $(NULL, c(RDynamicArray)), NULL);
+//    for(int j = 0; j < 10; ++j){
+    RDynamicArray *dynamicArray = $(NULL, c(RDynamicArray)), NULL);
 
-        dynamicArray->printer = printString;
-        dynamicArray->destructor = free;
+    dynamicArray->printer = printString;
+    dynamicArray->destructor = free;
 
-        for(int i = 0; i < 17; ++i) {
-            char* a = malloc(sizeof(char) * 8);
-            memmove(a, "Hello  ", sizeof("Hello  "));
-            a[6] = (char)( i % 10 + 48);
-            $(dynamicArray, m(addObject, RDynamicArray)), a);
-        }
+    for (int i = 0; i < 10000; ++i) {
+        char *a = malloc(sizeof(char) * 8);
+        memmove(a, "Hello  ", sizeof("Hello  "));
+        a[6] = (char) (i % 10 + 48);
+        $(dynamicArray, m(addObject, RDynamicArray)), a);
+    }
 
-        $(dynamicArray, p(RDynamicArray)) );
+//    $(dynamicArray, p(RDynamicArray)));
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
-        $(dynamicArray, m(sort, RDynamicArray)) );
+    $(dynamicArray, m(sort, RDynamicArray)));
 
-        $(dynamicArray, p(RDynamicArray)) );
+    $(dynamicArray, p(RDynamicArray)));
 
-        $(dynamicArray, d(RDynamicArray)) );
-        $deallocator(dynamicArray);
-    }
+    $(dynamicArray, d(RDynamicArray)));
+    deallocator(dynamicArray);
+//    }
 }
 
 
@@ -138,7 +133,7 @@ void RayFoundationTest(void) {
     $(ob1, p(MyClass)));
     $(ob1, d(MyClass)));
     // additional pointer cleanup
-    $deallocator(ob1);
+    deallocator(ob1);
 
     // Work with stack
     printf("\nStack: \n\n");

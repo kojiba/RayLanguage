@@ -1,10 +1,10 @@
 /**
-* RayFoundation.h
-* A ray of light in the realm of darkness.
-* Some additions to C.
-* If You don't like it, You can preprocess file, to get pure-C code.
-* Author Kucheruavyu Ilya (kojiba@ro.ru)
-*/
+ * RayFoundation.h
+ * A ray of light in the realm of darkness.
+ * Some additions to C.
+ * If You don't like it, You can preprocess file, to get pure-C code.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
 
 #ifndef __RAY_FOUNDATION__
 #define __RAY_FOUNDATION__
@@ -51,11 +51,12 @@ typedef unsigned char byte;
 
 #define $(object, methodName)  methodName(object
 
-#define $allocator(className) malloc(sizeof(className))
-#define $deallocator(object) free(object); object = NULL
-#define $master(object, className) object->splitUp(master,splitUp(className, Object))
+#define allocator(className) malloc(sizeof(className))
+#define deallocator(object) free(object); object = NULL
+#define master(object, className) object->splitUp(master,splitUp(className, Object))
 
+// cases/if/for ...
 #define forAll(iterator, count) for(iterator = 0; iterator < count; ++iterator)
-
+#define fromStartForAll(iterator, start, count) for(iterator = start; iterator < count; ++iterator)
 
 #endif /*__RAY_FOUNDATION__*/

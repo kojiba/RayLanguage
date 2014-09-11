@@ -2,7 +2,7 @@
 #include "RClassNamePair.h"
 
 $constructor(RClassNamePair)) {
-    object = $allocator(RClassNamePair);
+    object = allocator(RClassNamePair);
 
     if (object != NULL) {
 

@@ -6,16 +6,16 @@
 $constructor(RClassTable)) {
 
     // alloc RClassTable
-    object = $allocator(RClassTable);
+    object = allocator(RClassTable);
     if (object != NULL) {
 
         // alloc RDynamicArray
-        $master(object, RDynamicArray) = $(NULL, c(RDynamicArray)), NULL);
-        if ($master(object, RDynamicArray) != NULL) {
+        master(object, RDynamicArray) = $(NULL, c(RDynamicArray)), NULL);
+        if (master(object, RDynamicArray) != NULL) {
 
             // we store pairs, and set destructor for pair, and printer for pair
-            $master(object, RDynamicArray)->destructor = d(RClassNamePair);
-            $master(object, RDynamicArray)->printer = p(RClassNamePair);
+            master(object, RDynamicArray)->destructor = d(RClassNamePair);
+            master(object, RDynamicArray)->printer = p(RClassNamePair);
 
             // register classes
             $(object, m(registerClassWithName, RClassTable)), toString(RDynamicArray));
@@ -33,8 +33,8 @@ $destructor(RClassTable) {
 
     if (object != NULL) {
         // destructor for RDynamicArray
-        $($master(object, RDynamicArray), d(RDynamicArray)));
-        $deallocator($master(object, RDynamicArray));
+        $(master(object, RDynamicArray), d(RDynamicArray)));
+        deallocator(master(object, RDynamicArray));
     }
 
 }
@@ -46,10 +46,10 @@ $method(uint64_t, registerClassWithName, RClassTable), char *name) {
 
     if (pair != NULL) {
         pair->className = name;
-        pair->idForClassName = $master(object, RDynamicArray)->count;
+        pair->idForClassName = master(object, RDynamicArray)->count;
 
         // successfully register new class
-        if ($($master(object, RDynamicArray), m(addObject, RDynamicArray)), pair)) {
+        if ($(master(object, RDynamicArray), m(addObject, RDynamicArray)), pair)) {
             return pair->idForClassName;
         } else {
             return 0;
@@ -62,7 +62,7 @@ $method(uint64_t, registerClassWithName, RClassTable), char *name) {
 }
 
 $method(uint64_t, getNumberOfClasses, RClassTable)) {
-    return $master(object, RDynamicArray)->count;
+    return master(object, RDynamicArray)->count;
 }
 
 //$method(uint64_t , getIdentifierByClassName, RClassTable), char *name){
@@ -71,8 +71,8 @@ $method(uint64_t, getNumberOfClasses, RClassTable)) {
 
 $printer(RClassTable) {
     printf("\n%s object %p: { \n", toString(RClassTable), object);
-    $($master(object, RDynamicArray), p(RDynamicArray)));
-    printf("\t--- TOTAL: %qu classes registered ---\n", $master(object, RDynamicArray)->count);
+    $(master(object, RDynamicArray), p(RDynamicArray)));
+    printf("\t--- TOTAL: %qu classes registered ---\n", master(object, RDynamicArray)->count);
     printf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 
