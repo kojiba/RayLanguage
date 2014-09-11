@@ -35,7 +35,7 @@ int main(int argc, const char *argv[]) {
     dynamicArray->printer = printString;
     dynamicArray->destructor = free;
 
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);

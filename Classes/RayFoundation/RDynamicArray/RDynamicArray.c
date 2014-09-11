@@ -34,6 +34,7 @@ $constructor(RDynamicArray), RDynamicArrayErrors *error) {
     } else {
         // default start size in elements
         object->startSize = 100;
+        object->sizeMultiplier = 2;
         object->array = malloc(object->startSize * sizeof(pointer));
 
         if (object->array == NULL) {
