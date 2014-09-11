@@ -5,8 +5,8 @@
 * Author Kucheruavyu Ilya (kojiba@ro.ru)
 */
 
-#include "Classes/RayFoundation/RayFoundation.h"
-#include "Classes/RayFoundation/RDynamicArray/RDynamicArray.h"
+#include "RayFoundation/RayFoundation.h"
+#include "RayFoundation/RDynamicArray/RDynamicArray.h"
 #include <stdio.h>
 #include <string.h>
 
