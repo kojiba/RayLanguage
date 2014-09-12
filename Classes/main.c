@@ -30,27 +30,24 @@ byte stringSorter(char *first, char *second) {
 
 int main(int argc, const char *argv[]) {
 //    for(int j = 0; j < 10; ++j){
-    RDynamicArray *dynamicArray = $(NULL, c(RDynamicArray)), NULL);
+    RDynamicArray *dynamicArray = makeRDArray();
 
     dynamicArray->printer = printString;
     dynamicArray->destructor = free;
 
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
-        $(dynamicArray, m(addObject, RDynamicArray)), a);
+        addObjectToArray(dynamicArray, a);
     }
 
-//    $(dynamicArray, p(RDynamicArray)));
+//    printArray(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
-    $(dynamicArray, m(sort, RDynamicArray)));
-
-    $(dynamicArray, p(RDynamicArray)));
-
-    $(dynamicArray, d(RDynamicArray)));
-    deallocator(dynamicArray);
+    sortArray(dynamicArray);
+    printArray(dynamicArray);
+    deleteArray(dynamicArray);
 //    }
     return 0;
 }

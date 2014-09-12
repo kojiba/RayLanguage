@@ -59,15 +59,18 @@ $method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src);
 $method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
 // add - set - delete
 
-// finder
+// getters - finders
 $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
+$method(pointer *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
+$method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
+// getters - finders
 
 // sorts
 $method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer));
 $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
 // standart comparator
 byte RDynamicArrayStandartComporator(pointer first, pointer second);
-inline $method(void, sort, RDynamicArray));
+$method(void, sort, RDynamicArray));
 // sorts
 
 $method(void, shift, RDynamicArray), byte side, uint64_t number);
@@ -75,5 +78,13 @@ $method(byte, checkIfIndexIn, RDynamicArray), uint64_t index);
 
 $printer(RDynamicArray);
 
+//----------------------------------------------------------------------------------
+
+#define makeRDArray() $(NULL, c(RDynamicArray)), NULL)
+#define deleteArray(dynamicArray) $(dynamicArray, d(RDynamicArray))); \
+                            deallocator(dynamicArray)
+#define printArray(dynamicArray) $(dynamicArray, p(RDynamicArray)))
+#define addObjectToArray(dynamicArray, object) $(dynamicArray, m(addObject, RDynamicArray)), object)
+#define sortArray(dynamicArray) $(dynamicArray, m(sort, RDynamicArray)))
 
 #endif /*__R_DYNAMIC_ARRAY_H__*/

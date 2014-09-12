@@ -200,9 +200,7 @@ $method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer
             if (comparator(object->array[inner], object->array[inner + 1]) == swap_objects) {
 
                 // swap
-                pointer temp = object->array[inner];
-                object->array[inner] = object->array[inner + 1];
-                object->array[inner + 1] = temp;
+                swapElementsAtIndexes(inner, inner + 1);
             }
         }
     }
@@ -253,7 +251,7 @@ $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t la
         left -= 1;
 
         // swap
-        swapElementsAtIndexes(first, right);
+        swapElementsAtIndexes(first, left);
 
         quickSortWithDelegateRDynamicArray(object, first, left, comparator);
         quickSortWithDelegateRDynamicArray(object, right, last, comparator);
@@ -327,6 +325,7 @@ $method(void, shift, RDynamicArray), byte side, uint64_t number) {
         } else {
             start = object->count - number - 1;
             end = object->count;
+//            fixme
             return;
         }
 
