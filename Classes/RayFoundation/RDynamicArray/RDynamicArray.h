@@ -29,8 +29,8 @@ typedef enum RDynamicArrayFlags {
     index_does_not_exist,
 
     // flag for shift
-    shift_left,
-    shift_right
+              shift_left,
+              shift_right
 
 } RDynamicArrayFlags;
 
@@ -59,24 +59,25 @@ $method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src);
 $method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
 // add - set - delete
 
-// getters - finders
+// get - find
 $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
-$method(pointer *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
+$method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
 $method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
-// getters - finders
+// get - find
 
-// sorts
+// sort
 $method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer));
 $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
 // standart comparator
 byte RDynamicArrayStandartComporator(pointer first, pointer second);
 $method(void, sort, RDynamicArray));
-// sorts
+// sort
 
+// work
 $method(void, shift, RDynamicArray), byte side, uint64_t number);
 $method(byte, checkIfIndexIn, RDynamicArray), uint64_t index);
-
 $printer(RDynamicArray);
+// work
 
 //----------------------------------------------------------------------------------
 

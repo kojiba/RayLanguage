@@ -18,6 +18,9 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RCString/RCString.h
 
                  Classes/RayFoundation/Function/Function.c
-                 Classes/RayFoundation/Function/Function.h)
+                 Classes/RayFoundation/Function/Function.h
+
+                 Classes/RayFoundation/RDynamicArray/RFinderDelegate/RFinderDelegate.h
+                 Classes/RayFoundation/RDynamicArray/RFinderDelegate/RFinderDelegate.c)
 
 add_executable(RayLanguage ${SOURCE_FILES})

@@ -2,7 +2,6 @@
 #include "RClassTable.h"
 #include "RClassNamePair/RClassNamePair.h"
 
-
 $constructor(RClassTable)) {
 
     // alloc RClassTable
@@ -10,7 +9,7 @@ $constructor(RClassTable)) {
     if (object != NULL) {
 
         // alloc RDynamicArray
-        master(object, RDynamicArray) = $(NULL, c(RDynamicArray)), NULL);
+        master(object, RDynamicArray) = makeRDArray();
         if (master(object, RDynamicArray) != NULL) {
 
             // we store pairs, and set destructor for pair, and printer for pair
@@ -30,13 +29,11 @@ $constructor(RClassTable)) {
 }
 
 $destructor(RClassTable) {
-
     if (object != NULL) {
         // destructor for RDynamicArray
         $(master(object, RDynamicArray), d(RDynamicArray)));
         deallocator(master(object, RDynamicArray));
     }
-
 }
 
 $method(uint64_t, registerClassWithName, RClassTable), char *name) {
@@ -55,7 +52,7 @@ $method(uint64_t, registerClassWithName, RClassTable), char *name) {
             return 0;
         }
 
-        // alloc error
+    // alloc error
     } else {
         return 0;
     }
@@ -65,16 +62,17 @@ $method(uint64_t, getNumberOfClasses, RClassTable)) {
     return master(object, RDynamicArray)->count;
 }
 
-//$method(uint64_t , getIdentifierByClassName, RClassTable), char *name){
-//    return ;
-//}
-
 $printer(RClassTable) {
     printf("\n%s object %p: { \n", toString(RClassTable), object);
     $(master(object, RDynamicArray), p(RDynamicArray)));
     printf("\t--- TOTAL: %qu classes registered ---\n", master(object, RDynamicArray)->count);
     printf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
+
+//$method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
+//    fixme
+//    $(master(object,RDynamicArray), m(findObjectWithDelegate, RDynamicArray)), findStringByName(, name));
+//}
 
 $singleton(RClassTable) {
     static RClassTable *instance;

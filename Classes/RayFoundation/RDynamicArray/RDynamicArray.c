@@ -13,14 +13,7 @@
                                                 object->array[index1] = object->array[index2]; \
                                                 object->array[index2] = temp;
 
-byte RDynamicArrayStandartComporator(pointer first, pointer second) {
-    // whats inside higher sort
-    if (*((size_t *) first) > *((size_t *) second)) {
-        return swap_objects;
-    } else {
-        return 0;
-    }
-}
+#pragma mark Constructor - Destructor - Reallocation
 
 $constructor(RDynamicArray), RDynamicArrayFlags *error) {
 
@@ -143,6 +136,40 @@ $method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
     }
 }
 
+$method(void, flush, RDynamicArray)) {
+    static uint64_t iterator;
+
+    if (object != NULL) {
+
+        if (object->array != NULL) {
+            forAll(iterator, object->count) {
+                // call destructors for all of objects in array
+                destroyElementAtIndex(iterator); // or do nothing
+            }
+            // dealloc array pointer
+            deallocator(object->array);
+
+            object->array = malloc(100 * sizeof(pointer));
+
+            if (object->array == NULL) {
+                return;
+            }
+
+            object->count = 0;
+            object->freePlaces = 100;
+        }
+
+    } else {
+        printf("Warning. Flushing a NULL, do nothing, please delete function call, or fix it.");
+    }
+
+#if RAY_SHORT_DEBUG == 1
+    printf("RDynamicArray FLUSH of %p\n", object);
+#endif
+}
+
+#pragma mark Add - Set - Delete
+
 $method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     static RDynamicArrayFlags errors;
     errors = no_error;
@@ -172,6 +199,19 @@ $method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     return errors;
 }
 
+$method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
+    if ($(object, m(checkIfIndexIn, RDynamicArray)), index) == index_exists) {
+        destroyElementAtIndex(index);
+//  fixme
+        return no_error;
+
+    } else {
+        return index_does_not_exist;
+    }
+}
+
+#pragma mark Get - Find
+
 $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
@@ -185,6 +225,8 @@ $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)
     }
     return NULL;
 }
+
+#pragma mark Sort
 
 $method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer)) {
 
@@ -206,24 +248,13 @@ $method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer
     }
 }
 
-$printer(RDynamicArray) {
-
-#if RAY_SHORT_DEBUG == 1
-      printf("%s printer of %p \n", toString(RDynamicArray), object);
-#else
-    static uint64_t iterator;
-
-    printf("\n%s object %p: { \n", toString(RDynamicArray), object);
-    forAll(iterator, object->count) {
-        printf("\t %qu - ", iterator);
-        printElemementAtIndex(iterator); // or print value
-        else {
-            printf("%p \n", object->array[iterator]);
-        }
+byte RDynamicArrayStandartComporator(pointer first, pointer second) {
+    // whats inside higher sort
+    if (*((size_t *) first) > *((size_t *) second)) {
+        return swap_objects;
+    } else {
+        return 0;
     }
-    printf("} end of %s object %p \n\n", toString(RDynamicArray), object);
-#endif
-
 }
 
 $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer)) {
@@ -265,36 +296,26 @@ $method(void, sort, RDynamicArray)) {
     $(object, m(quickSortWithDelegate, RDynamicArray)), 0, object->count, RDynamicArrayStandartComporator);
 }
 
-$method(void, flush, RDynamicArray)) {
-    static uint64_t iterator;
+#pragma mark Work
 
-    if (object != NULL) {
-
-        if (object->array != NULL) {
-            forAll(iterator, object->count) {
-                // call destructors for all of objects in array
-                destroyElementAtIndex(iterator); // or do nothing
-            }
-            // dealloc array pointer
-            deallocator(object->array);
-
-            object->array = malloc(100 * sizeof(pointer));
-
-            if (object->array == NULL) {
-                return;
-            }
-
-            object->count = 0;
-            object->freePlaces = 100;
-        }
-
-    } else {
-        printf("Warning. Flushing a NULL, do nothing, please delete function call, or fix it.");
-    }
+$printer(RDynamicArray) {
 
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray FLUSH of %p\n", object);
+      printf("%s printer of %p \n", toString(RDynamicArray), object);
+#else
+    static uint64_t iterator;
+
+    printf("\n%s object %p: { \n", toString(RDynamicArray), object);
+    forAll(iterator, object->count) {
+        printf("\t %qu - ", iterator);
+        printElemementAtIndex(iterator); // or print value
+        else {
+            printf("%p \n", object->array[iterator]);
+        }
+    }
+    printf("} end of %s object %p \n\n", toString(RDynamicArray), object);
 #endif
+
 }
 
 $method(byte, checkIfIndexIn, RDynamicArray), uint64_t index) {
@@ -341,16 +362,5 @@ $method(void, shift, RDynamicArray), byte side, uint64_t number) {
 
     } else {
         printf("Warning. Shifts of RDynamicArray do nothing, please delete function call, or fix it.");
-    }
-}
-
-$method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
-    if ($(object, m(checkIfIndexIn, RDynamicArray)), index) == index_exists) {
-        destroyElementAtIndex(index);
-//  fixme
-        return no_error;
-
-    } else {
-        return index_does_not_exist;
     }
 }
