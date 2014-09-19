@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "RClassNamePair.h"
 
-$constructor(RClassNamePair)) {
+constructor(RClassNamePair)) {
     object = allocator(RClassNamePair);
 
     if (object != NULL) {
@@ -13,9 +13,9 @@ $constructor(RClassNamePair)) {
     return object;
 }
 
-$destructor(RClassNamePair) {
+destructor(RClassNamePair) {
 }
 
-$printer(RClassNamePair) {
+printer(RClassNamePair) {
     printf("%p , { %qu - %s }\n", object, object->idForClassName, object->className);
 }

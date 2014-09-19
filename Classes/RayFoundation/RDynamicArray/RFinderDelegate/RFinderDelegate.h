@@ -1,7 +1,7 @@
 #include "../../RayFoundation.h"
 
-$class(RFinderDelegate)
+class(RFinderDelegate)
 
-$endOfClass(RFinderDelegate)
+endOfClass(RFinderDelegate)
 
-$method(byte, checkObject, RFinderDelegate));
+method(byte, checkObject, RFinderDelegate));

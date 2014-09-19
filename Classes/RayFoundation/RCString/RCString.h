@@ -3,16 +3,17 @@
 
 #include "../RayFoundation.h"
 
-$class(RCString)
+class(RCString)
     char *string;
     uint64_t size;
-$endOfClass(RCString)
+endOfClass(RCString)
 
-$constructor(RCString));
 
-$destructor(RCString);
+constructor(RCString));
 
-$method(void, setString, RCString), char *string);
+destructor(RCString);
+
+method(void, setString, RCString), char *string);
 
 
 #endif /*__R_C_STRING_H__*/

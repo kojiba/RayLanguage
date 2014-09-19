@@ -3,15 +3,16 @@
 
 #include "../../RayFoundation.h"
 
-$class(RClassNamePair)
+class(RClassNamePair)
     char *className;
     uint64_t idForClassName;
-$endOfClass(RClassNamePair)
+endOfClass(RClassNamePair)
 
-$constructor(RClassNamePair));
 
-$destructor(RClassNamePair);
+constructor(RClassNamePair));
 
-$printer(RClassNamePair);
+destructor(RClassNamePair);
+
+printer(RClassNamePair);
 
 #endif /*__R_CLASS_NAME_PAIR_H__*/

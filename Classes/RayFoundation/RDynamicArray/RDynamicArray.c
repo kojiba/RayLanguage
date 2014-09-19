@@ -7,15 +7,19 @@
 #include <stdio.h>
 #include "RDynamicArray.h"
 
-#define destroyElementAtIndex(index) if (object->destructor != NULL) object->destructor(object->array[index])
-#define printElemementAtIndex(index) if (object->printer != NULL) $(object->array[iterator], object->printer))
+#define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \
+                                        object->destructorDelegate(object->array[index])
+
+#define printElemementAtIndex(index) if (object->printerDelegate != NULL) \
+                                        $(object->array[iterator], object->printerDelegate))
+
 #define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
                                                 object->array[index1] = object->array[index2]; \
                                                 object->array[index2] = temp;
 
 #pragma mark Constructor - Destructor - Reallocation
 
-$constructor(RDynamicArray), RDynamicArrayFlags *error) {
+constructor(RDynamicArray), RDynamicArrayFlags *error) {
 
     object = allocator(RDynamicArray);
 
@@ -45,8 +49,8 @@ $constructor(RDynamicArray), RDynamicArrayFlags *error) {
             object->classId = 0;
 
             object->count = 0;
-            object->destructor = NULL;
-            object->printer = NULL;
+            object->destructorDelegate = NULL;
+            object->printerDelegate = NULL;
             object->freePlaces = object->startSize;
 
             return object;
@@ -55,7 +59,7 @@ $constructor(RDynamicArray), RDynamicArrayFlags *error) {
     }
 }
 
-$destructor(RDynamicArray) {
+destructor(RDynamicArray) {
 
     static uint64_t iterator;
 
@@ -72,8 +76,8 @@ $destructor(RDynamicArray) {
 
         object->count = 0;
         object->freePlaces = 0;
-        object->destructor = NULL;
-        object->printer = NULL;
+        object->destructorDelegate = NULL;
+        object->printerDelegate = NULL;
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -82,7 +86,7 @@ $destructor(RDynamicArray) {
 
 }
 
-$method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
+method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
         printf("RDynamicArray %p addSize\n", object);
@@ -136,7 +140,7 @@ $method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
     }
 }
 
-$method(void, flush, RDynamicArray)) {
+method(void, flush, RDynamicArray)) {
     static uint64_t iterator;
 
     if (object != NULL) {
@@ -170,7 +174,7 @@ $method(void, flush, RDynamicArray)) {
 
 #pragma mark Add - Set - Delete
 
-$method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
+method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     static RDynamicArrayFlags errors;
     errors = no_error;
 
@@ -199,7 +203,7 @@ $method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     return errors;
 }
 
-$method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
+method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
     if ($(object, m(checkIfIndexIn, RDynamicArray)), index) == index_exists) {
         destroyElementAtIndex(index);
 //  fixme
@@ -212,7 +216,7 @@ $method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index)
 
 #pragma mark Get - Find
 
-$method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
+method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     printf("RDynamicArray findObjectWithDelegate of %p\n", object);
@@ -228,7 +232,7 @@ $method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)
 
 #pragma mark Sort
 
-$method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer)) {
+method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer)) {
 
 #if RAY_SHORT_DEBUG == 1
     printf("RDynamicArray bubbleSortWithDelegate of %p\n", object);
@@ -257,7 +261,7 @@ byte RDynamicArrayStandartComporator(pointer first, pointer second) {
     }
 }
 
-$method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer)) {
+method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer)) {
 
 #if RAY_SHORT_DEBUG == 1
     static uint64_t number = 0;
@@ -289,7 +293,7 @@ $method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t la
     }
 }
 
-$method(void, sort, RDynamicArray)) {
+method(void, sort, RDynamicArray)) {
 #if RAY_SHORT_DEBUG == 1
     printf("RDynamicArray sort of %p\n", object);
 #endif
@@ -298,7 +302,7 @@ $method(void, sort, RDynamicArray)) {
 
 #pragma mark Work
 
-$printer(RDynamicArray) {
+printer(RDynamicArray) {
 
 #if RAY_SHORT_DEBUG == 1
       printf("%s printer of %p \n", toString(RDynamicArray), object);
@@ -318,15 +322,15 @@ $printer(RDynamicArray) {
 
 }
 
-$method(byte, checkIfIndexIn, RDynamicArray), uint64_t index) {
-    if (index >= 0 && index < object->count) {
+method(byte, checkIfIndexIn, RDynamicArray), uint64_t index) {
+    if (index < object->count) {
         return index_exists;
     } else {
         return index_does_not_exist;
     }
 }
 
-$method(void, shift, RDynamicArray), byte side, uint64_t number) {
+method(void, shift, RDynamicArray), byte side, uint64_t number) {
 #if RAY_SHORT_DEBUG == 1
     char *side;
     if(side == shift_left) {

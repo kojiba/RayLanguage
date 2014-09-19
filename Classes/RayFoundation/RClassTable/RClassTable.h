@@ -5,29 +5,29 @@
 #define __CLASS_TABLE_H__
 
 
-$class(RClassTable) //------------------------------------------------------------
+class(RClassTable) //------------------------------------------------------------
 
-    $discipleOf(RDynamicArray)
+    discipleOf(RDynamicArray)
 
-$endOfClass(RClassTable) //-------------------------------------------------------
+endOfClass(RClassTable) //-------------------------------------------------------
 
-$constructor(RClassTable));
-$destructor(RClassTable);
+constructor(RClassTable));
+destructor(RClassTable);
 
-$method(uint64_t, registerClassWithName, RClassTable), char *name);
-$method(uint64_t, getNumberOfClasses, RClassTable));
-$method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
+method(uint64_t, registerClassWithName, RClassTable), char *name);
+method(uint64_t, getNumberOfClasses, RClassTable));
+method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
 
-$printer(RClassTable);
-$singleton(RClassTable);
+printer(RClassTable);
+singleton(RClassTable);
 
 // some substitutions macro for better syntax
 #if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) || defined(releaseRCTS) || defined(flushRCTS)
     #error "Ray Class Table Defines Error - some already defined"
 #else
-#define RCTSingleton singleton(RClassTable)
+#define RCTSingleton singletonCall(RClassTable)
 #define flushRCTS $(master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
-#define releaseRCTS d(RClassTable)(RCTSingleton); free(singleton(RClassTable))
+#define releaseRCTS d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
 #define registerClassOnce(name) $(RCTSingleton, m(registerClassWithName, RClassTable)), name)
 #define printRCTS $(RCTSingleton, p(RClassTable)) )
 #endif

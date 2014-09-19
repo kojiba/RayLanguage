@@ -29,17 +29,17 @@ typedef void *pointer;
 typedef unsigned char byte;
 
 // declarations
-#define $class(className) typedef struct className { uint64_t classId;
-#define $discipleOf(className) className *splitUp(master,splitUp(className, Object));
-#define $endOfClass(className)  } className;
+#define class(className) typedef struct className { uint64_t classId;
+#define discipleOf(className) className *splitUp(master,splitUp(className, Object));
+#define endOfClass(className)  } className;
 
-#define $method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object
-#define $constructor(className) className* splitUp(constructorOf,className) (className *object
-#define $destructor(className) void splitUp(destructorOf,className) (className *object)
-#define $printer(className) void splitUp(printerOf,className) (className *object)
-#define $singleton(className) className* splitUp(singletonOf,className)(void)
+#define method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object
+#define constructor(className) className* splitUp(constructorOf,className) (className *object
+#define destructor(className) void splitUp(destructorOf,className) (className *object)
+#define printer(className) void splitUp(printerOf,className) (className *object)
+#define singleton(className) className* splitUp(singletonOf,className)(void)
 
-#define $staticMethod(returnValue, methodName, className) returnValue splitUp(splitUp(staticMethod, methodName), splitUp(Of, className))(className *deprecatedObject
+#define staticMethod(returnValue, methodName, className) returnValue splitUp(splitUp(staticMethod, methodName), splitUp(Of, className))(className *deprecatedObject
 
 // calls
 #define c(className) splitUp(constructorOf, className)                                              // constructor function name
@@ -47,7 +47,7 @@ typedef unsigned char byte;
 #define p(className) splitUp(printerOf, className)                                                  // printer function name
 #define m(methodName, className) splitUp(methodName,className)                                      // some method function name
 #define sm(methodName, className) splitUp(splitUp(staticMethod,methodName),splitUp(Of,className))   // static method function name
-#define singleton(className) splitUp(singletonOf,className)()                                       // singleton call
+#define singletonCall(className) splitUp(singletonOf,className)()                                       // singleton call
 
 #define $(object, methodName)  methodName(object
 

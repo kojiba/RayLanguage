@@ -34,49 +34,49 @@ typedef enum RDynamicArrayFlags {
 
 } RDynamicArrayFlags;
 
-$class(RDynamicArray) //------------------------------------------------------------
+class(RDynamicArray) //------------------------------------------------------------
 
-    uint64_t startSize;             // start size of array in elements, default: 100
-    uint64_t sizeMultiplier;        // size multiplier when auto-add-size, default: 2
-    uint64_t count;                 // count of elements in array
-    uint64_t freePlaces;            // count of free places for elements
-    void (*destructor)(pointer);    // destructor of elements delegate
-    void (*printer)(pointer);       // printer of elements delegate
-    pointer *array;                 // array
+    uint64_t startSize;                     // start size of array in elements, default: 100
+    uint64_t sizeMultiplier;                // size multiplier when auto-add-size, default: 2
+    uint64_t count;                         // count of elements in array
+    uint64_t freePlaces;                    // count of free places for elements
+    void (*destructorDelegate)(pointer);    // destructor of elements delegate
+    void (*printerDelegate)(pointer);       // printer of elements delegate
+    pointer *array;                         // array
 
-$endOfClass(RDynamicArray) //-------------------------------------------------------
+endOfClass(RDynamicArray) //-------------------------------------------------------
 
 // constructor - destructor - reallocation
-$constructor(RDynamicArray), RDynamicArrayFlags *error);
-$destructor(RDynamicArray);
+constructor(RDynamicArray), RDynamicArrayFlags *error);
+destructor(RDynamicArray);
 
-$method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize);
-$method(void, flush, RDynamicArray));
+method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize);
+method(void, flush, RDynamicArray));
 // constructor - destructor - reallocation
 
 // add - set - delete
-$method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src);
-$method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
+method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src);
+method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
 // add - set - delete
 
 // get - find
-$method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
-$method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
-$method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
+method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
+method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
+method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
 // get - find
 
 // sort
-$method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer));
-$method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
+method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer));
+method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
 // standart comparator
 byte RDynamicArrayStandartComporator(pointer first, pointer second);
-$method(void, sort, RDynamicArray));
+method(void, sort, RDynamicArray));
 // sort
 
 // work
-$method(void, shift, RDynamicArray), byte side, uint64_t number);
-$method(byte, checkIfIndexIn, RDynamicArray), uint64_t index);
-$printer(RDynamicArray);
+method(void, shift, RDynamicArray), byte side, uint64_t number);
+method(byte, checkIfIndexIn, RDynamicArray), uint64_t index);
+printer(RDynamicArray);
 // work
 
 //----------------------------------------------------------------------------------

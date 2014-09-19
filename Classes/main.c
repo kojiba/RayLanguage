@@ -28,12 +28,42 @@ byte stringSorter(char *first, char *second) {
     return 0;
 }
 
+// working defines
+//#define _TOSTRING(x) #x
+//#define toString(x) _TOSTRING(x)              // gets c-string from define or some code
+//
+//#define _splitUp(one, two) one##two
+//#define splitUp(one, two) _splitUp(one, two)
+//
+//#define className
+//
+//#define class(ClassName) typedef struct ClassName {
+//
+//#define endOfClass(ClassName) } ClassName; \
+//                               className splitUp(className, BaseSingleton);
+//
+//#define method(retValue, methodName) retValue (*splitUp(methodName,className))(struct className *object
+//#define implementation(retValue, methodName) retValue splitUp(splitUp(methodName, className), Implementation)(className *object
+//#define endImplementation(retValue, methodName)  /*(*splitUp(className,BaseSingleton).splitUp(methodName,className)) = &splitUp(splitUp(methodName, className), Implementation);*/ }
+//
+//
+//#define className Hello
+//class(Hello)
+//    int b;
+//    method(void, getMe), int arg);
+//endOfClass(Hello);
+//
+//implementation(void, getMe), int arg) {
+//    printf("%d",arg);
+//endImplementation(void, getMe)
+
 int main(int argc, const char *argv[]) {
-//    for(int j = 0; j < 10; ++j){
+    for(int j = 0; j < 10; ++j){
     RDynamicArray *dynamicArray = makeRDArray();
 
-    dynamicArray->printer = printString;
-    dynamicArray->destructor = free;
+
+    dynamicArray->printerDelegate = printString;
+    dynamicArray->destructorDelegate = free;
 
     for (int i = 0; i < 1000; ++i) {
         char *a = malloc(sizeof(char) * 8);
@@ -41,6 +71,8 @@ int main(int argc, const char *argv[]) {
         a[6] = (char) (i % 10 + 48);
         addObjectToArray(dynamicArray, a);
     }
+    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+    printf("%p\n", findedObject);
 
 //    printArray(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
@@ -48,7 +80,8 @@ int main(int argc, const char *argv[]) {
     sortArray(dynamicArray);
     printArray(dynamicArray);
     deleteArray(dynamicArray);
-//    }
+    }
+
     return 0;
 }
 
