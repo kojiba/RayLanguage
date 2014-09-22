@@ -10,7 +10,7 @@
 #define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \
                                         object->destructorDelegate(object->array[index])
 
-#define printElemementAtIndex(index) if (object->printerDelegate != NULL) \
+#define printElementAtIndex(index) if (object->printerDelegate != NULL) \
                                         $(object->array[iterator], object->printerDelegate))
 
 #define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
@@ -47,12 +47,12 @@ constructor(RDynamicArray), RDynamicArrayFlags *error) {
 
             // registers its class identifier like 0
             object->classId = 0;
-
+            // set up members
             object->count = 0;
+            object->freePlaces = object->startSize;
+            // set up delegates
             object->destructorDelegate = NULL;
             object->printerDelegate = NULL;
-            object->freePlaces = object->startSize;
-
             return object;
         }
 
@@ -78,6 +78,8 @@ destructor(RDynamicArray) {
         object->freePlaces = 0;
         object->destructorDelegate = NULL;
         object->printerDelegate = NULL;
+    } else {
+        printf("Warning. Destructing a NULL, do nothing, please delete function call, or fix it.");
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -230,6 +232,43 @@ method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer))
     return NULL;
 }
 
+method(pointer, elementAtIndex, RDynamicArray), uint64_t index) {
+    if($(object, m(checkIfIndexIn,RDynamicArray)), index) == index_exists) {
+        return object->array[index];
+    } else {
+        printf("RDArray index error!");
+        return NULL;
+    }
+}
+
+method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t count){
+    uint64_t iterator = 0;
+    RDynamicArray *result = makeRDArray();
+
+    if(result != NULL) {
+
+        // set up subArray delegates:
+        result->destructorDelegate = object->destructorDelegate;
+        result->printerDelegate = object->printerDelegate;
+
+        fromStartForAll(iterator, from, count) {
+            if(addObjectToArray(result, elementAtIndex(object, iterator)) == no_error) {
+                continue;
+
+            // error occurred
+            } else {
+
+                // cleanup and alert
+                deleteArray(result);
+                printf("Get-subarray error occurred.");
+                return NULL;
+            }
+        }
+    }
+
+    return result;
+}
+
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer)) {
@@ -307,12 +346,12 @@ printer(RDynamicArray) {
 #if RAY_SHORT_DEBUG == 1
       printf("%s printer of %p \n", toString(RDynamicArray), object);
 #else
-    static uint64_t iterator;
+    uint64_t iterator;
 
     printf("\n%s object %p: { \n", toString(RDynamicArray), object);
     forAll(iterator, object->count) {
         printf("\t %qu - ", iterator);
-        printElemementAtIndex(iterator); // or print value
+        printElementAtIndex(iterator); // or print value
         else {
             printf("%p \n", object->array[iterator]);
         }
@@ -350,15 +389,15 @@ method(void, shift, RDynamicArray), byte side, uint64_t number) {
         } else {
             start = object->count - number - 1;
             end = object->count;
-//            fixme
+//          fixme
             return;
         }
-
+//          fixme
         // destroying elements, that are rights
         fromStartForAll(iterator, start, end) {
             destroyElementAtIndex(iterator);
         }
-
+//          fixme
         // shifting others
         fromStartForAll(iterator, start, end - 1) {
             swapElementsAtIndexes(iterator, iterator + 1)

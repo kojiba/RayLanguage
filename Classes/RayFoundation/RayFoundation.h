@@ -34,6 +34,7 @@ typedef unsigned char byte;
 #define endOfClass(className)  } className;
 
 #define method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object
+#define virtualMethod(returnValue, methodName, className) returnValue (*splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className)))(struct className *object
 #define constructor(className) className* splitUp(constructorOf,className) (className *object
 #define destructor(className) void splitUp(destructorOf,className) (className *object)
 #define printer(className) void splitUp(printerOf,className) (className *object)
@@ -47,7 +48,8 @@ typedef unsigned char byte;
 #define p(className) splitUp(printerOf, className)                                                  // printer function name
 #define m(methodName, className) splitUp(methodName,className)                                      // some method function name
 #define sm(methodName, className) splitUp(splitUp(staticMethod,methodName),splitUp(Of,className))   // static method function name
-#define singletonCall(className) splitUp(singletonOf,className)()                                       // singleton call
+#define vm(methodName, className) object->splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className))
+#define singletonCall(className) splitUp(singletonOf,className)()                                   // singleton call
 
 #define $(object, methodName)  methodName(object
 
@@ -57,6 +59,10 @@ typedef unsigned char byte;
 
 // cases/if/for ...
 #define forAll(iterator, count) for(iterator = 0; iterator < count; ++iterator)
-#define fromStartForAll(iterator, start, count) for(iterator = start; iterator < count; ++iterator)
+#define fromStartForAll(iterator, start, count) for(iterator = start; iterator < start + count; ++iterator)
+
+// naming rules
+#define __MEMBERS
+#define __METHODS
 
 #endif /*__RAY_FOUNDATION__*/

@@ -36,6 +36,7 @@ typedef enum RDynamicArrayFlags {
 
 class(RDynamicArray) //------------------------------------------------------------
 
+__MEMBERS
     uint64_t startSize;                     // start size of array in elements, default: 100
     uint64_t sizeMultiplier;                // size multiplier when auto-add-size, default: 2
     uint64_t count;                         // count of elements in array
@@ -61,7 +62,7 @@ method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
 
 // get - find
 method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
-method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t to);
+method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t count);
 method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
 // get - find
 
@@ -87,5 +88,6 @@ printer(RDynamicArray);
 #define printArray(dynamicArray) $(dynamicArray, p(RDynamicArray)))
 #define addObjectToArray(dynamicArray, object) $(dynamicArray, m(addObject, RDynamicArray)), object)
 #define sortArray(dynamicArray) $(dynamicArray, m(sort, RDynamicArray)))
+#define elementAtIndex(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RDynamicArray)), index)
 
 #endif /*__R_DYNAMIC_ARRAY_H__*/

@@ -58,7 +58,7 @@ byte stringSorter(char *first, char *second) {
 //endImplementation(void, getMe)
 
 int main(int argc, const char *argv[]) {
-    for(int j = 0; j < 10; ++j){
+//    for(int j = 0; j < 10; ++j){
     RDynamicArray *dynamicArray = makeRDArray();
 
 
@@ -71,16 +71,21 @@ int main(int argc, const char *argv[]) {
         a[6] = (char) (i % 10 + 48);
         addObjectToArray(dynamicArray, a);
     }
-    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
-    printf("%p\n", findedObject);
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+//    printf("%p\n", findedObject);
 
-//    printArray(dynamicArray);
+    printArray(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
     sortArray(dynamicArray);
     printArray(dynamicArray);
+
+    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 895, 10);
+    printArray(sub);
+
     deleteArray(dynamicArray);
-    }
+    deallocator(sub);
+//    }
 
     return 0;
 }
