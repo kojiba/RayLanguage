@@ -14,29 +14,29 @@
 typedef enum RDynamicArrayFlags {
 
     // basic errors
-            no_error,
+                 no_error,
     temp_allocation_error,
-    allocation_error,
+         allocation_error,
 
     // flags for findObjectWithDelegate
-            object_founded, // or NULL
+           object_founded, // or NULL
 
     // sort-flags for sortWithDelegate
-            swap_objects,   // or 0
+             swap_objects,   // or 0
 
     // flag for checkIfIndexInArray
-            index_exists,
-    index_does_not_exist,
+             index_exists,
+     index_does_not_exist,
 
     // flag for shift
-              shift_left,
+               shift_left,
               shift_right
 
 } RDynamicArrayFlags;
 
 class(RDynamicArray) //------------------------------------------------------------
 
-__MEMBERS
+members
     uint64_t startSize;                     // start size of array in elements, default: 100
     uint64_t sizeMultiplier;                // size multiplier when auto-add-size, default: 2
     uint64_t count;                         // count of elements in array

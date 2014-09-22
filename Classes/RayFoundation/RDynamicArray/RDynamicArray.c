@@ -24,9 +24,9 @@ constructor(RDynamicArray), RDynamicArrayFlags *error) {
     object = allocator(RDynamicArray);
 
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray constructor of %p\n", object);
+    printf("RDA constructor of %p\n", object);
     if(object == NULL){
-        printf("RDynamicArray BAD ALLOCATION\n");
+        printf("ERROR. RDA BAD ALLOCATION\n");
     }
 #endif
 
@@ -83,7 +83,7 @@ destructor(RDynamicArray) {
     }
 
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray destructor of %p\n", object);
+    printf("RDA destructor of %p\n", object);
 #endif
 
 }
@@ -91,7 +91,7 @@ destructor(RDynamicArray) {
 method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
-        printf("RDynamicArray %p addSize\n", object);
+        printf("RDA %p addSize\n", object);
 #endif
     static uint64_t iterator;
 
@@ -123,7 +123,7 @@ method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize) {
             deallocator(tempArray);
             return allocation_error;
 
-            // if allocation successful
+        // if allocation successful
         } else {
 
             // copy from temp
@@ -170,7 +170,7 @@ method(void, flush, RDynamicArray)) {
     }
 
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray FLUSH of %p\n", object);
+    printf("RDA FLUSH of %p\n", object);
 #endif
 }
 
@@ -183,7 +183,7 @@ method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     // needs additional allocation of memory
     if (object->freePlaces == 0) {
 #if RAY_SHORT_DEBUG == 1
-        printf("RDynamicArray %p needs additional allocation\n", object);
+        printf("RDA %p needs additional allocation\n", object);
 #endif
         errors = $(object, m(addSize, RDynamicArray)), object->count * object->sizeMultiplier);
     }
@@ -191,7 +191,7 @@ method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
     // not need additional allocation
 #if RAY_SHORT_DEBUG == 1
     else {
-        printf("RDynamicArray %p addObject without additional allocation\n", object);
+        printf("RDA %p addObject without additional allocation\n", object);
     }
 #endif
 
@@ -206,6 +206,9 @@ method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src) {
 }
 
 method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) {
+#if RAY_SHORT_DEBUG == 1
+    printf("RDA deleteObjectAtIndex of %p\n", object);
+#endif
     if ($(object, m(checkIfIndexIn, RDynamicArray)), index) == index_exists) {
         destroyElementAtIndex(index);
 //  fixme
@@ -221,7 +224,7 @@ method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index) 
 method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray findObjectWithDelegate of %p\n", object);
+    printf("RDA findObjectWithDelegate of %p\n", object);
 #endif
 
     forAll(iterator, object->count) {
@@ -233,18 +236,24 @@ method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer))
 }
 
 method(pointer, elementAtIndex, RDynamicArray), uint64_t index) {
+#if RAY_SHORT_DEBUG == 1
+    printf("RDA elementAtIndex of %p\n", object);
+#endif
     if($(object, m(checkIfIndexIn,RDynamicArray)), index) == index_exists) {
         return object->array[index];
     } else {
-        printf("RDArray index error!");
+        printf("ERROR. RDArray index not_exist of %p!\n", object);
         return NULL;
     }
 }
 
 method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t count){
+
     uint64_t iterator = 0;
     RDynamicArray *result = makeRDArray();
-
+#if RAY_SHORT_DEBUG == 1
+    printf("RDA getSubarray of %p\n", object);
+#endif
     if(result != NULL) {
 
         // set up subArray delegates:
@@ -260,11 +269,16 @@ method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t cou
 
                 // cleanup and alert
                 deleteArray(result);
-                printf("Get-subarray error occurred.");
+                printf("ERROR. Get-subarray error occurred of %p.\n", object);
                 return NULL;
             }
         }
     }
+#if RAY_SHORT_DEBUG == 1
+    else {
+        printf("ERROR. RDynamicArray getSubarray allocation error of %p\n", object);
+    }
+#endif
 
     return result;
 }
@@ -274,7 +288,7 @@ method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t cou
 method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer, pointer)) {
 
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray bubbleSortWithDelegate of %p\n", object);
+    printf("RDA bubbleSortWithDelegate of %p\n", object);
 #endif
 
     static uint64_t inner;
@@ -292,7 +306,7 @@ method(void, bubbleSortWithDelegate, RDynamicArray), byte (*comparator)(pointer,
 }
 
 byte RDynamicArrayStandartComporator(pointer first, pointer second) {
-    // whats inside higher sort
+    // whats-inside-higher, sort
     if (*((size_t *) first) > *((size_t *) second)) {
         return swap_objects;
     } else {
@@ -304,7 +318,7 @@ method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t las
 
 #if RAY_SHORT_DEBUG == 1
     static uint64_t number = 0;
-    printf("RDynamicArray quickSortWithDelegate of %p recursive #%qu\n", object, number);
+    printf("RDA quickSortWithDelegate of %p recursive #%qu\n", object, number);
     ++number;
 #endif
 
@@ -334,7 +348,7 @@ method(void, quickSortWithDelegate, RDynamicArray), uint64_t first, uint64_t las
 
 method(void, sort, RDynamicArray)) {
 #if RAY_SHORT_DEBUG == 1
-    printf("RDynamicArray sort of %p\n", object);
+    printf("RDA sort of %p\n", object);
 #endif
     $(object, m(quickSortWithDelegate, RDynamicArray)), 0, object->count, RDynamicArrayStandartComporator);
 }
@@ -371,12 +385,12 @@ method(byte, checkIfIndexIn, RDynamicArray), uint64_t index) {
 
 method(void, shift, RDynamicArray), byte side, uint64_t number) {
 #if RAY_SHORT_DEBUG == 1
-    char *side;
+    char *sideName;
     if(side == shift_left) {
-         side = "left";
+         sideName = "left";
     } else {
-         side = "right";
-    } printf("RDynamicArray shift of %p on \n", object);
+         sideName = "right";
+    } printf("RDA shift of %p on %s\n", object, sideName);
 #endif
     uint64_t iterator;
     uint64_t start;
@@ -404,6 +418,6 @@ method(void, shift, RDynamicArray), byte side, uint64_t number) {
         }
 
     } else {
-        printf("Warning. Shifts of RDynamicArray do nothing, please delete function call, or fix it.");
+        printf("Warning. Shifts of RDynamicArray do nothing, please delete function call, or fix it.\n");
     }
 }

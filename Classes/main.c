@@ -9,6 +9,7 @@
 #include "RayFoundation/RDynamicArray/RDynamicArray.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 byte findString(char *string) {
@@ -27,35 +28,6 @@ byte stringSorter(char *first, char *second) {
     }
     return 0;
 }
-
-// working defines
-//#define _TOSTRING(x) #x
-//#define toString(x) _TOSTRING(x)              // gets c-string from define or some code
-//
-//#define _splitUp(one, two) one##two
-//#define splitUp(one, two) _splitUp(one, two)
-//
-//#define className
-//
-//#define class(ClassName) typedef struct ClassName {
-//
-//#define endOfClass(ClassName) } ClassName; \
-//                               className splitUp(className, BaseSingleton);
-//
-//#define method(retValue, methodName) retValue (*splitUp(methodName,className))(struct className *object
-//#define implementation(retValue, methodName) retValue splitUp(splitUp(methodName, className), Implementation)(className *object
-//#define endImplementation(retValue, methodName)  /*(*splitUp(className,BaseSingleton).splitUp(methodName,className)) = &splitUp(splitUp(methodName, className), Implementation);*/ }
-//
-//
-//#define className Hello
-//class(Hello)
-//    int b;
-//    method(void, getMe), int arg);
-//endOfClass(Hello);
-//
-//implementation(void, getMe), int arg) {
-//    printf("%d",arg);
-//endImplementation(void, getMe)
 
 int main(int argc, const char *argv[]) {
 //    for(int j = 0; j < 10; ++j){
@@ -80,7 +52,7 @@ int main(int argc, const char *argv[]) {
     sortArray(dynamicArray);
     printArray(dynamicArray);
 
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 895, 10);
+    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 845, 40);
     printArray(sub);
 
     deleteArray(dynamicArray);
@@ -129,27 +101,32 @@ void printString(char *src){
 
 void RDynamicArrayTest(void){
 //    for(int j = 0; j < 10; ++j){
-    RDynamicArray *dynamicArray = $(NULL, c(RDynamicArray)), NULL);
+    RDynamicArray *dynamicArray = makeRDArray();
 
-    dynamicArray->printer = printString;
-    dynamicArray->destructor = free;
 
-    for (int i = 0; i < 10000; ++i) {
+    dynamicArray->printerDelegate = printString;
+    dynamicArray->destructorDelegate = free;
+
+    for (int i = 0; i < 1000; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
-        $(dynamicArray, m(addObject, RDynamicArray)), a);
+        addObjectToArray(dynamicArray, a);
     }
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+//    printf("%p\n", findedObject);
 
-//    $(dynamicArray, p(RDynamicArray)));
+    printArray(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
-    $(dynamicArray, m(sort, RDynamicArray)));
+    sortArray(dynamicArray);
+    printArray(dynamicArray);
 
-    $(dynamicArray, p(RDynamicArray)));
+    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 895, 10);
+    printArray(sub);
 
-    $(dynamicArray, d(RDynamicArray)));
-    deallocator(dynamicArray);
+    deleteArray(dynamicArray);
+    deallocator(sub);
 //    }
 }
 

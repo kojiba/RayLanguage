@@ -4,7 +4,7 @@
 #include "../RayFoundation.h"
 
 class(RCString)
-    char *string;
+    char *baseString;
     uint64_t size;
 endOfClass(RCString)
 

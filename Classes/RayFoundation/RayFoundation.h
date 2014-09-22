@@ -62,7 +62,7 @@ typedef unsigned char byte;
 #define fromStartForAll(iterator, start, count) for(iterator = start; iterator < start + count; ++iterator)
 
 // naming rules
-#define __MEMBERS
-#define __METHODS
+#define members
+#define methods
 
 #endif /*__RAY_FOUNDATION__*/
