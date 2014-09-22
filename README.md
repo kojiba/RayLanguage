@@ -13,10 +13,10 @@ Include:
 Declare class:
 
 ```C
-$class(MyClass)
+class(MyClass)
     int *a;
     float *b;
-$endOfClass(MyClass)
+endOfClass(MyClass)
 ```
 
 Declare methods:
@@ -48,7 +48,7 @@ $method(void, MyMethod, MyClass), int a) {
     }
 }
 
-$constructor(MyClass)) {
+constructor(MyClass)) {
     printf("Constructor\n");
 
     object = $allocator(MyClass);
@@ -63,7 +63,7 @@ $constructor(MyClass)) {
     return object;
 }
 
-$destructor(MyClass) {
+destructor(MyClass) {
 
     $deallocator(object->a);
     $deallocator(object->b);
@@ -73,7 +73,7 @@ $destructor(MyClass) {
     printf("Destructor of MyClass\n");
 }
 
-$printer(MyClass) {
+printer(MyClass) {
     printf("\n%s object 0x%.x: { \n", TOSTRING(MyClass), object);
 
     printf(" a = %d \n", object->a[0]);
@@ -82,7 +82,7 @@ $printer(MyClass) {
     printf("} end of %s object 0x%.x \n\n", TOSTRING(MyClass), object);
 }
 
-$staticMethod(void, MyStaticMethod, MyClass), double b) {
+staticMethod(void, MyStaticMethod, MyClass), double b) {
     printf("My static method with double %f \n", b);
 }
 ```
