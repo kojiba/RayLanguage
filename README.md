@@ -32,7 +32,7 @@ printer(MyClass);
 Declare disciple
 
 ```C
-class(SimpleDisciple) $discipleOf(MyClass)
+class(SimpleDisciple) discipleOf(MyClass)
     char *string;
 endOfClass(SimpleDisciple)
 ```
