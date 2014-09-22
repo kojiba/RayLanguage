@@ -13,34 +13,34 @@ Include:
 Declare class:
 
 ```C
-$class(MyClass)
+class(MyClass)
     int *a;
     float *b;
-$endOfClass(MyClass)
+endOfClass(MyClass)
 ```
 
 Declare methods:
 
 ```C
-$constructor(MyClass));
-$destructor(MyClass);
-$method(void, MyMethod, MyClass), int a);
-$staticMethod(void, MyStaticMethod, MyClass), double b);
-$printer(MyClass);
+constructor(MyClass));
+destructor(MyClass);
+method(void, MyMethod, MyClass), int a);
+staticMethod(void, MyStaticMethod, MyClass), double b);
+printer(MyClass);
 ```
 
 Declare disciple
 
 ```C
-$class(SimpleDisciple) $discipleOf(MyClass)
+class(SimpleDisciple) discipleOf(MyClass)
     char *string;
-$endOfClass(SimpleDisciple)
+endOfClass(SimpleDisciple)
 ```
 
 Implement methods:
 
 ```C
-$method(void, MyMethod, MyClass), int a) {
+method(void, MyMethod, MyClass), int a) {
     if (a == 1) {
         printf("Hello world.\n");
     } else {
@@ -48,14 +48,14 @@ $method(void, MyMethod, MyClass), int a) {
     }
 }
 
-$constructor(MyClass)) {
+constructor(MyClass)) {
     printf("Constructor\n");
 
-    object = $allocator(MyClass);
+    object = allocator(MyClass);
 //    You can get name of class in predeclared variable, but it's only optionally
 //    a->nameOfClass = TOSTRING(MyClass);
-    object->a = $allocator(int);
-    object->b = $allocator(float);
+    object->a = allocator(int);
+    object->b = allocator(float);
 
     object->a[0] = 2;
     object->b[0] = 20.3;
@@ -63,17 +63,17 @@ $constructor(MyClass)) {
     return object;
 }
 
-$destructor(MyClass) {
+destructor(MyClass) {
 
-    $deallocator(object->a);
-    $deallocator(object->b);
+    deallocator(object->a);
+    deallocator(object->b);
     object->a = 0;
     object->b = 0;
 
     printf("Destructor of MyClass\n");
 }
 
-$printer(MyClass) {
+printer(MyClass) {
     printf("\n%s object 0x%.x: { \n", TOSTRING(MyClass), object);
 
     printf(" a = %d \n", object->a[0]);
@@ -82,7 +82,7 @@ $printer(MyClass) {
     printf("} end of %s object 0x%.x \n\n", TOSTRING(MyClass), object);
 }
 
-$staticMethod(void, MyStaticMethod, MyClass), double b) {
+staticMethod(void, MyStaticMethod, MyClass), double b) {
     printf("My static method with double %f \n", b);
 }
 ```
