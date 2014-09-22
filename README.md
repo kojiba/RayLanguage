@@ -51,11 +51,11 @@ method(void, MyMethod, MyClass), int a) {
 constructor(MyClass)) {
     printf("Constructor\n");
 
-    object = $allocator(MyClass);
+    object = allocator(MyClass);
 //    You can get name of class in predeclared variable, but it's only optionally
 //    a->nameOfClass = TOSTRING(MyClass);
-    object->a = $allocator(int);
-    object->b = $allocator(float);
+    object->a = allocator(int);
+    object->b = allocator(float);
 
     object->a[0] = 2;
     object->b[0] = 20.3;
@@ -65,8 +65,8 @@ constructor(MyClass)) {
 
 destructor(MyClass) {
 
-    $deallocator(object->a);
-    $deallocator(object->b);
+    deallocator(object->a);
+    deallocator(object->b);
     object->a = 0;
     object->b = 0;
 
