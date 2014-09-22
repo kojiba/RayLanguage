@@ -22,25 +22,25 @@ endOfClass(MyClass)
 Declare methods:
 
 ```C
-$constructor(MyClass));
-$destructor(MyClass);
-$method(void, MyMethod, MyClass), int a);
-$staticMethod(void, MyStaticMethod, MyClass), double b);
-$printer(MyClass);
+constructor(MyClass));
+destructor(MyClass);
+method(void, MyMethod, MyClass), int a);
+staticMethod(void, MyStaticMethod, MyClass), double b);
+printer(MyClass);
 ```
 
 Declare disciple
 
 ```C
-$class(SimpleDisciple) $discipleOf(MyClass)
+class(SimpleDisciple) $discipleOf(MyClass)
     char *string;
-$endOfClass(SimpleDisciple)
+endOfClass(SimpleDisciple)
 ```
 
 Implement methods:
 
 ```C
-$method(void, MyMethod, MyClass), int a) {
+method(void, MyMethod, MyClass), int a) {
     if (a == 1) {
         printf("Hello world.\n");
     } else {
