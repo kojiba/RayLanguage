@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "RayCheckFoundation.h"
+#include "RayBase.h"
 
 // working defines
 #define _TOSTRING(x) #x
@@ -25,11 +26,13 @@
 // working defines
 
 // typedefs
-typedef void *pointer;
+typedef void * pointer;
 typedef unsigned char byte;
 
 // declarations
-#define class(className) typedef struct className { uint64_t classId;
+#define class(className) typedef struct className { \
+                                    uint64_t classId;
+
 #define discipleOf(className) className *splitUp(master,splitUp(className, Object));
 #define endOfClass(className)  } className;
 
@@ -53,8 +56,8 @@ typedef unsigned char byte;
 
 #define $(object, methodName)  methodName(object
 
-#define allocator(className) malloc(sizeof(className))
-#define deallocator(object) free(object); object = NULL
+#define allocator(className) RAlloc(sizeof(className))
+#define deallocator(object) RFree(object); object = NULL
 #define master(object, className) object->splitUp(master,splitUp(className, Object))
 
 // cases/if/for ...

@@ -30,15 +30,23 @@ typedef enum RDynamicArrayFlags {
 
     // flag for shift
                shift_left,
-              shift_right
+              shift_right,
+
+    // flag, determines bad newSize
+    // (smaller that exist)
+    // in addSize function
+            bad_size,
 
 } RDynamicArrayFlags;
+
+static const uint64_t startSizeOfRdynamicArrayDefault = 100;
+static const uint64_t sizeMultiplierOfRdynamicArrayDefault = 2;
 
 class(RDynamicArray) //------------------------------------------------------------
 
 members
-    uint64_t startSize;                     // start size of array in elements, default: 100
-    uint64_t sizeMultiplier;                // size multiplier when auto-add-size, default: 2
+    uint64_t startSize;                     // start size of array in elements
+    uint64_t sizeMultiplier;                // size multiplier when auto-add-size
     uint64_t count;                         // count of elements in array
     uint64_t freePlaces;                    // count of free places for elements
     void (*destructorDelegate)(pointer);    // destructor of elements delegate
@@ -53,11 +61,13 @@ destructor(RDynamicArray);
 
 method(RDynamicArrayFlags, addSize, RDynamicArray), uint64_t newSize);
 method(void, flush, RDynamicArray));
+method(byte, sizeToFit, RDynamicArray));
 // constructor - destructor - reallocation
 
 // add - set - delete
 method(RDynamicArrayFlags, addObject, RDynamicArray), pointer src);
-method(RDynamicArrayFlags, deleteObjectAtIndex, RDynamicArray), uint64_t index);
+method(RDynamicArrayFlags, deleteObjectAtIndexIn, RDynamicArray), uint64_t index);
+method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RDynamicArray), uint64_t index);
 // add - set - delete
 
 // get - find
@@ -76,7 +86,7 @@ method(void, sort, RDynamicArray));
 
 // work
 method(void, shift, RDynamicArray), byte side, uint64_t number);
-method(byte, checkIfIndexIn, RDynamicArray), uint64_t index);
+method(static inline byte, checkIfIndexIn, RDynamicArray), uint64_t index);
 printer(RDynamicArray);
 // work
 
@@ -89,5 +99,6 @@ printer(RDynamicArray);
 #define addObjectToArray(dynamicArray, object) $(dynamicArray, m(addObject, RDynamicArray)), object)
 #define sortArray(dynamicArray) $(dynamicArray, m(sort, RDynamicArray)))
 #define elementAtIndex(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RDynamicArray)), index)
+#define sizeToFit(dynamicArray) $(dynamicArray, m(sizeToFit, RDynamicArray)) )
 
 #endif /*__R_DYNAMIC_ARRAY_H__*/

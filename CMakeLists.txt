@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.4)
 project(RayLanguage)
 
 set(SOURCE_FILES Classes/main.c
+                Classes/RayFoundation/RayBase.h
                  Classes/RayFoundation/RayCheckFoundation.h
                  Classes/RayFoundation/RayFoundation.h
 
