@@ -10,14 +10,11 @@ secondly:
 There is BEST dynamic array for C language.
 There is classTable, that can help you to fast audite C code.
 
-Include:
-```C
-#include "RDynamicArray.h"
-```
-
 Work with RDynamicArray:
 
 ```C
+#include "RDynamicArray.h"
+
 byte findString(char *string) {
     return object_founded;
 }
@@ -85,6 +82,8 @@ int main(int argc, const char *argv[]) {
 Work with RClassTable:
 
 ```C
+#include "RClassTable.h"
+
 void RClassTableTest(void){
     // register class name once, and get identifier in result
     registerClassOnce("Luke");
