@@ -1,118 +1,109 @@
 RayLanguage
 ===========
 
+firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
 All based on defines. Here you can find dynamic array for C.
 
+secondly:
+There is BEST dynamic array for C language.
+There is classTable, that can help you to fast audite C code.
+
 Include:
 ```C
-#include "RayFoundation.h"
+#include "RDynamicArray.h"
 ```
 
-Declare class:
+Work with RDynamicArray:
 
 ```C
-class(MyClass)
-    int *a;
-    float *b;
-endOfClass(MyClass)
-```
+byte findString(char *string) {
+    return object_founded;
+}
 
-Declare methods:
+void printString(char *src) {
+    printf("%s \n", src);
+}
 
-```C
-constructor(MyClass));
-destructor(MyClass);
-method(void, MyMethod, MyClass), int a);
-staticMethod(void, MyStaticMethod, MyClass), double b);
-printer(MyClass);
-```
-
-Declare disciple
-
-```C
-class(SimpleDisciple) discipleOf(MyClass)
-    char *string;
-endOfClass(SimpleDisciple)
-```
-
-Implement methods:
-
-```C
-method(void, MyMethod, MyClass), int a) {
-    if (a == 1) {
-        printf("Hello world.\n");
-    } else {
-        printf("Goodbye world.\n");
+byte stringSorter(char *first, char *second) {
+    if (first != second) {
+        if (first[6] > second[6]) {
+            return swap_objects;
+        }
     }
+    return 0;
 }
 
-constructor(MyClass)) {
-    printf("Constructor\n");
+int main(int argc, const char *argv[]) {
+    // create your dynamic array
+    RDynamicArray *dynamicArray = makeRDArray();
 
-    object = allocator(MyClass);
-//    You can get name of class in predeclared variable, but it's only optionally
-//    a->nameOfClass = TOSTRING(MyClass);
-    object->a = allocator(int);
-    object->b = allocator(float);
+    dynamicArray->printerDelegate = printString;
+    dynamicArray->destructorDelegate = free;
 
-    object->a[0] = 2;
-    object->b[0] = 20.3;
+    for (int i = 0; i < 10; ++i) {
+        char *a = malloc(sizeof(char) * 8);
+        memmove(a, "Hello  ", sizeof("Hello  "));
+        a[6] = (char) (i % 10 + 48);
+        addObjectToArray(dynamicArray, a);
+    }
+    // find object in array
+    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+    printf("%p\n", findedObject);
+    
+    // print your array
+    printArray(dynamicArray);
+    
+    // sort with delegate
+    $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
+    
+    // built-in sort
+    sortArray(dynamicArray);
+    printArray(dynamicArray);
+    
+    // get sub-arrays
+    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 40);
+    printArray(sub);
+    
+    // fast delete objects
+    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RDynamicArray)), 9);
+    printArray(dynamicArray);
+    
+    // make your array size-to-fit (without free space)
+    sizeToFit(dynamicArray);
+    printArray(dynamicArray);
+    
+    // delete your array
+    deleteArray(dynamicArray);
+    deallocator(sub);
 
-    return object;
-}
-
-destructor(MyClass) {
-
-    deallocator(object->a);
-    deallocator(object->b);
-    object->a = 0;
-    object->b = 0;
-
-    printf("Destructor of MyClass\n");
-}
-
-printer(MyClass) {
-    printf("\n%s object 0x%.x: { \n", TOSTRING(MyClass), object);
-
-    printf(" a = %d \n", object->a[0]);
-    printf(" b = %f \n", object->b[0]);
-
-    printf("} end of %s object 0x%.x \n\n", TOSTRING(MyClass), object);
-}
-
-staticMethod(void, MyStaticMethod, MyClass), double b) {
-    printf("My static method with double %f \n", b);
+    return 0;
 }
 ```
 
-Creating and work with object:
+Work with RClassTable:
+
 ```C
-printf("Heap: \n\n");
-    // Work with pointers
-    MyClass *ob1;
-    ob1 = $(NULL, c(MyClass)) );
-    $(ob1, m(MyMethod, MyClass)), 1);
-    $(ob1, m(MyMethod, MyClass)), 26062000);
+void RClassTableTest(void){
+    // register class name once, and get identifier in result
+    registerClassOnce("Luke");
+    // print our class table
+    printRCTS;
 
-    $(NULL, sm(MyStaticMethod, MyClass)), 0.451);
+    registerClassOnce("Dart");
+    printRCTS;
 
-    $(ob1, p(MyClass)));
-    $(ob1, d(MyClass)));
-    // additional pointer cleanup
-    $(ob1, free));
+    registerClassOnce("Leia");
+    printRCTS;
 
-    // Work with stack
-    printf("\nStack: \n\n");
-    {
-        MyClass ob2 = *$(NULL, c(MyClass)) );
-        $(&ob2, m(MyMethod, MyClass)), 1);
-        $(&ob2, m(MyMethod, MyClass)), 23082011);
-
-        $(NULL, sm(MyStaticMethod, MyClass)), 0.451);
-
-        $(&ob2, p(MyClass)) );
-        $(&ob2, d(MyClass)) );
-    }
+    registerClassOnce("Han Solo");
+    
+    // flush your class table
+    flushRCTS;
+    printRCTS;
+    
+    // delete your class table
+    releaseRCTS;
+}
 ```
