@@ -59,8 +59,9 @@ int main(int argc, const char *argv[]) {
     sortArray(dynamicArray);
     printArray(dynamicArray);
     
-    // get sub-arrays
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 40);
+    // get sub-arrays, there will be two errorrs logged in console, 
+    // and subarray will consist thwo last elements like null
+    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 11);
     printArray(sub);
     
     // fast delete objects
