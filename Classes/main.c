@@ -120,40 +120,49 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-//    for(int j = 0; j < 10; ++j){
-    RDynamicArray *dynamicArray = makeRDArray();
-
-
-    dynamicArray->printerDelegate = printString;
-    dynamicArray->destructorDelegate = free;
-
-    for (int i = 0; i < 10; ++i) {
-        char *a = malloc(sizeof(char) * 8);
-        memmove(a, "Hello  ", sizeof("Hello  "));
-        a[6] = (char) (i % 10 + 48);
-        addObjectToArray(dynamicArray, a);
-    }
+//    RDynamicArray *dynamicArray = makeRDArray();
+//
+//
+//    dynamicArray->printerDelegate = printString;
+//    dynamicArray->destructorDelegate = free;
+//
+//    for (int i = 0; i < 10; ++i) {
+//        char *a = malloc(sizeof(char) * 8);
+//        memmove(a, "Hello  ", sizeof("Hello  "));
+//        a[6] = (char) (i % 10 + 48);
+//        addObjectToArray(dynamicArray, a);
+//    }
 //    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
 //    printf("%p\n", findedObject);
+//
+//    printArray(dynamicArray);
+////        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
+////        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
+//    sortArray(dynamicArray);
+//    printArray(dynamicArray);
+//
+//    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 11);
+//    printArray(sub);
+//
+//    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RDynamicArray)), 9);
+//    printArray(dynamicArray);
+//    sizeToFit(dynamicArray);
+//    printArray(dynamicArray);
+//
+//    deleteArray(dynamicArray);
+//    deallocator(sub);
+    registerClassOnce("Luke");
+    printRCTS;
 
-    printArray(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
-    sortArray(dynamicArray);
-    printArray(dynamicArray);
+    registerClassOnce("Dart");
+    printRCTS;
 
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 40);
-    printArray(sub);
+    registerClassOnce("Leia");
+    printRCTS;
 
-    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RDynamicArray)), 9);
-    printArray(dynamicArray);
-    sizeToFit(dynamicArray);
-    printArray(dynamicArray);
+    registerClassOnce("Han Solo");
 
-    deleteArray(dynamicArray);
-    deallocator(sub);
-//    }
-
+    RPrintf("%qu", getIdentifierByName("Han Solo"));
     return 0;
 }
 

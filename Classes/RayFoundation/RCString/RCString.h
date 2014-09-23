@@ -3,6 +3,11 @@
 
 #include "../RayFoundation.h"
 
+typedef enum RCStringFlags{
+    equals,
+    not_equals
+} RCStringFlags;
+
 class(RCString)
     char *baseString;
     uint64_t size;
@@ -14,6 +19,9 @@ constructor(RCString));
 destructor(RCString);
 
 method(void, setString, RCString), char *string);
+method(byte, compareWith, RCString), RCString *checkString);
 
+
+#define makeRCString() $(NULL, c(RCString)))
 
 #endif /*__R_C_STRING_H__*/

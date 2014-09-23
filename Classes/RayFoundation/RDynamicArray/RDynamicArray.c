@@ -243,14 +243,14 @@ method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RDynamicArray), uint64_t i
 
 #pragma mark Get - Find
 
-method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer)) {
+method(pointer, findObjectWithDelegate, RDynamicArray), RFinderDelegate *delegate) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RDA findObjectWithDelegate of %p\n", object);
 #endif
 
     forAll(iterator, object->count) {
-        if (finder(object->array[iterator]) == object_founded) {
+        if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == object_founded) {
             return object->array[iterator];
         }
     }

@@ -1,5 +1,6 @@
 #include "../RayFoundation.h"
 #include "../RDynamicArray/RDynamicArray.h"
+#include "RClassNamePair/RClassNamePair.h"
 
 #ifndef __CLASS_TABLE_H__
 #define __CLASS_TABLE_H__
@@ -8,6 +9,7 @@
 class(RClassTable) //------------------------------------------------------------
 
     discipleOf(RDynamicArray)
+    discipleOf(RFinderDelegate)
 
 endOfClass(RClassTable) //-------------------------------------------------------
 
@@ -18,11 +20,14 @@ method(uint64_t, registerClassWithName, RClassTable), char *name);
 method(uint64_t, getNumberOfClasses, RClassTable));
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
 
+method(byte, checkObject, RClassTable), RClassNamePair *pairToCheck);
+
 printer(RClassTable);
 singleton(RClassTable);
 
 // some substitutions macro for better syntax
-#if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) || defined(releaseRCTS) || defined(flushRCTS)
+#if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) \
+    || defined(releaseRCTS) || defined(flushRCTS) || defined(getIdentifierByName)
     #error "Ray Class Table Defines Error - some already defined"
 #else
 #define RCTSingleton singletonCall(RClassTable)
@@ -30,6 +35,7 @@ singleton(RClassTable);
 #define releaseRCTS d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
 #define registerClassOnce(name) $(RCTSingleton, m(registerClassWithName, RClassTable)), name)
 #define printRCTS $(RCTSingleton, p(RClassTable)) )
+#define getIdentifierByName(name) $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), name)
 #endif
 
 #endif /*__CLASS_TABLE_H__*/

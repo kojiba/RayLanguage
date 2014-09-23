@@ -2,9 +2,10 @@
 #define __R_CLASS_NAME_PAIR_H__
 
 #include "../../RayFoundation.h"
+#include "../../RCString/RCString.h"
 
 class(RClassNamePair)
-    char *className;
+    discipleOf(RCString)
     uint64_t idForClassName;
 endOfClass(RClassNamePair)
 
@@ -14,5 +15,8 @@ constructor(RClassNamePair));
 destructor(RClassNamePair);
 
 printer(RClassNamePair);
+
+method(byte, compareWith, RClassNamePair), RClassNamePair *checkPair);
+
 
 #endif /*__R_CLASS_NAME_PAIR_H__*/

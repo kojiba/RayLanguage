@@ -8,6 +8,7 @@
 #define __R_DYNAMIC_ARRAY_H__
 
 #include "../RayFoundation.h"
+#include "RFinderDelegate/RFinderDelegate.h"
 
 #define RAY_SHORT_DEBUG 451
 
@@ -71,7 +72,7 @@ method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RDynamicArray), uint64_t i
 // add - set - delete
 
 // get - find
-method(pointer, findObjectWithDelegate, RDynamicArray), byte (*finder)(pointer));
+method(pointer, findObjectWithDelegate, RDynamicArray), RFinderDelegate *delegate);
 method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t count);
 method(pointer, elementAtIndex, RDynamicArray), uint64_t index);
 // get - find
