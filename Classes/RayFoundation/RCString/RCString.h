@@ -13,7 +13,6 @@ class(RCString)
     uint64_t size;
 endOfClass(RCString)
 
-
 constructor(RCString));
 
 destructor(RCString);

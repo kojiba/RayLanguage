@@ -82,7 +82,7 @@ method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
     $(master(pair, RCString), m(setString, RCString)), name);
     master(object, RFinderDelegate)->etaloneObject = pair;
 
-    RClassNamePair *foundedObject = $(master(object,RDynamicArray), m(findObjectWithDelegate, RDynamicArray)), master(object, RFinderDelegate));
+    RClassNamePair *foundedObject = $(master(object, RDynamicArray), m(findObjectWithDelegate, RDynamicArray)), master(object, RFinderDelegate));
     if(foundedObject == NULL){
         return 0;
     } else {

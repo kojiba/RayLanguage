@@ -30,7 +30,7 @@ method(byte, compareWith, RClassNamePair), RClassNamePair *checkPair) {
             return object_founded;
         }
     } else {
-        RPrintf("Warning. Name and Id, of compare pair is NULL, please delete function call, or fix it\n");
+        RPrintf("Warning. RCNP. Name and Id, of compare pair is NULL, please delete function call, or fix it\n");
         return 0;
     }
     return 0;

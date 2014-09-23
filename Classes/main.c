@@ -162,7 +162,8 @@ int main(int argc, const char *argv[]) {
 
     registerClassOnce("Han Solo");
 
-    RPrintf("%qu", getIdentifierByName("Han Solo"));
+    $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), "Han Solo");
+//    RPrintf("%qu", getIdentifierByName("Han Solo"));
     return 0;
 }
 

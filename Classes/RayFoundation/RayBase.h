@@ -8,6 +8,7 @@
 #define RAlloc malloc
 #define RFree free
 #define RPrintf printf
+
 #define RStringLenght strlen
 #define RStringCompare strcmp
 
