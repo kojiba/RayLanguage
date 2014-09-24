@@ -27,11 +27,25 @@ method(byte, compareWith, RCString), RCString *checkString){
             return equals;
         } else {
             if (checkString->size == object->size) {
-                if (RStringCompare(checkString->baseString, object->baseString) == 0) {
+                if (compareCStrings(checkString->baseString, object->baseString) == equals) {
                     return equals;
                 }
             }
         }
     }
     return not_equals;
+}
+
+byte compareCStrings(char *first, char *second){
+    char *firstTemp = first;
+    char *secondTemp = second;
+    while (*firstTemp != 0) {
+        if(*firstTemp == *secondTemp) {
+            ++firstTemp;
+            ++secondTemp;
+        } else {
+            return not_equals;
+        }
+    }
+    return equals;
 }

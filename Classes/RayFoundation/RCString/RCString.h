@@ -17,6 +17,7 @@ constructor(RCString));
 
 destructor(RCString);
 
+byte compareCStrings(char *first, char *second);
 method(void, setString, RCString), char *string);
 method(byte, compareWith, RCString), RCString *checkString);
 

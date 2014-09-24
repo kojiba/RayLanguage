@@ -248,11 +248,14 @@ method(pointer, findObjectWithDelegate, RDynamicArray), RFinderDelegate *delegat
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RDA findObjectWithDelegate of %p\n", object);
 #endif
-
-    forAll(iterator, object->count) {
-        if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == object_founded) {
-            return object->array[iterator];
+    if(delegate != NULL) {
+        forAll(iterator, object->count) {
+            if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == object_founded) {
+                return object->array[iterator];
+            }
         }
+    } else {
+        RPrintf("ERROR. RDA - %p. Delegate for searching is NULL, please delete function call, or fix it.\n\n", object);
     }
     return NULL;
 }

@@ -8,7 +8,8 @@ method(byte, checkObject, RFinderDelegate), pointer objectToCheck){
         if(object->virtualMethodcheckObjectOfRFinderDelegate == NULL){
             RPrintf("Warning. RFD. Virtual method is not implemented\n");
         } else {
-            object->virtualMethodcheckObjectOfRFinderDelegate(object, objectToCheck);
+            return object->virtualMethodcheckObjectOfRFinderDelegate(object, objectToCheck);
         }
     }
+    return 0;
 }

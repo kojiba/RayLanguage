@@ -99,5 +99,5 @@ singleton(RClassTable) {
 }
 
 method(byte, checkObject, RClassTable), RClassNamePair *pairToCheck){
-    return $(master(object, RFinderDelegate)->etaloneObject, m(compareWith, RClassNamePair)), pairToCheck);
+    return $(((RFinderDelegate*)object)->etaloneObject, m(compareWith, RClassNamePair)), pairToCheck);
 }

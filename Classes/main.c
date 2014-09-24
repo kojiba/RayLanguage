@@ -152,18 +152,12 @@ int main(int argc, const char *argv[]) {
 //    deleteArray(dynamicArray);
 //    deallocator(sub);
     registerClassOnce("Luke");
-    printRCTS;
-
     registerClassOnce("Dart");
-    printRCTS;
-
     registerClassOnce("Leia");
+    registerClassOnce("Han Solo");
     printRCTS;
 
-    registerClassOnce("Han Solo");
-
-    $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), "Han Solo");
-//    RPrintf("%qu", getIdentifierByName("Han Solo"));
+    RPrintf("Identifier of Han Solo is - %qu \n", getIdentifierByName("Han Solo"));
     return 0;
 }
 

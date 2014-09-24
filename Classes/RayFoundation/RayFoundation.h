@@ -36,13 +36,17 @@ typedef unsigned char byte;
 #define discipleOf(className) className *splitUp(master,splitUp(className, Object));
 #define endOfClass(className)  } className;
 
+#define allocator(className) RAlloc(sizeof(className))
+#define deallocator(object) RFree(object); object = NULL
+#define master(object, masterClassName) object->splitUp(master,splitUp(masterClassName, Object))
+
 #define method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object
 #define virtualMethod(returnValue, methodName, className) returnValue (*splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className)))(struct className *object
+
 #define constructor(className) className* splitUp(constructorOf,className) (className *object
 #define destructor(className) void splitUp(destructorOf,className) (className *object)
 #define printer(className) void splitUp(printerOf,className) (className *object)
 #define singleton(className) className* splitUp(singletonOf,className)(void)
-
 #define staticMethod(returnValue, methodName, className) returnValue splitUp(splitUp(staticMethod, methodName), splitUp(Of, className))(className *deprecatedObject
 
 // calls
@@ -55,10 +59,6 @@ typedef unsigned char byte;
 #define singletonCall(className) splitUp(singletonOf,className)()                                   // singleton call
 
 #define $(object, methodName)  methodName(object
-
-#define allocator(className) RAlloc(sizeof(className))
-#define deallocator(object) RFree(object); object = NULL
-#define master(object, className) object->splitUp(master,splitUp(className, Object))
 
 // cases/if/for ...
 #define forAll(iterator, count) for(iterator = 0; iterator < count; ++iterator)

@@ -21,17 +21,19 @@ printer(RClassNamePair) {
 }
 
 method(byte, compareWith, RClassNamePair), RClassNamePair *checkPair) {
-    if(checkPair->idForClassName != 0) {
-        if (checkPair->idForClassName == object->idForClassName) {
-            return object_founded;
+    if(object != NULL) {
+        if(checkPair->idForClassName != 0) {
+            if (checkPair->idForClassName == object->idForClassName) {
+                return object_founded;
+            }
         }
-    } else if(master(checkPair, RCString) != NULL) {
-        if($(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString)) == equals){
-            return object_founded;
+        if(master(checkPair, RCString) != NULL && master(object, RCString) != NULL) {
+            if($(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString)) == equals){
+                return object_founded;
+            }
         }
     } else {
-        RPrintf("Warning. RCNP. Name and Id, of compare pair is NULL, please delete function call, or fix it\n");
+        RPrintf("Warning. RCNP. Name and Id (or Object), is NULL, please delete function call, or fix it\n");
         return 0;
     }
-    return 0;
 }

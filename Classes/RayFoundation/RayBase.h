@@ -10,6 +10,5 @@
 #define RPrintf printf
 
 #define RStringLenght strlen
-#define RStringCompare strcmp
 
 #endif /*__RAY_BASE_H__*/
