@@ -267,7 +267,7 @@ method(pointer, elementAtIndex, RDynamicArray), uint64_t index) {
     if($(object, m(checkIfIndexIn,RDynamicArray)), index) == index_exists) {
         return object->array[index];
     } else {
-        RPrintf("ERROR. RDArray index not_exist of %p!\n", object);
+        RPrintf("ERROR. RDA - %p. Index not_exist!\n", object);
         return NULL;
     }
 }
@@ -294,14 +294,14 @@ method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t cou
 
                 // cleanup and alert
                 deleteArray(result);
-                RPrintf("ERROR. Get-subarray error occurred of %p.\n", object);
+                RPrintf("ERROR. RDA - %p. Get-subarray error.\n", object);
                 return NULL;
             }
         }
     }
 #if RAY_SHORT_DEBUG == 1
     else {
-        RPrintf("ERROR. RDynamicArray getSubarray allocation error of %p\n", object);
+        RPrintf("ERROR. RDA - %p. GetSubarray allocation error.\n", object);
     }
 #endif
 
@@ -445,6 +445,6 @@ method(void, shift, RDynamicArray), byte side, uint64_t number) {
         }
 
     } else {
-        RPrintf("Warning. Shifts of RDynamicArray do nothing, please delete function call, or fix it.\n");
+        RPrintf("Warning. RDA. Shifts of RDynamicArray do nothing, please delete function call, or fix it.\n");
     }
 }

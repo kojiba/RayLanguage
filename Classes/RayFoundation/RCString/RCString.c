@@ -15,37 +15,31 @@ destructor(RCString) {
 }
 
 method(void, setString, RCString), char *string) {
-    object->baseString = string;
-    object->size = RStringLenght(string);
+    if(string != NULL) {
+        object->baseString = string;
+        object->size = RStringLenght(string);
+    } else {
+        RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
+    }
 }
 
 method(byte, compareWith, RCString), RCString *checkString){
+    static uint64_t iterator;
     if(checkString == NULL || object == NULL) {
-        printf("Warning. One of compare strings is empty, please delete function call, or fix it.\n");
+        RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
     } else {
         if (checkString == object) {
             return equals;
         } else {
             if (checkString->size == object->size) {
-                if (compareCStrings(checkString->baseString, object->baseString) == equals) {
-                    return equals;
+                forAll(iterator, object->size) {
+                    if(object->baseString[iterator] != checkString->baseString[iterator]){
+                        return not_equals;
+                    }
                 }
+                return equals;
             }
         }
     }
     return not_equals;
-}
-
-byte compareCStrings(char *first, char *second){
-    char *firstTemp = first;
-    char *secondTemp = second;
-    while (*firstTemp != 0) {
-        if(*firstTemp == *secondTemp) {
-            ++firstTemp;
-            ++secondTemp;
-        } else {
-            return not_equals;
-        }
-    }
-    return equals;
 }

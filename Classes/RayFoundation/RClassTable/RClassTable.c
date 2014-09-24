@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "RClassTable.h"
-#include "RClassNamePair/RClassNamePair.h"
 
 constructor(RClassTable)) {
 

@@ -157,7 +157,8 @@ int main(int argc, const char *argv[]) {
     registerClassOnce("Han Solo");
     printRCTS;
 
-    RPrintf("Identifier of Han Solo is - %qu \n", getIdentifierByName("Han Solo"));
+    char *checkName = "Han Solo";
+    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
     return 0;
 }
 
@@ -178,6 +179,8 @@ void RClassTableTest(void){
 
     flushRCTS;
     printRCTS;
+
+    RPrintf("Identifier of Han Solo is - %qu \n", getIdentifierByName("Han Solo"));
 
     releaseRCTS;
 }
