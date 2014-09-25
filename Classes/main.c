@@ -8,6 +8,7 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RArray/RArray.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
+#include "RayFoundation/RDictionary/RDictionary.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,37 +31,37 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-//    for(int j = 0; j < 10; ++j){
-    RArray *dynamicArray = makeRArray();
-
-
-    dynamicArray->printerDelegate = printString;
-    dynamicArray->destructorDelegate = free;
-
-    for (int i = 0; i < 1000; ++i) {
-        char *a = malloc(sizeof(char) * 8);
-        memmove(a, "Hello  ", sizeof("Hello  "));
-        a[6] = (char) (i % 10 + 48);
-        addObjectToRA(dynamicArray, a);
-    }
-//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
-//    printf("%p\n", findedObject);
-
-    printRA(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-    sortRA(dynamicArray);
-    printRA(dynamicArray);
-
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
-    printRA(sub);
-
-    sizeToFitRA(sub);
-    printRA(sub);
-
-    deleteRA(dynamicArray);
-    deallocator(sub);
+////    for(int j = 0; j < 10; ++j){
+//    RArray *dynamicArray = makeRArray();
+//
+//
+//    dynamicArray->printerDelegate = printString;
+//    dynamicArray->destructorDelegate = free;
+//
+//    for (int i = 0; i < 1000; ++i) {
+//        char *a = malloc(sizeof(char) * 8);
+//        memmove(a, "Hello  ", sizeof("Hello  "));
+//        a[6] = (char) (i % 10 + 48);
+//        addObjectToRA(dynamicArray, a);
 //    }
+////    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
+////    printf("%p\n", findedObject);
+//
+//    printRA(dynamicArray);
+////        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+////        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+//    sortRA(dynamicArray);
+//    printRA(dynamicArray);
+//
+//    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
+//    printRA(sub);
+//
+//    sizeToFitRA(sub);
+//    printRA(sub);
+//
+//    deleteRA(dynamicArray);
+//    deallocator(sub);
+////    }
 
 //    registerClassOnce("Luke");
 //    registerClassOnce("Dart");
@@ -73,6 +74,11 @@ int main(int argc, const char *argv[]) {
 //
 //    char *checkName = "Han Solo";
 //    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+
+    RDictionary *dictionary = makeRDictionary();
+    inDictionary(dictionary) setObject(0x21) forKey(0x50);
+    printRD(dictionary);
+    deleteRD(dictionary);
 
     return 0;
 }
