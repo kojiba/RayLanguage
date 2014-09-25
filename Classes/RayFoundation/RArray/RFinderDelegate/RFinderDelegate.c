@@ -1,5 +1,5 @@
 #include "RFinderDelegate.h"
-#include "../RDynamicArray.h"
+#include "../RArray.h"
 
 method(byte, checkObject, RFinderDelegate), pointer objectToCheck){
     if(objectToCheck == object->etaloneObject){

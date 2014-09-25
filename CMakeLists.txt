@@ -6,8 +6,8 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RayCheckFoundation.h
                  Classes/RayFoundation/RayFoundation.h
 
-                 Classes/RayFoundation/RDynamicArray/RDynamicArray.h
-                 Classes/RayFoundation/RDynamicArray/RDynamicArray.c
+                 Classes/RayFoundation/RArray/RArray.h
+                 Classes/RayFoundation/RArray/RArray.c
 
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassTable.c
@@ -21,8 +21,8 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/Function/Function.h
                  Classes/RayFoundation/Function/Function.c
 
-                 Classes/RayFoundation/RDynamicArray/RFinderDelegate/RFinderDelegate.h
-                 Classes/RayFoundation/RDynamicArray/RFinderDelegate/RFinderDelegate.c
+                 Classes/RayFoundation/RArray/RFinderDelegate/RFinderDelegate.h
+                 Classes/RayFoundation/RArray/RFinderDelegate/RFinderDelegate.c
 
                  Classes/RayFoundation/RDictionary/RDictionary.h
                  Classes/RayFoundation/RDictionary/RDictionary.c)

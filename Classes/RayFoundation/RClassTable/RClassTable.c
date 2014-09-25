@@ -7,9 +7,9 @@ constructor(RClassTable)) {
     object = allocator(RClassTable);
     if (object != NULL) {
 
-        // alloc RDynamicArray
-        master(object, RDynamicArray) = makeRDArray();
-        if (master(object, RDynamicArray) != NULL) {
+        // alloc RArray
+        master(object, RArray) = makeRDArray();
+        if (master(object, RArray) != NULL) {
             master(object, RFinderDelegate) = allocator(RFinderDelegate);
             if(master(object, RFinderDelegate) != NULL) {
                 // overload delegate function
@@ -18,11 +18,11 @@ constructor(RClassTable)) {
                 RPrintf("Warning. RCT. Bad allocation on delegate.");
             }
             // we store pairs, and set destructor for pair, and printer for pair
-            master(object, RDynamicArray)->destructorDelegate = d(RClassNamePair);
-            master(object, RDynamicArray)->printerDelegate = p(RClassNamePair);
+            master(object, RArray)->destructorDelegate = d(RClassNamePair);
+            master(object, RArray)->printerDelegate = p(RClassNamePair);
 
             // register classes
-            $(object, m(registerClassWithName, RClassTable)), toString(RDynamicArray));
+            $(object, m(registerClassWithName, RClassTable)), toString(RArray));
             $(object, m(registerClassWithName, RClassTable)), toString(RCString));
             $(object, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
 
@@ -36,23 +36,23 @@ constructor(RClassTable)) {
 
 destructor(RClassTable) {
     if (object != NULL) {
-        // destructor for RDynamicArray
-        $(master(object, RDynamicArray), d(RDynamicArray)));
-        deallocator(master(object, RDynamicArray));
+        // destructor for RArray
+        $(master(object, RArray), d(RArray)));
+        deallocator(master(object, RArray));
     }
 }
 
 method(uint64_t, registerClassWithName, RClassTable), char *name) {
 
-    // RDynamicArray pair
+    // RArray pair
     RClassNamePair *pair = $(NULL, c(RClassNamePair)));
 
     if (pair != NULL) {
         $(master(pair, RCString), m(setString, RCString)), name);
-        pair->idForClassName = master(object, RDynamicArray)->count;
+        pair->idForClassName = master(object, RArray)->count;
 
         // successfully register new class
-        if ($(master(object, RDynamicArray), m(addObject, RDynamicArray)), pair)) {
+        if ($(master(object, RArray), m(addObject, RArray)), pair)) {
             return pair->idForClassName;
         } else {
             return 0;
@@ -65,13 +65,13 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
 }
 
 method(uint64_t, getNumberOfClasses, RClassTable)) {
-    return master(object, RDynamicArray)->count;
+    return master(object, RArray)->count;
 }
 
 printer(RClassTable) {
     RPrintf("\n%s object %p: { \n", toString(RClassTable), object);
-    $(master(object, RDynamicArray), p(RDynamicArray)));
-    RPrintf("\t--- TOTAL: %qu classes registered ---\n", master(object, RDynamicArray)->count);
+    $(master(object, RArray), p(RArray)));
+    RPrintf("\t--- TOTAL: %qu classes registered ---\n", master(object, RArray)->count);
     RPrintf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 
@@ -81,7 +81,7 @@ method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
     $(master(pair, RCString), m(setString, RCString)), name);
     master(object, RFinderDelegate)->etaloneObject = pair;
 
-    RClassNamePair *foundedObject = $(master(object, RDynamicArray), m(findObjectWithDelegate, RDynamicArray)), master(object, RFinderDelegate));
+    RClassNamePair *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
     if(foundedObject == NULL){
         return 0;
     } else {

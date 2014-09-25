@@ -6,7 +6,7 @@
  */
 
 #include "RayFoundation/RayFoundation.h"
-#include "RayFoundation/RDynamicArray/RDynamicArray.h"
+#include "RayFoundation/RArray/RArray.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +31,7 @@ byte stringSorter(char *first, char *second) {
 
 int main(int argc, const char *argv[]) {
 //    for(int j = 0; j < 10; ++j){
-    RDynamicArray *dynamicArray = makeRDArray();
+    RArray *dynamicArray = makeRDArray();
 
 
     dynamicArray->printerDelegate = printString;
@@ -43,16 +43,16 @@ int main(int argc, const char *argv[]) {
         a[6] = (char) (i % 10 + 48);
         addObjectToRDA(dynamicArray, a);
     }
-//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
 //    printf("%p\n", findedObject);
 
     printRDA(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
+//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
     sortRDA(dynamicArray);
     printRDA(dynamicArray);
 
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 895, 10);
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
     printRDA(sub);
 
     sizeToFitRDA(sub);
@@ -99,7 +99,7 @@ void printString(char *src){
 
 void RDynamicArrayTest(void){
 //    for(int j = 0; j < 10; ++j){
-    RDynamicArray *dynamicArray = makeRDArray();
+    RArray *dynamicArray = makeRDArray();
 
 
     dynamicArray->printerDelegate = printString;
@@ -111,16 +111,16 @@ void RDynamicArrayTest(void){
         a[6] = (char) (i % 10 + 48);
         addObjectToRDA(dynamicArray, a);
     }
-//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
 //    printf("%p\n", findedObject);
 
     printRDA(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RDynamicArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
+//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
     sortRDA(dynamicArray);
     printRDA(dynamicArray);
 
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 895, 10);
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
     printRDA(sub);
 
     sizeToFitRDA(sub);

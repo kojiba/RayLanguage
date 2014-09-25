@@ -1,5 +1,5 @@
 #include "../RayFoundation.h"
-#include "../RDynamicArray/RDynamicArray.h"
+#include "../RArray/RArray.h"
 #include "RClassNamePair/RClassNamePair.h"
 
 #ifndef __CLASS_TABLE_H__
@@ -8,7 +8,7 @@
 
 class(RClassTable) //------------------------------------------------------------
 
-    discipleOf(RDynamicArray)
+    discipleOf(RArray)
     discipleOf(RFinderDelegate)
 
 endOfClass(RClassTable) //-------------------------------------------------------

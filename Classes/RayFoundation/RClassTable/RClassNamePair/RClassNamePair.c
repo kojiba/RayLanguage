@@ -1,5 +1,5 @@
 #include "RClassNamePair.h"
-#include "../../RDynamicArray/RDynamicArray.h"
+#include "../../RArray/RArray.h"
 
 constructor(RClassNamePair)) {
     object = allocator(RClassNamePair);
