@@ -10,10 +10,10 @@ secondly:
 There is BEST dynamic array for C language.
 There is classTable, that can help you to fast audite C code.
 
-Work with RDynamicArray:
+Work with RArray:
 
 ```C
-#include "RDynamicArray.h"
+#include "RayFoundation/RArray/RArray.h"
 
 byte findString(char *string) {
     return object_founded;
@@ -34,7 +34,7 @@ byte stringSorter(char *first, char *second) {
 
 int main(int argc, const char *argv[]) {
     // create your dynamic array
-    RDynamicArray *dynamicArray = makeRDArray();
+    RArray *dynamicArray = makeRArray();
 
     dynamicArray->printerDelegate = printString;
     dynamicArray->destructorDelegate = free;
@@ -43,40 +43,36 @@ int main(int argc, const char *argv[]) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
-        addObjectToArray(dynamicArray, a);
+        addObjectToRA(dynamicArray, a);
     }
-    // find object in array
-    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RDynamicArray)), findString);
-    printf("%p\n", findedObject);
-    
+
     // print your array
-    printArray(dynamicArray);
+    printRA(dynamicArray);
+
+    // built-in sort
+    sortRA(dynamicArray);
+    printRA(dynamicArray);
     
     // sort with delegate
-    $(dynamicArray, m(quickSortWithDelegate, RDynamicArray)), 0, dynamicArray->count - 1, stringSorter);
+    $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+    printRA(dynamicArray);
     
-    // built-in sort
-    sortArray(dynamicArray);
-    printArray(dynamicArray);
-    
-    // get sub-arrays, there will be two errorrs logged in console, 
-    // and subarray will consist thwo last elements like null
-    RDynamicArray *sub = $(dynamicArray, m(getSubarray, RDynamicArray)), 1, 11);
-    printArray(sub);
-    
-    // fast delete objects
-    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RDynamicArray)), 9);
-    printArray(dynamicArray);
-    
-    // make your array size-to-fit (without free space)
-    sizeToFit(dynamicArray);
-    printArray(dynamicArray);
-    
-    // delete your array
-    deleteArray(dynamicArray);
-    deallocator(sub);
+    // get sub-arrays, there will be two errorrs logged in console,
+    // and subarray will consist two last elements like null
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
+    printRA(sub);
 
-    return 0;
+    // fast delete objects
+    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RArray)), 9);
+    printRA(dynamicArray);
+
+    // make your array size-to-fit (without free space)
+    sizeToFitRA(dynamicArray);
+    printRA(dynamicArray);
+
+    // delete your array
+    deleteRA(dynamicArray);
+    deallocator(sub);
 }
 ```
 
