@@ -13,7 +13,7 @@
 #include <string.h>
 
 byte findString(char *string) {
-    return object_founded;
+    return equals;
 }
 
 void printString(char *src) {
@@ -31,47 +31,49 @@ byte stringSorter(char *first, char *second) {
 
 int main(int argc, const char *argv[]) {
 //    for(int j = 0; j < 10; ++j){
-    // create your dynamic array
     RArray *dynamicArray = makeRArray();
+
 
     dynamicArray->printerDelegate = printString;
     dynamicArray->destructorDelegate = free;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
         addObjectToRA(dynamicArray, a);
     }
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
+//    printf("%p\n", findedObject);
 
-    // print your array
     printRA(dynamicArray);
-
-    // built-in sort
+//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
     sortRA(dynamicArray);
     printRA(dynamicArray);
 
-    // sort with delegate
-    $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-    printRA(dynamicArray);
-
-    // get sub-arrays, there will be two errorrs logged in console,
-    // and subarray will consist two last elements like null
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
     printRA(sub);
 
-    // fast delete objects
-    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RArray)), 9);
-    printRA(dynamicArray);
+    sizeToFitRA(sub);
+    printRA(sub);
 
-    // make your array size-to-fit (without free space)
-    sizeToFitRA(dynamicArray);
-    printRA(dynamicArray);
-
-    // delete your array
     deleteRA(dynamicArray);
     deallocator(sub);
 //    }
+
+//    registerClassOnce("Luke");
+//    registerClassOnce("Dart");
+//    registerClassOnce("Leia");
+//    registerClassOnce("Han Solo");
+//    printRCTS;
+//
+//    RCString *hello = RS("Hello world\n");
+//    printRString(hello);
+//
+//    char *checkName = "Han Solo";
+//    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+
     return 0;
 }
 
@@ -140,5 +142,48 @@ void RDynamicArrayTest(void){
     deleteRA(dynamicArray);
     deallocator(sub);
 //    }
+}
+
+void RDynamicArrayTest2(void){
+    // create your dynamic array
+    RArray *dynamicArray = makeRArray();
+
+    dynamicArray->printerDelegate = printString;
+    dynamicArray->destructorDelegate = free;
+
+    for (int i = 0; i < 10; ++i) {
+        char *a = malloc(sizeof(char) * 8);
+        memmove(a, "Hello  ", sizeof("Hello  "));
+        a[6] = (char) (i % 10 + 48);
+        addObjectToRA(dynamicArray, a);
+    }
+
+    // print your array
+    printRA(dynamicArray);
+
+    // built-in sort
+    sortRA(dynamicArray);
+    printRA(dynamicArray);
+
+    // sort with delegate
+    $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+    printRA(dynamicArray);
+
+    // get sub-arrays, there will be two errorrs logged in console,
+    // and subarray will consist two last elements like null
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
+    printRA(sub);
+
+    // fast delete objects
+    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RArray)), 9);
+    printRA(dynamicArray);
+
+    // make your array size-to-fit (without free space)
+    sizeToFitRA(dynamicArray);
+    printRA(dynamicArray);
+
+    // delete your array
+    deleteRA(dynamicArray);
+    deallocator(sub);
 }
 */

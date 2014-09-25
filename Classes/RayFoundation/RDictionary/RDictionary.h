@@ -1,4 +1,4 @@
-#include "../RayFoundation.h"/**
+/**
  * @file RDictionary.h
  * @brief Realization of C dictionary(map) pair, in Ray additions.
  * @author Kucheruavyu Ilya (kojiba@ro.ru)
@@ -15,6 +15,9 @@ endOfClass(RDictionary)
 
 constructor(RDictionary));
 destructor(RDictionary);
+
+method(void, setObjectForKey, RDictionary), pointer key, pointer value);
+method(pointer, getObjectForKey, RDictionary), pointer key);
 
 printer(RDictionary);
 

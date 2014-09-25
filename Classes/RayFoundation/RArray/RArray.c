@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "RArray.h"
+#include "../RCString/RCString.h"
 
 #define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \
                                         object->destructorDelegate(object->array[index])
@@ -31,13 +32,11 @@ constructor(RArray), RDynamicArrayFlags *error) {
 
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RDA constructor of %p\n", object);
-    if(object == NULL){
-        RPrintf("ERROR. RDA BAD ALLOCATION\n");
-    }
 #endif
 
     if (object == NULL) {
         *error = allocation_error;
+        RPrintf("ERROR. RDA BAD ALLOCATION\n");
         return NULL;
 
     } else {
@@ -250,7 +249,7 @@ method(pointer, findObjectWithDelegate, RArray), RFinderDelegate *delegate) {
 #endif
     if(delegate != NULL) {
         forAll(iterator, object->count) {
-            if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == object_founded) {
+            if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == equals) {
                 return object->array[iterator];
             }
         }

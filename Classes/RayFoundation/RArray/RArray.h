@@ -19,9 +19,6 @@ typedef enum RDynamicArrayFlags {
     temp_allocation_error,
          allocation_error,
 
-    // flags for findObjectWithDelegate
-           object_founded, // or NULL
-
     // sort-flags for sortWithDelegate
              swap_objects,   // or 0
 

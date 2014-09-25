@@ -20,7 +20,7 @@ method(uint64_t, registerClassWithName, RClassTable), char *name);
 method(uint64_t, getNumberOfClasses, RClassTable));
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
 
-method(byte, checkObject, RClassTable), RClassNamePair *pairToCheck);
+method(RFinderDelegateFlags, checkObject, RClassTable), RClassNamePair *pairToCheck);
 
 printer(RClassTable);
 singleton(RClassTable);

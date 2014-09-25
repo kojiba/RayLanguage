@@ -1,9 +1,8 @@
 #include "RFinderDelegate.h"
-#include "../RArray.h"
 
-method(byte, checkObject, RFinderDelegate), pointer objectToCheck){
+method(RFinderDelegateFlags, checkObject, RFinderDelegate), pointer objectToCheck){
     if(objectToCheck == object->etaloneObject){
-        return object_founded;
+        return equals;
     } else {
         if(object->virtualMethodcheckObjectOfRFinderDelegate == NULL){
             RPrintf("Warning. RFD - %p. Virtual method is not implemented.\n", object);
@@ -11,5 +10,5 @@ method(byte, checkObject, RFinderDelegate), pointer objectToCheck){
             return object->virtualMethodcheckObjectOfRFinderDelegate(object, objectToCheck);
         }
     }
-    return 0;
+    return not_equals;
 }

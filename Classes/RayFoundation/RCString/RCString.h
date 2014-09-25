@@ -2,11 +2,7 @@
 #define __R_C_STRING_H__
 
 #include "../RayFoundation.h"
-
-typedef enum RCStringFlags{
-    equals,
-    not_equals
-} RCStringFlags;
+#include "../RArray/RFinderDelegate/RFinderDelegate.h"
 
 class(RCString)
     char *baseString;
@@ -16,9 +12,8 @@ endOfClass(RCString)
 constructor(RCString));
 destructor(RCString);
 
-byte compareCStrings(char *first, char *second);
 method(RCString *, setString, RCString), char *string);
-method(byte, compareWith, RCString), RCString *checkString);
+method(RFinderDelegateFlags, compareWith, RCString), RCString *checkString);
 
 printer(RCString);
 

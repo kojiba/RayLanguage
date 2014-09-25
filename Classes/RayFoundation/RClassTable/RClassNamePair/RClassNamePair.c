@@ -1,5 +1,5 @@
 #include "RClassNamePair.h"
-#include "../../RArray/RArray.h"
+#include "../../RArray/RFinderDelegate/RFinderDelegate.h"
 
 constructor(RClassNamePair)) {
     object = allocator(RClassNamePair);
@@ -20,20 +20,20 @@ printer(RClassNamePair) {
     RPrintf("%p , { %qu - %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
 }
 
-method(byte, compareWith, RClassNamePair), RClassNamePair *checkPair) {
+method(RFinderDelegateFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
     if(object != NULL) {
         if(checkPair->idForClassName != 0) {
             if (checkPair->idForClassName == object->idForClassName) {
-                return object_founded;
+                return equals;
             }
         }
         if(master(checkPair, RCString) != NULL && master(object, RCString) != NULL) {
             if($(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString)) == equals){
-                return object_founded;
+                return equals;
             }
         }
     } else {
         RPrintf("Warning. RCNP. Name and Id (or Object), is NULL, please delete function call, or fix it\n");
-        return 0;
+        return not_equals;
     }
 }

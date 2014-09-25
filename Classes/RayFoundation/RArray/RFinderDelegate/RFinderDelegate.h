@@ -3,11 +3,16 @@
 
 #include "../../RayFoundation.h"
 
+typedef enum RFinderDelegateFlags{
+    equals,
+    not_equals
+} RFinderDelegateFlags;
+
 class(RFinderDelegate)
-    virtualMethod(byte, checkObject, RFinderDelegate), pointer objectToCheck);
+    virtualMethod(RFinderDelegateFlags, checkObject, RFinderDelegate), pointer objectToCheck);
     pointer etaloneObject;
 endOfClass(RFinderDelegate)
 
-method(byte, checkObject, RFinderDelegate), pointer objectToCheck);
+method(RFinderDelegateFlags, checkObject, RFinderDelegate), pointer objectToCheck);
 
 #endif /*__RFINDER_DELEGATE_H__*/
