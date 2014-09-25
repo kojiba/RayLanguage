@@ -31,34 +31,45 @@ byte stringSorter(char *first, char *second) {
 
 int main(int argc, const char *argv[]) {
 //    for(int j = 0; j < 10; ++j){
-    RArray *dynamicArray = makeRDArray();
-
+    // create your dynamic array
+    RArray *dynamicArray = makeRArray();
 
     dynamicArray->printerDelegate = printString;
     dynamicArray->destructorDelegate = free;
 
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 10; ++i) {
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
-        addObjectToRDA(dynamicArray, a);
+        addObjectToRA(dynamicArray, a);
     }
-//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
-//    printf("%p\n", findedObject);
 
-    printRDA(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-    sortRDA(dynamicArray);
-    printRDA(dynamicArray);
+    // print your array
+    printRA(dynamicArray);
 
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
-    printRDA(sub);
+    // built-in sort
+    sortRA(dynamicArray);
+    printRA(dynamicArray);
 
-    sizeToFitRDA(sub);
-    printRDA(sub);
+    // sort with delegate
+    $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+    printRA(dynamicArray);
 
-    deleteRDA(dynamicArray);
+    // get sub-arrays, there will be two errorrs logged in console,
+    // and subarray will consist two last elements like null
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
+    printRA(sub);
+
+    // fast delete objects
+    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RArray)), 9);
+    printRA(dynamicArray);
+
+    // make your array size-to-fit (without free space)
+    sizeToFitRA(dynamicArray);
+    printRA(dynamicArray);
+
+    // delete your array
+    deleteRA(dynamicArray);
     deallocator(sub);
 //    }
     return 0;
@@ -99,7 +110,7 @@ void printString(char *src){
 
 void RDynamicArrayTest(void){
 //    for(int j = 0; j < 10; ++j){
-    RArray *dynamicArray = makeRDArray();
+    RArray *dynamicArray = makeRArray();
 
 
     dynamicArray->printerDelegate = printString;
@@ -109,64 +120,25 @@ void RDynamicArrayTest(void){
         char *a = malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
-        addObjectToRDA(dynamicArray, a);
+        addObjectToRA(dynamicArray, a);
     }
 //    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
 //    printf("%p\n", findedObject);
 
-    printRDA(dynamicArray);
+    printRA(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
 //        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-    sortRDA(dynamicArray);
-    printRDA(dynamicArray);
+    sortRA(dynamicArray);
+    printRA(dynamicArray);
 
     RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
-    printRDA(sub);
+    printRA(sub);
 
-    sizeToFitRDA(sub);
-    printRDA(sub);
+    sizeToFitRA(sub);
+    printRA(sub);
 
-    deleteRDA(dynamicArray);
+    deleteRA(dynamicArray);
     deallocator(sub);
 //    }
-}
-
-
-void RayFoundationTest(void) {
-
-    printf("Heap: \n\n");
-    // Work with pointers
-    MyClass *ob1;
-    ob1 = $(NULL, c(MyClass)) );
-    $(ob1, m(MyMethod, MyClass)), 1);
-    $(ob1, m(MyMethod, MyClass)), 26062000);
-
-    $(NULL, sm(MyStaticMethod, MyClass)), 0.451);
-
-    $(ob1, p(MyClass)));
-    $(ob1, d(MyClass)));
-    // additional pointer cleanup
-    deallocator(ob1);
-
-    // Work with stack
-    printf("\nStack: \n\n");
-    {
-        MyClass ob2 = *$(NULL, c(MyClass)) );
-        $(&ob2, m(MyMethod, MyClass)), 1);
-        $(&ob2, m(MyMethod, MyClass)), 23082011);
-
-        $(NULL, sm(MyStaticMethod, MyClass)), 0.451);
-
-        $(&ob2, p(MyClass)) );
-        $(&ob2, d(MyClass)) );
-    }
-
-    {
-        SimpleDisciple ob3 = *$(NULL, c(SimpleDisciple)) );
-
-        $(&ob3, p(SimpleDisciple)) );
-        $(&ob3, d(SimpleDisciple)) );
-    }
-
 }
 */

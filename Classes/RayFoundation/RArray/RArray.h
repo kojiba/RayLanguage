@@ -93,13 +93,13 @@ printer(RArray);
 
 //----------------------------------------------------------------------------------
 
-#define makeRDArray() $(NULL, c(RArray)), NULL)
-#define deleteRDA(dynamicArray) $(dynamicArray, d(RArray))); \
+#define makeRArray() $(NULL, c(RArray)), NULL)
+#define deleteRA(dynamicArray) $(dynamicArray, d(RArray))); \
                             deallocator(dynamicArray)
-#define printRDA(dynamicArray) $(dynamicArray, p(RArray)))
-#define addObjectToRDA(dynamicArray, object) $(dynamicArray, m(addObject, RArray)), object)
-#define sortRDA(dynamicArray) $(dynamicArray, m(sort, RArray)))
-#define elementAtIndexRDA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
-#define sizeToFitRDA(dynamicArray) $(dynamicArray, m(sizeToFit, RArray)) )
+#define printRA(dynamicArray) $(dynamicArray, p(RArray)))
+#define addObjectToRA(dynamicArray, object) $(dynamicArray, m(addObject, RArray)), object)
+#define sortRA(dynamicArray) $(dynamicArray, m(sort, RArray)))
+#define elementAtIndexRA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
+#define sizeToFitRA(dynamicArray) $(dynamicArray, m(sizeToFit, RArray)) )
 
 #endif /*__R_ARRAY_H__*/

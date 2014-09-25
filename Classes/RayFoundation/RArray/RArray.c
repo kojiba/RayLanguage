@@ -275,7 +275,7 @@ method(pointer, elementAtIndex, RArray), uint64_t index) {
 method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count){
 
     uint64_t iterator = 0;
-    RArray *result = makeRDArray();
+    RArray *result = makeRArray();
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA getSubarray of %p\n", object);
 #endif
@@ -286,14 +286,14 @@ method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count){
         result->printerDelegate = object->printerDelegate;
 
         fromStartForAll(iterator, from, count) {
-            if(addObjectToRDA(result, elementAtIndexRDA(object, iterator)) == no_error) {
+            if(addObjectToRA(result, elementAtIndexRA(object, iterator)) == no_error) {
                 continue;
 
             // error occurred
             } else {
 
                 // cleanup and alert
-                deleteRDA(result);
+                deleteRA(result);
                 RPrintf("ERROR. RA - %p. Get-subarray error.\n", object);
                 return NULL;
             }

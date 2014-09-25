@@ -8,7 +8,7 @@ constructor(RClassTable)) {
     if (object != NULL) {
 
         // alloc RArray
-        master(object, RArray) = makeRDArray();
+        master(object, RArray) = makeRArray();
         if (master(object, RArray) != NULL) {
             master(object, RFinderDelegate) = allocator(RFinderDelegate);
             if(master(object, RFinderDelegate) != NULL) {
