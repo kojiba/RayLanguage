@@ -26,8 +26,8 @@
 // working defines
 
 // typedefs
-typedef void * pointer;
-typedef unsigned char byte;
+typedef void* pointer;
+typedef uint8_t byte;
 
 // declarations
 #define class(className) typedef struct className { \

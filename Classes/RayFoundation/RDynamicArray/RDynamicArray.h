@@ -94,12 +94,12 @@ printer(RDynamicArray);
 //----------------------------------------------------------------------------------
 
 #define makeRDArray() $(NULL, c(RDynamicArray)), NULL)
-#define deleteArray(dynamicArray) $(dynamicArray, d(RDynamicArray))); \
+#define deleteRDA(dynamicArray) $(dynamicArray, d(RDynamicArray))); \
                             deallocator(dynamicArray)
-#define printArray(dynamicArray) $(dynamicArray, p(RDynamicArray)))
-#define addObjectToArray(dynamicArray, object) $(dynamicArray, m(addObject, RDynamicArray)), object)
-#define sortArray(dynamicArray) $(dynamicArray, m(sort, RDynamicArray)))
-#define elementAtIndex(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RDynamicArray)), index)
-#define sizeToFit(dynamicArray) $(dynamicArray, m(sizeToFit, RDynamicArray)) )
+#define printRDA(dynamicArray) $(dynamicArray, p(RDynamicArray)))
+#define addObjectToRDA(dynamicArray, object) $(dynamicArray, m(addObject, RDynamicArray)), object)
+#define sortRDA(dynamicArray) $(dynamicArray, m(sort, RDynamicArray)))
+#define elementAtIndexRDA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RDynamicArray)), index)
+#define sizeToFitRDA(dynamicArray) $(dynamicArray, m(sizeToFit, RDynamicArray)) )
 
 #endif /*__R_DYNAMIC_ARRAY_H__*/

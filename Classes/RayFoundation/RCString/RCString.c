@@ -14,13 +14,14 @@ constructor(RCString)) {
 destructor(RCString) {
 }
 
-method(void, setString, RCString), char *string) {
+method(RCString *, setString, RCString), char *string) {
     if(string != NULL) {
         object->baseString = string;
         object->size = RStringLenght(string);
     } else {
         RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
     }
+    return object;
 }
 
 method(byte, compareWith, RCString), RCString *checkString){
@@ -42,4 +43,8 @@ method(byte, compareWith, RCString), RCString *checkString){
         }
     }
     return not_equals;
+}
+
+printer(RCString){
+    RPrintf(object->baseString);
 }

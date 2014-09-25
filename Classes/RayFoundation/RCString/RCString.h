@@ -14,14 +14,17 @@ class(RCString)
 endOfClass(RCString)
 
 constructor(RCString));
-
 destructor(RCString);
 
 byte compareCStrings(char *first, char *second);
-method(void, setString, RCString), char *string);
+method(RCString *, setString, RCString), char *string);
 method(byte, compareWith, RCString), RCString *checkString);
+
+printer(RCString);
 
 
 #define makeRCString() $(NULL, c(RCString)))
+#define printRString(_RCString) $(_RCString, p(RCString)) );
+#define RS(CString) $(makeRCString(), m(setString, RCString)), CString);
 
 #endif /*__R_C_STRING_H__*/

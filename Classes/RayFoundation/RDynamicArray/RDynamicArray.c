@@ -286,14 +286,14 @@ method(RDynamicArray *, getSubarray, RDynamicArray), uint64_t from, uint64_t cou
         result->printerDelegate = object->printerDelegate;
 
         fromStartForAll(iterator, from, count) {
-            if(addObjectToArray(result, elementAtIndex(object, iterator)) == no_error) {
+            if(addObjectToRDA(result, elementAtIndexRDA(object, iterator)) == no_error) {
                 continue;
 
             // error occurred
             } else {
 
                 // cleanup and alert
-                deleteArray(result);
+                deleteRDA(result);
                 RPrintf("ERROR. RDA - %p. Get-subarray error.\n", object);
                 return NULL;
             }
