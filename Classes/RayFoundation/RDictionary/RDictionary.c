@@ -21,7 +21,7 @@ constructor(RDictionary)){
             RPrintf("ERROR. RD. Allocation keys or values error.");
             return object;
         } else {
-            master(object, RFinderDelegate) = allocator(RFinderDelegate);
+            master(object, RCompareDelegate) = allocator(RCompareDelegate);
         }
     }
     return object;
@@ -37,13 +37,13 @@ destructor(RDictionary){
     }
 }
 
-method(void, initDelegate, RDictionary), RFinderDelegate* delegate){
-    master(object, RFinderDelegate) = delegate;
+method(void, initDelegate, RDictionary), RCompareDelegate *delegate){
+    master(object, RCompareDelegate) = delegate;
 }
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key){
-    master(object, RFinderDelegate)->etaloneObject = key;
-    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+    master(object, RCompareDelegate)->etaloneObject = key;
+    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
     // if object for key not exist
     if(rArrayFindResult == NULL){
@@ -58,8 +58,8 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key){
 }
 
 method(pointer, getObjectForKey, RDictionary), pointer key){
-    master(object, RFinderDelegate)->etaloneObject = key;
-    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+    master(object, RCompareDelegate)->etaloneObject = key;
+    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
     return rArrayFindResult->result;
 }
 

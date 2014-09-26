@@ -2,7 +2,7 @@
 #define __R_C_STRING_H__
 
 #include "../RayFoundation.h"
-#include "../RArray/RFinderDelegate/RFinderDelegate.h"
+#include "../RArray/RCompareDelegate/RCompareDelegate.h"
 
 class(RCString)
     char *baseString;
@@ -13,10 +13,9 @@ constructor(RCString));
 destructor(RCString);
 
 method(RCString *, setString, RCString), char *string);
-method(RFinderDelegateFlags, compareWith, RCString), RCString *checkString);
+method(RCompareFlags, compareWith, RCString), RCString *checkString);
 
 printer(RCString);
-
 
 #define makeRCString() $(NULL, c(RCString)))
 #define printRString(_RCString) $(_RCString, p(RCString)) );

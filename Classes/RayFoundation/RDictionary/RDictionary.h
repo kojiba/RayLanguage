@@ -11,7 +11,7 @@
 #include "../RArray/RArray.h"
 
 class(RDictionary) //---------------------------------------------------------------------
-    discipleOf(RFinderDelegate)
+    discipleOf(RCompareDelegate)
 
 members
     RArray *keys;
@@ -22,7 +22,7 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor(RDictionary));
 destructor(RDictionary);
 
-method(void, initDelegate, RDictionary), RFinderDelegate* delegate);
+method(void, initDelegate, RDictionary), RCompareDelegate *delegate);
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key);
 method(pointer, getObjectForKey, RDictionary), pointer key);

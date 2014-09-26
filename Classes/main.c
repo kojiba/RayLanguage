@@ -63,29 +63,46 @@ int main(int argc, const char *argv[]) {
 //    deallocator(sub);
 ////    }
 
-//    registerClassOnce("Luke");
-//    registerClassOnce("Dart");
-//    registerClassOnce("Leia");
-//    registerClassOnce("Han Solo");
-//    printRCTS;
-//
-//    RCString *hello = RS("Hello world\n");
-//    printRString(hello);
-//
-//    char *checkName = "Han Solo";
-//    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+    registerClassOnce("Luke");
+    registerClassOnce("Dart");
+    registerClassOnce("Leia");
+    registerClassOnce("Han Solo");
+    printRCTS;
 
-    RDictionary *dictionary = makeRDictionary();
-    inDictionary(dictionary) setObject(0x21) forKey(0x50);
-    inDictionary(dictionary) setObject(0x22) forKey(0x50);
-    printRD(dictionary);
-    deleteRD(dictionary);
+    RCString *hello = RS("Hello world\n");
+    printRString(hello);
+
+    char *checkName = "Han Solo";
+    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+
+//    RDictionary *dictionary = makeRDictionary();
+//    RCompareDelegate delegate;
+//
+////    $(dictionary, m(initDelegate, RDictionary)), );
+//
+//    inDictionary(dictionary) setObject(0x11) forKey(0x1);
+//    inDictionary(dictionary) setObject(0x21) forKey(0x50);
+//    inDictionary(dictionary) setObject(0x22) forKey(0x50);
+//    inDictionary(dictionary) setObject(0x11) forKey(0x2);
+//    inDictionary(dictionary) setObject(0x11) forKey(0x3);
+//    inDictionary(dictionary) setObject(0x13) forKey(0x4);
+//
+//    printRD(dictionary);
+//    deleteRD(dictionary);
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+void RDictionaryTest(void){
+    RDictionary *dictionary = makeRDictionary();
+    inDictionary(dictionary) setObject(0x21) forKey(0x50);
+    inDictionary(dictionary) setObject(0x22) forKey(0x50);
+    printRD(dictionary);
+    deleteRD(dictionary);
+}
 
 void RClassTableTest(void){
     registerClassOnce("Luke");

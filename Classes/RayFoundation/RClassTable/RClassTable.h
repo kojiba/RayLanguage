@@ -9,7 +9,7 @@
 class(RClassTable) //------------------------------------------------------------
 
     discipleOf(RArray)
-    discipleOf(RFinderDelegate)
+    discipleOf(RCompareDelegate)
 
 endOf(RClassTable) //-------------------------------------------------------
 
@@ -20,7 +20,7 @@ method(uint64_t, registerClassWithName, RClassTable), char *name);
 method(uint64_t, getNumberOfClasses, RClassTable));
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
 
-method(RFinderDelegateFlags, checkObject, RClassTable), RClassNamePair *pairToCheck);
+method(RCompareFlags, checkObject, RClassTable), RClassNamePair *pairToCheck);
 
 printer(RClassTable);
 singleton(RClassTable);

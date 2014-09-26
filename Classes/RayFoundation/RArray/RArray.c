@@ -274,14 +274,14 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 
 #pragma mark Get - Find
 
-method(RArrayFindResult *, findObjectWithDelegate, RArray), RFinderDelegate *delegate) {
+method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
 #endif
     if(delegate != NULL) {
         forAll(iterator, object->count) {
-            if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == equals) {
+            if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
                 RArrayFindResult *result = allocator(RArrayFindResult);
                 result->index = iterator;
                 result->result = object->array[iterator];

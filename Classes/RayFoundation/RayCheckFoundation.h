@@ -1,9 +1,9 @@
 /**
-* RayFoundationCheck.h
-* A ray of light in the realm of darkness.
-* Checking of working defines.
-* Author Kucheruavyu Ilya (kojiba@ro.ru)
-*/
+ * RayFoundationCheck.h
+ * A ray of light in the realm of darkness.
+ * Checking of working defines.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
 
 #ifndef __RAY_CHECK_FOUNDATION_H__
 #define __RAY_CHECK_FOUNDATION_H__

@@ -24,10 +24,11 @@ method(RCString *, setString, RCString), char *string) {
     return object;
 }
 
-method(RFinderDelegateFlags, compareWith, RCString), RCString *checkString){
+method(RCompareFlags, compareWith, RCString), RCString *checkString){
     static uint64_t iterator;
     if(checkString == NULL || object == NULL) {
         RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
+        return not_equals;
     } else {
         if (checkString == object) {
             return equals;

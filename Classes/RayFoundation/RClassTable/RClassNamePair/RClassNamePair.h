@@ -16,7 +16,7 @@ destructor(RClassNamePair);
 
 printer(RClassNamePair);
 
-method(RFinderDelegateFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
+method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
 
 
 #endif /*__R_CLASS_NAME_PAIR_H__*/

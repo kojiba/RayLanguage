@@ -10,10 +10,10 @@ constructor(RClassTable)) {
         // alloc RArray
         master(object, RArray) = makeRArray();
         if (master(object, RArray) != NULL) {
-            master(object, RFinderDelegate) = allocator(RFinderDelegate);
-            if(master(object, RFinderDelegate) != NULL) {
+            master(object, RCompareDelegate) = allocator(RCompareDelegate);
+            if(master(object, RCompareDelegate) != NULL) {
                 // overload delegate function
-                master(object, RFinderDelegate)->virtualMethodcheckObjectOfRFinderDelegate = m(checkObject, RClassTable);
+                master(object, RCompareDelegate)->virtualCompareMethod = m(compareWith, RClassNamePair);
             } else {
                 RPrintf("Warning. RCT. Bad allocation on delegate.");
             }
@@ -77,11 +77,11 @@ printer(RClassTable) {
 
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
     RClassNamePair *pair = $(NULL, c(RClassNamePair)));
-
     $(master(pair, RCString), m(setString, RCString)), name);
-    master(object, RFinderDelegate)->etaloneObject = pair;
 
-    RArrayFindResult *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+    master(object, RCompareDelegate)->etaloneObject = pair;
+
+    RArrayFindResult *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
     if(foundedObject == NULL){
         return 0;
     } else {
@@ -95,8 +95,4 @@ singleton(RClassTable) {
         instance = $(NULL, c(RClassTable)));
     }
     return instance;
-}
-
-method(RFinderDelegateFlags, checkObject, RClassTable), RClassNamePair *pairToCheck){
-    return $(((RFinderDelegate*)object)->etaloneObject, m(compareWith, RClassNamePair)), pairToCheck);
 }

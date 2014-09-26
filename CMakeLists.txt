@@ -21,8 +21,8 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/Function/Function.h
                  Classes/RayFoundation/Function/Function.c
 
-                 Classes/RayFoundation/RArray/RFinderDelegate/RFinderDelegate.h
-                 Classes/RayFoundation/RArray/RFinderDelegate/RFinderDelegate.c
+                 Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.h
+                 Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.c
 
                  Classes/RayFoundation/RDictionary/RDictionary.h
                  Classes/RayFoundation/RDictionary/RDictionary.c)

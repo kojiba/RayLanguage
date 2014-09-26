@@ -8,7 +8,7 @@
 #define __R_ARRAY_H__
 
 #include "../RayFoundation.h"
-#include "RFinderDelegate/RFinderDelegate.h"
+#include "RCompareDelegate/RCompareDelegate.h"
 
 #define RAY_SHORT_DEBUG 451
 
@@ -73,7 +73,7 @@ method(RArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index);
 method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index);
 
 // get - find
-method(RArrayFindResult *, findObjectWithDelegate, RArray), RFinderDelegate *delegate);
+method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate);
 method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count);
 method(pointer, elementAtIndex, RArray), uint64_t index);
 
