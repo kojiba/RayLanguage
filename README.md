@@ -92,8 +92,16 @@ void RClassTableTest(void){
 
     registerClassOnce("Leia");
     printRCTS;
-
+    
+    // try once more, but here is only one record
+    registerClassOnce("Leia");
+    registerClassOnce("Dart");
+    registerClassOnce("Luke");
     registerClassOnce("Han Solo");
+    printRCTS;
+    // get Identifier of Han Solo
+    char *checkName = "Han Solo";
+    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
     
     // flush your class table
     flushRCTS;
