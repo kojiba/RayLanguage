@@ -30,12 +30,12 @@ constructor(RArray), RArrayFlags *error) {
     object = allocator(RArray);
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RDA constructor of %p\n", object);
+    RPrintf("RA constructor of %p\n", object);
 #endif
 
     if (object == NULL) {
         *error = allocation_error;
-        RPrintf("ERROR. RDA BAD ALLOCATION\n");
+        RPrintf("ERROR. RA. BAD ALLOCATION\n");
         return NULL;
 
     } else {
@@ -86,14 +86,14 @@ destructor(RArray) {
     }
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RDA destructor of %p\n", object);
+    RPrintf("RA destructor of %p\n", object);
 #endif
 }
 
 method(RArrayFlags, addSize, RArray), uint64_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RDA %p ADD_SIZE\n", object);
+        RPrintf("RA %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
         static uint64_t iterator;
@@ -212,9 +212,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 
 method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
 #if RAY_SHORT_DEBUG == 1
-    else {
         RPrintf("RA %p setObject atIndex = %qu \n", object, index);
-    }
 #endif
     // if at that index exist some object
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {

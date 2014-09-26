@@ -17,8 +17,8 @@ constructor(RClassTable));
 destructor(RClassTable);
 
 method(uint64_t, registerClassWithName, RClassTable), char *name);
-method(uint64_t, getNumberOfClasses, RClassTable));
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
+method(uint64_t, getNumberOfClasses, RClassTable));
 
 method(RCompareFlags, checkObject, RClassTable), RClassNamePair *pairToCheck);
 

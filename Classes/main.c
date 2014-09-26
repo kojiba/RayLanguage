@@ -13,8 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-byte findString(char *string) {
-    return equals;
+byte checkString(uint64_t first, uint64_t second) {
+    if(first == second){
+        return equals;
+    }
 }
 
 void printString(char *src) {
@@ -67,25 +69,26 @@ int main(int argc, const char *argv[]) {
     registerClassOnce("Dart");
     registerClassOnce("Leia");
     registerClassOnce("Han Solo");
+    // try once more, but here is only one record
+    registerClassOnce("Leia");
+    registerClassOnce("Dart");
+    registerClassOnce("Luke");
+
     printRCTS;
 
     RCString *hello = RS("Hello world\n");
     printRString(hello);
 
     char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
 
 //    RDictionary *dictionary = makeRDictionary();
-//    RCompareDelegate delegate;
-//
-////    $(dictionary, m(initDelegate, RDictionary)), );
-//
-//    inDictionary(dictionary) setObject(0x11) forKey(0x1);
-//    inDictionary(dictionary) setObject(0x21) forKey(0x50);
-//    inDictionary(dictionary) setObject(0x22) forKey(0x50);
-//    inDictionary(dictionary) setObject(0x11) forKey(0x2);
-//    inDictionary(dictionary) setObject(0x11) forKey(0x3);
-//    inDictionary(dictionary) setObject(0x13) forKey(0x4);
+//    uint64_t iterator;
+//    fromStartForAll(iterator, 1, 20){
+//        uint64_t value = iterator;
+//        uint64_t key = iterator;
+//        $(dictionary, m(setObjectForKey, RDictionary)), value, key);
+//    }
 //
 //    printRD(dictionary);
 //    deleteRD(dictionary);

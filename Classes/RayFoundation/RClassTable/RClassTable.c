@@ -2,9 +2,11 @@
 #include "RClassTable.h"
 
 constructor(RClassTable)) {
-
     // alloc RClassTable
     object = allocator(RClassTable);
+#if RAY_SHORT_DEBUG == 1
+    RPrintf("----- RCT constructor START of %p\n", object);
+#endif
     if (object != NULL) {
 
         // alloc RArray
@@ -21,20 +23,20 @@ constructor(RClassTable)) {
             master(object, RArray)->destructorDelegate = d(RClassNamePair);
             master(object, RArray)->printerDelegate = p(RClassNamePair);
 
-            // register classes
-            $(object, m(registerClassWithName, RClassTable)), toString(RArray));
-            $(object, m(registerClassWithName, RClassTable)), toString(RCString));
-            $(object, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
-
-            // register self
-            object->classId = $(object, m(registerClassWithName, RClassTable)), toString(RClassTable));
+            // 4 it's for self
+            object->classId =  3;
         }
     }
-
+#if RAY_SHORT_DEBUG == 1
+    RPrintf("----- RCT constructor END of %p\n", object);
+#endif
     return object;
 }
 
 destructor(RClassTable) {
+#if RAY_SHORT_DEBUG == 1
+    RPrintf("RCT destructor of %p\n", object);
+#endif
     if (object != NULL) {
         // destructor for RArray
         $(master(object, RArray), d(RArray)));
@@ -43,25 +45,33 @@ destructor(RClassTable) {
 }
 
 method(uint64_t, registerClassWithName, RClassTable), char *name) {
+#if RAY_SHORT_DEBUG == 1
+    RPrintf("--- RCT Register Class of %p\n", object);
+#endif
+    uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
+    if(result == 0) {
+        RClassNamePair *pair = $(NULL, c(RClassNamePair)));
+        if (pair != NULL) {
+            $(master(pair, RCString), m(setString, RCString)), name);
+            pair->idForClassName = master(object, RArray)->count;
 
-    // RArray pair
-    RClassNamePair *pair = $(NULL, c(RClassNamePair)));
-
-    if (pair != NULL) {
-        $(master(pair, RCString), m(setString, RCString)), name);
-        pair->idForClassName = master(object, RArray)->count;
-
-        // successfully register new class
-        if ($(master(object, RArray), m(addObject, RArray)), pair)) {
-            return pair->idForClassName;
+            // successfully register new class
+            if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
+#if RAY_SHORT_DEBUG == 1
+                    RPrintf("--- RCT Register Class SUCCESS on %p\n", object);
+#endif
+                return pair->idForClassName;
+            } else {
+                return 0;
+            }
+        // alloc error
         } else {
             return 0;
         }
-
-    // alloc error
     } else {
-        return 0;
+        return result;
     }
+
 }
 
 method(uint64_t, getNumberOfClasses, RClassTable)) {
@@ -71,7 +81,7 @@ method(uint64_t, getNumberOfClasses, RClassTable)) {
 printer(RClassTable) {
     RPrintf("\n%s object %p: { \n", toString(RClassTable), object);
     $(master(object, RArray), p(RArray)));
-    RPrintf("\t--- TOTAL: %qu classes registered ---\n", master(object, RArray)->count);
+    RPrintf("\t\tTOTAL: %qu classes registered \n", master(object, RArray)->count);
     RPrintf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 
@@ -92,7 +102,19 @@ method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
 singleton(RClassTable) {
     static RClassTable *instance;
     if (instance == NULL) {
+#if RAY_SHORT_DEBUG == 1
+        RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
+#endif
         instance = $(NULL, c(RClassTable)));
+        // register classes on that builded RClassTable
+        $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
+        $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
+        $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
+        $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
+
+#if RAY_SHORT_DEBUG == 1
+        RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n\n", instance);
+#endif
     }
     return instance;
 }

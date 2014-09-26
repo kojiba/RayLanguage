@@ -31,10 +31,6 @@ printer(RDictionary);
 
 // some macros for shorter work
 #define makeRDictionary() $(NULL, c(RDictionary)) );
-
-#define setObject(obj) , obj
-#define forKey(key) , key)
-#define inDictionary(dict) m(setObjectForKey, RDictionary)(dict
 #define printRD(rayDictionary) $(rayDictionary, p(RDictionary)) );
 
 #define deleteRD(rayDictionary) $(rayDictionary, d(RDictionary)) );\

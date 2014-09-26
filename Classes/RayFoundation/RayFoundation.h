@@ -9,6 +9,8 @@
 #ifndef __RAY_FOUNDATION__
 #define __RAY_FOUNDATION__
 
+#define RAY_SHORT_DEBUG 451
+
 #include <stdlib.h>
 #include <time.h>
 #include "RayCheckFoundation.h"

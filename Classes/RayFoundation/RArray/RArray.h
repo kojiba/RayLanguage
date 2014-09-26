@@ -10,8 +10,6 @@
 #include "../RayFoundation.h"
 #include "RCompareDelegate/RCompareDelegate.h"
 
-#define RAY_SHORT_DEBUG 451
-
 typedef struct RArrayFindResult {
     pointer result;
     uint64_t index;
