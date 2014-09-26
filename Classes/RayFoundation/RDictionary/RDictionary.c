@@ -21,7 +21,7 @@ constructor(RDictionary)){
             RPrintf("ERROR. RD. Allocation keys or values error.");
             return object;
         } else {
-//            fixme
+            master(object, RFinderDelegate) = allocator(RFinderDelegate);
         }
     }
     return object;
@@ -37,20 +37,35 @@ destructor(RDictionary){
     }
 }
 
+method(void, initDelegate, RDictionary), RFinderDelegate* delegate){
+    master(object, RFinderDelegate) = delegate;
+}
+
 method(void, setObjectForKey, RDictionary), pointer value, pointer key){
-//    fixme
-    $(object->keys, m(addObject, RArray)), key);
-    $(object->values, m(addObject, RArray)), value);
+    master(object, RFinderDelegate)->etaloneObject = key;
+    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+
+    // if object for key not exist
+    if(rArrayFindResult == NULL){
+        $(object->keys, m(addObject, RArray)), key);      // adding
+        $(object->values, m(addObject, RArray)), value);  // adding
+
+    // if key exist
+    } else {
+        $(object->values,  m(setObjectAtIndex, RArray)), value, rArrayFindResult->index);
+    }
+
 }
 
 method(pointer, getObjectForKey, RDictionary), pointer key){
-//    fixme
-    return NULL;
+    master(object, RFinderDelegate)->etaloneObject = key;
+    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+    return rArrayFindResult->result;
 }
 
 printer(RDictionary){
     uint64_t iterator;
-    RPrintf("\n%s object %p: { \n", toString(RArray), object);
+    RPrintf("\n%s object %p: { \n", toString(RDictionary), object);
     RPrintf(" Count : %qu \n", object->keys->count);
     RPrintf(" Free  : %qu \n", object->keys->freePlaces);
     forAll(iterator, object->keys->count) {

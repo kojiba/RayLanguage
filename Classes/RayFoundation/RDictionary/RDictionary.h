@@ -10,13 +10,19 @@
 #include "../RayFoundation.h"
 #include "../RArray/RArray.h"
 
-class(RDictionary)
+class(RDictionary) //---------------------------------------------------------------------
+    discipleOf(RFinderDelegate)
+
+members
     RArray *keys;
     RArray *values;
-endOfClass(RDictionary)
+
+endOf(RDictionary) //----------------------------------------------------------------
 
 constructor(RDictionary));
 destructor(RDictionary);
+
+method(void, initDelegate, RDictionary), RFinderDelegate* delegate);
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key);
 method(pointer, getObjectForKey, RDictionary), pointer key);

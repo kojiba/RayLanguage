@@ -81,11 +81,11 @@ method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
     $(master(pair, RCString), m(setString, RCString)), name);
     master(object, RFinderDelegate)->etaloneObject = pair;
 
-    RClassNamePair *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
+    RArrayFindResult *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RFinderDelegate));
     if(foundedObject == NULL){
         return 0;
     } else {
-        return foundedObject->idForClassName;
+        return ((RClassNamePair*)foundedObject->result)->idForClassName;
     }
 }
 

@@ -10,7 +10,7 @@
 
 #if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(startClock) || defined(stopClock)
         #error "Some of working RayFoundation defines are already defined"
-    #elif defined(class) || defined(discipleOf) || defined(endOfClass)
+    #elif defined(class) || defined(discipleOf) || defined(endOf)
         #error "Some of core defines of RayFoundation are already defined"
     #elif defined(staticMethod) || defined(virtualMethod)
         #error "Some of declaration defines of RayFoundation are already defined"

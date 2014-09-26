@@ -12,7 +12,12 @@
 
 #define RAY_SHORT_DEBUG 451
 
-typedef enum RDynamicArrayFlags {
+typedef struct RArrayFindResult {
+    pointer result;
+    uint64_t index;
+} RArrayFindResult;
+
+typedef enum RArrayFlags {
 
     // basic errors
                  no_error,
@@ -35,7 +40,7 @@ typedef enum RDynamicArrayFlags {
     // in addSize function
             bad_size,
 
-} RDynamicArrayFlags;
+} RArrayFlags;
 
 static const uint64_t startSizeOfRdynamicArrayDefault = 100;
 static const uint64_t sizeMultiplierOfRdynamicArrayDefault = 2;
@@ -51,42 +56,38 @@ members
     void (*printerDelegate)(pointer);       // printer of elements delegate
     pointer *array;                         // array
 
-endOfClass(RArray) //-------------------------------------------------------
+endOf(RArray) //-------------------------------------------------------
 
 // constructor - destructor - reallocation
-constructor(RArray), RDynamicArrayFlags *error);
+constructor(RArray), RArrayFlags *error);
 destructor(RArray);
 
-method(RDynamicArrayFlags, addSize, RArray), uint64_t newSize);
+method(RArrayFlags, addSize, RArray), uint64_t newSize);
 method(void, flush, RArray));
 method(byte, sizeToFit, RArray));
-// constructor - destructor - reallocation
 
 // add - set - delete
-method(RDynamicArrayFlags, addObject, RArray), pointer src);
-method(RDynamicArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index);
-method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index);
-// add - set - delete
+method(RArrayFlags, addObject, RArray), pointer src);
+method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index); // be aware with this, cause addObject cause memory leak with that
+method(RArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index);
+method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index);
 
 // get - find
-method(pointer, findObjectWithDelegate, RArray), RFinderDelegate *delegate);
+method(RArrayFindResult *, findObjectWithDelegate, RArray), RFinderDelegate *delegate);
 method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count);
 method(pointer, elementAtIndex, RArray), uint64_t index);
-// get - find
 
 // sort
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer));
 method(void, quickSortWithDelegate, RArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
 // standart comparator
-byte RDynamicArrayStandartComporator(pointer first, pointer second);
+byte RArrayStandartComporator(pointer first, pointer second);
 method(void, sort, RArray));
-// sort
 
 // work
 method(void, shift, RArray), byte side, uint64_t number);
 method(static inline byte, checkIfIndexIn, RArray), uint64_t index);
 printer(RArray);
-// work
 
 //----------------------------------------------------------------------------------
 

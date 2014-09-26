@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include "RArray.h"
-#include "../RCString/RCString.h"
 
 #define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \
                                         object->destructorDelegate(object->array[index])
@@ -16,17 +15,17 @@
 
 #define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
                                                 object->array[index1] = object->array[index2]; \
-                                                object->array[index2] = temp;
+                                                object->array[index2] = temp
 
 #define incrementCount() ++object->count; \
-                       --object->freePlaces;
+                       --object->freePlaces
 
 #define incrementFreePlaceses() --object->count; \
-                              ++object->freePlaces;
+                              ++object->freePlaces
 
 #pragma mark Constructor - Destructor - Reallocation
 
-constructor(RArray), RDynamicArrayFlags *error) {
+constructor(RArray), RArrayFlags *error) {
 
     object = allocator(RArray);
 
@@ -91,7 +90,7 @@ destructor(RArray) {
 #endif
 }
 
-method(RDynamicArrayFlags, addSize, RArray), uint64_t newSize) {
+method(RArrayFlags, addSize, RArray), uint64_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
         RPrintf("RDA %p ADD_SIZE\n", object);
@@ -183,8 +182,8 @@ method(byte, sizeToFit, RArray)){
 
 #pragma mark Add - Set - Delete
 
-method(RDynamicArrayFlags, addObject, RArray), pointer src) {
-    static RDynamicArrayFlags errors;
+method(RArrayFlags, addObject, RArray), pointer src) {
+    static RArrayFlags errors;
     errors = no_error;
 
     // needs additional allocation of memory
@@ -211,7 +210,40 @@ method(RDynamicArrayFlags, addObject, RArray), pointer src) {
     return errors;
 }
 
-method(RDynamicArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index) {
+method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
+#if RAY_SHORT_DEBUG == 1
+    else {
+        RPrintf("RA %p setObject atIndex = %qu \n", object, index);
+    }
+#endif
+    // if at that index exist some object
+    if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
+        destroyElementAtIndex(index);
+        object->array[index] = newObject;
+
+    } else {
+
+        // if space at index is not allocated
+        if(index > (object->freePlaces + object->count)){
+
+            RPrintf("Error. RA. Setting to a not allocated space, do nothing, please delete function call, or fix it.\n");
+            // allocation of more space to index + startSize
+//            fixme
+//            $(object, m(addSize, RArray)), index + object->startSize);
+//            $(object, m(setObjectAtIndex, RArray)), newObject, index);
+
+        // if space is allocated
+        } else {
+            object->array[index] = newObject;
+            // todo mark: count is not incrementing, cause we don't know place
+            // todo mark: addObject cause memory to leak, with objects added by setObject
+            // todo mark: destructor not called
+//            --object->freePlaces;
+        }
+    }
+}
+
+method(RArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA deleteObjectAtIndex of %p\n", object);
 #endif
@@ -225,7 +257,7 @@ method(RDynamicArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index) {
     }
 }
 
-method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
+method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA fastDeleteObjectAtIndex of %p\n", object);
 #endif
@@ -242,7 +274,7 @@ method(RDynamicArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 
 #pragma mark Get - Find
 
-method(pointer, findObjectWithDelegate, RArray), RFinderDelegate *delegate) {
+method(RArrayFindResult *, findObjectWithDelegate, RArray), RFinderDelegate *delegate) {
     static uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
@@ -250,7 +282,10 @@ method(pointer, findObjectWithDelegate, RArray), RFinderDelegate *delegate) {
     if(delegate != NULL) {
         forAll(iterator, object->count) {
             if ($(delegate, m(checkObject, RFinderDelegate)), object->array[iterator]) == equals) {
-                return object->array[iterator];
+                RArrayFindResult *result = allocator(RArrayFindResult);
+                result->index = iterator;
+                result->result = object->array[iterator];
+                return result;
             }
         }
     } else {
@@ -329,7 +364,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     }
 }
 
-byte RDynamicArrayStandartComporator(pointer first, pointer second) {
+byte RArrayStandartComporator(pointer first, pointer second) {
     // whats-inside-higher, sort
     if (*((size_t *) first) > *((size_t *) second)) {
         return swap_objects;
@@ -374,7 +409,7 @@ method(void, sort, RArray)) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA sort of %p\n", object);
 #endif
-    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RDynamicArrayStandartComporator);
+    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComporator);
 }
 
 #pragma mark Work
@@ -440,7 +475,7 @@ method(void, shift, RArray), byte side, uint64_t number) {
 //          fixme
         // shifting others
         fromStartForAll(iterator, start, end - 1) {
-            swapElementsAtIndexes(iterator, iterator + 1)
+            swapElementsAtIndexes(iterator, iterator + 1);
         }
 
     } else {

@@ -8,10 +8,10 @@ typedef enum RFinderDelegateFlags{
     not_equals
 } RFinderDelegateFlags;
 
-class(RFinderDelegate)
+protocol(RFinderDelegate)
     virtualMethod(RFinderDelegateFlags, checkObject, RFinderDelegate), pointer objectToCheck);
     pointer etaloneObject;
-endOfClass(RFinderDelegate)
+endOf(RFinderDelegate)
 
 method(RFinderDelegateFlags, checkObject, RFinderDelegate), pointer objectToCheck);
 

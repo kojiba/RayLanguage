@@ -7,7 +7,7 @@
 class(RCString)
     char *baseString;
     uint64_t size;
-endOfClass(RCString)
+endOf(RCString)
 
 constructor(RCString));
 destructor(RCString);

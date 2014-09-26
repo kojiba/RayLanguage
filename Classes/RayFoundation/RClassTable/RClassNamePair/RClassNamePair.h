@@ -7,7 +7,7 @@
 class(RClassNamePair)
     discipleOf(RCString)
     uint64_t idForClassName;
-endOfClass(RClassNamePair)
+endOf(RClassNamePair)
 
 
 constructor(RClassNamePair));

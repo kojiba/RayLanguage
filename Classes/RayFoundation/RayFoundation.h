@@ -23,7 +23,6 @@
 
 #define startClock clock_t start = clock(), diff;
 #define stopClock diff = clock() - start; int msec = diff * 1000 / CLOCKS_PER_SEC; printf("Time taken %d seconds %d milliseconds", msec/1000, msec%1000);
-// working defines
 
 // typedefs
 typedef void* pointer;
@@ -32,9 +31,10 @@ typedef uint8_t byte;
 // declarations
 #define class(className) typedef struct className { \
                                     uint64_t classId;
+#define protocol(protocolName) typedef struct protocolaName {
 
-#define discipleOf(className) className *splitUp(master,splitUp(className, Object));
-#define endOfClass(className)  } className;
+#define discipleOf(className) className *splitUp(master, splitUp(className, Object));
+#define endOf(className)  } className;
 
 #define allocator(className) RAlloc(sizeof(className))
 #define deallocator(object) RFree(object); object = NULL

@@ -11,7 +11,7 @@ class(RClassTable) //-----------------------------------------------------------
     discipleOf(RArray)
     discipleOf(RFinderDelegate)
 
-endOfClass(RClassTable) //-------------------------------------------------------
+endOf(RClassTable) //-------------------------------------------------------
 
 constructor(RClassTable));
 destructor(RClassTable);

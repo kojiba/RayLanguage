@@ -77,6 +77,7 @@ int main(int argc, const char *argv[]) {
 
     RDictionary *dictionary = makeRDictionary();
     inDictionary(dictionary) setObject(0x21) forKey(0x50);
+    inDictionary(dictionary) setObject(0x22) forKey(0x50);
     printRD(dictionary);
     deleteRD(dictionary);
 
