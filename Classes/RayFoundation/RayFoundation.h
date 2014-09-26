@@ -11,10 +11,9 @@
 
 #define RAY_SHORT_DEBUG 451
 
-#include <stdlib.h>
 #include <time.h>
-#include "RayCheckFoundation.h"
 #include "RayBase.h"
+#include "RayCheckFoundation.h"
 
 // working defines
 #define _TOSTRING(x) #x
@@ -23,8 +22,11 @@
 #define _splitUp(one, two) one##two
 #define splitUp(one, two) _splitUp(one, two)  // splits up two words: splitUp(Hello,World) -> HelloWorld
 
-#define startClock clock_t start = clock(), diff;
-#define stopClock diff = clock() - start; int msec = diff * 1000 / CLOCKS_PER_SEC; printf("Time taken %d seconds %d milliseconds", msec/1000, msec%1000);
+#define startRClock() clock_t start = clock();\
+                      int msec = 0;
+#define stopRClock() start = clock() - start; \
+                     msec = start * 1000 / CLOCKS_PER_SEC; \
+                     RPrintf("Time taken %d seconds %d milliseconds", msec / 1000, msec % 1000);
 
 // typedefs
 typedef void* pointer;
@@ -39,7 +41,7 @@ typedef uint8_t byte;
 #define endOf(className)  } className;
 
 #define allocator(className) RAlloc(sizeof(className))
-#define deallocator(object) RFree(object); object = NULL
+#define deallocator(object) RFree(object);
 #define master(object, masterClassName) object->splitUp(master,splitUp(masterClassName, Object))
 
 #define method(returnValue, methodName, className) returnValue splitUp(methodName, className)(className *object

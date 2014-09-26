@@ -33,66 +33,40 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-////    for(int j = 0; j < 10; ++j){
-//    RArray *dynamicArray = makeRArray();
-//
-//
-//    dynamicArray->printerDelegate = printString;
-//    dynamicArray->destructorDelegate = free;
-//
-//    for (int i = 0; i < 1000; ++i) {
-//        char *a = malloc(sizeof(char) * 8);
-//        memmove(a, "Hello  ", sizeof("Hello  "));
-//        a[6] = (char) (i % 10 + 48);
-//        addObjectToRA(dynamicArray, a);
-//    }
-////    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
-////    printf("%p\n", findedObject);
-//
+    startRClock();
+//    for(int j = 0; j < 10; ++j){
+    RArray *dynamicArray = makeRArray();
+
+
+    dynamicArray->printerDelegate = printString;
+    dynamicArray->destructorDelegate = free;
+
+    for (int i = 0; i < 100000; ++i) {
+        char *a = malloc(sizeof(char) * 8);
+        memmove(a, "Hello  ", sizeof("Hello  "));
+        a[6] = (char) (i % 10 + 48);
+        addObjectToRA(dynamicArray, a);
+    }
+//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
+//    printf("%p\n", findedObject);
+
 //    printRA(dynamicArray);
-////        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-////        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-//    sortRA(dynamicArray);
+//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+    sortRA(dynamicArray);
 //    printRA(dynamicArray);
-//
-//    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
-//    printRA(sub);
-//
-//    sizeToFitRA(sub);
-//    printRA(sub);
-//
-//    deleteRA(dynamicArray);
-//    deallocator(sub);
-////    }
 
-    registerClassOnce("Luke");
-    registerClassOnce("Dart");
-    registerClassOnce("Leia");
-    registerClassOnce("Han Solo");
-    // try once more, but here is only one record
-    registerClassOnce("Leia");
-    registerClassOnce("Dart");
-    registerClassOnce("Luke");
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
+    printRA(sub);
 
-    printRCTS;
+    sizeToFitRA(sub);
+    printRA(sub);
 
-    RCString *hello = RS("Hello world\n");
-    printRString(hello);
-
-    char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
-
-//    RDictionary *dictionary = makeRDictionary();
-//    uint64_t iterator;
-//    fromStartForAll(iterator, 1, 20){
-//        uint64_t value = iterator;
-//        uint64_t key = iterator;
-//        $(dictionary, m(setObjectForKey, RDictionary)), value, key);
+    deleteRA(dynamicArray);
+    deallocator(sub);
 //    }
-//
-//    printRD(dictionary);
-//    deleteRD(dictionary);
 
+    stopRClock();
     return 0;
 }
 
@@ -101,24 +75,38 @@ int main(int argc, const char *argv[]) {
 
 void RDictionaryTest(void){
     RDictionary *dictionary = makeRDictionary();
-    inDictionary(dictionary) setObject(0x21) forKey(0x50);
-    inDictionary(dictionary) setObject(0x22) forKey(0x50);
+    uint64_t iterator;
+    fromStartForAll(iterator, 1, 20){
+        uint64_t value = iterator;
+        uint64_t key = iterator;
+        $(dictionary, m(setObjectForKey, RDictionary)), value, key);
+    }
+
     printRD(dictionary);
     deleteRD(dictionary);
 }
 
 void RClassTableTest(void){
+    startRClock();
+
     registerClassOnce("Luke");
     registerClassOnce("Dart");
     registerClassOnce("Leia");
     registerClassOnce("Han Solo");
+    // try once more, but here is only one record
+    uint64_t iterator;
+    forAll(iterator, 1000000) {
+        registerClassOnce("Leia");
+        registerClassOnce("Dart");
+        registerClassOnce("Luke");
+    }
+
     printRCTS;
 
-    RCString *hello = RS("Hello world\n");
-    printRString(hello);
-
     char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, getIdentifierByName(checkName));
+    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
+
+    stopRClock();
 }
 
 void RClassNamePairTest(void){

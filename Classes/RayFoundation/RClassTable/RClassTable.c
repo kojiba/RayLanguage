@@ -106,7 +106,7 @@ singleton(RClassTable) {
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
 #endif
         instance = $(NULL, c(RClassTable)));
-        // register classes on that builded RClassTable
+        // register classes on that  RClassTable was built (only our singleton)
         $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
         $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
         $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
