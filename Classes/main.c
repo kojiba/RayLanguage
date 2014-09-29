@@ -33,44 +33,49 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-    initRClock();
-//    for(int j = 0; j < 10; ++j){
-    RArray *dynamicArray = makeRArray();
-
-
-
-    dynamicArray->printerDelegate = printString;
-    dynamicArray->destructorDelegate = free;
-
-    for (int i = 0; i < 10000; ++i) {
-        char *a = (char*)malloc(sizeof(char) * 8);
-        memmove(a, "Hello  ", sizeof("Hello  "));
-        a[6] = (char) (i % 10 + 48);
-        addObjectToRA(dynamicArray, a);
-//        $(dynamicArray, m(deleteLast, RArray)) );
-    }
-//    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
-//    printf("%p\n", findedObject);
-
-//    printRA(dynamicArray);
-//        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-
-    sortRA(dynamicArray);
-    tickRClock();
-
-    printRA(dynamicArray);
-
-//    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(8, 10));
-//    printRA(sub);
-
-//    sizeToFitRA(sub);
-//    printRA(sub);
-
-    deleteRA(dynamicArray);
-
-//    deallocator(sub);
+//    initRClock();
+////    for(int j = 0; j < 10; ++j){
+//    RArray *dynamicArray = makeRArray();
+//
+//
+//
+//    dynamicArray->printerDelegate = printString;
+//    dynamicArray->destructorDelegate = free;
+//
+//    for (int i = 0; i < 10000; ++i) {
+//        char *a = (char*)malloc(sizeof(char) * 8);
+//        memmove(a, "Hello  ", sizeof("Hello  "));
+//        a[6] = (char) (i % 10 + 48);
+//        addObjectToRA(dynamicArray, a);
+////        $(dynamicArray, m(deleteLast, RArray)) );
 //    }
+////    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
+////    printf("%p\n", findedObject);
+//
+////    printRA(dynamicArray);
+////        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
+//
+//    sortRA(dynamicArray);
+//    tickRClock();
+//
+//    printRA(dynamicArray);
+//
+////    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(8, 10));
+////    printRA(sub);
+//
+////    sizeToFitRA(sub);
+////    printRA(sub);
+//
+//    deleteRA(dynamicArray);
+//
+////    deallocator(sub);
+////    }
+    srand(time(NULL));
 
+    for(int i = 0; i < 20; ++i) {
+        printRString(randomRCString());
+        RPrintf("\n");
+    }
 
     return 0;
 }

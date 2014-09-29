@@ -51,7 +51,11 @@ method(RCString *, setString, RCString), char *string) {
 
 method(RCString *, setConstantString, RCString), char *string){
     if(string != NULL) {
-        // not deleting old string, only copy pointer, and compute length
+        // checking, if exist and size like copying
+        if(object->size != 0 && object->baseString != NULL){
+            deallocator(object->baseString);
+        }
+        // copy pointer, and compute length
         object->baseString = string;
         object->size = RStringLenght(string);
     } else {
@@ -84,4 +88,33 @@ method(RCompareFlags, compareWith, RCString), RCString *checkString){
 
 printer(RCString){
     RPrintf(object->baseString);
+}
+
+staticMethod(char , randomCharacter, RCString)){
+    char character = ((char)rand());
+    while(character < 34 ||
+            character > 126) {
+        character = ((char)rand());
+    }
+    return character;
+}
+
+staticMethod(RCString *, randomString, RCString)){
+    static uint64_t iterator;
+    RCString *string = makeRCString();
+    uint64_t size = ((uint64_t)rand()) % 50;
+    char *cstring;
+
+    while(size == 0) {
+        size = ((uint64_t)rand()) % 50;
+    }
+
+    cstring = RAlloc(size);
+
+    forAll(iterator, size){
+        cstring[iterator] = sm(randomCharacter, RCString)(NULL);
+    }
+
+    $(string, m(setConstantString, RCString)), cstring);
+    return string;
 }

@@ -223,20 +223,13 @@ method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
 
         // if space at index is not allocated
         if(index > (object->freePlaces + object->count)){
-
             RPrintf("Error. RA. Setting to a not allocated space, do nothing, please delete function call, or fix it.\n");
-            // allocation of more space to index + startSize
-//            fixme
-//            $(object, m(addSize, RArray)), index + object->startSize);
-//            $(object, m(setObjectAtIndex, RArray)), newObject, index);
-
         // if space is allocated
         } else {
             object->array[index] = newObject;
-            // todo mark: count is not incrementing, cause we don't know place
-            // todo mark: addObject cause memory to leak, with objects added by setObject
-            // todo mark: destructor not called
-//            --object->freePlaces;
+            // mark: count is not incrementing, cause we don't know place
+            // mark: addObject cause memory to leak, with objects added by setObject
+            // mark: destructor not called
         }
     }
 }
