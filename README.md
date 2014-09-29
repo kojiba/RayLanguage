@@ -73,6 +73,26 @@ int main(int argc, const char *argv[]) {
     // delete your array
     deleteRA(dynamicArray);
     deallocator(sub);
+    
+    //--------------------------------------------------
+    
+    // create c-string array
+    RArray *stringArray = makeRArray();
+    
+    // set-up delegates
+    stringArray->printerDelegate = p(RCString);
+    stringArray->destructorDelegate = d(RCString);
+
+    for(unsigned i = 0; i < 10; ++i) {
+        // genering simly-rand() strings
+        addObjectToRA(stringArray, randomRCString());
+    }
+    printRA(stringArray);
+
+    // delete subArray in range [5...9]
+    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
+
+    printRA(stringArray);
 }
 ```
 
