@@ -111,3 +111,56 @@ void RClassTableTest(void){
     releaseRCTS;
 }
 ```
+
+You can simply use it in Yours C++ projects:
+
+```C
+#include <iostream>
+
+extern "C" {
+    #include "RArray.h"
+}
+
+using namespace std;
+
+class MyClass{
+protected:
+    double x;
+    double y;
+public:
+    MyClass(){
+
+    }
+    ~MyClass(){
+
+    }
+    void Print(){
+        cout << "MyClass obj - " << this << endl;
+    }
+};
+
+void deleter(pointer src) {
+    delete (MyClass*)src;
+}
+
+void Printer(pointer src){
+    ((MyClass*)src)->Print();
+}
+
+int main(int argc, const char *argv[]) {
+
+    RArray *helloArray = makeRArray();
+
+    helloArray->destructorDelegate = deleter;
+    helloArray->printerDelegate = Printer;
+
+    for(unsigned i = 0; i < 100000; ++i) {
+        MyClass *a = new MyClass;
+        addObjectRArray(helloArray, a);
+    }
+
+    $(helloArray, p(RArray)));
+    deleteRA(helloArray);
+    return 0;
+}
+```
