@@ -255,13 +255,26 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
-        object->array[index] = object->array[object->count - 1];
+        if(index != object->count - 1) {
+            object->array[index] = object->array[object->count - 1];
+        }
         incrementFreePlaceses();
         return no_error;
 
     } else {
         return index_does_not_exist;
     }
+}
+
+method(void, deleteObjects, RArray), RRange  *range){
+    uint64_t iterator;
+#if RAY_SHORT_DEBUG == 1
+    RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range->from, range->count);
+#endif
+    fromStartForAll(iterator, range->from, range->count) {
+        destroyElementAtIndex(iterator);
+    }
+    $(object, m(shift, RArray)), shift_left, range);
 }
 
 method(void, deleteLast, RArray)){

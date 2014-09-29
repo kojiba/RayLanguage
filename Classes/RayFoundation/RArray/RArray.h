@@ -66,10 +66,11 @@ method(void,               flush, RArray));
 method(byte,               sizeToFit, RArray));
 // add - set - delete
 method(RArrayFlags,        addObject, RArray),                  pointer src);                        // push_back analog
-method(void,               deleteLast, RArray));                                                     // pop_back analog
 method(void,               setObjectAtIndex, RArray),           pointer newObject, uint64_t index);  // be aware with this, addObject cause memory leak with that
-method(RArrayFlags,        deleteObjectAtIndex, RArray),        uint64_t index);
-method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),  uint64_t index);
+method(void,               deleteLast, RArray));                                                     // pop_back analog
+method(void,               deleteObjects, RArray),              RRange  *range);                     // delete with shift
+method(RArrayFlags,        deleteObjectAtIndex, RArray),        uint64_t index);                     // delete with shift
+method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),  uint64_t index);                     // delete, and the last object will be on it place
 // get - find
 method(RArrayFindResult *, findObjectWithDelegate, RArray),     RCompareDelegate *delegate);
 method(RArray *,           getSubarray, RArray),                RRange *range);

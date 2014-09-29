@@ -23,7 +23,7 @@ int main(int argc, const char *argv[]) {
     }
     printRA(stringArray);
 
-    $(stringArray, m(deleteObjectAtIndex, RArray)), 2);
+    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
 
     printRA(stringArray);
 
