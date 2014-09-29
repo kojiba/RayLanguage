@@ -102,7 +102,11 @@ Work with RClassTable:
 #include "RClassTable.h"
 
 void RClassTableTest(void){
+
     // register class name once, and get identifier in result
+    // it's can be used like management tool for creating unique 
+    // identifiers for string objects (in our case class names)
+    
     registerClassOnce("Luke");
     // print our class table
     printRCTS;
@@ -129,6 +133,20 @@ void RClassTableTest(void){
     
     // delete your class table
     releaseRCTS;
+    
+    // use not singleton
+    RClassTable *table = makeRCTable();
+
+    $(table, m(registerClassWithName, RClassTable)), "Some string");
+    $(table, m(registerClassWithName, RClassTable)), "Some string2");
+    $(table, m(registerClassWithName, RClassTable)), "Some string3");
+    // once more time, to check
+    $(table, m(registerClassWithName, RClassTable)), "Some string3");
+
+    $(table, p(RClassTable)) );
+
+    $(table, d(RClassTable)) );
+    deallocator(table);
 }
 ```
 
