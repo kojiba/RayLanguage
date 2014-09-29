@@ -13,75 +13,54 @@
 #include <stdlib.h>
 #include <string.h>
 
-byte checkString(uint64_t first, uint64_t second) {
-    if(first == second){
-        return equals;
-    }
-}
-
-void printString(void *src) {
-    printf("%s \n", src);
-}
-
-byte stringSorter(char *first, char *second) {
-    if (first != second) {
-        if (first[6] > second[6]) {
-            return swap_objects;
-        }
-    }
-    return 0;
-}
-
 int main(int argc, const char *argv[]) {
-//    initRClock();
-////    for(int j = 0; j < 10; ++j){
-//    RArray *dynamicArray = makeRArray();
-//
-//
-//
-//    dynamicArray->printerDelegate = printString;
-//    dynamicArray->destructorDelegate = free;
-//
-//    for (int i = 0; i < 10000; ++i) {
-//        char *a = (char*)malloc(sizeof(char) * 8);
-//        memmove(a, "Hello  ", sizeof("Hello  "));
-//        a[6] = (char) (i % 10 + 48);
-//        addObjectToRA(dynamicArray, a);
-////        $(dynamicArray, m(deleteLast, RArray)) );
-//    }
-////    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
-////    printf("%p\n", findedObject);
-//
-////    printRA(dynamicArray);
-////        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-//
-//    sortRA(dynamicArray);
-//    tickRClock();
-//
-//    printRA(dynamicArray);
-//
-////    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(8, 10));
-////    printRA(sub);
-//
-////    sizeToFitRA(sub);
-////    printRA(sub);
-//
-//    deleteRA(dynamicArray);
-//
-////    deallocator(sub);
-////    }
-    srand(time(NULL));
+    RArray *stringArray = makeRArray();
+    stringArray->printerDelegate = p(RCString);
+    stringArray->destructorDelegate = d(RCString);
 
-    for(int i = 0; i < 20; ++i) {
-        printRString(randomRCString());
-        RPrintf("\n");
+    for(unsigned i = 0; i < 10; ++i) {
+        addObjectToRA(stringArray, randomRCString());
     }
+    printRA(stringArray);
+
+    $(stringArray, m(deleteObjectAtIndex, RArray)), 2);
+
+    printRA(stringArray);
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+void RATimingTest() {
+    initRClock();
+    double average = 0;
+    uint64_t count = 173137;
+
+    for(double multiplier = 1.5; multiplier < 40; multiplier += 0.5) {
+
+        for (uint64_t i = 0; i < 30; ++i) {
+            RArray *stringArray = makeRArray();
+            stringArray->destructorDelegate = RFree;
+            stringArray->sizeMultiplier = multiplier;
+
+            for (uint64_t j = 0; j < count; ++j) {
+                char *a = (char *) malloc(sizeof(char) * 8);
+                memmove(a, "Hello  ", sizeof("Hello  "));
+                a[6] = (char) (j % 10 + 48);
+                addObjectToRA(stringArray, a);
+            }
+            deleteRA(stringArray);
+            tickRClock();
+            average = average / 2.f + diff / 2.0f;
+        }
+
+        average = average * 1000 / CLOCKS_PER_SEC;
+        RPrintf("%f\n", average);
+        average = 0;
+    }
+}
 
 void RDictionaryTest(void){
     RDictionary *dictionary = makeRDictionary();
@@ -129,11 +108,6 @@ void RClassNamePairTest(void){
     $(pair, d(RClassNamePair)) );
     deallocator(pair);
 }
-
-void printString(char *src){
-    printf("%s \n",src);
-}
-
 
 void RDynamicArrayTest(void){
 //    for(int j = 0; j < 10; ++j){

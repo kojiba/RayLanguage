@@ -234,13 +234,14 @@ method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
     }
 }
 
-method(RArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index) {
+method(RArrayFlags, deleteObjectAtIndex, RArray), uint64_t index){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA deleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
-//  fixme
+//        testme
+        $(object, m(shift, RArray)), shift_left, makeRRange(index, 1));
         return no_error;
 
     } else {
@@ -440,7 +441,7 @@ method(static inline byte, checkIfIndexIn, RArray), uint64_t index) {
     }
 }
 
-method(void, shift, RArray), byte side, uint64_t number) {
+method(void, shift, RArray), byte side, RRange *range) {
 #if RAY_SHORT_DEBUG == 1
     char *sideName;
     if(side == shift_left) {
@@ -450,30 +451,21 @@ method(void, shift, RArray), byte side, uint64_t number) {
     } RPrintf("RA shift of %p on %s\n", object, sideName);
 #endif
     uint64_t iterator;
-    uint64_t start;
-    uint64_t end;
-    if(number != 0) {
-
+    if(range->count != 0) {
         if (side == shift_left) {
-            start = 0;
-            end = object->count;
-        } else {
-            start = object->count - number - 1;
-            end = object->count;
-//          fixme
-            return;
+            // do not call destructor
+            for(iterator = range->from; iterator < object->count - range->count; ++iterator) {
+                object->array[iterator] = object->array[iterator + range->count];
+            }
         }
-//          fixme
-        // destroying elements, that are rights
-        fromStartForAll(iterator, start, end) {
-            destroyElementAtIndex(iterator);
-        }
-//          fixme
-        // shifting others
-        fromStartForAll(iterator, start, end - 1) {
-            swapElementsAtIndexes(iterator, iterator + 1);
-        }
-
+//        fixme
+//        else {
+//            for(iterator = object->count - range->count; iterator < object->count; ++iterator) {
+//                object->array[iterator] = object->array[iterator - object->count + range->count];
+//            }
+//        }
+        object->count -= range->count;
+        object->freePlaces += range->count;
     } else {
         RPrintf("Warning. RA. Shifts of RArray do nothing, please delete function call, or fix it.\n");
     }

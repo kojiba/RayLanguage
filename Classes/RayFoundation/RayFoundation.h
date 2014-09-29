@@ -22,11 +22,14 @@
 #define _splitUp(one, two)                                one##two
 #define splitUp(one, two)                                 _splitUp(one, two)  // splits up two words: splitUp(Hello,World) -> HelloWorld
 
-#define initRClock()                                      clock_t start = clock();\
-                                                          int msec = 0;
-#define tickRClock()                                      start = clock() - start; \
-                                                          msec = start * 1000 / CLOCKS_PER_SEC; \
-                                                          RPrintf("Time taken %d seconds %d milliseconds\n", msec / 1000, msec % 1000);
+#define initRClock()                                      clock_t start = clock(); \
+                                                          clock_t stop = 0; \
+                                                          clock_t diff = 0;
+
+#define tickRClock()                                      stop = clock(); \
+                                                          diff = stop - start; \
+                                                          start = clock(); \
+                                                          RPrintf("Time taken %d seconds %d milliseconds\n", diff / 1000 / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
 // typedefs
 typedef void* pointer;

@@ -87,7 +87,7 @@ method(RCompareFlags, compareWith, RCString), RCString *checkString){
 }
 
 printer(RCString){
-    RPrintf(object->baseString);
+    RPrintf("%s\n", object->baseString);
 }
 
 staticMethod(char , randomCharacter, RCString)){

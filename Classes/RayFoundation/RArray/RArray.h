@@ -68,7 +68,7 @@ method(byte,               sizeToFit, RArray));
 method(RArrayFlags,        addObject, RArray),                  pointer src);                        // push_back analog
 method(void,               deleteLast, RArray));                                                     // pop_back analog
 method(void,               setObjectAtIndex, RArray),           pointer newObject, uint64_t index);  // be aware with this, addObject cause memory leak with that
-method(RArrayFlags,        deleteObjectAtIndexIn, RArray),      uint64_t index);
+method(RArrayFlags,        deleteObjectAtIndex, RArray),        uint64_t index);
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),  uint64_t index);
 // get - find
 method(RArrayFindResult *, findObjectWithDelegate, RArray),     RCompareDelegate *delegate);
@@ -79,7 +79,7 @@ method(void,               bubbleSortWithDelegate, RArray),     byte (*comparato
 method(void,               quickSortWithDelegate, RArray),      uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
 method(void,               sort, RArray));
 // work
-method(void,               shift, RArray),                      byte side, uint64_t number);
+method(void,               shift, RArray),                      byte side, RRange *range);         // do not call destructor
 method(static inline byte, checkIfIndexIn, RArray),             uint64_t index);
 
 printer(RArray);
