@@ -44,7 +44,7 @@ typedef uint8_t byte;
 #define deallocator(object)                               RFree(object);
 #define master(object, masterClassName)                   object->splitUp(master,splitUp(masterClassName, Object))
 
-#define method(returnValue, methodName, className)        eturnValue splitUp(methodName, className)(className *object
+#define method(returnValue, methodName, className)        returnValue splitUp(methodName, className)(className *object
 #define virtualMethod(returnValue, methodName, className) returnValue (*splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className)))(struct className *object
 
 #define constructor(className)                            className* splitUp(constructorOf,className) (className *object
