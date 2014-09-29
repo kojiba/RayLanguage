@@ -6,16 +6,14 @@
 
 class(RClassNamePair)
     discipleOf(RCString)
+
     uint64_t idForClassName;
 endOf(RClassNamePair)
 
 
 constructor(RClassNamePair));
-
 destructor(RClassNamePair);
-
 printer(RClassNamePair);
-
 method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
 
 

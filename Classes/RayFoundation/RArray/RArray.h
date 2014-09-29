@@ -9,6 +9,7 @@
 
 #include "../RayFoundation.h"
 #include "RCompareDelegate/RCompareDelegate.h"
+#include "../RCString/RCString.h"
 
 typedef struct RArrayFindResult {
     pointer result;
@@ -36,66 +37,64 @@ typedef enum RArrayFlags {
     // flag, determines bad newSize
     // (smaller that exist)
     // in addSize function
-            bad_size,
+                 bad_size,
 
 } RArrayFlags;
 
-static const uint64_t startSizeOfRdynamicArrayDefault = 100;
-static const uint64_t sizeMultiplierOfRdynamicArrayDefault = 2;
+static const uint64_t startSizeOfRArrayDefault      = 100;
+static const uint64_t sizeMultiplierOfRArrayDefault = 2;
 
 class(RArray) //------------------------------------------------------------
 
 members
-    uint64_t startSize;                     // start size of array in elements
-    uint64_t sizeMultiplier;                // size multiplier when auto-add-size
-    uint64_t count;                         // count of elements in array
-    uint64_t freePlaces;                    // count of free places for elements
-    void (*destructorDelegate)(pointer);    // destructor of elements delegate
-    void (*printerDelegate)(pointer);       // printer of elements delegate
-    pointer *array;                         // array
+    uint64_t  startSize;                     // start size of array in elements
+    uint64_t  sizeMultiplier;                // size multiplier when auto-add-size
+    uint64_t  count;                         // count of elements in array
+    uint64_t  freePlaces;                    // count of free places for elements
+    void    (*destructorDelegate)(pointer);  // destructor of elements delegate
+    void    (*printerDelegate)(pointer);     // printer of elements delegate
+    pointer  *array;                         // array
 
-endOf(RArray) //-------------------------------------------------------
+endOf(RArray) //------------------------------------------------------------
 
-// constructor - destructor - reallocation
+// constructor - destructor
 constructor(RArray), RArrayFlags *error);
 destructor(RArray);
-
-method(RArrayFlags, addSize, RArray), uint64_t newSize);
-method(void, flush, RArray));
-method(byte, sizeToFit, RArray));
-
+// allocation - reallocation
+method(RArrayFlags,        addSize, RArray),                    uint64_t newSize);
+method(void,               flush, RArray));
+method(byte,               sizeToFit, RArray));
 // add - set - delete
-method(RArrayFlags, addObject, RArray), pointer src);
-method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index); // be aware with this, cause addObject cause memory leak with that
-method(RArrayFlags, deleteObjectAtIndexIn, RArray), uint64_t index);
-method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index);
-
+method(RArrayFlags,        addObject, RArray),                  pointer src);                        // push_back analog
+method(void,               deleteLast, RArray));                                                     // pop_back analog
+method(void,               setObjectAtIndex, RArray),           pointer newObject, uint64_t index);  // be aware with this, addObject cause memory leak with that
+method(RArrayFlags,        deleteObjectAtIndexIn, RArray),      uint64_t index);
+method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),  uint64_t index);
 // get - find
-method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate);
-method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count);
-method(pointer, elementAtIndex, RArray), uint64_t index);
-
+method(RArrayFindResult *, findObjectWithDelegate, RArray),     RCompareDelegate *delegate);
+method(RArray *,           getSubarray, RArray),                RRange *range);
+method(pointer,            elementAtIndex, RArray),             uint64_t index);
 // sort
-method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer));
-method(void, quickSortWithDelegate, RArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
+method(void,               bubbleSortWithDelegate, RArray),     byte (*comparator)(pointer, pointer));
+method(void,               quickSortWithDelegate, RArray),      uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
+method(void,               sort, RArray));
+// work
+method(void,               shift, RArray),                      byte side, uint64_t number);
+method(static inline byte, checkIfIndexIn, RArray),             uint64_t index);
+
+printer(RArray);
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);
-method(void, sort, RArray));
-
-// work
-method(void, shift, RArray), byte side, uint64_t number);
-method(static inline byte, checkIfIndexIn, RArray), uint64_t index);
-printer(RArray);
 
 //----------------------------------------------------------------------------------
 
-#define makeRArray() $(NULL, c(RArray)), NULL)
-#define deleteRA(dynamicArray) $(dynamicArray, d(RArray))); \
-                            deallocator(dynamicArray)
-#define printRA(dynamicArray) $(dynamicArray, p(RArray)))
-#define addObjectToRA(dynamicArray, object) $(dynamicArray, m(addObject, RArray)), object)
-#define sortRA(dynamicArray) $(dynamicArray, m(sort, RArray)))
+#define makeRArray()                          $(NULL, c(RArray)), NULL)
+#define deleteRA(dynamicArray)                $(dynamicArray, d(RArray))); \
+                                              deallocator(dynamicArray)
+#define printRA(dynamicArray)                 $(dynamicArray, p(RArray)))
+#define addObjectToRA(dynamicArray, object)   $(dynamicArray, m(addObject, RArray)), object)
+#define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))
 #define elementAtIndexRA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
-#define sizeToFitRA(dynamicArray) $(dynamicArray, m(sizeToFit, RArray)) )
+#define sizeToFitRA(dynamicArray)             $(dynamicArray, m(sizeToFit, RArray)) )
 
 #endif /*__R_ARRAY_H__*/

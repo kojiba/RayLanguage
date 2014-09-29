@@ -7,7 +7,6 @@
 
 
 class(RClassTable) //------------------------------------------------------------
-
     discipleOf(RArray)
     discipleOf(RCompareDelegate)
 
@@ -16,11 +15,10 @@ endOf(RClassTable) //-------------------------------------------------------
 constructor(RClassTable));
 destructor(RClassTable);
 
-method(uint64_t, registerClassWithName, RClassTable), char *name);
-method(uint64_t, getIdentifierByClassName, RClassTable), char *name);
-method(uint64_t, getNumberOfClasses, RClassTable));
-
-method(RCompareFlags, checkObject, RClassTable), RClassNamePair *pairToCheck);
+method(uint64_t,      registerClassWithName, RClassTable),    char *name);
+method(uint64_t,      getIdentifierByClassName, RClassTable), char *name);
+method(uint64_t,      getNumberOfClasses, RClassTable));
+method(RCompareFlags, checkObject, RClassTable),              RClassNamePair *pairToCheck);
 
 printer(RClassTable);
 singleton(RClassTable);
@@ -30,11 +28,11 @@ singleton(RClassTable);
     || defined(releaseRCTS) || defined(flushRCTS) || defined(getIdentifierByName)
     #error "Ray Class Table Defines Error - some already defined"
 #else
-#define RCTSingleton singletonCall(RClassTable)
-#define flushRCTS $(master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
-#define releaseRCTS d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
-#define registerClassOnce(name) $(RCTSingleton, m(registerClassWithName, RClassTable)), name)
-#define printRCTS $(RCTSingleton, p(RClassTable)) )
+#define RCTSingleton              singletonCall(RClassTable)
+#define flushRCTS                 $(master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
+#define releaseRCTS               d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
+#define registerClassOnce(name)   $(RCTSingleton, m(registerClassWithName, RClassTable)), name)
+#define printRCTS                 $(RCTSingleton, p(RClassTable)) )
 #define getIdentifierByName(name) $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), name)
 #endif
 

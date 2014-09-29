@@ -40,8 +40,8 @@ constructor(RArray), RArrayFlags *error) {
 
     } else {
         // default start size in elements
-        object->startSize = startSizeOfRdynamicArrayDefault;
-        object->sizeMultiplier = sizeMultiplierOfRdynamicArrayDefault;
+        object->startSize = startSizeOfRArrayDefault;
+        object->sizeMultiplier = sizeMultiplierOfRArrayDefault;
         object->array = RAlloc(object->startSize * sizeof(pointer));
 
         if (object->array == NULL) {
@@ -270,6 +270,11 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
     }
 }
 
+method(void, deleteLast, RArray)){
+    destroyElementAtIndex(object->count - 1);
+    incrementFreePlaceses();
+}
+
 #pragma mark Get - Find
 
 method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
@@ -304,7 +309,7 @@ method(pointer, elementAtIndex, RArray), uint64_t index) {
     }
 }
 
-method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count){
+method(RArray *, getSubarray, RArray), RRange *range){
 
     uint64_t iterator = 0;
     RArray *result = makeRArray();
@@ -317,7 +322,7 @@ method(RArray *, getSubarray, RArray), uint64_t from, uint64_t count){
         result->destructorDelegate = object->destructorDelegate;
         result->printerDelegate = object->printerDelegate;
 
-        fromStartForAll(iterator, from, count) {
+        fromStartForAll(iterator, range->from, range->count) {
             if(addObjectToRA(result, elementAtIndexRA(object, iterator)) == no_error) {
                 continue;
 

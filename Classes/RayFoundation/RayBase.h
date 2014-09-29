@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define RAlloc malloc
-#define RFree free
-#define RPrintf printf
-
-#define RStringLenght strlen
+#define RAlloc          malloc
+#define RFree           free
+#define RPrintf         printf
+#define RMemCpy         memcpy
+#define RStringLenght   strlen
 
 #endif /*__RAY_BASE_H__*/

@@ -10,7 +10,7 @@ typedef enum RCompareFlags{
 
 protocol(RCompareDelegate)
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);
-    pointer etaloneObject;
+    pointer         etaloneObject;
 endOf(RCompareDelegate)
 
 method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);

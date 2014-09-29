@@ -3,7 +3,6 @@ project(RayLanguage)
 
 set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RayBase.h
-                 Classes/RayFoundation/RayConsoleColors.h
                  Classes/RayFoundation/RayCheckFoundation.h
                  Classes/RayFoundation/RayFoundation.h
 
@@ -27,8 +26,8 @@ set(SOURCE_FILES Classes/main.c
 
                  Classes/RayFoundation/RDictionary/RDictionary.h
                  Classes/RayFoundation/RDictionary/RDictionary.c)
-add_library(RayFoundation STATIC ${SOURCE_FILES})
+#add_library(RayFoundation STATIC ${SOURCE_FILES})
 
 add_executable(RayLanguage ${SOURCE_FILES})
 
-target_link_libraries(RayLanguage RayFoundation)
+#target_link_libraries(RayLanguage RayFoundation)

@@ -8,15 +8,15 @@
 #ifndef __RAY_CHECK_FOUNDATION_H__
 #define __RAY_CHECK_FOUNDATION_H__
 
-#if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(startClock) || defined(stopClock)
+#if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(initRClock) || defined(tickRClock)
         #error "Some of working RayFoundation defines are already defined"
-    #elif defined(class) || defined(discipleOf) || defined(endOf)
+    #elif defined(class) || defined(discipleOf) || defined(endOf) || defined(protocol)
         #error "Some of core defines of RayFoundation are already defined"
-    #elif defined(staticMethod) || defined(virtualMethod)
+    #elif defined(method) || defined(staticMethod) || defined(virtualMethod)
         #error "Some of declaration defines of RayFoundation are already defined"
     #elif defined(c) || defined(d) || defined(p) || defined(m) || defined(sm) || defined(singletonCall)
         #error "Some of function-call defines of RayFoundation are already defined"
-    #elif defined($) || defined(allocator) || defined(deallocator) || defined(master) || defined(forAll)
+    #elif defined($) || defined(allocator) || defined(deallocator) || defined(master) || defined(forAll) || defined(fromStartForAll)
         #error "Some of core-function-call defines of RayFoundation are already defined"
     #endif
 

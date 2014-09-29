@@ -19,7 +19,7 @@ byte checkString(uint64_t first, uint64_t second) {
     }
 }
 
-void printString(char *src) {
+void printString(void *src) {
     printf("%s \n", src);
 }
 
@@ -33,40 +33,45 @@ byte stringSorter(char *first, char *second) {
 }
 
 int main(int argc, const char *argv[]) {
-    startRClock();
+    initRClock();
 //    for(int j = 0; j < 10; ++j){
     RArray *dynamicArray = makeRArray();
+
 
 
     dynamicArray->printerDelegate = printString;
     dynamicArray->destructorDelegate = free;
 
-    for (int i = 0; i < 100000; ++i) {
-        char *a = malloc(sizeof(char) * 8);
+    for (int i = 0; i < 10000; ++i) {
+        char *a = (char*)malloc(sizeof(char) * 8);
         memmove(a, "Hello  ", sizeof("Hello  "));
         a[6] = (char) (i % 10 + 48);
         addObjectToRA(dynamicArray, a);
+//        $(dynamicArray, m(deleteLast, RArray)) );
     }
 //    pointer findedObject = $(dynamicArray, m(findObjectWithDelegate, RArray)), findString);
 //    printf("%p\n", findedObject);
 
 //    printRA(dynamicArray);
 //        $(dynamicArray, m(bubbleSortWithDelegate, RArray)), stringSorter);
-//        $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
+
     sortRA(dynamicArray);
-//    printRA(dynamicArray);
+    tickRClock();
 
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 895, 10);
-    printRA(sub);
+    printRA(dynamicArray);
 
-    sizeToFitRA(sub);
-    printRA(sub);
+//    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(8, 10));
+//    printRA(sub);
+
+//    sizeToFitRA(sub);
+//    printRA(sub);
 
     deleteRA(dynamicArray);
-    deallocator(sub);
+
+//    deallocator(sub);
 //    }
 
-    stopRClock();
+
     return 0;
 }
 
