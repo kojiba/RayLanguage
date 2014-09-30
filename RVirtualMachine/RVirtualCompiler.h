@@ -15,9 +15,10 @@ constructor(RVirtualCompiler));
 destructor(RVirtualCompiler);
 
 method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode);
-method(RCString *, getFunctionNameFrom, RVirtualCompiler), RCString *sourceCode);
+method(char, characterToCode,RVirtualCompiler),                             char character);
 
-char characterToCodeRVirtualCompiler(char character);
+method(RCString *, getFunctionNameFrom, RVirtualCompiler));
+method(void, flushSourceCode, RVirtualCompiler));
 
 singleton(RVirtualCompiler);
 

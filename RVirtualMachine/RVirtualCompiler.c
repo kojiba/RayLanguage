@@ -1,7 +1,7 @@
 #include "../Classes/RayFoundation/RayFoundation.h"
 #include "RVirtualCompiler.h"
 
-constructor(RVirtualCompiler)){
+constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
     if(object != NULL) {
 
@@ -15,31 +15,47 @@ destructor(RVirtualCompiler) {
     }
 }
 
-method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode){
+method(void, flushSourceCode, RVirtualCompiler)){
+    //fixme delete from substring some symbols
+}
+
+method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode) {
 
     if(sourceCode->size != 0) {
         RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
+
+        // copy source to object
+        object->code = $(sourceCode, m(copy, RCString)) );
+
+        // delete all unused symbols
+        $(object, m(flushSourceCode, RVirtualCompiler)) );
+
+        // set name
         function->name = $(object, m(getFunctionNameFrom, RVirtualCompiler)), sourceCode);
+
         // fixme
         return function;
     } else {
-        RPrintf("Error. Bad virtual-code size");
+        RPrintf("Error. RVC. Bad virtual-code size\n");
     }
     return NULL;
 }
 
-method(RCString *, getFunctionNameFrom, RVirtualCompiler), RCString *sourceCode){
-    uint64_t counter = 0;
-    // finding to startSymbol
-    while(characterToCodeRVirtualCompiler(sourceCode->baseString[counter]) != r_function_begin && counter < sourceCode->size) {
-        ++counter;
+method(RCString *, getFunctionNameFrom, RVirtualCompiler)) {
+    if(object->code->size != 0){
+        uint64_t counter = 0;
+        // finding to startSymbol
+        while($(object, m(characterToCode, RVirtualCompiler)), object->code->baseString[counter]) != r_function_begin && counter < object->code->size) {
+            ++counter;
+        }
+        RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, counter));
+        return name;
     }
-    RCString *name = $(sourceCode, m(getSubstringInRange, RCString)), makeRRange(0, counter));
-    return name;
+    return NULL;
 }
 
 
-char characterToCodeRVirtualCompiler(char character){
+method(char, characterToCode, RVirtualCompiler), char character) {
     switch (character) {
         case '\"': {
             static uint64_t counter = 0;
@@ -61,7 +77,7 @@ char characterToCodeRVirtualCompiler(char character){
     }
 }
 
-singleton(RVirtualCompiler){
+singleton(RVirtualCompiler) {
     static RVirtualCompiler *instance = NULL;
     if(instance == NULL) {
         instance = $(NULL, c(RVirtualCompiler)));

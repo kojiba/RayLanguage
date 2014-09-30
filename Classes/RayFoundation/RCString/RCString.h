@@ -27,6 +27,7 @@ method(RCString *,       setConstantString, RCString),   char *string);    // co
 
 method(RCString *,       setSubstringInRange, RCString), RRange *range, char *string);
 method(RCString *,       getSubstringInRange, RCString), RRange *range);
+method(RCString *,       copy, RCString));
 method(RCompareFlags,    compareWith, RCString),         RCString *checkString);
 
 printer(RCString);

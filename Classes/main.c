@@ -9,12 +9,15 @@
 #include "RayFoundation/RArray/RArray.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include "RayFoundation/RDictionary/RDictionary.h"
+#include "../RVirtualMachine/RVirtualCompiler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-
+//    RCString *funcName = $(NULL, m(getFunctionNameFrom, RVirtualCompiler)), RS("Hello world : p\"Hello world\""));
+//    registerClassOnce(funcName->baseString);
+//    printRCTS;
     return 0;
 }
 
