@@ -23,6 +23,8 @@ method(RCompareFlags, checkObject, RClassTable),              RClassNamePair *pa
 printer(RClassTable);
 singleton(RClassTable);
 
+#define makeRCTable() $(NULL, c(RClassTable)) );
+
 // some substitutions macro for better syntax
 #if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) \
     || defined(releaseRCTS) || defined(flushRCTS) || defined(getIdentifierByName)

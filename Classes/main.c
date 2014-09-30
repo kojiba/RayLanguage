@@ -14,24 +14,25 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-    RArray *stringArray = makeRArray();
-    stringArray->printerDelegate = p(RCString);
-    stringArray->destructorDelegate = d(RCString);
-
-    for(unsigned i = 0; i < 10; ++i) {
-        addObjectToRA(stringArray, randomRCString());
-    }
-    printRA(stringArray);
-
-    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
-
-    printRA(stringArray);
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+//RArray *stringArray = makeRArray();
+//    stringArray->printerDelegate = p(RCString);
+//    stringArray->destructorDelegate = d(RCString);
+//
+//    for(unsigned i = 0; i < 10; ++i) {
+//        addObjectToRA(stringArray, randomRCString());
+//    }
+//    printRA(stringArray);
+//
+//    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
+//
+//    printRA(stringArray);
 
 void RATimingTest() {
     initRClock();

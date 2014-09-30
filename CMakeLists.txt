@@ -25,9 +25,14 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.c
 
                  Classes/RayFoundation/RDictionary/RDictionary.h
-                 Classes/RayFoundation/RDictionary/RDictionary.c)
-#add_library(RayFoundation STATIC ${SOURCE_FILES})
+                 Classes/RayFoundation/RDictionary/RDictionary.c
+
+                 # RVM
+                 RVirtualMachine/RVirtualFunction/RVirtualFunction.h
+                 RVirtualMachine/RVirtualFunction/RVirtualFunction.c
+
+                 RVirtualMachine/RVirtualCompiler.h
+                 RVirtualMachine/RVirtualCompiler.c)
+
 
 add_executable(RayLanguage ${SOURCE_FILES})
-
-#target_link_libraries(RayLanguage RayFoundation)

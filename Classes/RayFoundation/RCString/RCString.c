@@ -1,4 +1,5 @@
 #include <string.h>
+#include <Foundation/Foundation.h>
 #include "RCString.h"
 
 RRange* makeRRange(uint64_t from, uint64_t count){
@@ -84,6 +85,19 @@ method(RCompareFlags, compareWith, RCString), RCString *checkString){
         }
     }
     return not_equals;
+}
+
+method(RCString *, getSubstringInRange, RCString), RRange *range){
+    if(range->count != 0 && range->from < object->size) {
+        char *cstring = RAlloc(range->count + 1);
+        RMemCpy(cstring, object->baseString[range->from], range->count);
+        cstring[count + 1] = 0;
+        return RS(substring);
+    } else {
+        RPrintf("ERRROR. RCS. BAD RANGE!\n");
+        return NULL;
+    }
+
 }
 
 printer(RCString){

@@ -26,6 +26,7 @@ method(RCString *,       setString, RCString),           char *string);    // co
 method(RCString *,       setConstantString, RCString),   char *string);    // copy pointer
 
 method(RCString *,       setSubstringInRange, RCString), RRange *range, char *string);
+method(RCString *,       getSubstringInRange, RCString), RRange *range);
 method(RCompareFlags,    compareWith, RCString),         RCString *checkString);
 
 printer(RCString);
