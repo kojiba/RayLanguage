@@ -44,7 +44,7 @@ typedef enum RArrayFlags {
 static const uint64_t startSizeOfRArrayDefault      = 100;
 static const uint64_t sizeMultiplierOfRArrayDefault = 2;
 
-class(RArray) //------------------------------------------------------------
+class(RArray) //--------------------------------------------------------------
 
 members
     uint64_t  startSize;                     // start size of array in elements
@@ -55,7 +55,7 @@ members
     void    (*printerDelegate)(pointer);     // printer of elements delegate
     pointer  *array;                         // array
 
-endOf(RArray) //------------------------------------------------------------
+endOf(RArray) //--------------------------------------------------------------
 
 // constructor - destructor
 constructor(RArray), RArrayFlags *error);

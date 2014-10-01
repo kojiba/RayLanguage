@@ -7,9 +7,12 @@
 typedef enum RVirtualCodes {
 //
     r_modifies_input,
+    r_end,
     r_function_begin,
     r_const_start,
     r_const_end,
+    r_ignore,
+    r_error,
 
 // algebra operations
     r_addition,
@@ -38,16 +41,16 @@ typedef enum RVirtualCodes {
 
 class(RVirtualFunction)
     RCString *name;
-    RArray   *memory;
-    RArray   *arguments;
-    uint64_t  numberOfArguments;
-    RArray   *body;
+//    RArray   *memory;
+//    RArray   *arguments;
+//    uint64_t  numberOfArguments;
+    byte   *body;
 endOf(RVirtualFunction)
 
 constructor(RVirtualFunction));
 destructor(RVirtualFunction);
 
-//method(void, initFromCString, RVirtualFunction), RCString *code);
+printer(RVirtualFunction);
 method(void, executeWithArgs, RVirtualFunction), RArray *args);
 
 

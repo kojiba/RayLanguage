@@ -9,16 +9,18 @@
 
 class(RVirtualCompiler)
     RCString *code;
+    uint64_t lines;
+    uint64_t column;
 endOf(RVirtualCompiler)
 
 constructor(RVirtualCompiler));
 destructor(RVirtualCompiler);
 
 method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode);
-method(char, characterToCode,RVirtualCompiler),                             char character);
+method(byte,               sourceToByteCode, RVirtualCompiler),             uint64_t iterator);
 
-method(RCString *, getFunctionNameFrom, RVirtualCompiler));
-method(void, flushSourceCode, RVirtualCompiler));
+method(RCString *,         getFunctionName, RVirtualCompiler));
+method(byte *,             getFunctionBody, RVirtualCompiler));
 
 singleton(RVirtualCompiler);
 

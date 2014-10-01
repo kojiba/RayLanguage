@@ -48,30 +48,34 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("--- RCT Register Class of %p\n", object);
 #endif
-    uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
-    if(result == 0) {
-        RClassNamePair *pair = $(NULL, c(RClassNamePair)));
-        if (pair != NULL) {
-            $(master(pair, RCString), m(setString, RCString)), name);
-            pair->idForClassName = master(object, RArray)->count;
+    if(name != NULL) {
+        uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
+        if(result == 0) {
+            RClassNamePair *pair = $(NULL, c(RClassNamePair)));
+            if (pair != NULL) {
+                $(master(pair, RCString), m(setString, RCString)), name);
+                pair->idForClassName = master(object, RArray)->count;
 
-            // successfully register new class
-            if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
+                // successfully register new class
+                if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
 #if RAY_SHORT_DEBUG == 1
-                    RPrintf("--- RCT Register Class SUCCESS on %p\n", object);
+                        RPrintf("--- RCT Register Class SUCCESS on %p\n", object);
 #endif
-                return pair->idForClassName;
+                    return pair->idForClassName;
+                } else {
+                    return 0;
+                }
+            // alloc error
             } else {
                 return 0;
             }
-        // alloc error
         } else {
-            return 0;
+            return result;
         }
     } else {
-        return result;
+        RPrintf("Warning. RCT. Register classname is null, do nothig, please remove function call, or fix it.\n");
+        return 0;
     }
-
 }
 
 method(uint64_t, getNumberOfClasses, RClassTable)) {

@@ -18,9 +18,6 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString.c
 
-                 Classes/RayFoundation/Function/Function.h
-                 Classes/RayFoundation/Function/Function.c
-
                  Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.h
                  Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.c
 
@@ -35,4 +32,5 @@ set(SOURCE_FILES Classes/main.c
                  RVirtualMachine/RVirtualCompiler.c)
 
 
+file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(RayLanguage ${SOURCE_FILES})

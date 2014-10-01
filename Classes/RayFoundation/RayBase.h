@@ -10,5 +10,6 @@
 #define RPrintf         printf
 #define RMemCpy         memcpy
 #define RStringLenght   strlen
+#define RMemMove        memmove
 
 #endif /*__RAY_BASE_H__*/

@@ -1,14 +1,14 @@
 #include <string.h>
 #include "RCString.h"
 
-RRange* makeRRange(uint64_t from, uint64_t count){
+RRange* makeRRange(uint64_t from, uint64_t count) {
     RRange *range = allocator(RRange);
     range->from = from;
     range->count = count;
     return range;
 }
 
-RRange* makeRRangeTo(uint64_t from, uint64_t to){
+RRange* makeRRangeTo(uint64_t from, uint64_t to) {
     RRange *range = allocator(RRange);
     range->from = from;
     range->count = to - from;
@@ -29,6 +29,13 @@ destructor(RCString) {
     deallocator(object->baseString);
 }
 
+method(void, flush, RCString)) {
+    if(object->size != 0 && object->baseString != NULL) {
+        deallocator(object->baseString);
+        object->size = 0;
+    }
+}
+
 method(RCString *, setString, RCString), char *string) {
     if(string != NULL) {
         uint64_t stringSize = RStringLenght(string) + 1;
@@ -37,7 +44,7 @@ method(RCString *, setString, RCString), char *string) {
         if(object->size != 0 && object->baseString != NULL
                 || object->size < stringSize) {
             deallocator(object->baseString);
-            object->baseString = RAlloc(stringSize);
+            object->baseString = RAlloc(stringSize * sizeof(char));
         }
 
         // final copying
@@ -49,12 +56,11 @@ method(RCString *, setString, RCString), char *string) {
     return object;
 }
 
-method(RCString *, setConstantString, RCString), char *string){
+method(RCString *, setConstantString, RCString), char *string) {
     if(string != NULL) {
-        // checking, if exist and size like copying
-        if(object->size != 0 && object->baseString != NULL){
-            deallocator(object->baseString);
-        }
+        // flush old string
+        $(object, m(flush, RCString)) );
+
         // copy pointer, and compute length
         object->baseString = string;
         object->size = RStringLenght(string);
@@ -64,7 +70,7 @@ method(RCString *, setConstantString, RCString), char *string){
     return object;
 }
 
-method(RCompareFlags, compareWith, RCString), RCString *checkString){
+method(RCompareFlags, compareWith, RCString), RCString *checkString) {
     static uint64_t iterator;
     if(checkString == NULL || object == NULL) {
         RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
@@ -86,9 +92,9 @@ method(RCompareFlags, compareWith, RCString), RCString *checkString){
     return not_equals;
 }
 
-method(RCString *, getSubstringInRange, RCString), RRange *range){
+method(RCString *, getSubstringInRange, RCString), RRange *range) {
     if(range->count != 0 && range->from < object->size) {
-        char *cstring = RAlloc(range->count + 1);
+        char *cstring = RAlloc(range->count + 1 * sizeof(char));
         RMemCpy(cstring, object->baseString + range->from, range->count);
         cstring[range->count + 1] = 0;
         return RS(cstring);
@@ -99,16 +105,44 @@ method(RCString *, getSubstringInRange, RCString), RRange *range){
 
 }
 
+method(void, deleteInRange, RCString), RRange *range) {
+    if(range->count != 0 && range->from < object->size) {
+        RMemMove(object->baseString + range->from, object->baseString + range->from + range->count, object->size - range->count - range->from + 1);
+        object->size -= range->count;
+        object->baseString[object->size + 1] = 0;
+    } else {
+        RPrintf("ERRROR. RCS. deleteInRange, bad range, do nothing.\n");
+    }
+}
+
 method(RCString *, copy, RCString)){
-    RCString *copy = $(object, m(getSubstringInRange, RCString)), makeRRange(0, object->size - 1));
+    RCString *copy = $(object, m(getSubstringInRange, RCString)), makeRRange(0, object->size));
     return copy;
 }
 
-printer(RCString){
+method(void, fromFile, RCString), RCString *filename) {
+    FILE *file = fopen(filename->baseString, "rb");
+    char *buffer;
+    long fileSize;
+
+    if(file != NULL) {
+        fseek(file, 0, SEEK_END);
+        fileSize = ftell(file);
+        rewind(file);
+        buffer = RAlloc(fileSize * (sizeof(char)));
+        fread(buffer, sizeof(char), fileSize, file);
+        fclose(file);
+        $(object, m(setConstantString, RCString)), buffer);
+    } else {
+        RPrintf("Warning. RCS. Cannot open file.\n");
+    }
+}
+
+printer(RCString) {
     RPrintf("%s\n", object->baseString);
 }
 
-staticMethod(char , randomCharacter, RCString)){
+staticMethod(char , randomCharacter, RCString)) {
     char character = ((char)rand());
     while(character < 34 ||
             character > 126) {
@@ -117,7 +151,7 @@ staticMethod(char , randomCharacter, RCString)){
     return character;
 }
 
-staticMethod(RCString *, randomString, RCString)){
+staticMethod(RCString *, randomString, RCString)) {
     static uint64_t iterator;
     RCString *string = makeRCString();
     uint64_t size = ((uint64_t)rand()) % 50;
@@ -127,7 +161,7 @@ staticMethod(RCString *, randomString, RCString)){
         size = ((uint64_t)rand()) % 50;
     }
 
-    cstring = RAlloc(size);
+    cstring = RAlloc(size * sizeof(char));
 
     forAll(iterator, size){
         cstring[iterator] = sm(randomCharacter, RCString)(NULL);

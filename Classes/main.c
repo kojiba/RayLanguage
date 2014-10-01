@@ -15,9 +15,20 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-//    RCString *funcName = $(NULL, m(getFunctionNameFrom, RVirtualCompiler)), RS("Hello world : p\"Hello world\""));
-//    registerClassOnce(funcName->baseString);
-//    printRCTS;
+    RCString *funcBody  = makeRCString();
+
+    $(funcBody, m(fromFile, RCString)), RS("//Users//ilya.kucheruavyu//Library//Caches//clion10//cmake//generated//56772a3//56772a3//Debug0//Resources//HelloWorld"));
+
+    if(funcBody != NULL) {
+        RVirtualFunction *function = $(RVC, m(createFunctionFromSourceCode, RVirtualCompiler)), funcBody);
+        $(function, p(RVirtualFunction)) );
+    }
+
+//    RCString *test = $(RS("Hellow"), m(copy, RCString)) );
+//    $(test, m(deleteInRange, RCString)), makeRRange(2, 3));
+//    $(test, p(RCString)) );
+//    $(test, d(RCString)) );
+
     return 0;
 }
 

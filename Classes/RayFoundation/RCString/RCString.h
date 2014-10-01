@@ -12,23 +12,33 @@ typedef struct RRange {
 RRange* makeRRange   (uint64_t from, uint64_t count);
 RRange* makeRRangeTo (uint64_t from, uint64_t to);
 
-class(RCString)
+class(RCString) //------------------------------------
 
-    char    *baseString;
-    uint64_t size;
+    char    *baseString; // \0-terminated c-string
+    uint64_t size;       // size without \0 character
 
-endOf(RCString)
+endOf(RCString) //------------------------------------
 
+// constructor - destructor - reallocation
 constructor(RCString));
 destructor(RCString);
+method(void,             flush, RCString));
 
-method(RCString *,       setString, RCString),           char *string);    // copy characters
-method(RCString *,       setConstantString, RCString),   char *string);    // copy pointer
+// setters
+method(RCString *,       setString, RCString),           char *string);                 // copy characters
+method(RCString *,       setConstantString, RCString),   char *string);                 // copy pointer
 
+// substrings and copies
 method(RCString *,       setSubstringInRange, RCString), RRange *range, char *string);
 method(RCString *,       getSubstringInRange, RCString), RRange *range);
+method(void,             deleteInRange, RCString),       RRange *range);                // with shift
 method(RCString *,       copy, RCString));
+
+// comparator
 method(RCompareFlags,    compareWith, RCString),         RCString *checkString);
+
+// reads from file
+method(void,             fromFile, RCString),            RCString *filename);           // deletes old string
 
 printer(RCString);
 
