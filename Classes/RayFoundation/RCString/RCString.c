@@ -1,6 +1,8 @@
 #include <string.h>
 #include "RCString.h"
 
+#pragma mark RRange
+
 RRange* makeRRange(uint64_t from, uint64_t count) {
     RRange *range = allocator(RRange);
     range->from = from;
@@ -40,7 +42,7 @@ method(void, flush, RCString)) {
 
 #pragma mark Setters
 
-method(RCString *, setString, RCString), char *string) {
+method(RCString *, setString, RCString), const char *string) {
     if(string != NULL) {
         uint64_t stringSize = RStringLenght(string) + 1;
 
@@ -60,7 +62,7 @@ method(RCString *, setString, RCString), char *string) {
     return object;
 }
 
-method(RCString *, setConstantString, RCString), char *string) {
+method(RCString *, setConstantString, RCString), const char *string) {
     if(string != NULL) {
         // flush old string
         $(object, m(flush, RCString)) );
@@ -76,7 +78,7 @@ method(RCString *, setConstantString, RCString), char *string) {
 
 #pragma mark Substrings and Copies
 
-method(RCString *, getSubstringInRange, RCString), RRange *range) {
+method(RCString *, getSubstringInRange, RCString), const RRange *range) {
     if(range->count != 0 && range->from < object->size) {
         char *cstring = RAlloc(range->count + 1 * sizeof(char));
         RMemCpy(cstring, object->baseString + range->from, range->count);
@@ -89,7 +91,7 @@ method(RCString *, getSubstringInRange, RCString), RRange *range) {
 
 }
 
-method(void, deleteInRange, RCString), RRange *range) {
+method(void, deleteInRange, RCString), const RRange *range) {
     if(range->count != 0 && range->from < object->size) {
         RMemMove(object->baseString + range->from, object->baseString + range->from + range->count, object->size - range->count - range->from + 1);
         object->size -= range->count;
@@ -106,7 +108,7 @@ method(RCString *, copy, RCString)){
 
 #pragma mark Comparator
 
-method(RCompareFlags, compareWith, RCString), RCString *checkString) {
+method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     static uint64_t iterator;
     if(checkString == NULL || object == NULL) {
         RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
@@ -130,7 +132,7 @@ method(RCompareFlags, compareWith, RCString), RCString *checkString) {
 
 #pragma mark With file
 
-method(void, fromFile, RCString), RCString *filename) {
+method(void, fromFile, RCString), const RCString *filename) {
     FILE *file = fopen(filename->baseString, "rb");
     char *buffer;
     long fileSize;
