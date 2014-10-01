@@ -22,10 +22,13 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor(RDictionary));
 destructor(RDictionary);
 
-method(void, initDelegate, RDictionary), RCompareDelegate *delegate);
+method(void,       initDelegate,    RDictionary), RCompareDelegate *delegate);
+method(void,       setObjectForKey, RDictionary), pointer value, pointer key);
+method(pointer,    getObjectForKey, RDictionary), pointer key);
 
-method(void, setObjectForKey, RDictionary), pointer value, pointer key);
-method(pointer, getObjectForKey, RDictionary), pointer key);
+// for string dictionary
+method(RCString *, getStringForKey, RDictionary), RCString *key);
+method(void,       setStringForKey, RDictionary), RCString *key, RCString *string);
 
 printer(RDictionary);
 

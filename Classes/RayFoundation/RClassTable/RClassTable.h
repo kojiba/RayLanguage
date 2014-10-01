@@ -15,9 +15,8 @@ endOf(RClassTable) //-------------------------------------------------------
 constructor(RClassTable));
 destructor(RClassTable);
 
-method(uint64_t,      registerClassWithName,    RClassTable), char *name);
-method(uint64_t,      getIdentifierByClassName, RClassTable), char *name);
-method(RCompareFlags, checkObject,              RClassTable), RClassNamePair *pairToCheck);
+method(uint64_t,      registerClassWithName,    RClassTable), char *name); // strings must be constant
+method(uint64_t,      getIdentifierByClassName, RClassTable), char *name); // strings must be constant
 method(uint64_t,      getNumberOfClasses,       RClassTable) );
 
 printer(RClassTable);

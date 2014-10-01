@@ -7,7 +7,7 @@
 #include "RDictionary.h"
 #include "../RClassTable/RClassTable.h"
 
-constructor(RDictionary)){
+constructor(RDictionary)) {
     object = allocator(RDictionary);
     if(object == NULL) {
         RPrintf("ERROR. RD. Allocation error.");
@@ -27,9 +27,8 @@ constructor(RDictionary)){
     return object;
 }
 
-destructor(RDictionary){
+destructor(RDictionary) {
     if(object != NULL){
-//        fixme
         deleteRA(object->keys);
         deleteRA(object->values);
     } else {
@@ -37,11 +36,11 @@ destructor(RDictionary){
     }
 }
 
-method(void, initDelegate, RDictionary), RCompareDelegate *delegate){
+method(void, initDelegate, RDictionary), RCompareDelegate *delegate) {
     master(object, RCompareDelegate) = delegate;
 }
 
-method(void, setObjectForKey, RDictionary), pointer value, pointer key){
+method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
     RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
@@ -57,7 +56,7 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key){
 
 }
 
-method(pointer, getObjectForKey, RDictionary), pointer key){
+method(pointer, getObjectForKey, RDictionary), pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
     RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
     return rArrayFindResult->result;

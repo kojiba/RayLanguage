@@ -24,6 +24,9 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RDictionary/RDictionary.h
                  Classes/RayFoundation/RDictionary/RDictionary.c
 
+                 Classes/RayFoundation/RStringDictionary/RStringDictionary.h
+                 Classes/RayFoundation/RStringDictionary/RStringDictionary.c
+
                  # RVM
                  RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  RVirtualMachine/RVirtualFunction/RVirtualFunction.c

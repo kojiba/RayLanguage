@@ -41,6 +41,7 @@ destructor(RClassTable) {
         // destructor for RArray
         $(master(object, RArray), d(RArray)));
         deallocator(master(object, RArray));
+        deallocator(master(object, RCompareDelegate));
     }
 }
 
