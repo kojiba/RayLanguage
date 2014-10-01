@@ -15,6 +15,8 @@ RRange* makeRRangeTo(uint64_t from, uint64_t to) {
     return range;
 }
 
+#pragma mark constructor - destructor - reallocation
+
 constructor(RCString)) {
     object = allocator(RCString);
     if(object) {
@@ -35,6 +37,8 @@ method(void, flush, RCString)) {
         object->size = 0;
     }
 }
+
+#pragma mark Setters
 
 method(RCString *, setString, RCString), char *string) {
     if(string != NULL) {
@@ -70,27 +74,7 @@ method(RCString *, setConstantString, RCString), char *string) {
     return object;
 }
 
-method(RCompareFlags, compareWith, RCString), RCString *checkString) {
-    static uint64_t iterator;
-    if(checkString == NULL || object == NULL) {
-        RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
-        return not_equals;
-    } else {
-        if (checkString == object) {
-            return equals;
-        } else {
-            if (checkString->size == object->size) {
-                forAll(iterator, object->size) {
-                    if(object->baseString[iterator] != checkString->baseString[iterator]){
-                        return not_equals;
-                    }
-                }
-                return equals;
-            }
-        }
-    }
-    return not_equals;
-}
+#pragma mark Substrings and Copies
 
 method(RCString *, getSubstringInRange, RCString), RRange *range) {
     if(range->count != 0 && range->from < object->size) {
@@ -119,6 +103,32 @@ method(RCString *, copy, RCString)){
     RCString *copy = $(object, m(getSubstringInRange, RCString)), makeRRange(0, object->size));
     return copy;
 }
+
+#pragma mark Comparator
+
+method(RCompareFlags, compareWith, RCString), RCString *checkString) {
+    static uint64_t iterator;
+    if(checkString == NULL || object == NULL) {
+        RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
+        return not_equals;
+    } else {
+        if (checkString == object) {
+            return equals;
+        } else {
+            if (checkString->size == object->size) {
+                forAll(iterator, object->size) {
+                    if(object->baseString[iterator] != checkString->baseString[iterator]){
+                        return not_equals;
+                    }
+                }
+                return equals;
+            }
+        }
+    }
+    return not_equals;
+}
+
+#pragma mark With file
 
 method(void, fromFile, RCString), RCString *filename) {
     FILE *file = fopen(filename->baseString, "rb");
