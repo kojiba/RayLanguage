@@ -31,14 +31,14 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RByteOperations/RByteOperations.c
 
                  # RVM
-                 RVirtualMachine/RVirtualFunction/RVirtualFunction.h
-                 RVirtualMachine/RVirtualFunction/RVirtualFunction.c
+                 Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
+                 Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
 
-                 RVirtualMachine/RVirtualCompiler.h
-                 RVirtualMachine/RVirtualCompiler.c
+                 Classes/RVirtualMachine/RVirtualCompiler.h
+                 Classes/RVirtualMachine/RVirtualCompiler.c
 
-                 RVirtualMachine/RVirtualMachine/RVirtualMachine.h
-                 RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
+                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h
+                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
 
 
 file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
