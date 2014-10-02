@@ -21,3 +21,9 @@ byte* getByteArrayCopy(const byte *array, uint64_t size) {
     RMemMove(arrayCopy, array, size);
     return arrayCopy;
 }
+
+byte* getSubArray(const byte *array, RRange range) {
+    byte *subArray = RAlloc(range.count);
+    RMemMove(subArray, array[range.from], range.count);
+    return subArray;
+}
