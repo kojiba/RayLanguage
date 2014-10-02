@@ -9,7 +9,7 @@
 #include "RayFoundation/RArray/RArray.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include "RayFoundation/RDictionary/RDictionary.h"
-#include "../RVirtualMachine/RVirtualCompiler.h"
+#include "RVirtualMachine/RVirtualCompiler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
