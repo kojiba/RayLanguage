@@ -22,20 +22,15 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor(RDictionary));
 destructor(RDictionary);
 
-method(void,       initDelegate,    RDictionary), RCompareDelegate *delegate);
-method(void,       setObjectForKey, RDictionary), pointer value, pointer key);
-method(pointer,    getObjectForKey, RDictionary), pointer key);
-
-// for string dictionary
-method(RCString *, getStringForKey, RDictionary), RCString *key);
-method(void,       setStringForKey, RDictionary), RCString *key, RCString *string);
+method(void,       initDelegate,    RDictionary),    RCompareDelegate *delegate);
+method(void,       setObjectForKey, RDictionary),    pointer value, pointer key);
+method(pointer,    getObjectForKey, RDictionary),    pointer key);
 
 printer(RDictionary);
 
 // some macros for shorter work
-#define makeRDictionary() $(NULL, c(RDictionary)) );
-#define printRD(rayDictionary) $(rayDictionary, p(RDictionary)) );
-
+#define makeRDictionary()       $(NULL, c(RDictionary)) );
+#define printRD(rayDictionary)  $(rayDictionary, p(RDictionary)) );
 #define deleteRD(rayDictionary) $(rayDictionary, d(RDictionary)) );\
                                 deallocator(rayDictionary)
 

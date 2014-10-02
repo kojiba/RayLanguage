@@ -15,7 +15,26 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
+    initRClock();
 
+    registerClassOnce("Luke");
+    registerClassOnce("Dart");
+    registerClassOnce("Leia");
+    registerClassOnce("Han Solo");
+    // try once more, but here is only one record
+    uint64_t iterator;
+    forAll(iterator, 1000000) {
+        registerClassOnce("Leia");
+        registerClassOnce("Dart");
+        registerClassOnce("Luke");
+    }
+
+    printRCTS;
+
+    char *checkName = "Han Solo";
+    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
+
+    tickRClock();
 
     return 0;
 }
@@ -88,7 +107,7 @@ void RDictionaryTest(void){
 }
 
 void RClassTableTest(void){
-    startRClock();
+    initRClock();
 
     registerClassOnce("Luke");
     registerClassOnce("Dart");
@@ -107,7 +126,7 @@ void RClassTableTest(void){
     char *checkName = "Han Solo";
     RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
 
-    stopRClock();
+    tickRClock();
 }
 
 void RClassNamePairTest(void){

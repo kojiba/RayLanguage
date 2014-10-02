@@ -1,5 +1,6 @@
 #include "RVirtualFunction.h"
 #include "../../Classes/RayFoundation/RClassTable/RClassTable.h"
+#include "../RVirtualMachine/RVirtualMachine.h"
 
 constructor(RVirtualFunction)) {
     object = allocator(RVirtualFunction);

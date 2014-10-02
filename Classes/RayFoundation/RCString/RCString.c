@@ -3,18 +3,18 @@
 
 #pragma mark RRange
 
-RRange* makeRRange(uint64_t from, uint64_t count) {
+RRange makeRRange(uint64_t from, uint64_t count) {
     RRange *range = allocator(RRange);
     range->from = from;
     range->count = count;
-    return range;
+    return *range;
 }
 
-RRange* makeRRangeTo(uint64_t from, uint64_t to) {
+RRange makeRRangeTo(uint64_t from, uint64_t to) {
     RRange *range = allocator(RRange);
     range->from = from;
     range->count = to - from;
-    return range;
+    return *range;
 }
 
 #pragma mark constructor - destructor - reallocation
@@ -78,11 +78,11 @@ method(RCString *, setConstantString, RCString), const char *string) {
 
 #pragma mark Substrings and Copies
 
-method(RCString *, getSubstringInRange, RCString), const RRange *range) {
-    if(range->count != 0 && range->from < object->size) {
-        char *cstring = RAlloc(range->count + 1 * sizeof(char));
-        RMemCpy(cstring, object->baseString + range->from, range->count);
-        cstring[range->count + 1] = 0;
+method(RCString *, getSubstringInRange, RCString), RRange range) {
+    if(range.count != 0 && range.from < object->size) {
+        char *cstring = RAlloc(range.count + 1 * sizeof(char));
+        RMemCpy(cstring, object->baseString + range.from, range.count);
+        cstring[range.count + 1] = 0;
         return RS(cstring);
     } else {
         RPrintf("ERRROR. RCS. BAD RANGE!\n");
@@ -91,10 +91,10 @@ method(RCString *, getSubstringInRange, RCString), const RRange *range) {
 
 }
 
-method(void, deleteInRange, RCString), const RRange *range) {
-    if(range->count != 0 && range->from < object->size) {
-        RMemMove(object->baseString + range->from, object->baseString + range->from + range->count, object->size - range->count - range->from + 1);
-        object->size -= range->count;
+method(void, deleteInRange, RCString), RRange range) {
+    if(range.count != 0 && range.from < object->size) {
+        RMemMove(object->baseString + range.from, object->baseString + range.from + range.count, object->size - range.count - range.from + 1);
+        object->size -= range.count;
         object->baseString[object->size + 1] = 0;
     } else {
         RPrintf("ERRROR. RCS. deleteInRange, bad range, do nothing.\n");

@@ -3,7 +3,6 @@
 
 #include "../../Classes/RayFoundation/RayFoundation.h"
 #include "../../Classes/RayFoundation/RArray/RArray.h"
-#include "../RVirtualMachine/RVirtualMachine.h"
 
 class(RVirtualFunction)
     RCString *name;

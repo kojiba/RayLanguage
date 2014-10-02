@@ -9,8 +9,8 @@ typedef struct RRange {
     uint64_t count;
 } RRange;
 
-RRange* makeRRange   (uint64_t from, uint64_t count);
-RRange* makeRRangeTo (uint64_t from, uint64_t to);
+RRange makeRRange   (uint64_t from, uint64_t count);
+RRange makeRRangeTo (uint64_t from, uint64_t to);
 
 class(RCString) //------------------------------------
 
@@ -22,28 +22,28 @@ endOf(RCString) //------------------------------------
 // Constructor - Destructor - Reallocation
 constructor(RCString));
 destructor(RCString);
-method(void,             flush, RCString));                                             // deletes old string
+method(void,             flush,              RCString));                                       // deletes old string
 
 // Setters
-method(RCString *,       setString,           RCString), const char *string);                 // copy characters
-method(RCString *,       setConstantString,   RCString), const char *string);                 // copy pointer
+method(RCString *,       setString,           RCString),    const char *string);               // copy characters
+method(RCString *,       setConstantString,   RCString),    const char *string);               // copy pointer
 
 // Substrings and Copies
-method(RCString *,       setSubstringInRange, RCString), const RRange *range, const char *string);
-method(RCString *,       getSubstringInRange, RCString), const RRange *range);                // substring is a copy
-method(void,             deleteInRange,       RCString), const RRange *range);                // with shift
-method(RCString *,       copy,                RCString) );
+method(RCString *,       setSubstringInRange, RCString),    RRange range, const char *string);
+method(RCString *,       getSubstringInRange, RCString),    RRange range);                     // substring is a copy
+method(void,             deleteInRange,       RCString),    RRange range);                     // with shift
+method(RCString *,       copy,                RCString));
 
 // Comparator
-method(RCompareFlags,    compareWith,         RCString), const RCString *checkString);
+method(RCompareFlags,    compareWith,         RCString),    const RCString *checkString);
 
 // With file
-method(void,             fromFile,            RCString), const RCString *filename);           // deletes old string
+method(void,             fromFile,            RCString),    const RCString *filename);          // deletes old string
 
 printer(RCString);
 
-staticMethod(RCString *, randomString,        RCString) );
-staticMethod(char ,      randomCharacter,     RCString) );
+staticMethod(RCString *, randomString,        RCString));
+staticMethod(char ,      randomCharacter,     RCString));
 
 
 #define makeRCString()          $(NULL, c(RCString)))

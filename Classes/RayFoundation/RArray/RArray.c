@@ -266,12 +266,12 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
     }
 }
 
-method(void, deleteObjects, RArray), RRange  *range){
+method(void, deleteObjects, RArray), RRange range){
     uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range->from, range->count);
 #endif
-    fromStartForAll(iterator, range->from, range->count) {
+    fromStartForAll(iterator, range.from, range.count) {
         destroyElementAtIndex(iterator);
     }
     $(object, m(shift, RArray)), shift_left, range);
@@ -316,7 +316,7 @@ method(pointer, elementAtIndex, RArray), uint64_t index) {
     }
 }
 
-method(RArray *, getSubarray, RArray), RRange *range){
+method(RArray *, getSubarray, RArray), RRange range){
 
     uint64_t iterator = 0;
     RArray *result = makeRArray();
@@ -329,7 +329,7 @@ method(RArray *, getSubarray, RArray), RRange *range){
         result->destructorDelegate = object->destructorDelegate;
         result->printerDelegate = object->printerDelegate;
 
-        fromStartForAll(iterator, range->from, range->count) {
+        fromStartForAll(iterator, range.from, range.count) {
             if(addObjectToRA(result, elementAtIndexRA(object, iterator)) == no_error) {
                 continue;
 
@@ -454,7 +454,7 @@ method(static inline byte, checkIfIndexIn, RArray), uint64_t index) {
     }
 }
 
-method(void, shift, RArray), byte side, RRange *range) {
+method(void, shift, RArray), byte side, RRange range) {
 #if RAY_SHORT_DEBUG == 1
     char *sideName;
     if(side == shift_left) {
@@ -464,11 +464,11 @@ method(void, shift, RArray), byte side, RRange *range) {
     } RPrintf("RA shift of %p on %s\n", object, sideName);
 #endif
     uint64_t iterator;
-    if(range->count != 0) {
+    if(range.count != 0) {
         if (side == shift_left) {
             // do not call destructor
-            for(iterator = range->from; iterator < object->count - range->count; ++iterator) {
-                object->array[iterator] = object->array[iterator + range->count];
+            for(iterator = range.from; iterator < object->count - range.count; ++iterator) {
+                object->array[iterator] = object->array[iterator + range.count];
             }
         }
 //        fixme
@@ -477,8 +477,8 @@ method(void, shift, RArray), byte side, RRange *range) {
 //                object->array[iterator] = object->array[iterator - object->count + range->count];
 //            }
 //        }
-        object->count -= range->count;
-        object->freePlaces += range->count;
+        object->count -= range.count;
+        object->freePlaces += range.count;
     } else {
         RPrintf("Warning. RA. Shifts of RArray do nothing, please delete function call, or fix it.\n");
     }

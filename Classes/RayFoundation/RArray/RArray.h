@@ -62,31 +62,31 @@ constructor(RArray), RArrayFlags *error);
 destructor(RArray);
 
 // allocation - reallocation
-method(RArrayFlags,        addSize, RArray),                    uint64_t newSize);
-method(void,               flush, RArray));
-method(byte,               sizeToFit, RArray));
+method(RArrayFlags,        addSize,                   RArray),    uint64_t newSize);
+method(void,               flush,                     RArray));
+method(byte,               sizeToFit,                 RArray));
 
 // add - set - delete
-method(RArrayFlags,        addObject, RArray),                  pointer src);                        // push_back analog
-method(void,               setObjectAtIndex, RArray),           pointer newObject, uint64_t index);  // be aware with this, addObject cause memory leak with that
-method(void,               deleteLast, RArray));                                                     // pop_back analog
-method(void,               deleteObjects, RArray),              RRange  *range);                     // delete with shift
-method(RArrayFlags,        deleteObjectAtIndex, RArray),        uint64_t index);                     // delete with shift
-method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),  uint64_t index);                     // delete, and the last object will be on it place
+method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
+method(void,               setObjectAtIndex,          RArray),    pointer newObject, uint64_t index); // be aware with this, addObject cause memory leak with that
+method(void,               deleteLast,                RArray));                                       // pop_back analog
+method(void,               deleteObjects,             RArray),    RRange  range);                     // delete with shift
+method(RArrayFlags,        deleteObjectAtIndex,       RArray),    uint64_t index);                    // delete with shift
+method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    uint64_t index);                    // delete, and the last object will be on it place
 
 // get - find
-method(RArrayFindResult *, findObjectWithDelegate, RArray),     RCompareDelegate *delegate);
-method(RArray *,           getSubarray, RArray),                RRange *range);
-method(pointer,            elementAtIndex, RArray),             uint64_t index);
+method(RArrayFindResult *, findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
+method(RArray *,           getSubarray,               RArray),    RRange range);
+method(pointer,            elementAtIndex,            RArray),    uint64_t index);
 
 // sort
-method(void,               bubbleSortWithDelegate, RArray),     byte (*comparator)(pointer, pointer));
-method(void,               quickSortWithDelegate, RArray),      uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
-method(void,               sort, RArray));
+method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
+method(void,               quickSortWithDelegate,     RArray),    uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
+method(void,               sort,                      RArray));
 
 // work
-method(void,               shift, RArray),                      byte side, RRange *range);         // do not call destructor
-method(static inline byte, checkIfIndexIn, RArray),             uint64_t index);
+method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
+method(static inline byte, checkIfIndexIn,            RArray),    uint64_t index);
 
 printer(RArray);
 // standart comparator
