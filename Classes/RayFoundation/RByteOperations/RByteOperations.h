@@ -1,3 +1,10 @@
+/**
+ * @file RByteOperations.h
+ * @brief Realization of some operations on bytes array, like getSubArray, etc.
+ * @date 2.10.14 Kharkiv
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
+
 #ifndef __R_BYTE_OPERATIONS_H__
 #define __R_BYTE_OPERATIONS_H__
 

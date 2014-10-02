@@ -2,6 +2,7 @@
  * RayFoundationCheck.h
  * A ray of light in the realm of darkness.
  * Checking of working defines.
+ * Created (post-factum) 2 Oct 2014
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
