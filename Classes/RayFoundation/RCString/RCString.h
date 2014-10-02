@@ -1,3 +1,9 @@
+/**
+ * @file RCString.h
+ * @brief Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
+
 #ifndef __R_C_STRING_H__
 #define __R_C_STRING_H__
 
@@ -45,6 +51,7 @@ printer(RCString);
 staticMethod(RCString *, randomString,        RCString));
 staticMethod(char ,      randomCharacter,     RCString));
 
+//----------------------------------------------------------------------------------
 
 #define makeRCString()          $(NULL, c(RCString)))
 #define printRString(_RCString) $(_RCString, p(RCString)) );

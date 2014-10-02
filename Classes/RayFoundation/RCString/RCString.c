@@ -1,3 +1,9 @@
+/**
+ * @file RCString.c
+ * @brief Implementation of wrapper on '\0' - terminated C-strings, in Ray additions.
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ */
+
 #include <string.h>
 #include "RCString.h"
 

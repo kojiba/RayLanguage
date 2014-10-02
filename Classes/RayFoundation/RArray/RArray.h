@@ -57,9 +57,10 @@ members
 
 endOf(RArray) //--------------------------------------------------------------
 
-// constructor - destructor
-constructor(RArray), RArrayFlags *error);
-destructor(RArray);
+// constructor - destructor - printer
+constructor (RArray), RArrayFlags *error);
+destructor  (RArray);
+printer     (RArray);
 
 // allocation - reallocation
 method(RArrayFlags,        addSize,                   RArray),    uint64_t newSize);
@@ -87,8 +88,6 @@ method(void,               sort,                      RArray));
 // work
 method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
 method(static inline byte, checkIfIndexIn,            RArray),    uint64_t index);
-
-printer(RArray);
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);
 
