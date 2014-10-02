@@ -27,3 +27,14 @@ byte* getSubArray(const byte *array, RRange range) {
     RMemMove(subArray, array[range.from], range.count);
     return subArray;
 }
+
+byte* getSubArrayToFirstSymbol (const byte *array, byte symbol) {
+    byte *subArray;
+    uint64_t iterator = 0;
+    while(array[iterator] != symbol) {
+        ++iterator;
+    }
+    subArray = RAlloc(iterator);
+    RMemMove(subArray, array, iterator);
+    return subArray;
+}
