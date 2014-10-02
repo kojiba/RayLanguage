@@ -1,10 +1,8 @@
-#include "../Classes/RayFoundation/RayFoundation.h"
-
 #ifndef __R_VIRTUAL_COMPILER_H__
 #define __R_VIRTUAL_COMPILER_H__
 
-#include "../Classes/RayFoundation/RayFoundation.h"
-#include "../Classes/RayFoundation/RCString/RCString.h"
+#include "../RayFoundation/RayFoundation.h"
+#include "../RayFoundation/RCString/RCString.h"
 #include "RVirtualFunction/RVirtualFunction.h"
 
 class(RVirtualCompiler)

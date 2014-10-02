@@ -1,4 +1,3 @@
-#include "../Classes/RayFoundation/RayFoundation.h"
 #include "RVirtualCompiler.h"
 #include "RVirtualMachine/RVirtualMachine.h"
 

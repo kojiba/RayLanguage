@@ -1,8 +1,8 @@
 #ifndef __R_VIRTUAL_FUNCTION_H__
 #define __R_VIRTUAL_FUNCTION_H__
 
-#include "../../Classes/RayFoundation/RayFoundation.h"
-#include "../../Classes/RayFoundation/RArray/RArray.h"
+#include "../../RayFoundation/RayFoundation.h"
+#include "../../RayFoundation/RArray/RArray.h"
 
 class(RVirtualFunction)
     RCString *name;
