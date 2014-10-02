@@ -4,7 +4,7 @@
 constructor(RVirtualFunction)) {
     object = allocator(RVirtualFunction);
     if(object != NULL) {
-//        object->memory = makeRArray();
+//        object->dataBlock = makeRArray();
         object->classId = registerClassOnce(toString(RVirtualFunction));
 //        object->numberOfArguments = 0;
     }
@@ -13,13 +13,6 @@ constructor(RVirtualFunction)) {
 
 destructor(RVirtualFunction) {
 //    deleteRA(object->memory);
-}
-
-method(void, executeWithArgs, RVirtualFunction), RArray *args) {
-    RPrintf("Executing function - ");
-    $(object->name, p(RCString)) );
-    RPrintf("\n");
-
 }
 
 printer(RVirtualFunction) {

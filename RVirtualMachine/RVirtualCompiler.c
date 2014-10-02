@@ -6,13 +6,17 @@ constructor(RVirtualCompiler)) {
     if(object != NULL) {
         object->lines = 1;
         object->column = 1;
+        object->dataBlock = makeRArray();
     }
     return object;
 }
 
 destructor(RVirtualCompiler) {
-    if(object->code != NULL) {
+    if(object != NULL) {
         $(object->code, d(RCString)) );
+        deallocator(object->code);
+
+        deleteRA(object->dataBlock);
     }
 }
 
@@ -22,13 +26,16 @@ method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCSt
         RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
 
         // copy source to object
+        if(object->code != NULL) {
+            $(object->code, d(RCString)) );
+        }
         object->code = $(sourceCode, m(copy, RCString)) );
 
         // set name and body
         function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
         function->body = $(object, m(getFunctionBody, RVirtualCompiler)) );
 
-        // fixme
+        // fixme, testme
         RPrintf("Processed lines - %qu\n", object->lines);
         return function;
     } else {
@@ -42,13 +49,14 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
         uint64_t counter = 0;
 
         // finding to startSymbol
-
         while(object->code->baseString[counter] != ':' && counter < object->code->size) {
             ++counter;
+//            testme, fixme
         }
-
+        // get copy of substring
         RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, counter));
 
+        // delete nameString from sourceCode
         $(object->code, m(deleteInRange, RCString)), makeRRange(0, counter));
 
         return name;
@@ -67,7 +75,7 @@ method(byte *, getFunctionBody, RVirtualCompiler)){
         ++iterator;
         body[iterator] = character;
     }
-//    fixme
+//    fixme, testme
     body[++iterator] = r_end;
 
     return body;

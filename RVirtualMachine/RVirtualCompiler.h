@@ -8,19 +8,22 @@
 #include "RVirtualFunction/RVirtualFunction.h"
 
 class(RVirtualCompiler)
+
     RCString *code;
-    uint64_t lines;
-    uint64_t column;
+    RArray   *dataBlock;
+    uint64_t  lines;
+    uint64_t  column;
+
 endOf(RVirtualCompiler)
 
 constructor(RVirtualCompiler));
 destructor(RVirtualCompiler);
 
 method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode);
-method(byte,               sourceToByteCode, RVirtualCompiler),             uint64_t iterator);
+method(byte,               sourceToByteCode,             RVirtualCompiler), uint64_t iterator);
 
-method(RCString *,         getFunctionName, RVirtualCompiler));
-method(byte *,             getFunctionBody, RVirtualCompiler));
+method(RCString *,         getFunctionName,              RVirtualCompiler));
+method(byte *,             getFunctionBody,              RVirtualCompiler));
 
 singleton(RVirtualCompiler);
 

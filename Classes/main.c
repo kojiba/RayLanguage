@@ -15,25 +15,22 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-    RCString *funcBody  = makeRCString();
 
-    $(funcBody, m(fromFile, RCString)), RS("//Users//ilya.kucheruavyu//Library//Caches//clion10//cmake//generated//56772a3//56772a3//Debug0//Resources//HelloWorld"));
-
-    if(funcBody != NULL) {
-        RVirtualFunction *function = $(RVC, m(createFunctionFromSourceCode, RVirtualCompiler)), funcBody);
-        $(function, p(RVirtualFunction)) );
-    }
-
-//    RCString *test = $(RS("Hellow"), m(copy, RCString)) );
-//    $(test, m(deleteInRange, RCString)), makeRRange(2, 3));
-//    $(test, p(RCString)) );
-//    $(test, d(RCString)) );
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+//    RCString *funcBody  = makeRCString();
+//
+//    $(funcBody, m(fromFile, RCString)), RS("//Users//ilya.kucheruavyu//Library//Caches//clion10//cmake//generated//56772a3//56772a3//Debug0//Resources//HelloWorld"));
+//
+//    if(funcBody != NULL) {
+//        RVirtualFunction *function = $(RVC, m(createFunctionFromSourceCode, RVirtualCompiler)), funcBody);
+//        $(function, p(RVirtualFunction)) );
+//    }
 
 //RArray *stringArray = makeRArray();
 //    stringArray->printerDelegate = p(RCString);

@@ -32,7 +32,10 @@ set(SOURCE_FILES Classes/main.c
                  RVirtualMachine/RVirtualFunction/RVirtualFunction.c
 
                  RVirtualMachine/RVirtualCompiler.h
-                 RVirtualMachine/RVirtualCompiler.c)
+                 RVirtualMachine/RVirtualCompiler.c
+
+                 RVirtualMachine/RVirtualMachine/RVirtualMachine.h
+                 RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
 
 
 file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
