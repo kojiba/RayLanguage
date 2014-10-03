@@ -269,7 +269,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 method(void, deleteObjects, RArray), RRange range){
     uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range->from, range->count);
+    RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range.from, range.count);
 #endif
     fromStartForAll(iterator, range.from, range.count) {
         destroyElementAtIndex(iterator);

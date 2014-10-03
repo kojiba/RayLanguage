@@ -47,7 +47,7 @@ destructor(RClassTable) {
 
 method(uint64_t, registerClassWithName, RClassTable), char *name) {
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("--- RCT Register Class of %p\n", object);
+    RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
     if(name != NULL) {
         uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
@@ -60,7 +60,7 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
                 // successfully register new class
                 if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
 #if RAY_SHORT_DEBUG == 1
-                        RPrintf("--- RCT Register Class SUCCESS on %p\n", object);
+                        RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
 #endif
                     return pair->idForClassName;
                 } else {
