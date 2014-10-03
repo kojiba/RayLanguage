@@ -15,10 +15,6 @@ Work with RArray:
 ```C
 #include "RayFoundation/RArray/RArray.h"
 
-byte findString(char *string) {
-    return object_founded;
-}
-
 void printString(char *src) {
     printf("%s \n", src);
 }
@@ -59,7 +55,7 @@ int main(int argc, const char *argv[]) {
     
     // get sub-arrays, there will be two errorrs logged in console,
     // and subarray will consist two last elements like null
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(1, 11));
     printRA(sub);
 
     // fast delete objects
