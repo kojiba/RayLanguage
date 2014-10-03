@@ -12,8 +12,9 @@ endOf(RClassNamePair)
 
 
 constructor(RClassNamePair));
-destructor(RClassNamePair);
-printer(RClassNamePair);
+destructor (RClassNamePair);
+printer    (RClassNamePair);
+
 method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
 
 

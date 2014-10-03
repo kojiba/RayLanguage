@@ -12,7 +12,6 @@
 
 #define RAY_SHORT_DEBUG 451
 
-#include <time.h>
 #include "RayBase.h"
 #include "RayCheckFoundation.h"
 
@@ -46,7 +45,6 @@ typedef uint8_t byte;
 
 #define allocator(className)                              RAlloc(sizeof(className))
 #define deallocator(object)                               RFree(object);
-#define master(object, masterClassName)                   object->splitUp(master,splitUp(masterClassName, Object))
 
 #define method(returnValue, methodName, className)        returnValue splitUp(methodName, className)(className *object
 #define virtualMethod(returnValue, methodName, className) returnValue (*splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className)))(struct className *object
@@ -64,6 +62,7 @@ typedef uint8_t byte;
 #define m(methodName, className)                          splitUp(methodName,className)                                      // some method function name
 #define sm(methodName, className)                         splitUp(splitUp(staticMethod,methodName),splitUp(Of,className))    // static method function name
 #define vm(methodName, className)                         object->splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className))
+#define master(object, masterClassName)                   object->splitUp(master,splitUp(masterClassName, Object))           // call to masterClassObject
 #define singletonCall(className)                          splitUp(singletonOf,className)()                                   // singleton call
 
 #define $(object, methodName)                             methodName(object

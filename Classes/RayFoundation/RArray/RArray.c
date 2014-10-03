@@ -40,9 +40,9 @@ constructor(RArray), RArrayFlags *error) {
 
     } else {
         // default start size in elements
-        object->startSize = startSizeOfRArrayDefault;
+        object->startSize      = startSizeOfRArrayDefault;
         object->sizeMultiplier = sizeMultiplierOfRArrayDefault;
-        object->array = RAlloc(object->startSize * sizeof(pointer));
+        object->array          = RAlloc(object->startSize * sizeof(pointer));
 
         if (object->array == NULL) {
             *error = allocation_error;
@@ -56,7 +56,7 @@ constructor(RArray), RArrayFlags *error) {
             object->freePlaces = object->startSize;
             // set up delegates
             object->destructorDelegate = NULL;
-            object->printerDelegate = NULL;
+            object->printerDelegate    = NULL;
             return object;
         }
     }
@@ -77,10 +77,10 @@ destructor(RArray) {
             deallocator(object->array);
         }
 
-        object->count = 0;
-        object->freePlaces = 0;
+        object->count              = 0;
+        object->freePlaces         = 0;
         object->destructorDelegate = NULL;
-        object->printerDelegate = NULL;
+        object->printerDelegate    = NULL;
     } else {
         RPrintf("Warning. RA. Destructing a NULL, do nothing, please delete function call, or fix it.\n");
     }
@@ -110,7 +110,7 @@ method(RArrayFlags, addSize, RArray), uint64_t newSize) {
                 tempArray[iterator] = object->array[iterator];
             }
             deallocator(object->array); // delete old
-            object->array = tempArray; // switch to new
+            object->array = tempArray;  // switch to new
             object->freePlaces = newSize - object->count; // add some free
             return no_error;
         }
@@ -136,7 +136,7 @@ method(void, flush, RArray)) {
             object->array = RAlloc(100 * sizeof(pointer));
 
             if (object->array == NULL) {
-                RPrintf("Warning. Flush allocation error.\n");
+                RPrintf("Warning. RA. Flush allocation error.\n");
                 return;
             }
 
@@ -145,11 +145,11 @@ method(void, flush, RArray)) {
         }
 
     } else {
-        RPrintf("Warning. Flushing a NULL, do nothing, please delete function call, or fix it.\n");
+        RPrintf("Warning. RA. Flushing a NULL, do nothing, please delete function call, or fix it.\n");
     }
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RDA FLUSH of %p\n", object);
+    RPrintf("RA FLUSH of %p\n", object);
 #endif
 }
 
@@ -159,7 +159,7 @@ method(byte, sizeToFit, RArray)){
     pointer *tempArray = RAlloc((size_t) (object->count * sizeof(pointer)));
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RDA %p SIZE_TO_FIT\n", object);
+    RPrintf("RA %p SIZE_TO_FIT\n", object);
 #endif
     if (tempArray == NULL) {
         return temp_allocation_error;
@@ -240,7 +240,6 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), uint64_t index){
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
-//        testme
         $(object, m(shift, RArray)), shift_left, makeRRange(index, 1));
         return no_error;
 
@@ -293,8 +292,8 @@ method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *de
         forAll(iterator, object->count) {
             if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
                 RArrayFindResult *result = allocator(RArrayFindResult);
-                result->index = iterator;
-                result->result = object->array[iterator];
+                result->index            = iterator;
+                result->result           = object->array[iterator];
                 return result;
             }
         }
@@ -327,7 +326,7 @@ method(RArray *, getSubarray, RArray), RRange range){
 
         // set up subArray delegates:
         result->destructorDelegate = object->destructorDelegate;
-        result->printerDelegate = object->printerDelegate;
+        result->printerDelegate    = object->printerDelegate;
 
         fromStartForAll(iterator, range.from, range.count) {
             if(addObjectToRA(result, elementAtIndexRA(object, iterator)) == no_error) {
@@ -366,7 +365,6 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
             if (comparator(object->array[inner], object->array[inner + 1]) == swap_objects) {
-
                 // swap
                 swapElementsAtIndexes(inner, inner + 1);
             }

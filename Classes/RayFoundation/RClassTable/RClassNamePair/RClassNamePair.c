@@ -8,7 +8,6 @@ constructor(RClassNamePair)) {
         // 2 - it's for RClassNamePair
         object->classId = 2;
     }
-
     return object;
 }
 

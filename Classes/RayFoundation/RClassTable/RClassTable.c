@@ -21,7 +21,7 @@ constructor(RClassTable)) {
             }
             // we store pairs, and set destructor for pair, and printer for pair
             master(object, RArray)->destructorDelegate = d(RClassNamePair);
-            master(object, RArray)->printerDelegate = p(RClassNamePair);
+            master(object, RArray)->printerDelegate    = p(RClassNamePair);
 
             // 4 it's for self
             object->classId =  3;

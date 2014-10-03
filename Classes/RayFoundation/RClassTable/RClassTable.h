@@ -14,9 +14,8 @@ endOf(RClassTable) //-------------------------------------------------------
 
 constructor (RClassTable));
 destructor  (RClassTable);
-
-printer    (RClassTable);
-singleton  (RClassTable);
+printer     (RClassTable);
+singleton   (RClassTable);
 
 method (uint64_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant
 method (uint64_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant
