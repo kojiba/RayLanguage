@@ -2,6 +2,7 @@
  * @file RStringDictionary.h
  * @brief Realization of C dictionary(map) for RCString, in Ray additions.
  * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @created 3.10.14 9:48:30
  */
 
 #ifndef __R_STRING_DICTIONARY_H__
@@ -12,11 +13,14 @@
 
 class(RStringDictionary)
     discipleOf(RDictionary)
-    discipleOf(RCompareDelegate)
 
 endOf(RStringDictionary)
 
-constructor(RStringDictionary));
-destructor(RStringDictionary);
+constructor (RStringDictionary));
+destructor  (RStringDictionary);
+printer     (RStringDictionary);
+
+method(void,       setObjectForKey, RStringDictionary),    RCString *value, RCString *key); // must be copies, use RSC, or RCString copy
+method(RCString *, getObjectForKey, RStringDictionary),    RCString *key);
 
 #endif /*__R_STRING_DICTIONARY_H__*/

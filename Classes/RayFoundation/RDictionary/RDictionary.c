@@ -14,8 +14,8 @@ constructor(RDictionary)) {
     } else {
         // set up class ID
         object->classId = registerClassOnce(toString(RDictionary));
-        object->keys = makeRArray();
-        object->values = makeRArray();
+        object->keys    = makeRArray();
+        object->values  = makeRArray();
 
         if(object->keys == NULL || object->values == NULL){
             RPrintf("ERROR. RD. Allocation keys or values error.");
@@ -31,12 +31,16 @@ destructor(RDictionary) {
     if(object != NULL){
         deleteRA(object->keys);
         deleteRA(object->values);
+        deallocator(master(object, RCompareDelegate));
     } else {
         RPrintf("Warning. RD. Destructing a NULL, do nothing, please delete function call, or fix it.\n");
     }
 }
 
 method(void, initDelegate, RDictionary), RCompareDelegate *delegate) {
+    if(delegate != NULL) {
+        deallocator(delegate);
+    }
     master(object, RCompareDelegate) = delegate;
 }
 
@@ -46,14 +50,13 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
 
     // if object for key not exist
     if(rArrayFindResult == NULL){
-        $(object->keys, m(addObject, RArray)), key);      // adding
+        $(object->keys,   m(addObject, RArray)), key);    // adding
         $(object->values, m(addObject, RArray)), value);  // adding
 
     // if key exist
     } else {
         $(object->values,  m(setObjectAtIndex, RArray)), value, rArrayFindResult->index);
     }
-
 }
 
 method(pointer, getObjectForKey, RDictionary), pointer key) {
@@ -70,7 +73,7 @@ printer(RDictionary){
     forAll(iterator, object->keys->count) {
         RPrintf("\t %qu - {", iterator);
         RPrintf(" %p : %p } \n", $(object->keys, m(elementAtIndex, RArray)), iterator),
-                                $(object->values, m(elementAtIndex, RArray)), iterator) );
+                                 $(object->values, m(elementAtIndex, RArray)), iterator) );
     }
-    RPrintf("} end of %s object %p \n\n", toString(RArray), object);
+    RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
 }

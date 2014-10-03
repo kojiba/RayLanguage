@@ -19,8 +19,8 @@ members
 
 endOf(RDictionary) //----------------------------------------------------------------
 
-constructor(RDictionary));
-destructor(RDictionary);
+constructor (RDictionary));
+destructor  (RDictionary);
 
 method(void,       initDelegate,    RDictionary),    RCompareDelegate *delegate);
 method(void,       setObjectForKey, RDictionary),    pointer value, pointer key);

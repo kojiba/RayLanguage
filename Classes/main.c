@@ -11,46 +11,40 @@
 #include "RayFoundation/RDictionary/RDictionary.h"
 #include "RVirtualMachine/RVirtualCompiler.h"
 #include "RayFoundation/RByteOperations/RByteOperations.h"
+#include "RayFoundation/RStringDictionary/RStringDictionary.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-    uint64_t size = 10;
-    byte *array = makeFlushedBytes(size, 0x2);
-    array[5] = 0x1;
-    printByteArrayInHex(array, size);
-    RByteArray *sub = getSubArrayToFirstSymbol(array, size, 0x1);
-    printByteArrayInHex(sub->array, sub->size);
-    deallocator(array);
-    deallocator(sub);
+    RStringDictionary *dictionary = $(NULL, c(RStringDictionary)) );
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), RSC("Veider"));
+    $(dictionary, p(RStringDictionary)) );
+    $(dictionary, d(RStringDictionary)) );
+    deallocator(dictionary);
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
 
-//    RCString *funcBody  = makeRCString();
-//
-//    $(funcBody, m(fromFile, RCString)), RS("//Users//ilya.kucheruavyu//Library//Caches//clion10//cmake//generated//56772a3//56772a3//Debug0//Resources//HelloWorld"));
-//
-//    if(funcBody != NULL) {
-//        RVirtualFunction *function = $(RVC, m(createFunctionFromSourceCode, RVirtualCompiler)), funcBody);
-//        $(function, p(RVirtualFunction)) );
-//    }
+void StringArrayTest( {
+    RArray *stringArray = makeRArray();
+    stringArray->printerDelegate = p(RCString);
+    stringArray->destructorDelegate = d(RCString);
 
-//RArray *stringArray = makeRArray();
-//    stringArray->printerDelegate = p(RCString);
-//    stringArray->destructorDelegate = d(RCString);
-//
-//    for(unsigned i = 0; i < 10; ++i) {
-//        addObjectToRA(stringArray, randomRCString());
-//    }
-//    printRA(stringArray);
-//
-//    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
-//
-//    printRA(stringArray);
+    for(unsigned i = 0; i < 10; ++i) {
+        addObjectToRA(stringArray, randomRCString());
+    }
+    printRA(stringArray);
+
+    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
+
+    printRA(stringArray);
+}
 
 void RATimingTest() {
     initRClock();

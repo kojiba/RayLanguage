@@ -4,6 +4,7 @@
  * Some additions to C.
  * If You don't like it, You can preprocess file, to get pure-C code.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
  */
 
 #ifndef __RAY_FOUNDATION__
