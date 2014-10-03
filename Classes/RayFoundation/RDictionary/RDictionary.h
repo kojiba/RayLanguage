@@ -22,7 +22,7 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor (RDictionary));
 destructor  (RDictionary);
 
-method(void,       initDelegate,    RDictionary),    RCompareDelegate *delegate);
+method(void,       initDelegate,    RDictionary),    const RCompareDelegate *delegate);
 method(void,       setObjectForKey, RDictionary),    pointer value, pointer key);
 method(pointer,    getObjectForKey, RDictionary),    pointer key);
 

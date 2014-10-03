@@ -19,9 +19,9 @@ constructor(RDictionary)) {
 
         if(object->keys == NULL || object->values == NULL){
             RPrintf("ERROR. RD. Allocation keys or values error.");
-            return object;
         } else {
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
+            master(object, RCompareDelegate)->virtualCompareMethod = NULL;
         }
     }
     return object;
@@ -37,11 +37,9 @@ destructor(RDictionary) {
     }
 }
 
-method(void, initDelegate, RDictionary), RCompareDelegate *delegate) {
-    if(delegate != NULL) {
-        deallocator(delegate);
-    }
-    master(object, RCompareDelegate) = delegate;
+method(void, initDelegate, RDictionary), const RCompareDelegate *delegate) {
+    master(object, RCompareDelegate)->etaloneObject = delegate->etaloneObject;
+    master(object, RCompareDelegate)->virtualCompareMethod = delegate->virtualCompareMethod;
 }
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
@@ -62,7 +60,12 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
 method(pointer, getObjectForKey, RDictionary), pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
     RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-    return rArrayFindResult->result;
+
+    if(rArrayFindResult != NULL) {
+        return $(object->values, m(elementAtIndex, RArray)), rArrayFindResult->index);
+    } else {
+        return NULL;
+    }
 }
 
 printer(RDictionary){

@@ -17,12 +17,22 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
+    RCString *key = RS("Veider");
     RStringDictionary *dictionary = $(NULL, c(RStringDictionary)) );
+
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), RSC("Veider"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
     $(dictionary, p(RStringDictionary)) );
+
+
+
+    RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
+    if(object != NULL) {
+        RPrintf("Found something for key : %s is value: %s\n", key->baseString, object->baseString);
+    }
+
     $(dictionary, d(RStringDictionary)) );
     deallocator(dictionary);
     return 0;
