@@ -3,14 +3,16 @@
 
 #include "../../RayFoundation/RayFoundation.h"
 #include "../../RayFoundation/RArray/RArray.h"
+#include "../../RayFoundation/RByteOperations/RByteOperations.h"
 
 class(RVirtualFunction)
-    RCString *name;
-    byte   *body;
+    discipleOf(RByteArray)
+
+    RCString   *name;
 endOf(RVirtualFunction)
 
-constructor(RVirtualFunction));
-destructor(RVirtualFunction);
+constructor (RVirtualFunction));
+destructor  (RVirtualFunction);
 
 printer(RVirtualFunction);
 

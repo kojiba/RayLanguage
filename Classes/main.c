@@ -6,15 +6,33 @@
  */
 
 #include "RayFoundation/RayFoundation.h"
-#include "RayFoundation/RArray/RArray.h"
-#include "RayFoundation/RClassTable/RClassTable.h"
-#include "RayFoundation/RDictionary/RDictionary.h"
-#include "RVirtualMachine/RVirtualCompiler.h"
-#include "RayFoundation/RByteOperations/RByteOperations.h"
-#include "RayFoundation/RStringDictionary/RStringDictionary.h"
+#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
+    RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
+    function->name = RS("My RVM Hello world");
 
+    // writing in opcodes
+    master(function, RByteArray)->array[0] = r_print;
+    master(function, RByteArray)->array[1] = 'H';
+    master(function, RByteArray)->array[2] = 'E';
+    master(function, RByteArray)->array[3] = 'L';
+    master(function, RByteArray)->array[4] = 'L';
+    master(function, RByteArray)->array[5] = 'O';
+    master(function, RByteArray)->array[6] = ' ';
+    master(function, RByteArray)->array[7] = 'W';
+    master(function, RByteArray)->array[8] = 'O';
+    master(function, RByteArray)->array[9] = 'R';
+    master(function, RByteArray)->array[10] = 'L';
+    master(function, RByteArray)->array[11] = 'D';
+    master(function, RByteArray)->array[12] = 0;
+    master(function, RByteArray)->array[13] = r_end;
+
+
+
+
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

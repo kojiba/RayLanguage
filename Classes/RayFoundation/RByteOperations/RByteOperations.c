@@ -102,9 +102,7 @@ destructor(RByteArray) {
 }
 
 printer(RByteArray) {
-//    RPrintf("%s object - %p {", toString(RByteArray), object);
     printByteArrayInHex(object->array, object->size);
-//    RPrintf(" } %p ;", object);
 }
 
 RByteArray* flushAllToByteRByteArray(RByteArray *array, byte symbol) {

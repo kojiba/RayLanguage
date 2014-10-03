@@ -1,54 +1,85 @@
-#include <assert.h>
 #include "RVirtualMachine.h"
 
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
     if(object != NULL) {
-        object->memory = makeRArray();
+        object->memory = NULL;
     }
     return object;
 }
 
 destructor(RVirtualMachine) {
     if(object != NULL) {
-        deleteRA(object->memory);
-    }
-}
-method(void, setUpMemory, RVirtualMachine)) {
-    // delete old, create new
-    deleteRA(object->memory);
-    object->memory = makeRArray();
-    if (object->memory != NULL) {
-        assert(object->memory);
-        RPrintf("ERROR. RVM. Memory set-up, can't allocate.");
-    }
-}
-
-method(void, setUpDataBlock,  RVirtualMachine)) {
-    uint64_t iterator = 0;
-    if(object->functionExecuting != NULL) {
-        if(object->functionExecuting->body[iterator] == r_data_start) {
-
-            while(object->functionExecuting->body[iterator] != r_function_begin) {
-                switch (object->functionExecuting->body[iterator]) {
-                    case r_const_start : {
-
-                    } break;
-                }
-                ++iterator;
-            }
-
-        } else {
-            RPrintf("RVM. Function has no constant data!\n");
+        if(object->memory != NULL) {
+            $(object->memory, d(RByteArray)));
+            deallocator(object->memory);
         }
-    } else {
-        assert(object->memory);
-        RPrintf("ERROR. RVM. Set-up data block is NULL.");
     }
+}
+
+method(void, setUpDataBlock, RVirtualMachine)) {
+    if(object->functionExecuting != NULL) {
+        object->memory = $(master(object->functionExecuting, RByteArray), m(copy, RByteArray)));
+    } else {
+        RPrintf("ERROR. RVM. Set-up function is NULL.");
+    }
+}
+
+method(void, executeCode, RVirtualMachine), byte code) {
+
+    switch(code) {
+        case r_increment : {
+            // increment data at pointer
+            ++(*object->dataRegister);
+        } break;
+
+        case r_decrement : {
+            // decrement data at pointer
+            --(*object->dataRegister);
+        } break;
+
+        case r_print : {
+            RPrintf("%s\n", object->dataRegister);
+            while(*object->dataRegister != r_string_end) {
+                ++object->dataRegister;
+                ++object->tickCount;
+            }
+        } break;
+
+        case r_move_forward : {
+            // increment pointer
+            ++object->dataRegister;
+        } break;
+
+        case r_move_backward : {
+            // decrement pointer
+            --object->dataRegister;
+        } break;
+
+        case r_jump_address : {
+            // set pointer to incremented pointers data, like JMP address
+            object->dataRegister = *(++object->dataRegister);
+        } break;
+
+        case r_end : {
+            RPrintf("End work of RVM.");
+            return;
+        }
+
+        default: {
+            RPrintf("RVM. Warning, default case, unhalted result\n");
+            return;
+        }
+    }
+
+    // increment ticks
+    ++object->tickCount;
+
+    // execute next code
+    $(object, m(executeCode, RVirtualMachine)), *object->dataRegister);
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
-
     // copy pointer
     object->functionExecuting = function;
 
@@ -57,23 +88,32 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(function->name, p(RCString)) );
     RPrintf("\"\n");
 
-    uint64_t iterator = 0;
-
-    // set-up memory
-    $(object, m(setUpMemory, RVirtualMachine)) );
+    // set tick count is 0
+    object->tickCount = 0;
 
     // copy data block
     $(object, m(setUpDataBlock, RVirtualMachine)) );
 
-    //
+    // set data register as pointer to first element of memory
+    object->dataRegister = object->memory->array;
 
-    while(function->body[iterator] != r_end) {
-        switch (function->body[iterator]) {
-            case r_print : {
-//                char * charString =
+    // execute first code, that starts processing
+    $(object, m(executeCode, RVirtualMachine)), *object->dataRegister);
 
-            } break;
-        }
-        ++iterator;
+    // at end of processing print analytics
+    RPrintf("RVM. End Executing Function : \"");
+    $(function->name, p(RCString)) );
+    RPrintf("\"\n");
+    RPrintf("Ticks count for executing is - %qu\n", object->tickCount);
+    RPrintf("Memory snapshot : {\n");
+    $(object->memory, p(RByteArray)) );
+    RPrintf(" } end memory snapshot\n\n");
+}
+
+singleton(RVirtualMachine) {
+    static RVirtualMachine *instance = NULL;
+    if(instance == NULL) {
+        instance = $(NULL, c(RVirtualMachine)) );
     }
+    return instance;
 }
