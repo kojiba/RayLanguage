@@ -44,6 +44,7 @@ method(void, executeCode, RVirtualMachine), byte code) {
                 ++object->dataRegister;
                 ++object->tickCount;
             }
+            ++object->dataRegister;
         } break;
 
         case r_move_forward : {
@@ -62,7 +63,7 @@ method(void, executeCode, RVirtualMachine), byte code) {
         } break;
 
         case r_end : {
-            RPrintf("End work of RVM.");
+            RPrintf("End work of RVM.\n");
             return;
         }
 
@@ -84,9 +85,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     object->functionExecuting = function;
 
     // function name label
-    RPrintf("RVM. Start Executing Function : \"");
-    $(function->name, p(RCString)) );
-    RPrintf("\"\n");
+    RPrintf("RVM. Start Executing Function : \"%s\"\n\n", function->name->baseString);
 
     // set tick count is 0
     object->tickCount = 0;
@@ -101,13 +100,11 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(object, m(executeCode, RVirtualMachine)), *object->dataRegister);
 
     // at end of processing print analytics
-    RPrintf("RVM. End Executing Function : \"");
-    $(function->name, p(RCString)) );
-    RPrintf("\"\n");
+    RPrintf("\nRVM. End Executing Function : \"%s\"\n", function->name->baseString);
     RPrintf("Ticks count for executing is - %qu\n", object->tickCount);
-    RPrintf("Memory snapshot : {\n");
+    RPrintf("Memory snapshot : {");
     $(object->memory, p(RByteArray)) );
-    RPrintf(" } end memory snapshot\n\n");
+    RPrintf("\n } end memory snapshot\n\n");
 }
 
 singleton(RVirtualMachine) {

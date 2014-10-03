@@ -33,7 +33,7 @@ method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCSt
 
         // set name and body
         function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
-        function->body = $(object, m(getFunctionBody, RVirtualCompiler)) );
+        master(function, RByteArray)->array = $(object, m(getFunctionBody, RVirtualCompiler)) );
 
         // fixme, testme
         RPrintf("Processed lines - %qu\n", object->lines);

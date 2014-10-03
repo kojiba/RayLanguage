@@ -26,12 +26,14 @@ int main(int argc, const char *argv[]) {
     master(function, RByteArray)->array[9] = 'R';
     master(function, RByteArray)->array[10] = 'L';
     master(function, RByteArray)->array[11] = 'D';
-    master(function, RByteArray)->array[12] = 0;
+    master(function, RByteArray)->array[12] = r_string_end;
     master(function, RByteArray)->array[13] = r_end;
 
+    executeRay(function);
 
-
-
+    $(function, d(RVirtualFunction)) );
+    deallocator(function);
+    deleteRVM();
     return 0;
 }
 

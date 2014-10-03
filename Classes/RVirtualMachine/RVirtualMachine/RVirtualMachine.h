@@ -74,6 +74,8 @@ method(void, executeCode,     RVirtualMachine),    byte code);
 method(void, setUpDataBlock,  RVirtualMachine));
 
 #define RVM singletonCall(RVirtualMachine)
+#define deleteRVM() $(RVM, d(RVirtualMachine)) ); \
+                  deallocator(RVM)
 #define executeRay(RVirtualFunction) $(RVM, m(executeFunction, RVirtualMachine)), RVirtualFunction)
 
 #endif /*__R_VIRTUAL_MACHINE_H__*/
