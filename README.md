@@ -99,7 +99,7 @@ int main(int argc, const char *argv[]) {
 Work with RClassTable:
 
 ```C
-#include "RClassTable.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 
 void RClassTableTest(void){
 
