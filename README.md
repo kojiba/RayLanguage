@@ -150,9 +150,44 @@ void RClassTableTest(void){
 }
 ```
 
-You can simply use it in Yours C++ projects:
+Use of RStringDictionary:
 
 ```C
+// some key constant
+    RCString *key = RS("Veider");
+
+    // create dictionary
+    RStringDictionary *dictionary = $(NULL, c(RStringDictionary)) );
+
+    // fill dictionary with some object-keys,
+    // use RSC, cause we need copies of constant,
+    // also use m(copy, RCString)
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
+
+    // try once more, to check is it one-time-adding
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
+    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
+
+    // print
+    $(dictionary, p(RStringDictionary)) );
+
+    // find some object for key
+    RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
+    if(object != NULL) {
+        RPrintf("Found something for key : %s is value: %s\n", key->baseString, object->baseString);
+    }
+
+    // destructs, and delete pointer
+    $(dictionary, d(RStringDictionary)) );
+    deallocator(dictionary);
+```
+
+You can simply use it in Yours C++ projects:
+
+```C++
 #include <iostream>
 
 extern "C" {
