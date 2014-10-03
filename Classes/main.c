@@ -10,32 +10,20 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include "RayFoundation/RDictionary/RDictionary.h"
 #include "RVirtualMachine/RVirtualCompiler.h"
+#include "RayFoundation/RByteOperations/RByteOperations.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-    initRClock();
-
-    registerClassOnce("Luke");
-    registerClassOnce("Dart");
-    registerClassOnce("Leia");
-    registerClassOnce("Han Solo");
-    // try once more, but here is only one record
-    uint64_t iterator;
-    forAll(iterator, 1000000) {
-        registerClassOnce("Leia");
-        registerClassOnce("Dart");
-        registerClassOnce("Luke");
-    }
-
-    printRCTS;
-
-    char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
-
-    tickRClock();
-
+    uint64_t size = 10;
+    byte *array = makeFlushedBytes(size, 0x2);
+    array[5] = 0x1;
+    printByteArrayInHex(array, size);
+    RByteArray *sub = getSubArrayToFirstSymbol(array, size, 0x1);
+    printByteArrayInHex(sub->array, sub->size);
+    deallocator(array);
+    deallocator(sub);
     return 0;
 }
 

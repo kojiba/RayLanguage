@@ -7,9 +7,17 @@
 
 #include "RByteOperations.h"
 
+#pragma mark Basics
+
 byte* makeByteArray(uint64_t size) {
-    byte* array;
-    array = RAlloc(size);
+    return RAlloc(size);
+}
+
+byte* flushAllToByte(byte *array, uint64_t size, byte symbol) {
+    uint64_t iterator;
+    forAll(iterator, size) {
+        array[iterator] = symbol;
+    }
     return array;
 }
 
@@ -31,17 +39,82 @@ byte* getByteArrayCopy(const byte *array, uint64_t size) {
 
 byte* getSubArray(const byte *array, RRange range) {
     byte *subArray = RAlloc(range.count);
-    RMemMove(subArray, array[range.from], range.count);
+    RMemMove(subArray, &array[range.from], range.count);
     return subArray;
 }
 
-byte* getSubArrayToFirstSymbol(const byte *array, byte symbol) {
-    byte *subArray;
-    uint64_t iterator = 0;
-    while(array[iterator] != symbol) {
+RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symbol) {
+    RByteArray *result   = NULL;
+    uint64_t    iterator = 0;
+    byte       *subArray;
+
+    while(array[iterator] != symbol
+            && iterator < size) {
         ++iterator;
     }
-    subArray = RAlloc(iterator);
-    RMemMove(subArray, array, iterator);
-    return subArray;
+
+    if(iterator != 0) {
+        result = allocator(RByteArray);
+        result->size = iterator;
+        subArray = RAlloc(iterator);
+        RMemMove(subArray, array, iterator);
+        result->array = subArray;
+    }
+    return result;
+}
+
+RArray* getArraySeparatedBySymbol(const byte *array, uint64_t size, byte symbol) {
+    RByteArray         *subArray    = NULL;
+    RArray             *resultArray = makeRArray();
+
+    // init RArray
+    resultArray->destructorDelegate = d(RByteArray);
+    resultArray->printerDelegate = p(RByteArray);
+
+    subArray = getSubArrayToFirstSymbol(array, size, symbol);
+    while(subArray != NULL) {
+        addObjectToRA(resultArray, subArray);
+        subArray = getSubArrayToFirstSymbol(array, size, symbol);
+    }
+
+
+
+    return resultArray;
+}
+
+#pragma mark RByteArray
+
+constructor(RByteArray), uint64_t size) {
+    object = allocator(RByteArray);
+    if(object != NULL) {
+        object->array = makeByteArray(size);
+        object->size = size;
+    }
+    return object;
+}
+
+destructor(RByteArray) {
+    if(object != NULL) {
+        RFree(object->array);
+    } else {
+        RPrintf("Warning. RBA. Destructor of NULL.\n");
+    }
+}
+
+printer(RByteArray) {
+//    RPrintf("%s object - %p {", toString(RByteArray), object);
+    printByteArrayInHex(object->array, object->size);
+//    RPrintf(" } %p ;", object);
+}
+
+RByteArray* flushAllToByteRByteArray(RByteArray *array, byte symbol) {
+    array->array = flushAllToByte(array->array, array->size, symbol);
+    return array;
+}
+
+method (RByteArray*, copy, RByteArray)) {
+    RByteArray *copy = allocator(RByteArray);
+    copy->array = getByteArrayCopy(object->array, object->size);
+    copy->size = object->size;
+    return copy;
 }

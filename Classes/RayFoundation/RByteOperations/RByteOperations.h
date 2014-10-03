@@ -10,11 +10,32 @@
 
 #include "../RayFoundation.h"
 #include "../RCString/RCString.h"
+#include "../RArray/RArray.h"
 
-byte* makeByteArray            (uint64_t size);
-void  printByteArrayInHex      (const byte *array, uint64_t size);
-byte* getByteArrayCopy         (const byte *array, uint64_t size);
-byte* getSubArray              (const byte *array, RRange range);
-byte* getSubArrayToFirstSymbol (const byte *array, byte symbol);
+class(RByteArray)
+    byte    *array;
+    uint64_t size;
+endOf(RByteArray)
 
-#endif __R_BYTE_OPERATIONS_H__
+// basics
+byte*               makeByteArray             (uint64_t size);
+byte*               flushAllToByte            (byte *array,       uint64_t size, byte symbol); // not copy
+void                printByteArrayInHex       (const byte *array, uint64_t size);
+byte*               getByteArrayCopy          (const byte *array, uint64_t size);
+byte*               getSubArray               (const byte *array, RRange range );              // sub-array copy
+RByteArray*         getSubArrayToFirstSymbol  (const byte *array, uint64_t size, byte symbol); // sub-array copy
+RArray*             getArraySeparatedBySymbol (const byte *array, uint64_t size, byte symbol); // RArray with set-upd delegates
+
+// RByteArray
+constructor (RByteArray), uint64_t size);
+destructor  (RByteArray);
+printer     (RByteArray);
+
+method(RByteArray*, flushAllToByte, RByteArray),    byte symbol);
+method(RByteArray*, copy,           RByteArray));
+
+
+#define makeFlushedBytes(size, symbol) flushAllToByte(makeByteArray(size), size, symbol)
+#define makeRByteArray(size)         $(NULL, c(RByteArray)) )
+
+#endif /*__R_BYTE_OPERATIONS_H__*/
