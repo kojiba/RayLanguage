@@ -153,7 +153,11 @@ void RClassTableTest(void){
 Use of RStringDictionary:
 
 ```C
-// some key constant
+
+#include "RayFoundation/RStringDictionary/RStringDictionary.h"
+
+void StringDictionaryTest() {
+    // some key constant
     RCString *key = RS("Veider");
 
     // create dictionary
@@ -183,6 +187,7 @@ Use of RStringDictionary:
     // destructs, and delete pointer
     $(dictionary, d(RStringDictionary)) );
     deallocator(dictionary);
+}
 ```
 
 You can simply use it in Yours C++ projects:
