@@ -49,11 +49,14 @@ typedef enum RVirtualCodes {
     r_print_0_string,      // prints all to 0, cause errors
     r_print_char,          // print simple ASCII char
     r_print_pascal_string, // prints buffer like string, length first
+
+    r_get_char,
     r_get,
 
 // if
     r_if,
     r_while,
+    r_end_while,
 
 } RInstructions;
 
@@ -63,7 +66,7 @@ class(RVirtualMachine)
     RVirtualFunction *functionExecuting;
 
     byte             *dataRegister;      // pointer to memory element
-//    uint64_t          stateRegister;
+    byte             *command;
     uint64_t          tickCount;
 
 endOf(RVirtualMachine)
@@ -73,7 +76,7 @@ destructor  (RVirtualMachine);
 singleton   (RVirtualMachine);
 
 method(void, executeFunction, RVirtualMachine),    RVirtualFunction *function);
-method(void, executeCode,     RVirtualMachine),    byte code);
+method(void, executeCode, RVirtualMachine));
 
 method(void, setUpDataBlock,  RVirtualMachine));
 

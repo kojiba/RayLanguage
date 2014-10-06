@@ -22,12 +22,16 @@ byte* flushAllToByte(byte *array, uint64_t size, byte symbol) {
 }
 
 void printByteArrayInHex(const byte *array, uint64_t size) {
-    uint64_t iterator;
-    forAll(iterator, size) {
-        if(iterator % 20 == 0) {
-            RPrintf("\n");
+    if(array != NULL) {
+        uint64_t iterator;
+        forAll(iterator, size) {
+            if (iterator % 20 == 0) {
+                RPrintf("\n");
+            }
+            RPrintf("%02x ", array[iterator]);
         }
-        RPrintf("%02x ", array[iterator]);
+    } else {
+        RPrintf("Empty byte array.\n");
     }
 }
 

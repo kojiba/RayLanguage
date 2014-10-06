@@ -1,33 +1,36 @@
 #include "RVirtualMachine.h"
+#include "../../RayFoundation/RClassTable/RClassTable.h"
 
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
     if(object != NULL) {
-        object->memory = NULL;
+        object->memory = allocator(RByteArray);
+        if(object->memory != NULL) {
+            object->classId = registerClassOnce(toString(RVirtualMachine));
+        }
     }
     return object;
 }
 
 destructor(RVirtualMachine) {
     if(object != NULL) {
-        if(object->memory != NULL) {
-            $(object->memory, d(RByteArray)));
-            deallocator(object->memory);
-        }
+        $(object->memory, d(RByteArray)));
+        deallocator(object->memory);
     }
 }
 
 method(void, setUpDataBlock, RVirtualMachine)) {
     if(object->functionExecuting != NULL) {
-        object->memory = $(master(object->functionExecuting, RByteArray), m(copy, RByteArray)));
+        object->memory->array = makeFlushedBytes(256, 0x00);
+        object->memory->size = 256;
     } else {
         RPrintf("ERROR. RVM. Set-up function is NULL.");
     }
 }
 
-method(void, executeCode, RVirtualMachine), byte code) {
+method(void, executeCode, RVirtualMachine)) {
 
-    switch(code) {
+    switch(*object->command) {
         case r_increment : {
             // increment data at pointer
             ++(*object->dataRegister);
@@ -48,13 +51,14 @@ method(void, executeCode, RVirtualMachine), byte code) {
         } break;
 
         case r_print_char : {
-            RPrintf("%c\n", *object->dataRegister);
+            RPrintf("%c", *object->dataRegister);
         } break;
 
 // moves forward-backward
         case r_string_end : {
             // increment pointer
-            ++object->dataRegister;
+//            fixme
+//            ++object->dataRegister;
         } break;
 
         case r_move_forward : {
@@ -88,8 +92,11 @@ method(void, executeCode, RVirtualMachine), byte code) {
     // increment ticks
     ++object->tickCount;
 
+    // fixme increment code (if, while, for)
+    ++object->command;
+
     // execute next code
-    $(object, m(executeCode, RVirtualMachine)), *object->dataRegister);
+    $(object, m(executeCode, RVirtualMachine)));
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
@@ -108,8 +115,11 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     // set data register as pointer to first element of memory
     object->dataRegister = object->memory->array;
 
+    // set command to first byte of opcodes
+    object->command = object->functionExecuting->masterRByteArrayObject->array;
+
     // execute first code, that starts processing
-    $(object, m(executeCode, RVirtualMachine)), *object->dataRegister);
+    $(object, m(executeCode, RVirtualMachine)));
 
     // at end of processing print analytics
     RPrintf("\nRVM. End Executing Function : \"%s\"\n", function->name->baseString);

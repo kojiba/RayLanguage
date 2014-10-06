@@ -5,10 +5,10 @@ constructor(RVirtualFunction)) {
     object = allocator(RVirtualFunction);
     if(object != NULL) {
         // fixme size
-        master(object, RByteArray) = c(RByteArray)(NULL, 255);
-        if(master(object, RByteArray) != NULL) {
+//        master(object, RByteArray) = c(RByteArray)(NULL, 255);
+//        if(master(object, RByteArray) != NULL) {
             object->classId = registerClassOnce(toString(RVirtualFunction));
-        }
+//        }
     }
     return object;
 }

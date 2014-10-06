@@ -62,6 +62,7 @@ method(RCString *, setString, RCString), const char *string) {
         // final copying
         object->size = stringSize;
         RMemCpy(object->baseString, string, object->size);
+        --object->size;
     } else {
         RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
     }
@@ -90,6 +91,7 @@ method(RCString *, deleteAllCharacters, RCString), char character) {
         if(object->baseString[iterator] == character) {
             RMemCpy(object->baseString + iterator, object->baseString + iterator + 1, object->size + 1 - iterator);
             --iterator;
+            --object->size;
         }
     }
     return object;
@@ -106,9 +108,9 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
 
             // compare to substring
             if(object->baseString[iterator] == substring->baseString[0]) {
-                for(inner = iterator; inner < substring->size; ++inner) {
+                for(inner = 1; inner < substring->size; ++inner) {
 
-                    if(object->baseString[inner] != substring->baseString[inner]) {
+                    if(object->baseString[iterator + 1] != substring->baseString[inner]) {
                         flag = 0;
                         break;
                     }
@@ -122,6 +124,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
             if(flag == 1) {
                 RMemCpy(object->baseString + iterator, object->baseString + iterator + substring->size, object->size + 1 - iterator - substring->size);
                 --iterator;
+                object->size -= substring->size;
             } else {
                 flag = 1;
             }

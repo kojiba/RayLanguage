@@ -8,44 +8,61 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
+#include "RVirtualMachine/RVirtualCompiler.h"
 
 int main(int argc, const char *argv[]) {
 
-//    // RVM helloWorld
-//    RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
-//    function->name = RS("My RVM Hello world");
-//
-//    // writing in opcodes
-//    master(function, RByteArray)->array[0] = r_print_0_string;
-//    master(function, RByteArray)->array[1] = 'H';
-//    master(function, RByteArray)->array[2] = 'E';
-//    master(function, RByteArray)->array[3] = 'L';
-//    master(function, RByteArray)->array[4] = 'L';
-//    master(function, RByteArray)->array[5] = 'O';
-//    master(function, RByteArray)->array[6] = ' ';
-//    master(function, RByteArray)->array[7] = 'W';
-//    master(function, RByteArray)->array[8] = 'O';
-//    master(function, RByteArray)->array[9] = 'R';
-//    master(function, RByteArray)->array[10] = 'L';
-//    master(function, RByteArray)->array[11] = 'D';
-//    master(function, RByteArray)->array[12] = r_string_end;
-//    master(function, RByteArray)->array[13] = r_end;
-//
-//    executeRay(function);
-//
-//    $(function, d(RVirtualFunction)) );
-//    deallocator(function);
-//    deleteRVM();
+    // brainfuck ezy hello world on RVM
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
+                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
+                    " ++++++++++++.+++++++..+++.-------------------\n"
+                    " ---------------------------------------------\n"
+                    " ---------------.+++++++++++++++++++++++++++++\n"
+                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
+                    " ++++++.+++.------.--------.------------------\n"
+                    " ---------------------------------------------\n"
+                    " ----.-----------------------."));
 
-    RCString *temp = $(RSC("Hello misha hello, Hello"), m(deleteAllSubstrings, RCString)), RS("Hello"));
-    $(temp, p(RCString)) );
-    $(temp, d(RCString)) );
-    deallocator(temp);
+    executeRay(function);
+
+    $(function, d(RVirtualFunction)) );
+    deallocator(function);
+    deleteRVM();
+
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+void RVM_basicsTest() {
+    // RVM helloWorld
+    RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
+    function->name = RS("My RVM Hello world");
+
+    // writing in opcodes
+    master(function, RByteArray)->array[0] = r_print_0_string;
+    master(function, RByteArray)->array[1] = 'H';
+    master(function, RByteArray)->array[2] = 'E';
+    master(function, RByteArray)->array[3] = 'L';
+    master(function, RByteArray)->array[4] = 'L';
+    master(function, RByteArray)->array[5] = 'O';
+    master(function, RByteArray)->array[6] = ' ';
+    master(function, RByteArray)->array[7] = 'W';
+    master(function, RByteArray)->array[8] = 'O';
+    master(function, RByteArray)->array[9] = 'R';
+    master(function, RByteArray)->array[10] = 'L';
+    master(function, RByteArray)->array[11] = 'D';
+    master(function, RByteArray)->array[12] = r_string_end;
+    master(function, RByteArray)->array[13] = r_end;
+
+    executeRay(function);
+
+    $(function, d(RVirtualFunction)) );
+    deallocator(function);
+    deleteRVM();
+}
 
 void StringDictionaryTest() {
     // some key constant

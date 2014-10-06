@@ -35,7 +35,7 @@ method(RByteArray*, flushAllToByte, RByteArray),    byte symbol);
 method(RByteArray*, copy,           RByteArray));
 
 
+#define makeRByteArray(size)         $(NULL, c(RByteArray)), size)
 #define makeFlushedBytes(size, symbol) flushAllToByte(makeByteArray(size), size, symbol)
-#define makeRByteArray(size)         $(NULL, c(RByteArray)) )
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

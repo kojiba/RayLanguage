@@ -1,12 +1,17 @@
 #include "RVirtualCompiler.h"
 #include "RVirtualMachine/RVirtualMachine.h"
+#include "../RayFoundation/RClassTable/RClassTable.h"
 
 constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
     if(object != NULL) {
-        object->lines = 1;
-        object->column = 1;
+
         object->dataBlock = makeRArray();
+        if(object->dataBlock != NULL) {
+            object->classId = registerClassOnce(toString(RVirtualCompiler));
+            object->lines = 1;
+            object->symbols = 1;
+        }
     }
     return object;
 }
@@ -27,75 +32,95 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
         // finding to startSymbol
         while(object->code->baseString[counter] != ':' && counter < object->code->size) {
             ++counter;
-//            testme, fixme
         }
+
         // get copy of substring
         RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, counter));
 
-        // delete nameString from sourceCode
-        $(object->code, m(deleteInRange, RCString)), makeRRange(0, counter));
+        // delete nameString from sourceCode and ':' symbol
+        $(object->code, m(deleteInRange, RCString)), makeRRange(0, counter + 1));
 
+        // delete spaces
+        $(object->code, m(deleteAllCharacters, RCString)), ' ');
         return name;
     }
     return NULL;
 }
 
-method(byte *, getFunctionBody, RVirtualCompiler)){
-//    byte *body = RAlloc(sizeof(byte) * object->code->size);
-//    byte character;
-//    uint64_t iterator = 0;
-//    character = r_ignore;
-//
-//    while(iterator < object->code->size) {
-//        character = $(object, m(sourceToByteCode, RVirtualCompiler)), iterator);
-//        ++iterator;
-//        body[iterator] = character;
-//    }
-////    fixme, testme
-//    body[++iterator] = r_end;
-//
-//    return body;
-}
-
 #pragma mark Brainfuck lang to rasm
 
-method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
-//    static uint64_t counter = 0;
-//    if(counter == 1) {
-//        if(object->code->baseString[iterator] != '\"') {
-//            return object->code->baseString[iterator];
-//        }
-//    }
-//
-//    switch (object->code->baseString[iterator]) {
-//        case '\"': {
-//
-//        } break;
-//
-//        case 'p': {
-//
-//        } break;
-//
-//        case ':': {
-//
-//        } break;
-//
-//        case ' ': {
-//
-//        } break;
-//
-//        case '\n': {
-//
-//        } break;
-//
-//        default: {
-//            RPrintf("Error parsing on line: %qu column: %qu !\n", object->lines, object->column);
-//            return r_error;
-//        }
-//    }
+method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
+    RByteArray *body = makeRByteArray(object->code->size);
+
+    byte character;
+
+    object->iterator = 0;
+
+    while(object->iterator < body->size) {
+        character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
+        ++object->iterator;
+        body->array[object->iterator] = character;
+    }
+
+    body->array[++object->iterator] = r_end;
+
+    return body;
 }
 
-method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), RCString *sourceCode) {
+method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
+    byte byteCode;
+    switch (object->code->baseString[object->iterator]) {
+        case '+': {
+            byteCode = r_increment;
+        } break;
+
+        case '-': {
+            byteCode = r_decrement;
+        } break;
+
+        case '.': {
+            byteCode = r_print_char;
+        } break;
+
+        case '>': {
+            byteCode = r_move_forward;
+        } break;
+
+        case '<': {
+            byteCode = r_move_backward;
+        } break;
+
+        case ',': {
+            byteCode = r_get_char;
+        } break;
+
+// fixme not working
+        case '[': {
+            byteCode = r_while;
+        } break;
+
+        case ']': {
+            byteCode = r_end_while;
+        } break;
+// fixme end not working
+
+        case '\n': {
+            ++object->lines;
+            object->symbols = 1;
+        } break;
+
+        default: {
+            byteCode = r_end;
+            RPrintf("Error parsing on line: %qu, symbol: %qu !\n", object->lines, object->symbols);
+            return r_error;
+        }
+    }
+
+    ++object->symbols;
+    return byteCode;
+}
+
+method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), const RCString *sourceCode) {
 
     if(sourceCode->size != 0) {
         RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
@@ -108,9 +133,8 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
 
         // set name and body
         function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
-        master(function, RByteArray)->array = $(object, m(getFunctionBody, RVirtualCompiler)) );
+        master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
-        // fixme, testme
         RPrintf("Processed lines - %qu\n", object->lines);
         return function;
     } else {
