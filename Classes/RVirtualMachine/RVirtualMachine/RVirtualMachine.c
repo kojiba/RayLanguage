@@ -38,12 +38,22 @@ method(void, executeCode, RVirtualMachine), byte code) {
             --(*object->dataRegister);
         } break;
 
-        case r_print : {
+// prints
+        case r_print_0_string : {
             RPrintf("%s\n", object->dataRegister);
             while(*object->dataRegister != r_string_end) {
                 ++object->dataRegister;
                 ++object->tickCount;
             }
+        } break;
+
+        case r_print_char : {
+            RPrintf("%c\n", *object->dataRegister);
+        } break;
+
+// moves forward-backward
+        case r_string_end : {
+            // increment pointer
             ++object->dataRegister;
         } break;
 
@@ -62,11 +72,13 @@ method(void, executeCode, RVirtualMachine), byte code) {
             object->dataRegister = *(++object->dataRegister);
         } break;
 
+// work end
         case r_end : {
             RPrintf("End work of RVM.\n");
             return;
         }
 
+// bad situation
         default: {
             RPrintf("RVM. Warning, default case, unhalted result\n");
             return;

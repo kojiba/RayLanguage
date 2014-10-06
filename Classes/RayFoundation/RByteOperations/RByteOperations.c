@@ -24,7 +24,7 @@ byte* flushAllToByte(byte *array, uint64_t size, byte symbol) {
 void printByteArrayInHex(const byte *array, uint64_t size) {
     uint64_t iterator;
     forAll(iterator, size) {
-        if(iterator % 80 == 0) {
+        if(iterator % 20 == 0) {
             RPrintf("\n");
         }
         RPrintf("%02x ", array[iterator]);

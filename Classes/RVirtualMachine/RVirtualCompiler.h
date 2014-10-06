@@ -11,17 +11,20 @@ class(RVirtualCompiler)
     RArray   *dataBlock;
     uint64_t  lines;
     uint64_t  column;
+    uint64_t iterator;
 
 endOf(RVirtualCompiler)
 
 constructor(RVirtualCompiler));
 destructor(RVirtualCompiler);
 
-method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode);
-method(byte,               sourceToByteCode,             RVirtualCompiler), uint64_t iterator);
+method(RCString *,         getFunctionName,                       RVirtualCompiler));
+method(byte *,             getFunctionBody,                       RVirtualCompiler));
 
-method(RCString *,         getFunctionName,              RVirtualCompiler));
-method(byte *,             getFunctionBody,              RVirtualCompiler));
+// brainfuck lang
+method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler),    RCString *sourceCode);
+method(byte,               brainFuckSourceToByteCode,             RVirtualCompiler));
+
 
 singleton(RVirtualCompiler);
 

@@ -32,7 +32,11 @@ method(void,             flush,              RCString));                        
 
 // Setters
 method(RCString *,       setString,           RCString),    const char *string);               // copy characters
-method(RCString *,       setConstantString,   RCString),    const char *string);               // copy pointer
+method(RCString *,       setConstantString,   RCString),    char *string);                     // copy pointer
+
+// Options
+method(RCString *,       deleteAllCharacters, RCString),    char character);
+method(RCString *,       deleteAllSubstrings, RCString),    const RCString *substring);
 
 // Substrings and Copies
 method(RCString *,       setSubstringInRange, RCString),    RRange range, const char *string);

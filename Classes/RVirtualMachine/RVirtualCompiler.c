@@ -20,30 +20,6 @@ destructor(RVirtualCompiler) {
     }
 }
 
-method(RVirtualFunction *, createFunctionFromSourceCode, RVirtualCompiler), RCString *sourceCode) {
-
-    if(sourceCode->size != 0) {
-        RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
-
-        // copy source to object
-        if(object->code != NULL) {
-            $(object->code, d(RCString)) );
-        }
-        object->code = $(sourceCode, m(copy, RCString)) );
-
-        // set name and body
-        function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
-        master(function, RByteArray)->array = $(object, m(getFunctionBody, RVirtualCompiler)) );
-
-        // fixme, testme
-        RPrintf("Processed lines - %qu\n", object->lines);
-        return function;
-    } else {
-        RPrintf("Error. RVC. Bad virtual-code size\n");
-    }
-    return NULL;
-}
-
 method(RCString *, getFunctionName, RVirtualCompiler)) {
     if(object->code->size != 0){
         uint64_t counter = 0;
@@ -65,64 +41,82 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 }
 
 method(byte *, getFunctionBody, RVirtualCompiler)){
-    byte *body = RAlloc(sizeof(byte) * object->code->size);
-    byte character;
-    uint64_t iterator = 0;
-    character = r_ignore;
-
-    while(iterator < object->code->size) {
-        character = $(object, m(sourceToByteCode, RVirtualCompiler)), iterator);
-        ++iterator;
-        body[iterator] = character;
-    }
-//    fixme, testme
-    body[++iterator] = r_end;
-
-    return body;
+//    byte *body = RAlloc(sizeof(byte) * object->code->size);
+//    byte character;
+//    uint64_t iterator = 0;
+//    character = r_ignore;
+//
+//    while(iterator < object->code->size) {
+//        character = $(object, m(sourceToByteCode, RVirtualCompiler)), iterator);
+//        ++iterator;
+//        body[iterator] = character;
+//    }
+////    fixme, testme
+//    body[++iterator] = r_end;
+//
+//    return body;
 }
 
-method(byte, sourceToByteCode, RVirtualCompiler), uint64_t iterator) {
-    static uint64_t counter = 0;
-    if(counter == 1) {
-        if(object->code->baseString[iterator] != '\"') {
-            return object->code->baseString[iterator];
+#pragma mark Brainfuck lang to rasm
+
+method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
+//    static uint64_t counter = 0;
+//    if(counter == 1) {
+//        if(object->code->baseString[iterator] != '\"') {
+//            return object->code->baseString[iterator];
+//        }
+//    }
+//
+//    switch (object->code->baseString[iterator]) {
+//        case '\"': {
+//
+//        } break;
+//
+//        case 'p': {
+//
+//        } break;
+//
+//        case ':': {
+//
+//        } break;
+//
+//        case ' ': {
+//
+//        } break;
+//
+//        case '\n': {
+//
+//        } break;
+//
+//        default: {
+//            RPrintf("Error parsing on line: %qu column: %qu !\n", object->lines, object->column);
+//            return r_error;
+//        }
+//    }
+}
+
+method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), RCString *sourceCode) {
+
+    if(sourceCode->size != 0) {
+        RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
+
+        // copy source to object
+        if(object->code != NULL) {
+            $(object->code, d(RCString)) );
         }
+        object->code = $(sourceCode, m(copy, RCString)) );
+
+        // set name and body
+        function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
+        master(function, RByteArray)->array = $(object, m(getFunctionBody, RVirtualCompiler)) );
+
+        // fixme, testme
+        RPrintf("Processed lines - %qu\n", object->lines);
+        return function;
+    } else {
+        RPrintf("Error. RVC. Bad virtual-code size\n");
     }
-
-    switch (object->code->baseString[iterator]) {
-        case '\"': {
-            counter = (counter + 1) % 2;
-            if(counter == 1){
-                return r_const_start;
-            } else {
-                return r_const_end;
-            }
-        } break;
-
-        case 'p': {
-            return r_print;
-        } break;
-
-        case ':': {
-            return r_function_begin;
-        } break;
-
-        case ' ': {
-            ++object->column;
-            return r_ignore;
-        } break;
-
-        case '\n': {
-            ++object->lines;
-            object->column = 0;
-            return r_ignore;
-        } break;
-
-        default: {
-            RPrintf("Error parsing on line: %qu column: %qu !\n", object->lines, object->column);
-            return r_error;
-        }
-    }
+    return NULL;
 }
 
 singleton(RVirtualCompiler) {

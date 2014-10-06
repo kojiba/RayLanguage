@@ -7,8 +7,10 @@
 #include "../RVirtualFunction/RVirtualFunction.h"
 #include "../../RayFoundation/RByteOperations/RByteOperations.h"
 
+// rasm - ray assembler for RVM
+
 typedef enum RVirtualCodes {
-//
+
     r_string_end = 0, // reserved for 0-terminated strings
 
     r_modifies_input,
@@ -44,7 +46,9 @@ typedef enum RVirtualCodes {
     r_jump_address,
 
 // io
-  r_print,
+    r_print_0_string,      // prints all to 0, cause errors
+    r_print_char,          // print simple ASCII char
+    r_print_pascal_string, // prints buffer like string, length first
     r_get,
 
 // if
@@ -59,7 +63,7 @@ class(RVirtualMachine)
     RVirtualFunction *functionExecuting;
 
     byte             *dataRegister;      // pointer to memory element
-    uint64_t          stateRegister;
+//    uint64_t          stateRegister;
     uint64_t          tickCount;
 
 endOf(RVirtualMachine)

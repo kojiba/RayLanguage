@@ -68,7 +68,7 @@ method(RCString *, setString, RCString), const char *string) {
     return object;
 }
 
-method(RCString *, setConstantString, RCString), const char *string) {
+method(RCString *, setConstantString, RCString), char *string) {
     if(string != NULL) {
         // flush old string
         $(object, m(flush, RCString)) );
@@ -80,6 +80,57 @@ method(RCString *, setConstantString, RCString), const char *string) {
         RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
     }
     return object;
+}
+
+#pragma mark Options
+
+method(RCString *, deleteAllCharacters, RCString), char character) {
+    uint64_t iterator;
+    forAll(iterator, object->size) {
+        if(object->baseString[iterator] == character) {
+            RMemCpy(object->baseString + iterator, object->baseString + iterator + 1, object->size + 1 - iterator);
+            --iterator;
+        }
+    }
+    return object;
+}
+
+method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
+    uint64_t iterator;
+    uint64_t inner;
+    byte flag = 1;
+
+    if(substring->size != 0
+            || substring->baseString == NULL) {
+        forAll(iterator, object->size - substring->size) {
+
+            // compare to substring
+            if(object->baseString[iterator] == substring->baseString[0]) {
+                for(inner = iterator; inner < substring->size; ++inner) {
+
+                    if(object->baseString[inner] != substring->baseString[inner]) {
+                        flag = 0;
+                        break;
+                    }
+
+                }
+            } else {
+                flag = 0;
+            }
+
+            // moving
+            if(flag == 1) {
+                RMemCpy(object->baseString + iterator, object->baseString + iterator + substring->size, object->size + 1 - iterator - substring->size);
+                --iterator;
+            } else {
+                flag = 1;
+            }
+        }
+        return object;
+    } else {
+        RPrintf("Warning. RCS. Substring size is 0, or, substring is NULL.\n");
+    }
+    return NULL;
 }
 
 #pragma mark Substrings and Copies
