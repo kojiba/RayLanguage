@@ -52,7 +52,7 @@ members
     uint64_t  count;                         // count of elements in array
     uint64_t  freePlaces;                    // count of free places for elements
     void    (*destructorDelegate)(pointer);  // destructor of elements delegate
-    void    (*printerDelegate)(pointer);     // printer of elements delegate
+    void    (*printerDelegate)   (pointer);  // printer of elements delegate
     pointer  *array;                         // array
 
 endOf(RArray) //--------------------------------------------------------------
@@ -69,11 +69,11 @@ method(byte,               sizeToFit,                 RArray));
 
 // add - set - delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
-method(void,               setObjectAtIndex,          RArray),    pointer newObject, uint64_t index); // be aware with this, addObject cause memory leak with that
+method(void,               setObjectAtIndex,          RArray),    pointer newObject, uint64_t index); // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
 method(void,               deleteObjects,             RArray),    RRange  range);                     // delete with shift
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    uint64_t index);                    // delete with shift
-method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    uint64_t index);                    // delete, and the last object will be on it place
+method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    uint64_t index);                    // delete, and the last object will be on its place
 
 // get - find
 method(RArrayFindResult *, findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);

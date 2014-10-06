@@ -98,7 +98,6 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             byteCode = r_get_char;
         } break;
 
-// fixme not working
         case '[': {
             byteCode = r_while;
         } break;
@@ -106,7 +105,6 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         case ']': {
             byteCode = r_end_while;
         } break;
-// fixme end not working
 
         case '\n': {
             ++object->lines;
@@ -121,7 +119,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("Error parsing on line: %qu, symbol: %qu !\n", object->lines, object->symbols);
+            RPrintf("Error parsing Brainuck on line: %qu, symbol: %qu !\n", object->lines, object->symbols);
         }
     }
 
@@ -144,7 +142,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
-        RPrintf("Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
+        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         return function;
     } else {
         RPrintf("Error. RVC. Bad virtual-code size\n");

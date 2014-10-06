@@ -11,7 +11,7 @@
 
 typedef enum RVirtualCodes {
 
-    r_string_end = 0, // reserved for 0-terminated strings
+    r_string_end = 0,       // reserved for 0-terminated strings
 
     r_modifies_input,
     r_data_start,
@@ -19,7 +19,7 @@ typedef enum RVirtualCodes {
     r_function_begin,
     r_const_start,
     r_const_end,
-    r_ignore,
+    r_ignore,               // code for ignoring, not byte-code
     r_error,
 
 // algebra operations
@@ -66,7 +66,7 @@ class(RVirtualMachine)
     RVirtualFunction *functionExecuting;
 
     byte             *dataRegister;      // pointer to memory element
-    byte             *command;
+    byte             *command;           // pointer to rasm byte-code
     uint64_t          tickCount;
 
 endOf(RVirtualMachine)
@@ -82,7 +82,7 @@ method(void, setUpDataBlock,  RVirtualMachine));
 
 #define RVM singletonCall(RVirtualMachine)
 #define deleteRVM() $(RVM, d(RVirtualMachine)) ); \
-                  deallocator(RVM)
+                    deallocator(RVM)
 #define executeRay(RVirtualFunction) $(RVM, m(executeFunction, RVirtualMachine)), RVirtualFunction)
 
 #endif /*__R_VIRTUAL_MACHINE_H__*/

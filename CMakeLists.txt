@@ -17,6 +17,8 @@ set(SOURCE_FILES Classes/main.c
 
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString.c
+                 Classes/RayFoundation/RCString/Encoding/Base64.h
+                 Classes/RayFoundation/RCString/Encoding/Base64.c
 
                  Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.h
                  Classes/RayFoundation/RArray/RCompareDelegate/RCompareDelegate.c
