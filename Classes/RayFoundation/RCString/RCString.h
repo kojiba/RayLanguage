@@ -35,6 +35,7 @@ method(RCString *,       setString,           RCString),    const char *string);
 method(RCString *,       setConstantString,   RCString),    char *string);                     // copy pointer
 
 // Options
+method(uint64_t,         numberOfRepetitions, RCString),    char character);
 method(RCString *,       deleteAllCharacters, RCString),    char character);
 method(RCString *,       deleteAllSubstrings, RCString),    const RCString *substring);
 

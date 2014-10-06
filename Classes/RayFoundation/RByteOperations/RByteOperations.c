@@ -67,21 +67,20 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symb
     return result;
 }
 
-RArray* getArraySeparatedBySymbol(const byte *array, uint64_t size, byte symbol) {
+RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol) {
     RByteArray         *subArray    = NULL;
     RArray             *resultArray = makeRArray();
 
     // init RArray
     resultArray->destructorDelegate = d(RByteArray);
-    resultArray->printerDelegate = p(RByteArray);
+    resultArray->printerDelegate    = p(RByteArray);
 
     subArray = getSubArrayToFirstSymbol(array, size, symbol);
     while(subArray != NULL) {
         addObjectToRA(resultArray, subArray);
         subArray = getSubArrayToFirstSymbol(array, size, symbol);
     }
-
-
+    // fixme
 
     return resultArray;
 }

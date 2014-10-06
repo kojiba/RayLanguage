@@ -113,10 +113,10 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(object, m(setUpDataBlock, RVirtualMachine)) );
 
     // set data register as pointer to first element of memory
-    object->dataRegister = object->memory->array;
+    object->dataRegister = &object->memory->array[0];
 
     // set command to first byte of opcodes
-    object->command = object->functionExecuting->masterRByteArrayObject->array;
+    object->command = &object->functionExecuting->masterRByteArrayObject->array[0];
 
     // execute first code, that starts processing
     $(object, m(executeCode, RVirtualMachine)));

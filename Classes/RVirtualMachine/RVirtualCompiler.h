@@ -9,9 +9,11 @@ class(RVirtualCompiler)
 
     RCString *code;
     RArray   *dataBlock;
+
     uint64_t  lines;
+    uint64_t  numberOfLines;
     uint64_t  symbols;
-    uint64_t iterator;
+    uint64_t  iterator;
 
 endOf(RVirtualCompiler)
 

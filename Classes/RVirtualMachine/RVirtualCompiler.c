@@ -11,6 +11,7 @@ constructor(RVirtualCompiler)) {
             object->classId = registerClassOnce(toString(RVirtualCompiler));
             object->lines = 1;
             object->symbols = 1;
+            object->numberOfLines = 0;
         }
     }
     return object;
@@ -42,6 +43,7 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 
         // delete spaces
         $(object->code, m(deleteAllCharacters, RCString)), ' ');
+        object->numberOfLines = $(object->code, m(numberOfRepetitions, RCString)), '\n');
         return name;
     }
     return NULL;
@@ -50,16 +52,18 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 #pragma mark Brainfuck lang to rasm
 
 method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
-    RByteArray *body = makeRByteArray(object->code->size);
+    RByteArray *body = makeRByteArray(object->code->size + 1 - object->numberOfLines);
 
     byte character;
 
     object->iterator = 0;
 
-    while(object->iterator < body->size) {
+    while(object->iterator < object->code->size) {
         character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
+        if(character != r_ignore) {
+            body->array[object->iterator] = character;
+        }
         ++object->iterator;
-        body->array[object->iterator] = character;
     }
 
     body->array[++object->iterator] = r_end;
@@ -107,12 +111,17 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         case '\n': {
             ++object->lines;
             object->symbols = 1;
+            byteCode = r_ignore;
+        } break;
+
+        case ' ': {
+            object->symbols = 1;
+            byteCode = r_ignore;
         } break;
 
         default: {
             byteCode = r_end;
             RPrintf("Error parsing on line: %qu, symbol: %qu !\n", object->lines, object->symbols);
-            return r_error;
         }
     }
 
@@ -135,7 +144,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
-        RPrintf("Processed lines - %qu\n", object->lines);
+        RPrintf("Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         return function;
     } else {
         RPrintf("Error. RVC. Bad virtual-code size\n");

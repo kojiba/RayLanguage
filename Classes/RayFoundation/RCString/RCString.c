@@ -85,6 +85,17 @@ method(RCString *, setConstantString, RCString), char *string) {
 
 #pragma mark Options
 
+method(uint64_t, numberOfRepetitions, RCString), char character) {
+    uint64_t iterator;
+    uint64_t reps = 0;
+    forAll(iterator, object->size) {
+        if(object->baseString[iterator] == character) {
+            ++reps;
+        }
+    }
+    return reps;
+}
+
 method(RCString *, deleteAllCharacters, RCString), char character) {
     uint64_t iterator;
     forAll(iterator, object->size) {
