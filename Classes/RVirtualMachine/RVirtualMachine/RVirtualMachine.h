@@ -67,6 +67,7 @@ class(RVirtualMachine)
 
     byte             *dataRegister;      // pointer to memory element
     byte             *command;           // pointer to rasm byte-code
+
     uint64_t          tickCount;
 
     byte              breakFlag;         // for force quit
