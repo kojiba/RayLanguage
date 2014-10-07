@@ -7,13 +7,14 @@
 
 class(RVirtualCompiler)
 
-    RCString *code;
-    RArray   *dataBlock;
+    RCString   *code; // copy of source-code
+//    RArray   *dataBlock;
 
-    uint64_t  lines;
-    uint64_t  numberOfLines;
-    uint64_t  symbols;
-    uint64_t  iterator;
+    uint64_t    lines;
+    uint64_t    numberOfLines;
+    uint64_t    symbols;
+    uint64_t    iterator;
+    RByteArray *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)
 

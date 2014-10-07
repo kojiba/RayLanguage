@@ -18,6 +18,17 @@ typedef struct RRange {
 RRange makeRRange   (uint64_t from, uint64_t count);
 RRange makeRRangeTo (uint64_t from, uint64_t to);
 
+typedef struct RBounds {
+    char startSymbol;
+    char endSymbol;
+} RBounds;
+
+RBounds makeRBounds (char startSymbol, char endSymbol);
+
+// basics
+uint64_t indexOfFirstCharacterCString (const char *string, uint64_t size, char character);
+uint64_t indexOfLastCharacterCString  (const char *string, uint64_t size, char character);
+
 class(RCString) //------------------------------------
 
     char    *baseString; // 0-terminated c-string
