@@ -43,7 +43,7 @@ typedef enum RVirtualCodes {
     r_move_backward,
 
 // jump to a difference
-    r_jump_address,
+    r_goto_address,        // jump (address) sets command register to address
 
 // io
     r_print_0_string,      // prints all to 0, cause errors
@@ -54,9 +54,8 @@ typedef enum RVirtualCodes {
     r_get,
 
 // if
-    r_if,
-    r_while,
-    r_end_while,
+    r_if,                  // if (false_instruction , true_instruction) value in dataRegister == 0,
+                           // then false_instruction, else true_instruction
 
 } RInstructions;
 
@@ -67,6 +66,7 @@ class(RVirtualMachine)
 
     byte             *dataRegister;      // pointer to memory element
     byte             *command;           // pointer to rasm byte-code
+
     uint64_t          tickCount;
 
 endOf(RVirtualMachine)

@@ -6,13 +6,13 @@ constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
     if(object != NULL) {
 
-        object->dataBlock = makeRArray();
-        if(object->dataBlock != NULL) {
+//        object->dataBlock = makeRArray();
+//        if(object->dataBlock != NULL) {
             object->classId = registerClassOnce(toString(RVirtualCompiler));
             object->lines = 1;
             object->symbols = 1;
             object->numberOfLines = 0;
-        }
+//        }
     }
     return object;
 }
@@ -22,7 +22,7 @@ destructor(RVirtualCompiler) {
         $(object->code, d(RCString)) );
         deallocator(object->code);
 
-        deleteRA(object->dataBlock);
+//        deleteRA(object->dataBlock);
     }
 }
 
@@ -52,11 +52,19 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 #pragma mark Brainfuck lang to rasm
 
 method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
-    RByteArray *body = makeRByteArray(object->code->size + 1 - object->numberOfLines);
-
+    uint64_t sizeOfByteCode = object->code->size + 1 - object->numberOfLines;
+    RByteArray *body;
     byte character;
-
     object->iterator = 0;
+
+    // all [, ] instructions will be doubled in the byte-code,
+    // because of r_if instruction build
+    sizeOfByteCode = sizeOfByteCode + 3 * $(object->code, m(numberOfRepetitions, RCString)), '[') + 3 * $(object->code, m(numberOfRepetitions, RCString)), ']');
+
+    body = makeRByteArray(sizeOfByteCode);
+
+    // set pointer to body
+    object->body = body;
 
     while(object->iterator < object->code->size) {
         character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
@@ -73,7 +81,11 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
 
 method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     byte byteCode;
+    static uint64_t toNext = 0;
+    static uint64_t toPrev = 0;
+
     switch (object->code->baseString[object->iterator]) {
+
         case '+': {
             byteCode = r_increment;
         } break;
@@ -99,11 +111,37 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case '[': {
-            byteCode = r_while;
+            // complicated case fixme
+            toNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator], object->code->size - toNext, ']');
+
+            if(toNext > 255) {
+                RPrintf("RVC. Error. '[' Too long loop\n");
+            }
+
+            object->body->array[object->iterator] = r_if;
+            object->body->array[object->iterator + 1] = r_goto_address;
+            object->body->array[object->iterator + 2] = toNext;
+
+            // finally increment iterator
+            object->iterator += 2;
+            byteCode = r_ignore;
         } break;
 
         case ']': {
-            byteCode = r_end_while;
+            // complicated case fixme
+            toPrev = indexOfFirstCharacterCString(&object->code->baseString[toPrev], object->code->size, ']');
+
+            if(toPrev > 255) {
+                RPrintf("RVC. Error. ']' Too long loop\n");
+            }
+
+            object->body->array[object->iterator] = r_if;
+            object->body->array[object->iterator + 1] = r_goto_address;
+            object->body->array[object->iterator + 1] = object->iterator - toPrev;
+
+            // finally increment iterator
+            object->iterator += 2;
+            byteCode = r_ignore;
         } break;
 
         case '\n': {

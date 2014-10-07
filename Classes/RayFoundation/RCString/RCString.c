@@ -10,17 +10,53 @@
 #pragma mark RRange
 
 RRange makeRRange(uint64_t from, uint64_t count) {
-    RRange *range = allocator(RRange);
-    range->from = from;
-    range->count = count;
-    return *range;
+    RRange range;
+    range.from = from;
+    range.count = count;
+    return range;
 }
 
 RRange makeRRangeTo(uint64_t from, uint64_t to) {
-    RRange *range = allocator(RRange);
-    range->from = from;
-    range->count = to - from;
-    return *range;
+    RRange range;
+    range.from = from;
+    range.count = to - from;
+    return range;
+}
+
+#pragma mark RBounds
+
+RBounds makeRBounds(char startSymbol, char endSymbol) {
+    RBounds bounds;
+    bounds.startSymbol = startSymbol;
+    bounds.endSymbol = endSymbol;
+    return bounds;
+}
+
+#pragma mark Basics
+
+uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char character) {
+    uint64_t iterator = 0;
+    while(iterator < size) {
+        if(string[iterator] == character) {
+            break;
+        } else {
+            ++iterator;
+        }
+    }
+    return iterator;
+}
+
+uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char character) {
+    uint64_t iterator = 0;
+    uint64_t last = 0;
+    while(iterator < size) {
+        if(string[iterator] == character) {
+            last = iterator;
+        } else {
+            ++iterator;
+        }
+    }
+    return last;
 }
 
 #pragma mark constructor - destructor - reallocation

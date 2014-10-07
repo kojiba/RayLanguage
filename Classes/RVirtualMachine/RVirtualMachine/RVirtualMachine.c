@@ -34,11 +34,13 @@ method(void, executeCode, RVirtualMachine)) {
         case r_increment : {
             // increment data at pointer
             ++(*object->dataRegister);
+            ++object->command;
         } break;
 
         case r_decrement : {
             // decrement data at pointer
             --(*object->dataRegister);
+            ++object->command;
         } break;
 
 // prints
@@ -48,32 +50,40 @@ method(void, executeCode, RVirtualMachine)) {
                 ++object->dataRegister;
                 ++object->tickCount;
             }
+            ++object->command;
         } break;
 
         case r_print_char : {
             RPrintf("%c", *object->dataRegister);
+            ++object->command;
         } break;
 
 // moves forward-backward
-        case r_string_end : {
-            // increment pointer
-//            fixme
-//            ++object->dataRegister;
-        } break;
-
         case r_move_forward : {
             // increment pointer
             ++object->dataRegister;
+            ++object->command;
         } break;
 
         case r_move_backward : {
             // decrement pointer
             --object->dataRegister;
+            ++object->command;
         } break;
 
-        case r_jump_address : {
-            // set pointer to incremented pointers data, like JMP address
-            object->dataRegister = *(++object->dataRegister);
+        case r_goto_address : {
+            // set pointer to command incremented pointers data, like JMP address, fixme when instruction in data
+            object->command = *(++object->command);
+        } break;
+
+        case r_if : {
+            if((*object->dataRegister) != 0) {
+                // true instruction
+                object->command += 3; // 3 case of goto arg byte
+            } else {
+                // false instruction
+                ++object->command;
+            }
         } break;
 
 // work end
@@ -91,9 +101,6 @@ method(void, executeCode, RVirtualMachine)) {
 
     // increment ticks
     ++object->tickCount;
-
-    // fixme increment code (if, while, for)
-    ++object->command;
 
     // execute next code
     $(object, m(executeCode, RVirtualMachine)));
