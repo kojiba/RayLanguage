@@ -52,9 +52,8 @@ uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char cha
     while(iterator < size) {
         if(string[iterator] == character) {
             last = iterator;
-        } else {
-            ++iterator;
         }
+        ++iterator;
     }
     return last;
 }

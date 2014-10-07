@@ -9,7 +9,7 @@
 #ifndef __RAY_CHECK_FOUNDATION_H__
 #define __RAY_CHECK_FOUNDATION_H__
 
-#if defined(toString) || defined(_TOSTRING) || defined(splitUp) || defined(initRClock) || defined(tickRClock)
+#if defined(toString) || defined(_TOSTRING) || defined(concatenate) || defined(initRClock) || defined(tickRClock)
         #error "Some of working RayFoundation defines are already defined"
     #elif defined(class) || defined(discipleOf) || defined(endOf) || defined(protocol)
         #error "Some of core defines of RayFoundation are already defined"

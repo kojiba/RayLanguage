@@ -9,9 +9,9 @@
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 #include "RVirtualMachine/RVirtualCompiler.h"
+#include "RayFoundation/RStringDictionary/RStringDictionary.h"
 
 int main(int argc, const char *argv[]) {
-
     // brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
             RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
@@ -31,6 +31,11 @@ int main(int argc, const char *argv[]) {
 /*
 
 void RVM_basicsTest() {
+//    // brainfuck hard(with [, ]) hello world on RVM
+//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+//            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+//                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+//                                  " ------.--------.>+.>."));
     // brainfuck ezy hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
             RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"

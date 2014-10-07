@@ -1,12 +1,11 @@
 #include "RCompareDelegate.h"
 
 method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
-    if(objectToCheck == object->etaloneObject) {
-        return equals;
-    } else {
-        if(object->virtualCompareMethod != NULL) {
-            return object->virtualCompareMethod(object->etaloneObject, objectToCheck);
-        }
+    if(object->virtualCompareMethod != NULL) {
+        return object->virtualCompareMethod(object->etaloneObject, objectToCheck);
+    } else if(object->etaloneObject == objectToCheck) {
+            return equals;
+    }
 #if RAY_SHORT_DEBUG == 1
         else {
             static pointer lastObject = NULL;
@@ -16,6 +15,5 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
             }
         }
 #endif
-    }
     return not_equals;
 }

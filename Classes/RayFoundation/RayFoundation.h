@@ -19,8 +19,8 @@
 #define _TOSTRING(x)                                      #x
 #define toString(x)                                       _TOSTRING(x)        // gets c-string from define or some code
 
-#define _splitUp(one, two)                                one##two
-#define splitUp(one, two)                                 _splitUp(one, two)  // splits up two words: splitUp(Hello,World) -> HelloWorld
+#define _concatenate(one, two)                            one##two
+#define concatenate(one, two)                             _concatenate(one, two)  // concatenate two words: concatenate(Hello, World) -> HelloWorld
 
 #define initRClock()                                      clock_t start = clock(); \
                                                           clock_t stop = 0; \
@@ -40,30 +40,30 @@ typedef uint8_t byte;
                                                           uint64_t classId;
 #define protocol(protocolName)                            typedef struct protocolaName {
 
-#define discipleOf(className)                             className *splitUp(master, splitUp(className, Object));
+#define discipleOf(className)                             className *concatenate(master, concatenate(className, Object));
 #define endOf(className)                                  } className;
 
 #define allocator(className)                              RAlloc(sizeof(className))
 #define deallocator(object)                               RFree(object);
 
-#define method(returnValue, methodName, className)        returnValue splitUp(methodName, className)(className *object
-#define virtualMethod(returnValue, methodName, className) returnValue (*splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className)))(struct className *object
+#define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object
+#define virtualMethod(returnValue, methodName, className) returnValue (*concatenate(concatenate(virtualMethod,methodName),concatenate(Of,className)))(struct className *object
 
-#define constructor(className)                            className* splitUp(constructorOf,className) (className *object
-#define destructor(className)                             void splitUp(destructorOf,className) (className *object)
-#define printer(className)                                void splitUp(printerOf,className) (className *object)
-#define singleton(className)                              className* splitUp(singletonOf,className)(void)
-#define staticMethod(returnValue, methodName, className)  returnValue splitUp(splitUp(staticMethod, methodName), splitUp(Of, className))(className *deprecatedObject
+#define constructor(className)                            className* concatenate(constructorOf,className) (className *object
+#define destructor(className)                             void concatenate(destructorOf,className) (className *object)
+#define printer(className)                                void concatenate(printerOf,className) (className *object)
+#define singleton(className)                              className* concatenate(singletonOf,className)(void)
+#define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
 
 // calls
-#define c(className)                                      splitUp(constructorOf, className)                                  // constructor function name
-#define d(className)                                      splitUp(destructorOf, className)                                   // destructor function name
-#define p(className)                                      splitUp(printerOf, className)                                      // printer function name
-#define m(methodName, className)                          splitUp(methodName,className)                                      // some method function name
-#define sm(methodName, className)                         splitUp(splitUp(staticMethod,methodName),splitUp(Of,className))    // static method function name
-#define vm(methodName, className)                         object->splitUp(splitUp(virtualMethod,methodName),splitUp(Of,className))
-#define master(object, masterClassName)                   object->splitUp(master,splitUp(masterClassName, Object))           // call to masterClassObject
-#define singletonCall(className)                          splitUp(singletonOf,className)()                                   // singleton call
+#define c(className)                                      concatenate(constructorOf, className)                                  // constructor function name
+#define d(className)                                      concatenate(destructorOf, className)                                   // destructor function name
+#define p(className)                                      concatenate(printerOf, className)                                      // printer function name
+#define m(methodName, className)                          concatenate(methodName,className)                                      // some method function name
+#define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className))    // static method function name
+#define vm(methodName, className)                         object->concatenate(concatenate(virtualMethod,methodName),concatenate(Of,className))
+#define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))           // call to masterClassObject
+#define singletonCall(className)                          concatenate(singletonOf,className)()                                   // singleton call
 
 #define $(object, methodName)                             methodName(object
 
