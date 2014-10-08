@@ -57,6 +57,9 @@ typedef enum RVirtualCodes {
     r_if,                  // if (false_instruction , true_instruction) value in dataRegister == 0,
                            // then false_instruction, else true_instruction
 
+    r_if_not              // if_not (false_instruction , true_instruction) value in dataRegister != 0,
+                          // then false_instruction, else true_instruction
+
 } RInstructions;
 
 static const uint64_t memorySizeOfRVM = 1024;
@@ -69,7 +72,7 @@ class(RVirtualMachine)
     byte             *command;           // pointer to rasm byte-code
 
     uint64_t          tickCount;
-
+    byte              *functionStartAddress;
     byte              breakFlag;         // for force quit
 
 endOf(RVirtualMachine)

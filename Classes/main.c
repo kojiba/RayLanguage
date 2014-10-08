@@ -30,6 +30,26 @@ int main(int argc, const char *argv[]) {
 //----------------------------------------------------------------------------------------------------------------------
 /*
 
+void cycleTest() {
+    // cycle test
+    // rasm program
+    RVirtualFunction *function = $(function, c(RVirtualFunction)) );
+    function->name = RS("If test");
+    master(function, RByteArray) = makeRByteArray(20);
+    master(function, RByteArray)->array[0] = r_increment;
+    master(function, RByteArray)->array[1] = r_increment;
+    master(function, RByteArray)->array[2] = r_increment;
+    master(function, RByteArray)->array[3] = r_if;
+    master(function, RByteArray)->array[4] = r_goto_address;
+    master(function, RByteArray)->array[5] = 8;
+    master(function, RByteArray)->array[6] = r_decrement;
+    master(function, RByteArray)->array[7] = r_print_char;
+    master(function, RByteArray)->array[8] = r_if_not;
+    master(function, RByteArray)->array[9] = r_goto_address;
+    master(function, RByteArray)->array[10] = 3;
+    master(function, RByteArray)->array[11] = r_end;
+}
+
 void RVM_basicsTest() {
 //    // brainfuck hard(with [, ]) hello world on RVM
 //    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),

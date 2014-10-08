@@ -13,7 +13,9 @@ class(RVirtualCompiler)
     uint64_t    lines;
     uint64_t    numberOfLines;
     uint64_t    symbols;
+
     uint64_t    iterator;
+    uint64_t    iteratorShift;
     RByteArray *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)

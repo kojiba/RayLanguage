@@ -54,7 +54,11 @@ method(void, executeCode, RVirtualMachine)) {
         } break;
 
         case r_print_char : {
-            RPrintf("%c", *object->dataRegister);
+            if(*object->dataRegister < 32 || *object->dataRegister > 127) {
+                RPrintf("%02x ", *object->dataRegister);
+            } else {
+                RPrintf("%c", *object->dataRegister);
+            }
             ++object->command;
         } break;
 
@@ -73,13 +77,23 @@ method(void, executeCode, RVirtualMachine)) {
 
         case r_goto_address : {
             // set pointer to command incremented pointers data, like JMP address, fixme when instruction in data
-            object->command = *(++object->command);
+            object->command = object->functionStartAddress + *(++object->command);
         } break;
 
         case r_if : {
             if((*object->dataRegister) != 0) {
                 // true instruction
-                object->command += 3; // 3 case of goto arg byte
+                object->command += 3; // 3 - cause of goto arg byte
+            } else {
+                // false instruction
+                ++object->command;
+            }
+        } break;
+
+        case r_if_not : {
+            if((*object->dataRegister) == 0) {
+                // true instruction
+                object->command += 3; // 3 - cause of goto arg byte
             } else {
                 // false instruction
                 ++object->command;
@@ -125,7 +139,8 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     object->dataRegister = &object->memory->array[0];
 
     // set command to first byte of opcodes
-    object->command = &object->functionExecuting->masterRByteArrayObject->array[0];
+    object->functionStartAddress = master(object->functionExecuting, RByteArray)->array;
+    object->command = object->functionStartAddress;
 
     // execute first code, that starts processing
     $(object, m(executeCode, RVirtualMachine)));
