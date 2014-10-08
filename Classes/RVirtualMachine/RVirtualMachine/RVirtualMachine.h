@@ -15,35 +15,36 @@ typedef enum RVirtualCodes {
 
     r_modifies_input,
     r_data_start,
-    r_end,
+    r_end,                  // work-end-code
     r_function_begin,
     r_const_start,
     r_const_end,
     r_ignore,               // code for ignoring, not byte-code
     r_error,
 
-// algebra operations
+// algebra operations (address 1, address 2)
     r_addition,
     r_subtraction,
     r_multiplication,
     r_division,
 
-// binary operations
+// binary operations (address 1, address 2)
     r_xor,
     r_and,
     r_or,
-    r_no,
 
-// one arg
+
+// one arg (dataRegister)
     r_increment,
     r_decrement,
+    r_no,
 
 // brain-fuck move ups
     r_move_forward,
     r_move_backward,
 
 // jump to a difference
-    r_goto_address,        // jump (address) sets command register to address
+    r_goto_address,        // jump (address value) sets command register to address
 
 // io
     r_print_0_string,      // prints all to 0, cause errors
@@ -53,11 +54,11 @@ typedef enum RVirtualCodes {
     r_get_char,
     r_get,
 
-// if
-    r_if,                  // if (false_instruction , true_instruction) value in dataRegister == 0,
+// if (dataRegister)
+    r_if,                  // if (false_instruction , true_instruction) value == 0,
                            // then false_instruction, else true_instruction
 
-    r_if_not              // if_not (false_instruction , true_instruction) value in dataRegister != 0,
+    r_if_not              // if_not (false_instruction , true_instruction) value != 0,
                           // then false_instruction, else true_instruction
 
 } RInstructions;
@@ -65,15 +66,15 @@ typedef enum RVirtualCodes {
 static const uint64_t memorySizeOfRVM = 1024;
 
 class(RVirtualMachine)
-    RByteArray       *memory;            // memory 1 kB size
-    RVirtualFunction *functionExecuting; // pointer to function
+    RByteArray       *memory;               // memory 1 kB size
+    RVirtualFunction *functionExecuting;    // pointer to function
 
-    byte             *dataRegister;      // pointer to memory element
-    byte             *command;           // pointer to rasm byte-code
+    byte             *dataRegister;         // pointer to memory element
+    byte             *command;              // pointer to rasm byte-code
+    byte             *functionStartAddress; // pointer to place, where function starts
 
     uint64_t          tickCount;
-    byte              *functionStartAddress;
-    byte              breakFlag;         // for force quit
+    byte              breakFlag;            // for force quit
 
 endOf(RVirtualMachine)
 

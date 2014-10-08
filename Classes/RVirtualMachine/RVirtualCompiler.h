@@ -7,8 +7,7 @@
 
 class(RVirtualCompiler)
 
-    RCString   *code; // copy of source-code
-//    RArray   *dataBlock;
+    RCString   *code;          // copy of source-code
 
     uint64_t    lines;
     uint64_t    numberOfLines;

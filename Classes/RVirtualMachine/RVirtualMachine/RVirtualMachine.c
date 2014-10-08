@@ -31,6 +31,7 @@ method(void, setUpDataBlock, RVirtualMachine)) {
 method(void, executeCode, RVirtualMachine)) {
 
     switch(*object->command) {
+
         case r_increment : {
             // increment data at pointer
             ++(*object->dataRegister);
@@ -46,7 +47,7 @@ method(void, executeCode, RVirtualMachine)) {
 // prints
         case r_print_0_string : {
             RPrintf("%s\n", object->dataRegister);
-            while(*object->dataRegister != r_string_end) {
+            while(*object->dataRegister != 0) {
                 ++object->dataRegister;
                 ++object->tickCount;
             }

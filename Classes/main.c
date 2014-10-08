@@ -10,6 +10,7 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 #include "RVirtualMachine/RVirtualCompiler.h"
 #include "RayFoundation/RStringDictionary/RStringDictionary.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 
 int main(int argc, const char *argv[]) {
     // brainfuck hard(with [, ]) hello world on RVM

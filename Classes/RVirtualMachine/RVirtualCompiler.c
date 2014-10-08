@@ -7,13 +7,10 @@ constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
     if(object != NULL) {
 
-//        object->dataBlock = makeRArray();
-//        if(object->dataBlock != NULL) {
-            object->classId = registerClassOnce(toString(RVirtualCompiler));
-            object->lines = 1;
-            object->symbols = 1;
-            object->numberOfLines = 0;
-//        }
+        object->classId = registerClassOnce(toString(RVirtualCompiler));
+        object->lines = 1;
+        object->symbols = 1;
+        object->numberOfLines = 0;
     }
     return object;
 }
@@ -23,7 +20,6 @@ destructor(RVirtualCompiler) {
         $(object->code, d(RCString)) );
         deallocator(object->code);
 
-//        deleteRA(object->dataBlock);
     }
 }
 

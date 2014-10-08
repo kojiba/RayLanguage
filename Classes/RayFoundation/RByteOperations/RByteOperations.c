@@ -6,6 +6,7 @@
  */
 
 #include "RByteOperations.h"
+#include "../RClassTable/RClassTable.h"
 
 #pragma mark Basics
 
@@ -92,6 +93,7 @@ constructor(RByteArray), uint64_t size) {
     if(object != NULL) {
         object->array = makeByteArray(size);
         object->size = size;
+        object->classId = registerClassOnce(toString(RByteArray));
     }
     return object;
 }
