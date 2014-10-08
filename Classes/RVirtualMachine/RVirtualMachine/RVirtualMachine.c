@@ -102,7 +102,7 @@ method(void, executeCode, RVirtualMachine)) {
 
 // work end
         case r_end : {
-            RPrintf("End work of RVM.\n");
+            RPrintf("\nEnd work of RVM.\n");
             return;
         }
 
