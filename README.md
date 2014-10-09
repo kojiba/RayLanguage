@@ -10,6 +10,60 @@ secondly:
 There is BEST dynamic array for C language.
 There is classTable, that can help you to fast audite C code.
 
+killer-feature:
+Ray Virtual Machine (RVM) with simple 'rasm' byte-code
+BrainFuck compiler(to rasm byte-code) for RVM.
+
+BrainFuck samples:
+```C
+#include "RayFoundation/RayFoundation.h"
+#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
+#include "RVirtualMachine/RVirtualCompiler.h"
+
+int main(int argc, const char *argv[]) {
+    // ezy brainfuck hello world
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
+                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
+                    " ++++++++++++.+++++++..+++.-------------------\n"
+                    " ---------------------------------------------\n"
+                    " ---------------.+++++++++++++++++++++++++++++\n"
+                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
+                    " ++++++.+++.------.--------.------------------\n"
+                    " ---------------------------------------------\n"
+                    " ----.-----------------------."));
+
+    // execute of byte-code on RVM singleton
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+
+    // brainfuck compiler multiple-cycles test
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+
+    // brainfuck hard(with [, ]) hello world on RVM
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                                  " ------.--------.>+.>."));
+
+    // rasm byte-code print in words
+    $(function, p(RVirtualFunction)) );
+
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+    
+    // final function delete
+    deallocator(function);
+
+    // RVM singleton cleanup
+    deleteRVM();
+    return 0;
+}
+```
 Work with RArray:
 
 ```C
