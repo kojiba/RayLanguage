@@ -25,13 +25,13 @@ int main(int argc, const char *argv[]) {
                     " ---------------------------------------------\n"
                     " ----.-----------------------."));
 
+    // execute of byte-code on RVM singleton
     executeRay(function);
-
     $(function, d(RVirtualFunction)) );
-    // compiler cycle test on brainfuck
+
+    // brainfuck compiler multiple-cycles test
     function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
             RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
-
     executeRay(function);
     $(function, d(RVirtualFunction)) );
 
@@ -41,7 +41,7 @@ int main(int argc, const char *argv[]) {
                                   " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
                                   " ------.--------.>+.>."));
 
-    // rasm byte-code print
+    // rasm byte-code print in words
     $(function, p(RVirtualFunction)) );
 
     executeRay(function);
