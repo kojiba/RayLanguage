@@ -11,7 +11,7 @@ There is BEST dynamic array for C language.
 There is classTable, that can help you to fast audite C code.
 
 killer-feature:
-Ray Virtual Machine (RVM) with simple 'rasm' byte-code
+Ray Virtual Machine (RVM) with simple 'rasm' byte-code.
 BrainFuck compiler(to rasm byte-code) for RVM.
 
 BrainFuck samples:
