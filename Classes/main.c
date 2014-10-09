@@ -42,7 +42,7 @@ int main(int argc, const char *argv[]) {
                                   " ------.--------.>+.>."));
 
     // rasm byte-code print
-//    $(function, p(RVirtualFunction)) );
+    $(function, p(RVirtualFunction)) );
 
     executeRay(function);
     $(function, d(RVirtualFunction)) );

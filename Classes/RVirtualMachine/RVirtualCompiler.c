@@ -192,7 +192,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
 
         RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
-        $(function, p(RVirtualFunction)) );
+//        $(function, p(RVirtualFunction)) );
         return function;
     } else {
         RPrintf("Error. RVC. Bad virtual-code size\n");
