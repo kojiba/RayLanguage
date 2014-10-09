@@ -15,9 +15,7 @@
 int main(int argc, const char *argv[]) {
     // brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
-                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
-                                  " ------.--------.>+.>."));
+            RS(" Cycles : +++ [ > +++ [.-] <-]"));
 
     executeRay(function);
 
