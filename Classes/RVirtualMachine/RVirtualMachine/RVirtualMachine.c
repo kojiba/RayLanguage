@@ -55,7 +55,12 @@ method(void, executeCode, RVirtualMachine)) {
         } break;
 
         case r_print_char : {
-            if(*object->dataRegister < 32 || *object->dataRegister > 127) {
+            if(*object->dataRegister == '\n'
+                    || *object->dataRegister == '\r'
+                    || *object->dataRegister == '\t') {
+                RPrintf("%c", *object->dataRegister);
+            } else if(*object->dataRegister < 32
+                    || *object->dataRegister > 127) {
                 RPrintf("%02x ", *object->dataRegister);
             } else {
                 RPrintf("%c", *object->dataRegister);

@@ -115,7 +115,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case '[': {
-            // complicated case testme(fixed)
+            // complicated case
             uint64_t realPath;
 
             deltaToNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator + object->iteratorShift], object->code->size - deltaToNext, ']');
@@ -136,7 +136,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case ']': {
-            // complicated case testme, fixme
+            // complicated case
             uint64_t realPath;
 
             toPrev = indexOfLastCharacterCString(object->code->baseString, toPrev ? toPrev : object->code->size, '[');

@@ -13,9 +13,14 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 int main(int argc, const char *argv[]) {
-    // brainfuck hard(with [, ]) hello world on RVM
+//    // brainfuck hard(with [, ]) hello world on RVM
+//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+//            RS(" Cycles : +++ [ > +++ [.-] <-]"));
+//    brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Cycles : +++ [ > +++ [.-] <-]"));
+            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                                  " ------.--------.>+.>."));
 
     executeRay(function);
 
