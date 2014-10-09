@@ -19,6 +19,11 @@ class(RVirtualCompiler)
     uint64_t    iteratorShift;
     uint64_t    forwardRepetitions;
     uint64_t    backwardRepetitions;
+
+    // workers
+    uint64_t    deltaToNext;
+    uint64_t    toPrev;
+
     RByteArray *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)
@@ -27,7 +32,6 @@ constructor(RVirtualCompiler));
 destructor(RVirtualCompiler);
 
 method(RCString *,         getFunctionName,                       RVirtualCompiler));
-
 
 // brainfuck lang
 method(RByteArray*,             getBrainFuckFunctionBody,         RVirtualCompiler));

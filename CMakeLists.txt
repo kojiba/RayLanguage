@@ -43,5 +43,5 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
 
 
-file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(RayLanguage ${SOURCE_FILES})

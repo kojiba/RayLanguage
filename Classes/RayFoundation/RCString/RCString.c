@@ -72,6 +72,7 @@ constructor(RCString)) {
 
 destructor(RCString) {
     deallocator(object->baseString);
+    object->size = 0;
 }
 
 method(void, flush, RCString)) {
@@ -106,12 +107,9 @@ method(RCString *, setString, RCString), const char *string) {
 
 method(RCString *, setConstantString, RCString), char *string) {
     if(string != NULL) {
-        // flush old string
-        $(object, m(flush, RCString)) );
-
         // copy pointer, and compute length
         object->baseString = string;
-        object->size = RStringLenght(string);
+        object->size       = RStringLenght(string);
     } else {
         RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
     }
@@ -121,8 +119,9 @@ method(RCString *, setConstantString, RCString), char *string) {
 #pragma mark Options
 
 method(uint64_t, numberOfRepetitions, RCString), char character) {
+    uint64_t reps     = 0;
     uint64_t iterator;
-    uint64_t reps = 0;
+
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
             ++reps;
@@ -182,14 +181,28 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     return NULL;
 }
 
+method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
+    if(index > object->size) {
+        RPrintf("Error. RCS. Bad index!");
+    } else {
+        RMemMove(object->baseString + index, object->baseString + index + 1, object->size - index);
+    }
+    return object;
+}
+
 #pragma mark Substrings and Copies
 
 method(RCString *, getSubstringInRange, RCString), RRange range) {
     if(range.count != 0 && range.from < object->size) {
         char *cstring = RAlloc(range.count + 1 * sizeof(char));
-        RMemCpy(cstring, object->baseString + range.from, range.count);
+        RMemMove(cstring, object->baseString + range.from, range.count);
         cstring[range.count + 1] = 0;
-        return RS(cstring);
+
+        RCString *rcString   = $(NULL, c(RCString)) );
+        rcString->size       = range.count;
+        rcString->baseString = cstring;
+
+        return rcString;
     } else {
         RPrintf("ERRROR. RCS. BAD RANGE!\n");
         return NULL;

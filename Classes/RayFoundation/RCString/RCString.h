@@ -47,8 +47,9 @@ method(RCString *,       setConstantString,   RCString),    char *string);      
 
 // Options
 method(uint64_t,         numberOfRepetitions, RCString),    char character);
-method(RCString *,       deleteAllCharacters, RCString),    char character);
-method(RCString *,       deleteAllSubstrings, RCString),    const RCString *substring);
+method(RCString *,       deleteAllCharacters, RCString),    char character);                   // returns not copy!
+method(RCString *,       deleteAllSubstrings, RCString),    const RCString *substring);        // returns not copy!
+method(RCString *,       deleteCharacterAt,   RCString),    uint64_t index);                   // returns not copy!
 
 // Substrings and Copies
 method(RCString *,       setSubstringInRange, RCString),    RRange range, const char *string);

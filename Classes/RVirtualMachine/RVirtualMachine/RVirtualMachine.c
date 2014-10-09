@@ -21,8 +21,11 @@ destructor(RVirtualMachine) {
 
 method(void, setUpDataBlock, RVirtualMachine)) {
     if(object->functionExecuting != NULL) {
+        // set-up break flag
+        object->breakFlag     = 0;
+
         object->memory->array = makeFlushedBytes(memorySizeOfRVM, 0x00);
-        object->memory->size = memorySizeOfRVM;
+        object->memory->size  = memorySizeOfRVM;
     } else {
         RPrintf("ERROR. RVM. Set-up function is NULL.");
     }
@@ -138,7 +141,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     // set tick count is 0
     object->tickCount = 0;
 
-    // copy data block
+    // set-up data block
     $(object, m(setUpDataBlock, RVirtualMachine)) );
 
     // set data register as pointer to first element of memory
@@ -146,7 +149,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
 
     // set command to first byte of opcodes
     object->functionStartAddress = master(object->functionExecuting, RByteArray)->array;
-    object->command = object->functionStartAddress;
+    object->command              = object->functionStartAddress;
 
     // execute first code, that starts processing
     $(object, m(executeCode, RVirtualMachine)));

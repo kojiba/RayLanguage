@@ -25,18 +25,16 @@ destructor(RVirtualCompiler) {
 
 method(RCString *, getFunctionName, RVirtualCompiler)) {
     if(object->code->size != 0){
-        uint64_t counter = 0;
+        uint64_t place;
 
         // finding to startSymbol
-        while(object->code->baseString[counter] != ':' && counter < object->code->size) {
-            ++counter;
-        }
+        place = indexOfFirstCharacterCString(object->code->baseString, object->code->size, ':');
 
         // get copy of substring
-        RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, counter));
+        RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, place));
 
         // delete nameString from sourceCode and ':' symbol
-        $(object->code, m(deleteInRange, RCString)), makeRRange(0, counter + 1));
+        $(object->code, m(deleteInRange, RCString)), makeRRange(0, place + 1));
 
         // delete spaces
         $(object->code, m(deleteAllCharacters, RCString)), ' ');
@@ -50,14 +48,14 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 
 method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     RByteArray *body;
-    byte character;
-    object->iterator = 0;
+    byte        character;
+    uint64_t    sizeOfByteCode;
+    object->iterator      = 0;
     object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
-    uint64_t sizeOfByteCode;
 
     // all [, ] instructions will be doubled in the byte-code,
     // because of r_if instruction build
-    object->forwardRepetitions = $(object->code, m(numberOfRepetitions, RCString)), '[');
+    object->forwardRepetitions  = $(object->code, m(numberOfRepetitions, RCString)), '[');
     object->backwardRepetitions = $(object->code, m(numberOfRepetitions, RCString)), ']');
 
     // removing all '\n' from byte-code, +1 to r_end
@@ -85,8 +83,6 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
 
 method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     byte byteCode;
-    static uint64_t deltaToNext = 0;
-    static uint64_t toPrev = 0;
 
     switch (object->code->baseString[object->iterator]) {
 
@@ -118,16 +114,15 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             // complicated case
             uint64_t realPath;
 
-            deltaToNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator + object->iteratorShift], object->code->size - deltaToNext, ']');
-
+            object->deltaToNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator + object->iteratorShift], object->code->size - object->deltaToNext, ']');
             --object->forwardRepetitions;
-            realPath = object->iterator + object->iteratorShift + deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
+            realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
                 RPrintf("RVC. Error. '[' Too long loop\n");
             }
 
-            object->body->array[object->iterator + object->iteratorShift] = r_if;
+            object->body->array[object->iterator + object->iteratorShift]     = r_if;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
             object->body->array[object->iterator + object->iteratorShift + 2] = realPath;
 
@@ -139,15 +134,15 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             // complicated case
             uint64_t realPath;
 
-            toPrev = indexOfLastCharacterCString(object->code->baseString, toPrev ? toPrev : object->code->size, '[');
+            object->toPrev = indexOfLastCharacterCString(object->code->baseString, object->toPrev ? object->toPrev : object->code->size, '[');
             --object->backwardRepetitions;
-            realPath = toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
+            realPath = object->toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
                 RPrintf("RVC. Error. ']' Too long loop\n");
             }
 
-            object->body->array[object->iterator + object->iteratorShift] = r_if_not;
+            object->body->array[object->iterator + object->iteratorShift]     = r_if_not;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
             object->body->array[object->iterator + object->iteratorShift + 2] = realPath;
 
@@ -183,17 +178,19 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
 
         // copy source to object
-        if(object->code != NULL) {
-            $(object->code, d(RCString)) );
-        }
         object->code = $(sourceCode, m(copy, RCString)) );
 
+        // init workings
+        object->deltaToNext = 0;
+        object->toPrev      = 0;
+
         // set name and body
-        function->name = $(object, m(getFunctionName, RVirtualCompiler)) );
+        function->name               = $(object, m(getFunctionName, RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
-        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
+        $(object->code, d(RCString)) );
 
+        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
         $(function, p(RVirtualFunction)) );
         return function;

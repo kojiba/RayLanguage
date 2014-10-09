@@ -54,7 +54,7 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
         if(result == 0) {
             RClassNamePair *pair = $(NULL, c(RClassNamePair)));
             if (pair != NULL) {
-                $(master(pair, RCString), m(setString, RCString)), name);
+                $(master(pair, RCString), m(setConstantString, RCString)), name);
                 pair->idForClassName = master(object, RArray)->count;
 
                 // successfully register new class
@@ -92,7 +92,7 @@ printer(RClassTable) {
 
 method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
     RClassNamePair *pair = $(NULL, c(RClassNamePair)));
-    $(master(pair, RCString), m(setString, RCString)), name);
+    $(master(pair, RCString), m(setConstantString, RCString)), name);
 
     master(object, RCompareDelegate)->etaloneObject = pair;
 

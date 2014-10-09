@@ -13,21 +13,43 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 int main(int argc, const char *argv[]) {
-//    // brainfuck hard(with [, ]) hello world on RVM
-//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-//            RS(" Cycles : +++ [ > +++ [.-] <-]"));
-//    brainfuck hard(with [, ]) hello world on RVM
+    // ezy brainfuck hello world
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
-                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
-                                  " ------.--------.>+.>."));
+            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
+                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
+                    " ++++++++++++.+++++++..+++.-------------------\n"
+                    " ---------------------------------------------\n"
+                    " ---------------.+++++++++++++++++++++++++++++\n"
+                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
+                    " ++++++.+++.------.--------.------------------\n"
+                    " ---------------------------------------------\n"
+                    " ----.-----------------------."));
 
     executeRay(function);
 
     $(function, d(RVirtualFunction)) );
-    deallocator(function);
-    deleteRVM();
+    // compiler cycle test on brainfuck
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
 
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+
+    // brainfuck hard(with [, ]) hello world on RVM
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                                  " ------.--------.>+.>."));
+
+    // rasm byte-code print
+//    $(function, p(RVirtualFunction)) );
+
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+    deallocator(function);
+
+    // RVM singleton cleanup
+    deleteRVM();
     return 0;
 }
 

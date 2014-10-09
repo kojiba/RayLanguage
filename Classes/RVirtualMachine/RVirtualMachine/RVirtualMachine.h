@@ -83,7 +83,7 @@ destructor  (RVirtualMachine);
 singleton   (RVirtualMachine);
 
 method(void, executeFunction, RVirtualMachine),    RVirtualFunction *function);
-method(void, executeCode, RVirtualMachine));
+method(void, executeCode,     RVirtualMachine));
 
 method(void, setUpDataBlock,  RVirtualMachine));
 
