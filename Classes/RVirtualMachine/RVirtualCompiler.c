@@ -58,6 +58,10 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     object->forwardRepetitions  = $(object->code, m(numberOfRepetitions, RCString)), '[');
     object->backwardRepetitions = $(object->code, m(numberOfRepetitions, RCString)), ']');
 
+    if(object->forwardRepetitions != object->backwardRepetitions) {
+        RPrintf("Warning. RVC (BrainFuck). Count of \'[\' and \']\' isn't equal!");
+    }
+
     // removing all '\n' from byte-code, +1 to r_end
     sizeOfByteCode = object->code->size - object->numberOfLines + 1 + 2 * (object->forwardRepetitions + object->backwardRepetitions);
 
@@ -119,7 +123,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("RVC. Error. '[' Too long loop\n");
+                RPrintf("Warning. RVC (BrainFuck). '[' Too long loop\n");
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if;
@@ -139,7 +143,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             realPath = object->toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("RVC. Error. ']' Too long loop\n");
+                RPrintf("Warning. RVC (BrainFuck). ']' Too long loop\n");
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if_not;
@@ -164,7 +168,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("Error parsing Brainuck on line: %qu, symbol: %qu !\n", object->lines, object->symbols);
+            RPrintf("ERROR. RVC (BrainFuck). Undefined symbol on line: %qu, place: %qu !\n", object->lines, object->symbols);
         }
     }
 
@@ -192,7 +196,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
 
         RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
-//        $(function, p(RVirtualFunction)) );
+        //  $(function, p(RVirtualFunction)) );
         return function;
     } else {
         RPrintf("Error. RVC. Bad virtual-code size\n");
