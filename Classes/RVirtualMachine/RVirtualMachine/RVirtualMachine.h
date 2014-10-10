@@ -48,7 +48,7 @@ typedef enum RVirtualCodes {
 
 // io
     r_print_0_string,      // prints all to 0, cause errors
-    r_print_char,          // print simple ASCII char
+    r_print_char,          // print simple ASCII char or byte
     r_print_pascal_string, // prints buffer like string, length first
 
     r_get_char,

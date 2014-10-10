@@ -70,6 +70,12 @@ method(void, executeCode, RVirtualMachine)) {
             }
             ++object->command;
         } break;
+// gets
+        case r_get_char : {
+            // decrement data at pointer
+            *object->dataRegister = getchar();
+            ++object->command;
+        } break;
 
 // moves forward-backward
         case r_move_forward : {
