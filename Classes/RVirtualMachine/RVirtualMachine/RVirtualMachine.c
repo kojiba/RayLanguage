@@ -72,7 +72,6 @@ method(uint64_t, executeCode, RVirtualMachine)) {
         } break;
 // gets
         case r_get_char : {
-            // decrement data at pointer
             *object->dataRegister = getchar();
             ++object->command;
         } break;
@@ -95,6 +94,7 @@ method(uint64_t, executeCode, RVirtualMachine)) {
             object->command = object->functionStartAddress + *(++object->command);
         } break;
 
+// logical
         case r_if : {
             if((*object->dataRegister) != 0) {
                 // true instruction

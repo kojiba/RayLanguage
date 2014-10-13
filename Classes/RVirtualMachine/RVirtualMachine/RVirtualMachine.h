@@ -55,7 +55,7 @@ typedef enum RVirtualCodes {
     r_get,
 
 // if (dataRegister)
-    r_if,                  // if (false_instruction , true_instruction) value == 0,
+    r_if,                  // if (false_instruction, reserved byte, true_instruction) value == 0,
                            // then false_instruction, else true_instruction
 
     r_if_not              // if_not (false_instruction , true_instruction) value != 0,

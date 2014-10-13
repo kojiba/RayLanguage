@@ -189,7 +189,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         object->toPrev      = 0;
 
         // set name and body
-        function->name               = $(object, m(getFunctionName, RVirtualCompiler)) );
+        function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
         $(object->code, d(RCString)) );
