@@ -82,10 +82,12 @@ constructor (RVirtualMachine));
 destructor  (RVirtualMachine);
 singleton   (RVirtualMachine);
 
-method(void, executeFunction, RVirtualMachine),    RVirtualFunction *function);
-method(void, executeCode,     RVirtualMachine));
+// main method, to execute byte-code function
+method(void,     executeFunction, RVirtualMachine),    RVirtualFunction *function);
 
-method(void, setUpDataBlock,  RVirtualMachine));
+// workings methods
+method(uint64_t, executeCode,     RVirtualMachine));
+method(void,     setUpDataBlock,  RVirtualMachine));
 
 #define RVM singletonCall(RVirtualMachine)
 #define deleteRVM() $(RVM, d(RVirtualMachine)) ); \

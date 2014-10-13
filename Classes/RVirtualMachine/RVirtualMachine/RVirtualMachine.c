@@ -31,7 +31,7 @@ method(void, setUpDataBlock, RVirtualMachine)) {
     }
 }
 
-method(void, executeCode, RVirtualMachine)) {
+method(uint64_t, executeCode, RVirtualMachine)) {
 
     switch(*object->command) {
 
@@ -118,26 +118,20 @@ method(void, executeCode, RVirtualMachine)) {
 // work end
         case r_end : {
             RPrintf("\nEnd work of RVM.\n");
-            return;
+            return 1;
         }
 
 // bad situation
         default: {
             RPrintf("RVM. Warning, default case, unhalted result\n");
-            return;
+            return 1;
         }
     }
-
-    // increment ticks
-    ++object->tickCount;
-
-    // execute next code while not flag
-    if(object->breakFlag == 0) {
-        $(object, m(executeCode, RVirtualMachine)));
-    }
+    return 0;
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
+    uint64_t result = 0;
     // copy pointer
     object->functionExecuting = function;
 
@@ -158,7 +152,12 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     object->command              = object->functionStartAddress;
 
     // execute first code, that starts processing
-    $(object, m(executeCode, RVirtualMachine)));
+    // execute next code while not flag
+    while(object->breakFlag == 0 && result != 1) {
+        result = $(object, m(executeCode, RVirtualMachine)));
+        // increment ticks
+        ++object->tickCount;
+    }
 
     // at end of processing print analytics
     RPrintf("\nRVM. End Executing Function : \"%s\"\n", function->name->baseString);
