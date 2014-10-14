@@ -37,36 +37,39 @@ class(RCString) //------------------------------------
 endOf(RCString) //------------------------------------
 
 // Constructor - Destructor - Reallocation
-constructor(RCString));
-destructor(RCString);
-method(void,             flush,              RCString));                                       // deletes old string
+constructor (RCString));
+destructor  (RCString);
+method(void,             flush,                RCString));                                      // deletes old string
 
 // Setters
-method(RCString *,       setString,           RCString),    const char *string);               // copy characters
-method(RCString *,       setConstantString,   RCString),    char *string);                     // copy pointer
+method(RCString *,       setString,            RCString),    const char *string);               // copy characters
+method(RCString *,       setConstantString,    RCString),    char *string);                     // copy pointer
 
 // Options
-method(uint64_t,         numberOfRepetitions, RCString),    char character);
-method(RCString *,       deleteAllCharacters, RCString),    char character);                   // returns not copy!
-method(RCString *,       deleteAllSubstrings, RCString),    const RCString *substring);        // returns not copy!
-method(RCString *,       deleteCharacterAt,   RCString),    uint64_t index);                   // returns not copy!
+method(uint64_t,         numberOfRepetitions,  RCString),    char character);
+method(RCString *,       deleteAllCharacters,  RCString),    char character);                   // returns not copy!
+method(RCString *,       deleteAllSubstrings,  RCString),    const RCString *substring);        // returns not copy!
+method(RCString *,       deleteCharacterAt,    RCString),    uint64_t index);                   // returns not copy!
+method(void,             deleteInRange,        RCString),    RRange range);                     // with shift
 
 // Substrings and Copies
-method(RCString *,       setSubstringInRange, RCString),    RRange range, const char *string);
-method(RCString *,       getSubstringInRange, RCString),    RRange range);                     // substring is a copy
-method(void,             deleteInRange,       RCString),    RRange range);                     // with shift
-method(RCString *,       copy,                RCString));
+method(RCString *,       setSubstringInRange,  RCString),    RRange range, const char *string);
+
+method(RCString *,       getSubstringInRange,  RCString),    RRange range);                     // substring is a copy
+method(RCString *,       getSubstringByBounds, RCString),    RBounds bounds);                   // substring is a copy, by nesting
+
+method(RCString *,       copy,                 RCString));
 
 // Comparator
-method(RCompareFlags,    compareWith,         RCString),    const RCString *checkString);
+method(RCompareFlags,    compareWith,          RCString),    const RCString *checkString);
 
 // With file
-method(void,             fromFile,            RCString),    const RCString *filename);          // deletes old string
+method(void,             fromFile,             RCString),    const RCString *filename);          // deletes old string
 
 printer(RCString);
 
-staticMethod(RCString *, randomString,        RCString));
-staticMethod(char ,      randomCharacter,     RCString));
+staticMethod(RCString *, randomString,         RCString));
+staticMethod(char ,      randomCharacter,      RCString));
 
 //----------------------------------------------------------------------------------
 

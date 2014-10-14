@@ -190,6 +190,16 @@ method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
     return object;
 }
 
+method(void, deleteInRange, RCString), RRange range) {
+    if(range.count != 0 && range.from < object->size) {
+        RMemMove(object->baseString + range.from, object->baseString + range.from + range.count, object->size - range.count - range.from + 1);
+        object->size -= range.count;
+        object->baseString[object->size + 1] = 0;
+    } else {
+        RPrintf("ERRROR. RCS. deleteInRange, bad range, do nothing.\n");
+    }
+}
+
 #pragma mark Substrings and Copies
 
 method(RCString *, getSubstringInRange, RCString), RRange range) {
@@ -210,14 +220,15 @@ method(RCString *, getSubstringInRange, RCString), RRange range) {
 
 }
 
-method(void, deleteInRange, RCString), RRange range) {
-    if(range.count != 0 && range.from < object->size) {
-        RMemMove(object->baseString + range.from, object->baseString + range.from + range.count, object->size - range.count - range.from + 1);
-        object->size -= range.count;
-        object->baseString[object->size + 1] = 0;
-    } else {
-        RPrintf("ERRROR. RCS. deleteInRange, bad range, do nothing.\n");
-    }
+method(RCString *, getSubstringByBounds, RCString), RBounds bounds) {
+    RCString *result;
+    RRange    range;
+
+    range.from  = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
+    range.count = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.from;
+
+    result = $(object, m(getSubstringInRange, RCString)), range);
+    return result;
 }
 
 method(RCString *, copy, RCString)){
