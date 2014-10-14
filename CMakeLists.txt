@@ -36,8 +36,8 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
 
-                 Classes/RVirtualMachine/RVirtualCompiler.h
-                 Classes/RVirtualMachine/RVirtualCompiler.c
+                 Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
+                 Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
 
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)

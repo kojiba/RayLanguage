@@ -55,7 +55,6 @@ method(void, setObjectForKey, RStringDictionary), RCString *value, RCString *key
     $(master(object, RDictionary), m(setObjectForKey, RDictionary)), value, key);
 }
 
-method(RCString *, getObjectForKey, RStringDictionary), RCString *key) {
-    RCString *result = $(master(object, RDictionary), m(getObjectForKey, RDictionary)), key);
-    return result;
+method(pointer, getObjectForKey, RStringDictionary), RCString *key) {
+    return $(master(object, RDictionary), m(getObjectForKey, RDictionary)), key);
 }

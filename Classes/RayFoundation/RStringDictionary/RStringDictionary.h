@@ -20,7 +20,7 @@ constructor (RStringDictionary));
 destructor  (RStringDictionary);
 printer     (RStringDictionary);
 
-method(void,       setObjectForKey, RStringDictionary),    RCString *value, RCString *key); // must be copies, use RSC, or RCString copy
-method(RCString *, getObjectForKey, RStringDictionary),    RCString *key);                  // return POINTER, NOT COPY, be aware!
+method(void,     setObjectForKey, RStringDictionary),    RCString *value, RCString *key); // must be copies, use RSC, or RCString copy
+method(pointer , getObjectForKey, RStringDictionary),    RCString *key);                  // return POINTER, NOT COPY, be aware!
 
 #endif /*__R_STRING_DICTIONARY_H__*/

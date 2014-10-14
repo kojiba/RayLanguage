@@ -8,12 +8,11 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
-#include "RVirtualMachine/RVirtualCompiler.h"
+#include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
 #include "RayFoundation/RStringDictionary/RStringDictionary.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 int main(int argc, const char *argv[]) {
-
     return 0;
 }
 

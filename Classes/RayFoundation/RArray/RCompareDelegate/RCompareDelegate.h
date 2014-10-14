@@ -5,7 +5,11 @@
 
 typedef enum RCompareFlags{
     equals,
-    not_equals
+    not_equals,
+    longer,
+    shorter,
+    bigger,
+    smaller
 } RCompareFlags;
 
 protocol(RCompareDelegate)
