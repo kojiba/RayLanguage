@@ -32,6 +32,9 @@ set(SOURCE_FILES Classes/main.c
                  Classes/RayFoundation/RByteOperations/RByteOperations.h
                  Classes/RayFoundation/RByteOperations/RByteOperations.c
 
+                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
+                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
+
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c

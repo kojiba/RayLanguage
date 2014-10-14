@@ -11,8 +11,27 @@
 #include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
 #include "RayFoundation/RStringDictionary/RStringDictionary.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
+#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
+
+//uint64_t getNext(uint64_t iterator) {
+//    return iterator;
+//}
+
+REnum(Hello)
+    first,
+    second,
+    third
+endOfEnum(Hello)
+
+
+
+
 
 int main(int argc, const char *argv[]) {
+//    RFloatingEnum *floatingEnum = $(NULL, c(RFloatingEnum)), getNext, "First", "Second", "Third");
+//    $(floatingEnum, p(RFloatingEnum)) );
+//    $(floatingEnum, d(RFloatingEnum)) );
+//    deallocator(floatingEnum);
     return 0;
 }
 

@@ -18,9 +18,14 @@ constructor(RDictionary)) {
         object->values  = makeRArray();
 
         if(object->keys == NULL
-                || object->values == NULL){
+                || object->values == NULL) {
             RPrintf("ERROR. RD. Allocation keys or values error.");
         } else {
+            object->values->destructorDelegate = NULL;
+            object->keys->destructorDelegate   = NULL;
+            object->values->printerDelegate    = NULL;
+            object->keys->printerDelegate      = NULL;
+
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
             master(object, RCompareDelegate)->virtualCompareMethod = NULL;
         }
@@ -29,7 +34,7 @@ constructor(RDictionary)) {
 }
 
 destructor(RDictionary) {
-    if(object != NULL){
+    if(object != NULL) {
         deleteRA(object->keys);
         deleteRA(object->values);
         deallocator(master(object, RCompareDelegate));
