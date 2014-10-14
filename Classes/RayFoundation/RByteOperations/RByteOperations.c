@@ -26,11 +26,12 @@ void printByteArrayInHex(const byte *array, uint64_t size) {
     if(array != NULL) {
         uint64_t iterator;
         forAll(iterator, size) {
-            if (iterator % 20 == 0) {
+            if (iterator % 20 == 0 && iterator != 0) {
                 RPrintf("\n");
             }
             RPrintf("%02x ", array[iterator]);
         }
+        RPrintf("\n");
     } else {
         RPrintf("Empty byte array.\n");
     }
@@ -51,7 +52,6 @@ byte* getSubArray(const byte *array, RRange range) {
 RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symbol) {
     RByteArray *result   = NULL;
     uint64_t    iterator = 0;
-    byte       *subArray;
 
     while(array[iterator] != symbol
             && iterator < size) {
@@ -59,11 +59,8 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symb
     }
 
     if(iterator != 0) {
-        result = allocator(RByteArray);
-        result->size = iterator;
-        subArray = RAlloc(iterator);
-        RMemMove(subArray, array, iterator);
-        result->array = subArray;
+        result = $(NULL, c(RByteArray)), iterator);
+        RMemMove(result->array, array, iterator);
     }
     return result;
 }
@@ -71,17 +68,19 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symb
 RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol) {
     RByteArray         *subArray    = NULL;
     RArray             *resultArray = makeRArray();
+    byte               *tempArray   = array;
 
     // init RArray
     resultArray->destructorDelegate = d(RByteArray);
     resultArray->printerDelegate    = p(RByteArray);
 
     subArray = getSubArrayToFirstSymbol(array, size, symbol);
-    while(subArray != NULL) {
+    while(subArray != NULL && size > 0) {
         addObjectToRA(resultArray, subArray);
-        subArray = getSubArrayToFirstSymbol(array, size, symbol);
+        size = size - subArray->size - 1;
+        tempArray += subArray->size + 1;
+        subArray = getSubArrayToFirstSymbol(tempArray, size, symbol);
     }
-    // fixme
 
     return resultArray;
 }
@@ -91,8 +90,8 @@ RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol
 constructor(RByteArray), uint64_t size) {
     object = allocator(RByteArray);
     if(object != NULL) {
-        object->array = makeByteArray(size);
-        object->size = size;
+        object->array   = makeByteArray(size);
+        object->size    = size;
         object->classId = registerClassOnce(toString(RByteArray));
     }
     return object;
@@ -117,7 +116,7 @@ RByteArray* flushAllToByteRByteArray(RByteArray *array, byte symbol) {
 
 method (RByteArray*, copy, RByteArray)) {
     RByteArray *copy = allocator(RByteArray);
-    copy->array = getByteArrayCopy(object->array, object->size);
-    copy->size = object->size;
+    copy->array      = getByteArrayCopy(object->array, object->size);
+    copy->size       = object->size;
     return copy;
 }

@@ -13,43 +13,7 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 int main(int argc, const char *argv[]) {
-    // ezy brainfuck hello world
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
-                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
-                    " ++++++++++++.+++++++..+++.-------------------\n"
-                    " ---------------------------------------------\n"
-                    " ---------------.+++++++++++++++++++++++++++++\n"
-                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
-                    " ++++++.+++.------.--------.------------------\n"
-                    " ---------------------------------------------\n"
-                    " ----.-----------------------."));
 
-    // execute of byte-code on RVM singleton
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-
-    // brainfuck compiler multiple-cycles test
-    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-
-    // brainfuck hard(with [, ]) hello world on RVM
-    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
-                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
-                                  " ------.--------.>+.>."));
-
-    // rasm byte-code print in words
-    $(function, p(RVirtualFunction)) );
-
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-    deallocator(function);
-
-    // RVM singleton cleanup
-    deleteRVM();
     return 0;
 }
 
