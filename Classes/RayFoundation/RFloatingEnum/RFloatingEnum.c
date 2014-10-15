@@ -4,7 +4,7 @@
 constructor (RFloatingEnum), pointer (*nextElementForCode)(pointer), RRange range) {
     pointer iterator;
     object = allocator(RFloatingEnum);
-    if(object != NULL) {
+    if(object != NULL && nextElementForCode != NULL) {
         master(object, RDictionary) = makeRDictionary();
 
         if(master(object, RDictionary) != NULL) {
@@ -62,9 +62,13 @@ method(void, changesAfterCall,  RFloatingEnum), byte flag) {
 
 method(void, rebase, RFloatingEnum)) {
     pointer iterator;
-    $(master(object, RDictionary)->values, m(flush, RArray)) );
-    // rebase only values array
-    forAll(iterator, master(object, RDictionary)->keys->count) {
-        addObjectToRA(master(object, RDictionary)->values, object->nextElementForCode(iterator));
+    if(object->nextElementForCode != NULL) {
+        $(master(object, RDictionary)->values, m(flush, RArray)) );
+        // rebase only values array
+        forAll(iterator, master(object, RDictionary)->keys->count) {
+            addObjectToRA(master(object, RDictionary)->values, object->nextElementForCode(iterator));
+        }
+    } else {
+        RPrintf("ERROR. RFE. Delegate is empty");
     }
 }

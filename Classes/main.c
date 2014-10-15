@@ -17,6 +17,7 @@ typedef enum codes {
     first_opcode,
     second_opcode,
     third_opcode,
+    fourth_opcode,
     opcode_count
 } codes;
 
@@ -43,7 +44,6 @@ int main(int argc, const char *argv[]) {
     printEnum(codes);
     checkValueToKey(codes, 282475249, second_opcode);
     printEnum(codes);
-
 
     deleteEnum(codes);
     return 0;
