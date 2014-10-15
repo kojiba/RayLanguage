@@ -19,12 +19,12 @@ printer     (RFloatingEnum);
 method(RCompareFlags, compareValueToKey, RFloatingEnum),    pointer value, pointer key);
 method(void,          rebase,            RFloatingEnum));                                   // changes codes(values) depend on nextElementForCode delegate
 
-#define RFloatingEnumName(enumName) concatenate(RFloatingEnum, enumName)
+#define RFloatingEnumName(enumName)                                             concatenate(RFloatingEnum, enumName)
 #define createFloatingEnum(enumName, delegate, enumFirstValue, enumValuesCount) \
-const RFloatingEnum *RFloatingEnumName(enumName) = $(NULL, c(RFloatingEnum)), delegate, makeRRange(enumFirstValue, enumValuesCount))
+    const RFloatingEnum *RFloatingEnumName(enumName) = $(NULL, c(RFloatingEnum)), delegate, makeRRange(enumFirstValue, enumValuesCount))
 
 #define checkValueToKey(enumName, value, key) $(RFloatingEnumName(enumName), m(compareValueToKey, RFloatingEnum)), value, key)
-#define printEnum(enumName) $(RFloatingEnumName(enumName), p(RFloatingEnum)) )
-#define rebaseEnum(enumName) $(RFloatingEnumName(enumName), m(rebase, RFloatingEnum)) )
+#define printEnum(enumName)                   $(RFloatingEnumName(enumName), p(RFloatingEnum)) )
+#define rebaseEnum(enumName)                  $(RFloatingEnumName(enumName), m(rebase, RFloatingEnum)) )
 
 #endif /*__R_FLOATING_ENUM_H__*/
