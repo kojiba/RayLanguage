@@ -11,10 +11,6 @@
 
 typedef enum RVirtualCodes {
 
-    r_string_end = 0,       // reserved for 0-terminated strings
-
-    r_modifies_input,
-    r_data_start,
     r_end,                  // work-end-code
     r_function_begin,
     r_const_start,
@@ -58,8 +54,10 @@ typedef enum RVirtualCodes {
     r_if,                  // if (false_instruction, reserved byte, true_instruction) value == 0,
                            // then false_instruction, else true_instruction
 
-    r_if_not               // if_not (false_instruction , true_instruction) value != 0,
-                           // then false_instruction, else true_instruction
+    r_if_not,               // if_not (false_instruction , true_instruction) value != 0,
+                            // then false_instruction, else true_instruction
+
+    r_virtual_codes_count   // last parameter, count of opcodes
 
 } RInstructions;
 

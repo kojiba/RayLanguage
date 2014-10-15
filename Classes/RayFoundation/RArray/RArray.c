@@ -133,7 +133,7 @@ method(void, flush, RArray)) {
             // dealloc array pointer
             deallocator(object->array);
 
-            object->array = RAlloc(100 * sizeof(pointer));
+            object->array = RAlloc(object->startSize * sizeof(pointer));
 
             if (object->array == NULL) {
                 RPrintf("Warning. RA. Flush allocation error.\n");
@@ -141,7 +141,7 @@ method(void, flush, RArray)) {
             }
 
             object->count = 0;
-            object->freePlaces = 100;
+            object->freePlaces = object->startSize;
         }
 
     } else {

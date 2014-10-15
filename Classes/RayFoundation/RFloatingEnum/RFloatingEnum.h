@@ -5,27 +5,26 @@
 
 #include "../RStringDictionary/RStringDictionary.h"
 
-#if defined(REnum) || defined(endOfREnum) || defined(endREnumPoint)
-    #error "RFloating enum working defines are redefined. Please, remove that defines"
- #else
-    #define REnum(enumName) typedef enum enumName {
-    #define endOfREnum(enumName) }; enumName ; concatenate(endOfEnum, enumName)();
-    #define endREnumPoint(name) &concatenate(endOfEnum, name)
-#endif
-
 class(RFloatingEnum)
     discipleOf(RDictionary)
 
-    pointer (*nextElementForCode)(pointer code);
+    byte     isChangesAfterCall;               // if == 1 - rebase enum after each compare
+    pointer (*nextElementForCode)(pointer code); // get - set delegate, to create random elements
 endOf(RFloatingEnum)
 
-constructor (RFloatingEnum), pointer (*)(pointer code), pointer enumStartPointer, pointer enumEndPointer);
+constructor (RFloatingEnum), pointer (*)(pointer), RRange range); // range - is incrementing enum values from start value
 destructor  (RFloatingEnum);
 printer     (RFloatingEnum);
-singleton   (RFloatingEnum);
 
-method(RCompareFlags, compareValueToKey, RFloatingEnum) );
+method(RCompareFlags, compareValueToKey, RFloatingEnum),    pointer value, pointer key);
+method(void,          rebase,            RFloatingEnum));                                   // changes codes(values) depend on nextElementForCode delegate
 
-#define createFloatingEnum(enumName, delegate)
+#define RFloatingEnumName(enumName) concatenate(RFloatingEnum, enumName)
+#define createFloatingEnum(enumName, delegate, enumFirstValue, enumValuesCount) \
+const RFloatingEnum *RFloatingEnumName(enumName) = $(NULL, c(RFloatingEnum)), delegate, makeRRange(enumFirstValue, enumValuesCount))
+
+#define checkValueToKey(enumName, value, key) $(RFloatingEnumName(enumName), m(compareValueToKey, RFloatingEnum)), value, key)
+#define printEnum(enumName) $(RFloatingEnumName(enumName), p(RFloatingEnum)) )
+#define rebaseEnum(enumName) $(RFloatingEnumName(enumName), m(rebase, RFloatingEnum)) )
 
 #endif /*__R_FLOATING_ENUM_H__*/

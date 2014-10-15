@@ -13,25 +13,26 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 #include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
 
-//uint64_t getNext(uint64_t iterator) {
-//    return iterator;
-//}
-
-REnum(Hello)
-    first,
-    second,
-    third
-endOfEnum(Hello)
-
-
-
-
+typedef enum codes {
+    first_opcode,
+    second_opcode,
+    third_opcode,
+    opcode_count
+} codes;
 
 int main(int argc, const char *argv[]) {
-//    RFloatingEnum *floatingEnum = $(NULL, c(RFloatingEnum)), getNext, "First", "Second", "Third");
-//    $(floatingEnum, p(RFloatingEnum)) );
-//    $(floatingEnum, d(RFloatingEnum)) );
-//    deallocator(floatingEnum);
+    createFloatingEnum(codes, rand, first_opcode, opcode_count);
+
+    if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
+        RPrintf("Bingo!\n");
+    } else {
+        RPrintf("Not Bingo =(");
+    }
+    printEnum(codes);
+    rebaseEnum(codes);
+    printEnum(codes);
+
+
     return 0;
 }
 
