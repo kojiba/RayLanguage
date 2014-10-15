@@ -22,17 +22,30 @@ typedef enum codes {
 
 int main(int argc, const char *argv[]) {
     createFloatingEnum(codes, rand, first_opcode, opcode_count);
-
+    // cause not seed rand, in my case 282475249 is Bingo
     if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
         RPrintf("Bingo!\n");
     } else {
         RPrintf("Not Bingo =(");
     }
+    // print enum
     printEnum(codes);
+
+    // rebase manually
     rebaseEnum(codes);
     printEnum(codes);
 
+    // enables rebasing after all checks
+    setFloatingEnum(codes);
 
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+    printEnum(codes);
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+
+
+    deleteEnum(codes);
     return 0;
 }
 

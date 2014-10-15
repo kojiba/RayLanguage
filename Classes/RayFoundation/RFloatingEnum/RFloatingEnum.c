@@ -56,6 +56,10 @@ method(RCompareFlags, compareValueToKey, RFloatingEnum), pointer value, pointer 
     return flag;
 }
 
+method(void, changesAfterCall,  RFloatingEnum), byte flag) {
+    object->isChangesAfterCall = flag;
+}
+
 method(void, rebase, RFloatingEnum)) {
     pointer iterator;
     $(master(object, RDictionary)->values, m(flush, RArray)) );
