@@ -13,8 +13,50 @@ There is classTable, that can help you to fast audite C code.
 killer-feature:
 Ray Virtual Machine (RVM) with simple 'rasm' byte-code.
 BrainFuck compiler(to rasm byte-code) for RVM.
+Floating enums(changes value in runtime)
+
+```C
+#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
+
+typedef enum codes {
+    first_opcode,
+    second_opcode,
+    third_opcode,
+    fourth_opcode,
+    opcode_count
+} codes;
+
+int main(int argc, const char *argv[]) {
+ createFloatingEnum(codes, rand, first_opcode, opcode_count);
+    // cause not seed rand, in my case 282475249 is Bingo
+    if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
+        RPrintf("Bingo!\n");
+    } else {
+        RPrintf("Not Bingo =(");
+    }
+    // print enum
+    printEnum(codes);
+
+    // rebase manually
+    rebaseEnum(codes);
+    printEnum(codes);
+
+    // enables rebasing after all checks
+    setFloatingEnum(codes);
+
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+    printEnum(codes);
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+
+    deleteEnum(codes);
+    return 0
+}
+```
 
 BrainFuck samples:
+
 ```C
 #include "RayFoundation/RayFoundation.h"
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
