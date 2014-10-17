@@ -1,4 +1,3 @@
-#include <CoreFoundation/CoreFoundation.h>
 #include "RVirtualCompiler.h"
 #include "../RVirtualMachine/RVirtualMachine.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"

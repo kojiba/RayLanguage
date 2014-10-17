@@ -34,7 +34,7 @@ destructor(RVirtualCompiler);
 method(RCString *,         getFunctionName,                       RVirtualCompiler));
 
 // brainfuck lang
-method(RByteArray*,             getBrainFuckFunctionBody,         RVirtualCompiler));
+method(RByteArray*,        getBrainFuckFunctionBody,              RVirtualCompiler));
 method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler),    const RCString *sourceCode); // copies source
 method(byte,               brainFuckSourceToByteCode,             RVirtualCompiler));
 
