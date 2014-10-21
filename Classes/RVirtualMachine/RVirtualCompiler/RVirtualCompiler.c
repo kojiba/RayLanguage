@@ -23,22 +23,22 @@ destructor(RVirtualCompiler) {
 }
 
 method(RCString *, getFunctionName, RVirtualCompiler)) {
-    if(object->code->size != 0){
+    if(object->code->size != 0) {
         uint64_t place;
 
         // finding to startSymbol
         place = indexOfFirstCharacterCString(object->code->baseString, object->code->size, ':');
 
-        // get copy of substring
-        RCString *name = $(object->code, m(getSubstringInRange, RCString)), makeRRange(0, place));
+        // if there is ':'
+        if(place != object->code->size) {
 
-        // delete nameString from sourceCode and ':' symbol
-        $(object->code, m(deleteInRange, RCString)), makeRRange(0, place + 1));
+            // get copy of substring
+            RCString *name = $(object->code, m(substringInRange, RCString)), makeRRange(0, place));
 
-        // delete spaces
-        $(object->code, m(deleteAllCharacters, RCString)), ' ');
-        object->numberOfLines = $(object->code, m(numberOfRepetitions, RCString)), '\n');
-        return name;
+            // delete nameString from sourceCode and ':' symbol
+            $(object->code, m(deleteInRange, RCString)), makeRRange(0, place + 1));
+            return name;
+        }
     }
     return NULL;
 }
@@ -51,6 +51,10 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     uint64_t    sizeOfByteCode;
     object->iterator      = 0;
     object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
+
+    // delete spaces
+    $(object->code, m(deleteAllCharacters, RCString)), ' ');
+    object->numberOfLines = $(object->code, m(numberOfRepetitions, RCString)), '\n');
 
     // all [, ] instructions will be doubled in the byte-code,
     // because of r_if instruction build
@@ -191,6 +195,9 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
+        if(function->name == NULL) {
+            function->name = RSC("Unnamed");
+        }
         $(object->code, d(RCString)) );
 
         RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);

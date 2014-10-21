@@ -5,16 +5,13 @@
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
-#include "RayFoundation/RayFoundation.h"
+#include "RayFoundation/RCString/RCString.h"
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
-#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 #include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
-#include "RayFoundation/RStringDictionary/RStringDictionary.h"
-#include "RayFoundation/RClassTable/RClassTable.h"
-#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
-
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
+
     return 0;
 }
 

@@ -8,8 +8,7 @@
 #define __R_ARRAY_H__
 
 #include "../RayFoundation.h"
-#include "RCompareDelegate/RCompareDelegate.h"
-#include "../RCString/RCString.h"
+#include "../RBasics/RBasics.h"
 
 typedef struct RArrayFindResult {
     pointer result;
@@ -71,7 +70,7 @@ method(byte,               sizeToFit,                 RArray));
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, uint64_t index); // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
-method(void,               deleteObjects,             RArray),    RRange  range);                     // delete with shift
+method(void,               deleteObjects,             RArray),    RRange   range);                    // delete with shift
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    uint64_t index);                    // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    uint64_t index);                    // delete, and the last object will be on its place
 

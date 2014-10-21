@@ -10,6 +10,7 @@
 
 #include "../RayFoundation.h"
 #include "../RDictionary/RDictionary.h"
+#include "../RCString/RCString.h"
 
 class(RStringDictionary)
     discipleOf(RDictionary)

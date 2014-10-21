@@ -4,33 +4,7 @@
  * @author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
-#include <string.h>
 #include "RCString.h"
-
-#pragma mark RRange
-
-RRange makeRRange(uint64_t from, uint64_t count) {
-    RRange range;
-    range.from = from;
-    range.count = count;
-    return range;
-}
-
-RRange makeRRangeTo(uint64_t from, uint64_t to) {
-    RRange range;
-    range.from = from;
-    range.count = to - from;
-    return range;
-}
-
-#pragma mark RBounds
-
-RBounds makeRBounds(char startSymbol, char endSymbol) {
-    RBounds bounds;
-    bounds.startSymbol = startSymbol;
-    bounds.endSymbol = endSymbol;
-    return bounds;
-}
 
 #pragma mark Basics
 
@@ -48,7 +22,7 @@ uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char ch
 
 uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char character) {
     uint64_t iterator = 0;
-    uint64_t last = 0;
+    uint64_t last = size;
     while(iterator < size) {
         if(string[iterator] == character) {
             last = iterator;
@@ -73,6 +47,10 @@ constructor(RCString)) {
 destructor(RCString) {
     deallocator(object->baseString);
     object->size = 0;
+}
+
+printer(RCString) {
+    RPrintf("%s\n", object->baseString);
 }
 
 method(void, flush, RCString)) {
@@ -202,7 +180,7 @@ method(void, deleteInRange, RCString), RRange range) {
 
 #pragma mark Substrings and Copies
 
-method(RCString *, getSubstringInRange, RCString), RRange range) {
+method(RCString *, substringInRange, RCString), RRange range) {
     if(range.count != 0 && range.from < object->size) {
         char *cstring = RAlloc(range.count + 1 * sizeof(char));
         RMemMove(cstring, object->baseString + range.from, range.count);
@@ -220,19 +198,29 @@ method(RCString *, getSubstringInRange, RCString), RRange range) {
 
 }
 
-method(RCString *, getSubstringByBounds, RCString), RBounds bounds) {
+method(RCString *, substringSeparatedBySymbol, RCString), char symbol) {
+//fixme
+}
+
+method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
+    RArray *result = NULL;
+
+//fixme
+}
+
+method(RCString *, substringByBounds, RCString), RBounds bounds) {
     RCString *result;
     RRange    range;
 
     range.from  = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
     range.count = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.from;
 
-    result = $(object, m(getSubstringInRange, RCString)), range);
+    result = $(object, m(substringInRange, RCString)), range);
     return result;
 }
 
-method(RCString *, copy, RCString)){
-    RCString *copy = $(object, m(getSubstringInRange, RCString)), makeRRange(0, object->size));
+method(RCString *, copy, RCString)) {
+    RCString *copy = $(object, m(substringInRange, RCString)), makeRRange(0, object->size));
     return copy;
 }
 
@@ -286,11 +274,7 @@ method(void, fromFile, RCString), const RCString *filename) {
     }
 }
 
-printer(RCString) {
-    RPrintf("%s\n", object->baseString);
-}
-
-staticMethod(char , randomCharacter, RCString)) {
+char randomCharacter(void) {
     char character = ((char)rand());
     while(character < 34 ||
             character > 126) {
@@ -299,7 +283,7 @@ staticMethod(char , randomCharacter, RCString)) {
     return character;
 }
 
-staticMethod(RCString *, randomString, RCString)) {
+RCString *randomRCString(void) {
     static uint64_t iterator;
     RCString *string = makeRCString();
     uint64_t size = ((uint64_t)rand()) % 50;
@@ -312,7 +296,7 @@ staticMethod(RCString *, randomString, RCString)) {
     cstring = RAlloc(size * sizeof(char));
 
     forAll(iterator, size){
-        cstring[iterator] = sm(randomCharacter, RCString)(NULL);
+        cstring[iterator] = randomCharacter();
     }
 
     $(string, m(setConstantString, RCString)), cstring);

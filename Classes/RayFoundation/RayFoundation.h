@@ -14,6 +14,7 @@
 
 #include "RayBase.h"
 #include "RayCheckFoundation.h"
+#include <stdint.h>
 
 // working defines
 #define _TOSTRING(x)                                      #x
