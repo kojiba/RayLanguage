@@ -28,8 +28,9 @@ class(RVirtualCompiler)
 
 endOf(RVirtualCompiler)
 
-constructor(RVirtualCompiler));
-destructor(RVirtualCompiler);
+constructor (RVirtualCompiler));
+destructor  (RVirtualCompiler);
+singleton   (RVirtualCompiler);
 
 method(RCString *,         getFunctionName,                       RVirtualCompiler));
 
@@ -37,9 +38,6 @@ method(RCString *,         getFunctionName,                       RVirtualCompil
 method(RByteArray*,        getBrainFuckFunctionBody,              RVirtualCompiler));
 method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler),    const RCString *sourceCode); // copies source
 method(byte,               brainFuckSourceToByteCode,             RVirtualCompiler));
-
-
-singleton(RVirtualCompiler);
 
 #define RVC singletonCall(RVirtualCompiler)
 

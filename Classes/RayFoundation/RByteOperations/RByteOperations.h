@@ -24,7 +24,7 @@ void           printByteArrayInHex        (const byte *array, uint64_t size);
 byte*          getByteArrayCopy           (const byte *array, uint64_t size);
 byte*          getSubArray                (const byte *array, RRange range );              // sub-array copy
 RByteArray*    getSubArrayToFirstSymbol   (const byte *array, uint64_t size, byte symbol); // sub-array copy, or NULL
-RArray*        getArraysSeparatedBySymbol (const byte *array, uint64_t size, byte symbol); // RArray with set-upd delegates, or NULL
+RArray*        getArraysSeparatedBySymbol (const byte *array, uint64_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or NULL
 
 // RByteArray
 constructor (RByteArray), uint64_t size);

@@ -7,7 +7,6 @@
 #ifndef __R_ARRAY_H__
 #define __R_ARRAY_H__
 
-#include "../RayFoundation.h"
 #include "../RBasics/RBasics.h"
 
 typedef struct RArrayFindResult {

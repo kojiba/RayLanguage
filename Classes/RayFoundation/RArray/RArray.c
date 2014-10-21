@@ -4,7 +4,6 @@
  * @author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
-#include <stdio.h>
 #include "RArray.h"
 
 #define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \

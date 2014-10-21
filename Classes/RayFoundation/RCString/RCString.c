@@ -192,20 +192,50 @@ method(RCString *, substringInRange, RCString), RRange range) {
 
         return rcString;
     } else {
-        RPrintf("ERRROR. RCS. BAD RANGE!\n");
+        RPrintf("ERROR. RCS. BAD RANGE!\n");
         return NULL;
     }
 
 }
 
-method(RCString *, substringSeparatedBySymbol, RCString), char symbol) {
-//fixme
+method(RCString *, substringToSymbol, RCString), char symbol) {
+    uint64_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
+    if(index != object->size) {
+        return $(object, m(substringInRange, RCString)), makeRRange(0, index));
+    } else {
+        return NULL;
+    }
 }
 
 method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
-    RArray *result = NULL;
+    // store value of original pointers and size
+    RCString tempObject = *object;
+    RArray   *result    =  NULL;
+    RCString *string    = $(object, m(substringToSymbol, RCString)), symbol);
 
-//fixme
+    if(string != NULL) {
+        result = makeRArray();
+        result->destructorDelegate = d(RCString);
+        result->printerDelegate    = p(RCString);
+    }
+
+    while(string != NULL) {
+        $(result, m(addObject, RArray)), string);
+        object->baseString += string->size + 1;
+        object->size -= string->size + 1;
+        string = $(object, m(substringToSymbol, RCString)), symbol);
+        if(string == NULL) {
+            $(result, m(addObject, RArray)), $(object, m(copy, RCString))) );
+        }
+    }
+
+    // restore original pointers and size
+    *object = tempObject;
+    // size to fit RArray
+    if(result != NULL) {
+        $(result, m(sizeToFit, RArray)) );
+    }
+    return result;
 }
 
 method(RCString *, substringByBounds, RCString), RBounds bounds) {

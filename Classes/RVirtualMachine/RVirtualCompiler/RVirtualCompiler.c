@@ -22,6 +22,14 @@ destructor(RVirtualCompiler) {
     }
 }
 
+singleton(RVirtualCompiler) {
+    static RVirtualCompiler *instance = NULL;
+    if(instance == NULL) {
+        instance = $(NULL, c(RVirtualCompiler)));
+    }
+    return instance;
+}
+
 method(RCString *, getFunctionName, RVirtualCompiler)) {
     if(object->code->size != 0) {
         uint64_t place;
@@ -208,12 +216,4 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         RPrintf("Error. RVC. Bad virtual-code size\n");
     }
     return NULL;
-}
-
-singleton(RVirtualCompiler) {
-    static RVirtualCompiler *instance = NULL;
-    if(instance == NULL) {
-        instance = $(NULL, c(RVirtualCompiler)));
-    }
-    return instance;
 }

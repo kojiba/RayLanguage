@@ -86,6 +86,10 @@ RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol
         subArray = getSubArrayToFirstSymbol(tempArray, size, symbol);
     }
 
+    // size to fit RArray
+    if(resultArray != NULL) {
+        $(resultArray, m(sizeToFit, RArray)) );
+    }
     return resultArray;
 }
 
