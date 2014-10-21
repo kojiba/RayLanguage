@@ -180,6 +180,15 @@ method(void, deleteInRange, RCString), RRange range) {
 
 #pragma mark Substrings and Copies
 
+method(RCString *, setSubstringInRange, RCString), RRange range, const char *string) {
+    if(range.count != 0 && ((range.from + range.count - 1) < object->size)) {
+        RMemMove(object->baseString + range.from, string, range.count);
+    } else {
+        RPrintf("ERROR. RCS. BAD RANGE!\n");
+    }
+    return object;
+}
+
 method(RCString *, substringInRange, RCString), RRange range) {
     if(range.count != 0 && range.from < object->size) {
         char *cstring = RAlloc(range.count + 1 * sizeof(char));

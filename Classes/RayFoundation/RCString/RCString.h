@@ -41,11 +41,11 @@ method(RCString *,       deleteCharacterAt,            RCString),    uint64_t in
 method(void,             deleteInRange,                RCString),    RRange range);                     // shifts string
 
 // Substrings and Copies
-method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string); // basic method, that uses others
+method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string); // returns not copy!
 
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
 method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit
-method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy
+method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy,  basic method, that uses others
 method(RCString *,       substringByBounds,            RCString),    RBounds bounds);                   // substring is a copy, by nesting
 
 method(RCString *,       copy,                         RCString));
