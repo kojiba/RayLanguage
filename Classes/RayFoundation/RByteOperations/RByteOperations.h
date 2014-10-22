@@ -8,8 +8,6 @@
 #ifndef __R_BYTE_OPERATIONS_H__
 #define __R_BYTE_OPERATIONS_H__
 
-#include "../RayFoundation.h"
-#include "../RCString/RCString.h"
 #include "../RArray/RArray.h"
 
 class(RByteArray)

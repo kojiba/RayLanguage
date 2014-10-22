@@ -7,7 +7,6 @@
 #ifndef __R_DICTIONARY_H__
 #define __R_DICTIONARY_H__
 
-#include "../RayFoundation.h"
 #include "../RArray/RArray.h"
 
 class(RDictionary) //---------------------------------------------------------------------

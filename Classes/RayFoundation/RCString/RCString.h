@@ -7,7 +7,6 @@
 #ifndef __R_C_STRING_H__
 #define __R_C_STRING_H__
 
-#include "../RayFoundation.h"
 #include "../RBasics/RBasics.h"
 #include "../RArray/RArray.h"
 

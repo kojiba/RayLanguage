@@ -1,5 +1,4 @@
 #include "RVirtualFunction.h"
-#include "../../RayFoundation/RClassTable/RClassTable.h"
 #include "../RVirtualMachine/RVirtualMachine.h"
 
 constructor(RVirtualFunction)) {

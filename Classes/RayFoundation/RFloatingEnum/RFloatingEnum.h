@@ -1,9 +1,7 @@
-#include "../RayFoundation.h"
-
 #ifndef __R_FLOATING_ENUM_H__
 #define __R_FLOATING_ENUM_H__
 
-#include "../RStringDictionary/RStringDictionary.h"
+#include "../RDictionary/RDictionary.h"
 
 class(RFloatingEnum)
     discipleOf(RDictionary)

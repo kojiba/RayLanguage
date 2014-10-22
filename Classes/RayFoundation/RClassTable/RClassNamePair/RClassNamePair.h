@@ -1,7 +1,7 @@
 #ifndef __R_CLASS_NAME_PAIR_H__
 #define __R_CLASS_NAME_PAIR_H__
 
-#include "../../RayFoundation.h"
+#include "../../RSyntax.h"
 #include "../../RCString/RCString.h"
 
 class(RClassNamePair)

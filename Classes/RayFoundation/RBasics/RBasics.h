@@ -1,7 +1,7 @@
 #ifndef __R_BASICS_H__
 #define __R_BASICS_H__
 
-#include "../RayFoundation.h"
+#include "../RSyntax.h"
 
 typedef struct RRange {
     uint64_t from;

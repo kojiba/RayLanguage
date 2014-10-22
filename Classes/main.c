@@ -5,7 +5,8 @@
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
-#include "RayFoundation/RCString/RCString.h"
+#include "RayFoundation/RayFoundation.h"
+
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
 #include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"

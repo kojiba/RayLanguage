@@ -1,10 +1,8 @@
-#include "../RayFoundation.h"
-#include "../RArray/RArray.h"
-#include "RClassNamePair/RClassNamePair.h"
-
 #ifndef __CLASS_TABLE_H__
 #define __CLASS_TABLE_H__
 
+#include "../RSyntax.h"
+#include "RClassNamePair/RClassNamePair.h"
 
 class(RClassTable) //------------------------------------------------------------
     discipleOf(RArray)
