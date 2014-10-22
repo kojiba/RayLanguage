@@ -11,6 +11,20 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
+    char *code = RAlloc(1000);
+    RPrintf("Input some brainfuck code:\n");
+    RScanf("%1000s", code);
+    if(code != NULL) {
+        RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+                RS(code));
+
+        executeRay(function);
+
+        $(function, d(RVirtualFunction)) );
+        deallocator(function);
+        deallocator(code);
+        deleteRVM();
+    }
     return 0;
 }
 
