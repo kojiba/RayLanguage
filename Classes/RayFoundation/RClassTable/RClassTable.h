@@ -1,3 +1,18 @@
+/**
+ * RClassTable.h
+ * ClassTable for manage(get info, etc.) instances in runtime.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #ifndef __CLASS_TABLE_H__
 #define __CLASS_TABLE_H__
 

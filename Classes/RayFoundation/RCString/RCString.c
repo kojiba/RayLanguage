@@ -1,15 +1,24 @@
 /**
- * @file RCString.c
- * @brief Implementation of wrapper on '\0' - terminated C-strings, in Ray additions.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * RCString.h
+ * Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #include "RCString.h"
 
 #pragma mark Basics
 
 uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char character) {
-    uint64_t iterator = 0;
+    register uint64_t iterator = 0;
     while(iterator < size) {
         if(string[iterator] == character) {
             break;
@@ -21,8 +30,8 @@ uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char ch
 }
 
 uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char character) {
-    uint64_t iterator = 0;
-    uint64_t last = size;
+    register uint64_t iterator = 0;
+    register uint64_t last = size;
     while(iterator < size) {
         if(string[iterator] == character) {
             last = iterator;
@@ -64,7 +73,7 @@ method(void, flush, RCString)) {
 
 method(RCString *, setString, RCString), const char *string) {
     if(string != NULL) {
-        uint64_t stringSize = RStringLenght(string) + 1;
+        register uint64_t stringSize = RStringLenght(string) + 1;
 
         // checking, if exist and size like copying
         if(object->size != 0 && object->baseString != NULL
@@ -94,11 +103,23 @@ method(RCString *, setConstantString, RCString), char *string) {
     return object;
 }
 
-#pragma mark Options
+#pragma mark Replace
+
+method(void, replaceCharacters, RCString), char characterToReplace, char replacer) {
+    register uint64_t iterator = 0;
+    while(iterator < object->size) {
+        if(object->baseString[iterator] == characterToReplace) {
+            object->baseString[iterator] = replacer;
+        }
+        ++iterator;
+    }
+}
+
+#pragma mark Info
 
 method(uint64_t, numberOfRepetitions, RCString), char character) {
-    uint64_t reps     = 0;
-    uint64_t iterator;
+    register uint64_t reps     = 0;
+    register uint64_t iterator;
 
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -108,8 +129,10 @@ method(uint64_t, numberOfRepetitions, RCString), char character) {
     return reps;
 }
 
+#pragma mark Deletions
+
 method(RCString *, deleteAllCharacters, RCString), char character) {
-    uint64_t iterator;
+    register uint64_t iterator;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
             RMemCpy(object->baseString + iterator, object->baseString + iterator + 1, object->size + 1 - iterator);
@@ -121,9 +144,9 @@ method(RCString *, deleteAllCharacters, RCString), char character) {
 }
 
 method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
-    uint64_t iterator;
-    uint64_t inner;
-    byte flag = 1;
+    register uint64_t iterator;
+    register uint64_t inner;
+    register byte flag = 1;
 
     if(substring->size != 0
             || substring->baseString == NULL) {
@@ -208,7 +231,7 @@ method(RCString *, substringInRange, RCString), RRange range) {
 }
 
 method(RCString *, substringToSymbol, RCString), char symbol) {
-    uint64_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
+    register uint64_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
     if(index != object->size) {
         return $(object, m(substringInRange, RCString)), makeRRange(0, index));
     } else {
@@ -247,15 +270,34 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     return result;
 }
 
-method(RCString *, substringByBounds, RCString), RBounds bounds) {
-    RCString *result;
-    RRange    range;
+method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsString) {
+    register uint64_t iterator = 0;
+//             RCString tempObject = *object;
+             RArray   *result    =  NULL;
 
+    if(separatorsString != NULL
+            && separatorsString->size != 0
+            && object != NULL
+            && object->size != 0) {
+        // replace all separators to ' ' - space
+        while(iterator < separatorsString->size) {
+            if(separatorsString->baseString[iterator] != ' ') {
+                $(object, m(replaceCharacters, RCString)), separatorsString->baseString[iterator], ' ');
+            }
+
+            ++iterator;
+        }
+//        fixme
+    }
+
+    return result;
+}
+
+method(RCString *, substringByBounds, RCString), RBounds bounds) {
+    register RRange range;
     range.from  = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
     range.count = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.from;
-
-    result = $(object, m(substringInRange, RCString)), range);
-    return result;
+    return $(object, m(substringInRange, RCString)), range);
 }
 
 method(RCString *, copy, RCString)) {
@@ -296,17 +338,17 @@ method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
 #pragma mark With file
 
 method(void, fromFile, RCString), const RCString *filename) {
-    FILE *file = fopen(filename->baseString, "rb");
+    FILE *file = RFOpen(filename->baseString, "rb");
     char *buffer;
     long fileSize;
 
     if(file != NULL) {
-        fseek(file, 0, SEEK_END);
-        fileSize = ftell(file);
-        rewind(file);
+        RFSeek(file, 0, SEEK_END);
+        fileSize = RFTell(file);
+        RRewind(file);
         buffer = RAlloc(fileSize * (sizeof(char)));
-        fread(buffer, sizeof(char), fileSize, file);
-        fclose(file);
+        RFRead(buffer, sizeof(char), fileSize, file);
+        RFClose(file);
         $(object, m(setConstantString, RCString)), buffer);
     } else {
         RPrintf("Warning. RCS. Cannot open file.\n");
@@ -314,7 +356,7 @@ method(void, fromFile, RCString), const RCString *filename) {
 }
 
 char randomCharacter(void) {
-    char character = ((char)rand());
+    register char character = ((char)rand());
     while(character < 34 ||
             character > 126) {
         character = ((char)rand());
@@ -323,7 +365,7 @@ char randomCharacter(void) {
 }
 
 RCString *randomRCString(void) {
-    static uint64_t iterator;
+    register uint64_t iterator;
     RCString *string = makeRCString();
     uint64_t size = ((uint64_t)rand()) % 50;
     char *cstring;

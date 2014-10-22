@@ -1,3 +1,18 @@
+/**
+ * RClassTable.c
+ * ClassTable for manage(get info, etc.) instances in runtime.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #include "RClassTable.h"
 
 constructor(RClassTable)) {
@@ -49,7 +64,7 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
     if(name != NULL) {
-        uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
+        register uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
         if(result == 0) {
             RClassNamePair *pair = $(NULL, c(RClassNamePair)));
             if (pair != NULL) {

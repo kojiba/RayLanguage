@@ -1,8 +1,17 @@
 /**
- * @file RArray.c
- * @brief Implementation of C dynamic array, in Ray additions.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * RArray.c
+ * Realization of C dynamic array, in Ray additions.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #include "RArray.h"
 
@@ -63,7 +72,7 @@ constructor(RArray), RArrayFlags *error) {
 
 destructor(RArray) {
 
-    static uint64_t iterator;
+    register uint64_t iterator;
 
     if (object != NULL) {
 
@@ -95,7 +104,7 @@ method(RArrayFlags, addSize, RArray), uint64_t newSize) {
         RPrintf("RA %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
-        static uint64_t iterator;
+        register uint64_t iterator;
 
         // create temp array
         pointer *tempArray = RAlloc((size_t) (newSize * sizeof(pointer)));
@@ -120,7 +129,7 @@ method(RArrayFlags, addSize, RArray), uint64_t newSize) {
 }
 
 method(void, flush, RArray)) {
-    static uint64_t iterator;
+    register uint64_t iterator;
 
     if (object != NULL) {
 
@@ -153,7 +162,7 @@ method(void, flush, RArray)) {
 }
 
 method(byte, sizeToFit, RArray)){
-    uint64_t iterator;
+    register uint64_t iterator;
     // create temp array
     pointer *tempArray = RAlloc((size_t) (object->count * sizeof(pointer)));
 
@@ -182,7 +191,7 @@ method(byte, sizeToFit, RArray)){
 #pragma mark Add - Set - Delete
 
 method(RArrayFlags, addObject, RArray), pointer src) {
-    static RArrayFlags errors;
+    register RArrayFlags errors;
     errors = no_error;
 
     // needs additional allocation of memory
@@ -265,7 +274,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 }
 
 method(void, deleteObjects, RArray), RRange range){
-    uint64_t iterator;
+    register uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range.from, range.count);
 #endif
@@ -283,7 +292,7 @@ method(void, deleteLast, RArray)){
 #pragma mark Get - Find
 
 method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
-    static uint64_t iterator;
+    register uint64_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
 #endif
@@ -358,8 +367,8 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     RPrintf("RA bubbleSortWithDelegate of %p\n", object);
 #endif
 
-    static uint64_t inner;
-    static uint64_t outer;
+    register uint64_t inner;
+    register uint64_t outer;
 
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
@@ -389,9 +398,9 @@ method(void, quickSortWithDelegate, RArray), uint64_t first, uint64_t last, byte
 #endif
 
     if (last > first) {
-        pointer pivot = object->array[first];
-        uint64_t left = first;
-        uint64_t right = last;
+        register pointer pivot = object->array[first];
+        register uint64_t left = first;
+        register uint64_t right = last;
         while (left < right) {
             if (comparator(object->array[left], pivot) != swap_objects) {
                 left += 1;
@@ -426,7 +435,7 @@ printer(RArray) {
 #if RAY_SHORT_DEBUG == 1
       RPrintf("%s printer of %p \n", toString(RArray), object);
 #else
-    uint64_t iterator;
+    register uint64_t iterator;
 
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
     RPrintf(" Count : %qu \n", object->count);
@@ -460,7 +469,7 @@ method(void, shift, RArray), byte side, RRange range) {
          sideName = "right";
     } RPrintf("RA shift of %p on %s\n", object, sideName);
 #endif
-    uint64_t iterator;
+    register uint64_t iterator;
     if(range.count != 0) {
         if (side == shift_left) {
             // do not call destructor

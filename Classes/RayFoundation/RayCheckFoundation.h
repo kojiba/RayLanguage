@@ -2,9 +2,17 @@
  * RayFoundationCheck.h
  * A ray of light in the realm of darkness.
  * Checking of working defines.
- * Created (post-factum) 2 Oct 2014
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #ifndef __RAY_CHECK_FOUNDATION_H__
 #define __RAY_CHECK_FOUNDATION_H__

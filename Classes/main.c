@@ -12,6 +12,13 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+/*
+
+void BRFinterpreter() {
     char *code = RAlloc(1000);
     RPrintf("Input some brainfuck code:\n");
     RScanf("%1000s", code);
@@ -26,11 +33,7 @@ int main(int argc, const char *argv[]) {
         deallocator(code);
         deleteRVM();
     }
-    return 0;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-/*
 
 void cycleTest() {
     // cycle test

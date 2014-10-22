@@ -1,8 +1,17 @@
 /**
- * @file RDictionary.h
- * @brief Realization of C dictionary(map) pair, in Ray additions.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * RDictionary.h
+ * Realization of C dictionary(map) pair, in Ray additions.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #ifndef __R_DICTIONARY_H__
 #define __R_DICTIONARY_H__

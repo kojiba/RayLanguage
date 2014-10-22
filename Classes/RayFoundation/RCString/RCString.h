@@ -1,8 +1,17 @@
 /**
- * @file RCString.h
- * @brief Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * RCString.h
+ * Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #ifndef __R_C_STRING_H__
 #define __R_C_STRING_H__
@@ -32,8 +41,13 @@ method(void,             flush,                        RCString));              
 method(RCString *,       setString,                    RCString),    const char *string);               // copy characters
 method(RCString *,       setConstantString,            RCString),    char *string);                     // copy pointer
 
-// Options
+// Replace
+method(void,             replaceCharacters,            RCString),    char characterToReplace, char replacer);
+
+// Info
 method(uint64_t,         numberOfRepetitions,          RCString),    char character);
+
+// Deletions
 method(RCString *,       deleteAllCharacters,          RCString),    char character);                   // returns not copy!
 method(RCString *,       deleteAllSubstrings,          RCString),    const RCString *substring);        // returns not copy!
 method(RCString *,       deleteCharacterAt,            RCString),    uint64_t index);                   // returns not copy!
@@ -43,9 +57,10 @@ method(void,             deleteInRange,                RCString),    RRange rang
 method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string); // returns not copy!
 
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
-method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit
 method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy,  basic method, that uses others
 method(RCString *,       substringByBounds,            RCString),    RBounds bounds);                   // substring is a copy, by nesting
+method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit
+method(RArray *,         substringsSeparatedBySymbols, RCString),    RCString *separatorsString);       // or NULL, RArray is sizeToFit
 
 method(RCString *,       copy,                         RCString));
 

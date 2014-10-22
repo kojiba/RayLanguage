@@ -1,3 +1,18 @@
+/**
+ * RFloatingEnum.c
+ * Realization of enum, that can change values in runtime in Ray additions.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #include "RFloatingEnum.h"
 #include "../RClassTable/RClassTable.h"
 

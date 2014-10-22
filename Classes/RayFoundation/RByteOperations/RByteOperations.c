@@ -1,9 +1,17 @@
 /**
- * @file RByteOperations.c
- * @brief Implementation of some operations on bytes array, like getSubArray, etc.
- * @date 2.10.14 Kharkiv
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * RByteOperations.c
+ * Realization of some operations on bytes array, like getSubArray, etc.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2.10.14 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
 
 #include "RByteOperations.h"
 #include "../RClassTable/RClassTable.h"
