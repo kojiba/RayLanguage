@@ -69,8 +69,8 @@ method(RCString *,       insertSubstringAt,            RCString),    RCString *s
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
 method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy, basic method, that uses others
 method(RCString *,       substringByBounds,            RCString),    RBounds bounds);                   // substring is a copy, by nesting
-method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit
-method(RArray *,         substringsSeparatedBySymbols, RCString),    RCString *separatorsString);       // or NULL, RArray is sizeToFit
+method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit, subs are copies
+method(RArray *,         substringsSeparatedBySymbols, RCString),    RCString *separatorsString);       // or NULL, RArray is sizeToFit, subs are copies
 
 method(RCString *,       copy,                         RCString));
 

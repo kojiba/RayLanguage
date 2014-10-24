@@ -67,7 +67,7 @@ RCString *randomRCString(void) {
     return string;
 }
 
-#pragma mark constructor - destructor - reallocation
+#pragma mark Constructor - Destructor - Reallocation
 
 constructor(RCString)) {
     object = allocator(RCString);
@@ -351,7 +351,8 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, uint64_t p
 }
 
 method(RCString *, substringInRange, RCString), RRange range) {
-    if(range.count != 0 && range.from < object->size) {
+    if(range.count != 0
+            && ((range.from + range.count) < object->size)) {
         char *cstring = RAlloc(range.count + 1 * sizeof(char));
         RMemMove(cstring, object->baseString + range.from, range.count);
         cstring[range.count + 1] = 0;
@@ -409,25 +410,54 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 }
 
 method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsString) {
-    register uint64_t iterator = 0;
-//             RCString tempObject = *object;
-             RArray   *result    =  NULL;
+    register uint64_t  iterator;
+    register uint64_t  endOfSubstring   = 0;
+    register uint64_t  startOfSubstring = 0;
+    register byte      isFirst          = 1;
+             RArray   *result           =  NULL;
+             RCString *substring;
 
     if(separatorsString != NULL
             && separatorsString->size != 0
             && object != NULL
             && object->size != 0) {
-        // replace all separators to ' ' - space
-        while(iterator < separatorsString->size) {
-            if(separatorsString->baseString[iterator] != ' ') {
-                $(object, m(replaceCharacters, RCString)), separatorsString->baseString[iterator], ' ');
+
+        forAll(iterator, object->size) {
+            // check if separator
+            if($(separatorsString, m(numberOfRepetitions, RCString)), object->baseString[iterator]) > 0) {
+                if(isFirst == 1) {
+                    // if first separator set end
+                    endOfSubstring = iterator;
+                    isFirst = 0;
+                    if(result == NULL) {
+                        result = makeRArray();
+                        // set-up delegates
+                        result->printerDelegate    = p(RCString);
+                        result->destructorDelegate = d(RCString);
+                    }
+                }
+
+            // if not separator
+            } else {
+
+                // if we found some separators
+                if(isFirst == 0) {
+                    isFirst = 1;
+                    substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
+                    addObjectToRA(result, substring);
+                    startOfSubstring = iterator;
+                }
             }
-
-            ++iterator;
         }
-//        fixme
-    }
 
+        // if we found some
+        if(result != NULL) {
+            // add last and sizeToFit
+            substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
+            addObjectToRA(result, substring);
+            $(result, m(sizeToFit, RArray)) );
+        }
+    }
     return result;
 }
 

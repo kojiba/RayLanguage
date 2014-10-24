@@ -46,11 +46,11 @@ inline RBounds makeRBounds     (char startSymbol, char endSymbol);
 inline byte    isValueInBounds (RBounds bounds, char value);
 inline byte    compareRBounds  (RBounds first, RBounds second);
 
-protocol(RCompareDelegate)
+protocol(RCompareDelegate) //--------------------------------------------
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);
     pointer         etaloneObject;
 
-endOf(RCompareDelegate)
+endOf(RCompareDelegate) //-----------------------------------------------
 
 method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);
 

@@ -12,16 +12,13 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
-    RCString *temp = RSC(" abula cadabra oMNohmH ef we Hello");
+    RCString *temp = RSC("Hello, we are a great! It's very loog; puppy; bad; string.");
     printerOfRCString(temp);
-    toUpperCaseRCString(temp);
-    printerOfRCString(temp);
-    toLowerCaseRCString(temp);
-    printerOfRCString(temp);
-    insertSubstringAtRCString(temp, RS("Some sense string"), 10);
-    printerOfRCString(temp);
-    replaceSubstringsRCString(temp, RS("Some sense string"), RS("No sense here"));
-    printerOfRCString(temp);
+    RArray *result = $(temp, m(substringsSeparatedBySymbols, RCString)), RS(" .,;:!?") );
+    if(result != NULL) {
+        $(result, p(RArray)));
+        deleteRA(result);
+    }
     deleteRCS(temp);
     return 0;
 }
