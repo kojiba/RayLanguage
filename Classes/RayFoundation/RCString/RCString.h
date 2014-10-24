@@ -19,9 +19,13 @@
 #include "../RBasics/RBasics.h"
 #include "../RArray/RArray.h"
 
+typedef struct RCString RCString;
+
 // basics
-uint64_t indexOfFirstCharacterCString (const char *string, uint64_t size, char character); // returns index, or size
-uint64_t indexOfLastCharacterCString  (const char *string, uint64_t size, char character); // returns index, or size
+uint64_t  indexOfFirstCharacterCString (const char *string, uint64_t size, char character); // returns index, or size
+uint64_t  indexOfLastCharacterCString  (const char *string, uint64_t size, char character); // returns index, or size
+RCString* randomRCString              (void);
+char      randomCharacter             (void);
 
 class(RCString) //------------------------------------
 
@@ -74,13 +78,13 @@ method(RCompareFlags,    compareWith,                  RCString),    const RCStr
 // With file
 method(void,             fromFile,                     RCString),    const RCString *filename);          // deletes old string
 
-RCString *randomRCString  (void);
-char      randomCharacter (void);
+// Concatenate
+method(void,             concatenate,                  RCString),    const RCString *string);
 
 //----------------------------------------------------------------------------------
 
 #define makeRCString()          $(NULL, c(RCString)))
-#define printRString(_RCString) $(_RCString, p(RCString)) );
+#define printRString(string)    $(string, p(RCString)) );
 #define RS(CString)             $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant
 #define RSC(CString)            $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
 #define deleteRCS(string)       $(string , d(RCString)) ); deallocator(string)

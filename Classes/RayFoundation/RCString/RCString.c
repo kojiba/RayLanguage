@@ -41,6 +41,32 @@ uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char cha
     return last;
 }
 
+char randomCharacter(void) {
+    register char character = ((char)rand());
+    while(character < 34 ||
+            character > 126) {
+        character = ((char)rand());
+    }
+    return character;
+}
+
+RCString *randomRCString(void) {
+    register uint64_t  iterator;
+    RCString *string    = makeRCString();
+    register uint64_t  size      = ((uint64_t)rand()) % 50;
+    char     *cstring;
+
+    while(size == 0) {
+        size = ((uint64_t)rand()) % 50;
+    }
+    cstring = RAlloc(size * sizeof(char));
+    forAll(iterator, size){
+        cstring[iterator] = randomCharacter();
+    }
+    $(string, m(setConstantString, RCString)), cstring);
+    return string;
+}
+
 #pragma mark constructor - destructor - reallocation
 
 constructor(RCString)) {
@@ -418,28 +444,19 @@ method(void, fromFile, RCString), const RCString *filename) {
     }
 }
 
-char randomCharacter(void) {
-    register char character = ((char)rand());
-    while(character < 34 ||
-            character > 126) {
-        character = ((char)rand());
-    }
-    return character;
-}
+#pragma mark Concatenate
 
-RCString *randomRCString(void) {
-    register uint64_t  iterator;
-             RCString *string    = makeRCString();
-    register uint64_t  size      = ((uint64_t)rand()) % 50;
-             char     *cstring;
+method(void, concatenate, RCString), const RCString *string) {
+    if(string->size != 0 && string->baseString != NULL) {
+        char *concatenationResult = RAlloc(string->size + object->size + 1);
+        RMemMove(concatenationResult,                object->baseString, object->size);
+        RMemMove(concatenationResult + object->size, string->baseString, string->size);
+        concatenationResult[string->size + object->size + 1] = 0;
 
-    while(size == 0) {
-        size = ((uint64_t)rand()) % 50;
+        deallocator(object->baseString);
+        object->baseString = concatenationResult;
+        object->size += string->size;
+    } else {
+        RPrintf("Warning. RCS. Bad concatenate string.\n");
     }
-    cstring = RAlloc(size * sizeof(char));
-    forAll(iterator, size){
-        cstring[iterator] = randomCharacter();
-    }
-    $(string, m(setConstantString, RCString)), cstring);
-    return string;
 }
