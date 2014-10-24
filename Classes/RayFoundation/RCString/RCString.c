@@ -52,17 +52,18 @@ char randomCharacter(void) {
 
 RCString *randomRCString(void) {
     register uint64_t  iterator;
-    RCString *string    = makeRCString();
-    register uint64_t  size      = ((uint64_t)rand()) % 50;
+             RCString *string = makeRCString();
+    register uint64_t  size   = ((uint64_t)rand()) % 50;
     char     *cstring;
 
     while(size == 0) {
         size = ((uint64_t)rand()) % 50;
     }
     cstring = RAlloc(size * sizeof(char));
-    forAll(iterator, size){
+    forAll(iterator, size - 1){
         cstring[iterator] = randomCharacter();
     }
+    cstring[++iterator] = 0;
     $(string, m(setConstantString, RCString)), cstring);
     return string;
 }
