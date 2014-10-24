@@ -7,10 +7,6 @@
 
 #include "RayFoundation/RayFoundation.h"
 
-#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
-#include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
-#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
-
 int main(int argc, const char *argv[]) {
     RCString *temp = RSC("Hello from kojiba, %username%, we are a great! But, it's very long hello=)");
     printerOfRCString(temp);
