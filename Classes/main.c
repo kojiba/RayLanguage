@@ -8,7 +8,7 @@
 #include "RayFoundation/RayFoundation.h"
 
 int main(int argc, const char *argv[]) {
-    RCString *temp = RSC("Hello from kojiba, %username%, we are a great! But, it's very long hello=)");
+    RCString *temp = RSC("Hello from kojiba, %username%, we are a great! But, it's very long hello=) ss");
     printerOfRCString(temp);
     toLowerCaseRCString(temp);
     printerOfRCString(temp);

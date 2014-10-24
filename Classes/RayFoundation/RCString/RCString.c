@@ -452,8 +452,12 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
 
         // if we found some
         if(result != NULL) {
+            // if last it is not separator
+            if(endOfSubstring < object->size) {
+                endOfSubstring = object->size;
+            }
             // add last and sizeToFit
-            substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, object->size));
+            substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
             if(substring != NULL) {
                 addObjectToRA(result, substring);
             }
