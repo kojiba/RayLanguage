@@ -352,7 +352,7 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, uint64_t p
 
 method(RCString *, substringInRange, RCString), RRange range) {
     if(range.count != 0
-            && ((range.from + range.count) < object->size)) {
+            && ((range.from + range.count) <= object->size)) {
         char *cstring = RAlloc(range.count + 1 * sizeof(char));
         RMemMove(cstring, object->baseString + range.from, range.count);
         cstring[range.count + 1] = 0;
@@ -453,8 +453,10 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
         // if we found some
         if(result != NULL) {
             // add last and sizeToFit
-            substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
-            addObjectToRA(result, substring);
+            substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, object->size));
+            if(substring != NULL) {
+                addObjectToRA(result, substring);
+            }
             $(result, m(sizeToFit, RArray)) );
         }
     }
