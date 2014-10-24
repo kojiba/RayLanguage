@@ -13,6 +13,7 @@
  *         |__/
  **/
 
+#include <AppKit/AppKit.h>
 #include "RBasics.h"
 
 #pragma mark RRange
@@ -31,6 +32,32 @@ RRange makeRRangeTo(uint64_t from, uint64_t to) {
     return range;
 }
 
+RCompareFlags compareRRange(RRange first, RRange second) {
+    if(first.from == second.from) {
+        if(first.count > second.count) {
+            return longer;
+        } else if(first.count < second.count) {
+            return smaller;
+        } else {
+            return equals;
+        }
+    } else {
+        if(first.from > second.from) {
+            return bigger;
+        } else {
+            return smaller;
+        }
+    }
+}
+
+byte isInRange(RRange range, uint64_t value) {
+    if(value >= range.from && value <= range.from + range.count) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 #pragma mark RBounds
 
 RBounds makeRBounds(char startSymbol, char endSymbol) {
@@ -38,6 +65,23 @@ RBounds makeRBounds(char startSymbol, char endSymbol) {
     bounds.startSymbol = startSymbol;
     bounds.endSymbol = endSymbol;
     return bounds;
+}
+
+byte isValueInBounds(RBounds bounds, char value) {
+    if(value >= bounds.startSymbol && value <= bounds.endSymbol) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+inline byte compareRBounds(RBounds first, RBounds second) {
+    if(first.startSymbol == second.startSymbol
+            && first.endSymbol == second.endSymbol) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 #pragma mark RCompareDelegate

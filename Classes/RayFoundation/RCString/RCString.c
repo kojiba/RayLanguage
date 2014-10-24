@@ -118,7 +118,7 @@ method(RCString *, setString, RCString), const char *string) {
     return object;
 }
 
-method(RCString *, setConstantString, RCString), char *string) {
+method(RCString *, setConstantString, RCString), char const *string) {
     if(string != NULL) {
         // copy pointer, and compute length
         object->baseString = string;
@@ -459,4 +459,26 @@ method(void, concatenate, RCString), const RCString *string) {
     } else {
         RPrintf("Warning. RCS. Bad concatenate string.\n");
     }
+}
+
+#pragma mark Conversions
+
+method(RCString*, toUpperCase, RCString)) {
+    register uint64_t iterator;
+    forAll(iterator, object->size) {
+        if(object->baseString[iterator] > 96 && object->baseString[iterator] < 123 ) {
+            object->baseString[iterator] -= 32;
+        }
+    }
+    return object;
+}
+
+method(RCString*, toLowerCase, RCString)) {
+    register uint64_t iterator;
+    forAll(iterator, object->size) {
+        if(object->baseString[iterator] > 64 && object->baseString[iterator] < 91 ) {
+            object->baseString[iterator] += 32;
+        }
+    }
+    return object;
 }

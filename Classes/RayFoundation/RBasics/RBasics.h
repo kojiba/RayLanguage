@@ -18,29 +18,33 @@
 
 #include "../RSyntax.h"
 
+typedef enum RCompareFlags{
+    not_equals = 0,
+    equals     = 1,
+    longer,
+    shorter,
+    bigger,
+    smaller
+} RCompareFlags;
+
 typedef struct RRange {
     uint64_t from;
     uint64_t count;
 } RRange;
 
-RRange makeRRange   (uint64_t from, uint64_t count);
-RRange makeRRangeTo (uint64_t from, uint64_t to);
+inline RRange          makeRRange    (uint64_t from, uint64_t count);
+inline RRange          makeRRangeTo  (uint64_t from, uint64_t to);
+inline RCompareFlags   compareRRange (RRange first, RRange second);
+inline byte            isInRange     (RRange range, uint64_t value);
 
 typedef struct RBounds {
     char startSymbol;
     char endSymbol;
 } RBounds;
 
-RBounds makeRBounds (char startSymbol, char endSymbol);
-
-typedef enum RCompareFlags{
-    equals,
-    not_equals,
-    longer,
-    shorter,
-    bigger,
-    smaller
-} RCompareFlags;
+inline RBounds makeRBounds     (char startSymbol, char endSymbol);
+inline byte    isValueInBounds (RBounds bounds, char value);
+inline byte    compareRBounds  (RBounds first, RBounds second);
 
 protocol(RCompareDelegate)
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);

@@ -12,9 +12,12 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
-    RCString *temp = RSC("Hello");
-    $(temp, m(concatenate, RCString)), RS(" Misha"));
-    $(temp, p(RCString)) );
+    RCString *temp = RSC(" abula cadabra oMNohmH ef we Hello");
+    printerOfRCString(temp);
+    toUpperCaseRCString(temp);
+    printerOfRCString(temp);
+    toLowerCaseRCString(temp);
+    printerOfRCString(temp);
     deleteRCS(temp);
     return 0;
 }

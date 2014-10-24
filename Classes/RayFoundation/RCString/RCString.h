@@ -24,8 +24,8 @@ typedef struct RCString RCString;
 // basics
 uint64_t  indexOfFirstCharacterCString (const char *string, uint64_t size, char character); // returns index, or size
 uint64_t  indexOfLastCharacterCString  (const char *string, uint64_t size, char character); // returns index, or size
-RCString* randomRCString              (void);
-char      randomCharacter             (void);
+RCString* randomRCString               (void);
+char      randomCharacter              (void);
 
 class(RCString) //------------------------------------
 
@@ -43,7 +43,7 @@ method(void,             flush,                        RCString));              
 
 // Setters
 method(RCString *,       setString,                    RCString),    const char *string);               // copy characters
-method(RCString *,       setConstantString,            RCString),    char *string);                     // copy pointer
+method(RCString *,       setConstantString,            RCString),    char const *string);                     // copy pointer
 
 // Replace
 method(void,             replaceCharacters,            RCString),    char characterToReplace, char replacer);
@@ -80,6 +80,10 @@ method(void,             fromFile,                     RCString),    const RCStr
 
 // Concatenate
 method(void,             concatenate,                  RCString),    const RCString *string);
+
+// Conversions
+method(RCString*,        toUpperCase,                  RCString));                                       // returns not copy!
+method(RCString*,        toLowerCase,                  RCString));                                       // returns not copy!
 
 //----------------------------------------------------------------------------------
 
