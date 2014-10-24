@@ -12,6 +12,11 @@
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
+
+    RCString *string = RSC("HelloHelloHelloMishaMehaHello Privet OmgHelloHelllo");
+    $(string, m(removeRepetitionsOfString, RCString)), RS("Hello"));
+    $(string, p(RCString)) );
+    deleteRCS(string);
     return 0;
 }
 

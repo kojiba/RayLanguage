@@ -143,6 +143,27 @@ method(RCString *, deleteAllCharacters, RCString), char character) {
     return object;
 }
 
+method(void, removeRepetitionsOf, RCString), char character) {
+    register uint64_t iterator;
+    register uint64_t inner;
+    forAll(iterator, object->size - 1) {
+        if(object->baseString[iterator] == character) {
+
+            // find length of repetition
+            for(inner = 0; inner < object->size - iterator; ++inner) {
+                if(object->baseString[inner + iterator + 1] != character){
+                    break;
+                }
+            }
+
+            // delete if length > 0
+            if(inner > 0) {
+                $(object, m(deleteInRange, RCString)), makeRRange(iterator + 1, inner));
+            }
+        }
+    }
+}
+
 method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     register uint64_t iterator;
     register uint64_t inner;
@@ -182,6 +203,47 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     return NULL;
 }
 
+method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
+    // if they are not equals, and size is greater than 2 substrings
+    if($(object->baseString, m(compareWith, RCString)), substring) != equals
+            && object->size >= substring->size * 2) {
+
+        register uint64_t iterator;
+        register uint64_t place;
+        register uint64_t repetitionsCount;
+
+        forAll(iterator, object->size - substring->size) {
+            // first symbols compare
+            if(object->size - iterator >= substring->size
+                    && object->baseString[iterator] == substring->baseString[0]) {
+
+                // compare others
+                if(RMemCmp(object->baseString + iterator + 1, substring->baseString + 1, substring->size - 1) == 0) {
+
+                    // add to iterator substring->size
+                    iterator += substring->size;
+                    place     = iterator;
+
+                    for(repetitionsCount = 0; repetitionsCount < (object->size / substring->size - 1); ) {
+                        if (RMemCmp(object->baseString + iterator, substring->baseString, substring->size) == 0) {
+                            ++repetitionsCount;
+                            iterator += substring->size;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if(repetitionsCount > 0) {
+                        // delete in range
+                        $(object, m(deleteInRange, RCString)), makeRRange(place, repetitionsCount * substring->size));
+                        iterator -= repetitionsCount * substring->size;
+                    }
+                }
+            }
+        }
+    }
+}
+
 method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
     if(index > object->size) {
         RPrintf("Error. RCS. Bad index!");
@@ -192,7 +254,8 @@ method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
 }
 
 method(void, deleteInRange, RCString), RRange range) {
-    if(range.count != 0 && range.from < object->size) {
+    if(range.count != 0
+            && ((range.from + range.count) < object->size)) {
         RMemMove(object->baseString + range.from, object->baseString + range.from + range.count, object->size - range.count - range.from + 1);
         object->size -= range.count;
         object->baseString[object->size + 1] = 0;
@@ -365,21 +428,18 @@ char randomCharacter(void) {
 }
 
 RCString *randomRCString(void) {
-    register uint64_t iterator;
-    RCString *string = makeRCString();
-    uint64_t size = ((uint64_t)rand()) % 50;
-    char *cstring;
+    register uint64_t  iterator;
+             RCString *string    = makeRCString();
+    register uint64_t  size      = ((uint64_t)rand()) % 50;
+             char     *cstring;
 
     while(size == 0) {
         size = ((uint64_t)rand()) % 50;
     }
-
     cstring = RAlloc(size * sizeof(char));
-
     forAll(iterator, size){
         cstring[iterator] = randomCharacter();
     }
-
     $(string, m(setConstantString, RCString)), cstring);
     return string;
 }

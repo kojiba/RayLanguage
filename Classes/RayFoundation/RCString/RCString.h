@@ -49,7 +49,11 @@ method(uint64_t,         numberOfRepetitions,          RCString),    char charac
 
 // Deletions
 method(RCString *,       deleteAllCharacters,          RCString),    char character);                   // returns not copy!
+method(void,             removeRepetitionsOf,          RCString),    char character);
+
 method(RCString *,       deleteAllSubstrings,          RCString),    const RCString *substring);        // returns not copy!
+method(void,             removeRepetitionsOfString,    RCString),    const RCString *substring);
+
 method(RCString *,       deleteCharacterAt,            RCString),    uint64_t index);                   // returns not copy!
 method(void,             deleteInRange,                RCString),    RRange range);                     // shifts string
 
@@ -57,7 +61,7 @@ method(void,             deleteInRange,                RCString),    RRange rang
 method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string); // returns not copy!
 
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
-method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy,  basic method, that uses others
+method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy, basic method, that uses others
 method(RCString *,       substringByBounds,            RCString),    RBounds bounds);                   // substring is a copy, by nesting
 method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit
 method(RArray *,         substringsSeparatedBySymbols, RCString),    RCString *separatorsString);       // or NULL, RArray is sizeToFit
@@ -79,5 +83,6 @@ char      randomCharacter (void);
 #define printRString(_RCString) $(_RCString, p(RCString)) );
 #define RS(CString)             $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant
 #define RSC(CString)            $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
+#define deleteRCS(string)       $(string , d(RCString)) ); deallocator(string)
 
 #endif /*__R_C_STRING_H__*/

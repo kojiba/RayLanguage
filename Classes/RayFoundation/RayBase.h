@@ -41,6 +41,7 @@
 // mem operations
 #define RMemCpy         memcpy
 #define RMemMove        memmove
+#define RMemCmp         memcmp
 
 #define RStringLenght   strlen
 
