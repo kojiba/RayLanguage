@@ -141,6 +141,34 @@ method(void, replaceCharacters, RCString), char characterToReplace, char replace
     }
 }
 
+method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replacer) {
+    if(toReplace != NULL
+            && replacer != NULL
+            && toReplace->size != 0
+            && replacer->size  != 0
+            && toReplace->size <= object->size) {
+
+        register uint64_t iterator;
+        forAll(iterator, object->size) {
+
+            // search first symbol
+            if(object->baseString[iterator] == toReplace->baseString[0]) {
+
+                // compare others
+                if(RMemCmp(object->baseString + iterator + 1, toReplace->baseString + 1, toReplace->size - 1) == 0) {
+                    // insert replacer
+                    $(object, m(insertSubstringAt, RCString)), replacer, iterator);
+
+                    // remove toReplace-string from main string
+                    $(object, m(deleteInRange, RCString)), makeRRange(iterator + replacer->size, toReplace->size));
+                }
+            }
+        }
+    } else {
+        RPrintf("Warning. RCS. Bad strings, or sizes, please delete function call, or fix it.\n");
+    }
+}
+
 #pragma mark Info
 
 method(uint64_t, numberOfRepetitions, RCString), char character) {
@@ -282,7 +310,9 @@ method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
 method(void, deleteInRange, RCString), RRange range) {
     if(range.count != 0
             && ((range.from + range.count) < object->size)) {
-        RMemMove(object->baseString + range.from, object->baseString + range.from + range.count, object->size - range.count - range.from + 1);
+        RMemMove(object->baseString + range.from,
+                object->baseString + range.from + range.count,
+                object->size - range.count - range.from + 1);
         object->size -= range.count;
         object->baseString[object->size + 1] = 0;
     } else {
@@ -298,6 +328,25 @@ method(RCString *, setSubstringInRange, RCString), RRange range, const char *str
     } else {
         RPrintf("ERROR. RCS. BAD RANGE!\n");
     }
+    return object;
+}
+
+method(RCString *, insertSubstringAt, RCString), RCString *substring, uint64_t place) {
+    if(place < object->size) {
+        char *result = RAlloc(object->size + substring->size + 1);
+        RMemMove(result,                           object->baseString,         place);
+        RMemMove(result + place,                   substring->baseString,      substring->size);
+        RMemMove(result + place + substring->size, object->baseString + place, object->size - place);
+        deallocator(object->baseString);
+
+        object->size += substring->size;
+        object->baseString = result;
+    } else if(place == object->size) {
+        $(object, m(concatenate, RCString)), substring);
+    } else {
+        RPrintf("Warning. RCS. BAD place to insert!\n");
+    }
+
     return object;
 }
 

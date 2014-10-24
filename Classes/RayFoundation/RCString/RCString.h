@@ -43,10 +43,11 @@ method(void,             flush,                        RCString));              
 
 // Setters
 method(RCString *,       setString,                    RCString),    const char *string);               // copy characters
-method(RCString *,       setConstantString,            RCString),    char const *string);                     // copy pointer
+method(RCString *,       setConstantString,            RCString),    char const *string);               // copy pointer
 
 // Replace
 method(void,             replaceCharacters,            RCString),    char characterToReplace, char replacer);
+method(void,             replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
 
 // Info
 method(uint64_t,         numberOfRepetitions,          RCString),    char character);
@@ -62,7 +63,8 @@ method(RCString *,       deleteCharacterAt,            RCString),    uint64_t in
 method(void,             deleteInRange,                RCString),    RRange range);                     // shifts string
 
 // Substrings and Copies
-method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string); // returns not copy!
+method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string);    // returns not copy!
+method(RCString *,       insertSubstringAt,            RCString),    RCString *substring, uint64_t place); // returns not copy!
 
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
 method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy, basic method, that uses others

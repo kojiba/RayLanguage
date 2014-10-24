@@ -13,7 +13,6 @@
  *         |__/
  **/
 
-#include <AppKit/AppKit.h>
 #include "RBasics.h"
 
 #pragma mark RRange

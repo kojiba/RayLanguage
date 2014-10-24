@@ -18,6 +18,10 @@ int main(int argc, const char *argv[]) {
     printerOfRCString(temp);
     toLowerCaseRCString(temp);
     printerOfRCString(temp);
+    insertSubstringAtRCString(temp, RS("Some sense string"), 10);
+    printerOfRCString(temp);
+    replaceSubstringsRCString(temp, RS("Some sense string"), RS("No sense here"));
+    printerOfRCString(temp);
     deleteRCS(temp);
     return 0;
 }
