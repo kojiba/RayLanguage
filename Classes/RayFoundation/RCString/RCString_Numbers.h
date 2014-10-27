@@ -24,14 +24,19 @@ static inline RBool isOctalDigit   (char character);
 static inline RBool isHexDigit     (char character);
 static inline RBool isBinaryDigit  (char character);
 
-typedef enum RNumberSystemBase {
+typedef enum RNumberSystemBase { //--------------------------
     RNotNumber = 0,
     RBinary,
     ROctal,
     RDecimal,
     RHex,
-} RNumberSystemBase;
+} RNumberSystemBase; //--------------------------------------
 
+method(RCString *,        toRCString, RNumberSystemBase));
+
+//----------------------------------------------------------
+
+// RCString Additions
 method(RNumberSystemBase, isNumber,       RCString));
 
 method(unsigned,          toUnsgined,     RCString));
@@ -39,9 +44,5 @@ method(long,              toLong,         RCString));
 method(int,               toInt,          RCString));
 method(float,             toFloat,        RCString));
 method(double,            toDouble,       RCString));
-
-
-
-
 
 #endif __R_C_STRING_NUMBERS_H__

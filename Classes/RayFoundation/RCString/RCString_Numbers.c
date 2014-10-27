@@ -15,6 +15,8 @@
 
 #include "RCString_Numbers.h"
 
+#pragma mark Basics
+
 static inline RBool isDecimalDigit(char character) {
     if(character < '0' || character > '9') {
         return NO;
@@ -48,6 +50,33 @@ static inline RBool isBinaryDigit(char character) {
         return NO;
     }
 }
+
+#pragma mark RNumberSystemBase
+
+method(RCString *, toRCString, RNumberSystemBase)) {
+    switch (*object) {
+        case RNotNumber : {
+            return RS(toString(RNotNumber));
+        }
+
+        case RBinary : {
+            return RS(toString(RBinary));
+        }
+
+        case ROctal : {
+            return RS(toString(ROctal));
+        }
+
+        case RHex : {
+            return RS(toString(RHex));
+        }
+
+        case RDecimal : {
+            return RS(toString(RDecimal));
+    }
+}
+
+#pragma mark RCString Additions
 
 method(RNumberSystemBase, isNumber, RCString)) {
     size_t iterator;

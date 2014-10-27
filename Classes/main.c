@@ -9,27 +9,7 @@
 
 int main(int argc, const char *argv[]) {
     RNumberSystemBase temp = $(RS("0xffff"), m(isNumber, RCString)));
-    switch (temp) {
-        case RNotNumber : {
-            RPrintLn(toString(RNotNumber));
-        } break;
 
-        case RBinary : {
-            RPrintLn(toString(RBinary));
-        } break;
-
-        case ROctal : {
-            RPrintLn(toString(ROctal));
-        } break;
-
-        case RHex : {
-            RPrintLn(toString(RHex));
-        } break;
-
-        case RDecimal : {
-            RPrintLn(toString(RDecimal));
-        } break;
-    }
     RPrintf("%d", temp);
     return 0;
 }
