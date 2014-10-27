@@ -43,6 +43,7 @@
 
 #define RError(string, object)                            RFPrintf(stderr, "%p ERROR. "string"\n", object)
 #define RWarning(string, object)                          RPrintf("Warning. %p - "string"\n", object)
+#define RPrintLn(string)                                  RPrintf(string"\n")
 
 // typedefs
 typedef void*   pointer;

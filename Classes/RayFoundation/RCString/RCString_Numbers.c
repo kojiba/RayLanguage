@@ -24,7 +24,7 @@ static inline RBool isDecimalDigit(char character) {
 }
 
 static inline RBool isOctalDigit(char character) {
-    if(character < '0' || character > '8') {
+    if(character < '0' || character > '7') {
         return NO;
     } else {
         return YES;
@@ -33,8 +33,16 @@ static inline RBool isOctalDigit(char character) {
 
 static inline RBool isHexDigit(char character) {
     if(isDecimalDigit(character)
-            || character > 60 && character < 67
-            || character > 40 && character < 47) {
+            || character > 64 && character < 71
+            || character > 96 && character < 103) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+static inline RBool isBinaryDigit(char character) {
+    if(character == '0' || character == '1') {
         return YES;
     } else {
         return NO;

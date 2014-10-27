@@ -22,9 +22,10 @@
 static inline RBool isDecimalDigit (char character);
 static inline RBool isOctalDigit   (char character);
 static inline RBool isHexDigit     (char character);
+static inline RBool isBinaryDigit  (char character);
 
 typedef enum RNumberSystemBase {
-    RNotNumber,
+    RNotNumber = 0,
     RBinary,
     ROctal,
     RDecimal,
