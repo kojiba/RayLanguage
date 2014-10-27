@@ -19,7 +19,7 @@
                                         object->destructorDelegate(object->array[index])
 
 #define printElementAtIndex(index) if (object->printerDelegate != NULL) \
-                                        $(object->array[iterator], object->printerDelegate))
+                                        object->printerDelegate(object->array[iterator])
 
 #define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
                                                 object->array[index1] = object->array[index2]; \
@@ -28,7 +28,7 @@
 #define incrementCount() ++object->count; \
                        --object->freePlaces
 
-#define incrementFreePlaceses() --object->count; \
+#define incrementFreePlaces() --object->count; \
                               ++object->freePlaces
 
 #pragma mark Constructor - Destructor - Reallocation
@@ -104,7 +104,15 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
         RPrintf("RA %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
-        RReAlloc(object->array, (size_t) (newSize * sizeof(pointer)));
+#if RAY_SHORT_DEBUG == 1
+        RPrintf("\t Old array - %p", object->array);
+#endif
+
+        object->array = RReAlloc(object->array, newSize * sizeof(pointer));
+
+#if RAY_SHORT_DEBUG == 1
+        RPrintf(", new - %p\n", object->array);
+#endif
         if (object->array == NULL) {
             return reallocation_error;
         } else {
@@ -150,9 +158,8 @@ method(void, flush, RArray)) {
 }
 
 method(byte, sizeToFit, RArray)){
-    register size_t iterator;
     // create temp array
-    pointer *tempArray = RAlloc((size_t) (object->count * sizeof(pointer)));
+    pointer *tempArray = RAlloc(object->count * sizeof(pointer));
 
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA %p SIZE_TO_FIT\n", object);
@@ -162,9 +169,7 @@ method(byte, sizeToFit, RArray)){
     } else {
 
         // copy pointers to temp array
-        forAll(iterator, object->count) {
-            tempArray[iterator] = object->array[iterator];
-        }
+        RMemMove(tempArray, object->array, sizeof(pointer) * object->count);
 
         // delete old
         deallocator(object->array);
@@ -253,7 +258,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
         if(index != object->count - 1) {
             object->array[index] = object->array[object->count - 1];
         }
-        incrementFreePlaceses();
+        incrementFreePlaces();
         return no_error;
 
     } else {
@@ -274,7 +279,7 @@ method(void, deleteObjects, RArray), RRange range){
 
 method(void, deleteLast, RArray)){
     destroyElementAtIndex(object->count - 1);
-    incrementFreePlaceses();
+    incrementFreePlaces();
 }
 
 #pragma mark Get - Find
@@ -370,7 +375,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
 
 byte RArrayStandartComporator(pointer first, pointer second) {
     // whats-inside-higher, sort
-    if (*((size_t *) first) > *((size_t *) second)) {
+    if (first > second) {
         return swap_objects;
     } else {
         return 0;

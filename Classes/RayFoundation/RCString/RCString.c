@@ -13,6 +13,7 @@
  *         |__/
  **/
 
+#include <CoreFoundation/CoreFoundation.h>
 #include "RCString.h"
 
 #pragma mark Basics
@@ -72,10 +73,11 @@ RCString *randomRCString(void) {
 
 constructor(RCString)) {
     object = allocator(RCString);
-    if(object) {
+    if(object != NULL) {
         // 1 - it's for RCString
-        object->classId = 1;
-        object->size = 0;
+        object->classId    = 1;
+        object->size       = 0;
+        object->baseString = NULL;
     }
     return object;
 }
@@ -105,18 +107,18 @@ method(RCString *, setString, RCString), const char *string) {
         // checking, if exist and size like copying
         if(object->baseString == NULL) {
             object->baseString = RAlloc(stringSize * sizeof(char));
+
+        } else if(object->size < stringSize) {
+            object->baseString = RReAlloc(object->baseString, stringSize * sizeof(char));
         }
-        if(object->baseString != NULL
-                && object->size < stringSize) {
-            RReAlloc(object->baseString, stringSize * sizeof(char));
-        }
+
         if(object->baseString == NULL) {
             RError("RCS. SetString alloc or realloc returned NULL.", object);
         }
 
         // final copying
         object->size = stringSize;
-        RMemCpy(object->baseString, string, object->size);
+        RMemMove(object->baseString, string, object->size);
         --object->size;
     } else {
         RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
@@ -390,6 +392,7 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
         RMemMove(result + place,                   substring->baseString,      substring->size);
         RMemMove(result + place + substring->size, object->baseString + place, object->size - place);
         deallocator(object->baseString);
+        result[object->size + substring->size] = 0;
 
         object->size += substring->size;
         object->baseString = result;
@@ -405,9 +408,9 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
 method(RCString *, substringInRange, RCString), RRange range) {
     if(range.count != 0
             && ((range.from + range.count) <= object->size)) {
-        char *cstring = RAlloc(range.count + 1 * sizeof(char));
+        char *cstring = RAlloc((range.count + 1) * sizeof(char));
         RMemMove(cstring, object->baseString + range.from, range.count);
-        cstring[range.count + 1] = 0;
+        cstring[range.count] = 0;
 
         RCString *rcString   = $(NULL, c(RCString)) );
         rcString->size       = range.count;
@@ -445,7 +448,7 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     while(string != NULL) {
         $(result, m(addObject, RArray)), string);
         object->baseString += string->size + 1;
-        object->size -= string->size + 1;
+        object->size       -= string->size + 1;
         string = $(object, m(substringToSymbol, RCString)), symbol);
         if(string == NULL) {
             $(result, m(addObject, RArray)), $(object, m(copy, RCString))) );
@@ -585,7 +588,7 @@ method(void, fromFile, RCString), const RCString *filename) {
 
 method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != NULL) {
-        RReAlloc(object->baseString, string->size + object->size + 1);
+        object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
         if(object->baseString == NULL) {
             RError("RCS. Concatenate realloc error.", object);
         } else {

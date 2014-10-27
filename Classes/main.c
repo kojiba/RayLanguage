@@ -8,22 +8,6 @@
 #include "RayFoundation/RayFoundation.h"
 
 int main(int argc, const char *argv[]) {
-    RCString *temp = RSC("Hello from kojiba, %username%, we are a great! But, it's very long hello=) ss");
-    printerOfRCString(temp);
-    toLowerCaseRCString(temp);
-    printerOfRCString(temp);
-    toUpperCaseRCString(temp);
-    printerOfRCString(temp);
-    insertSubstringAtRCString(temp, RS(" and HABRAHABR, HABRAHABR"), 30);
-    printerOfRCString(temp);
-    size_t times = numberOfSubstringsRCString(temp, RS("HABRAHABR"));
-    RPrintf("Contatins HABRAHABR %qu - times \n", times);
-    RArray *result = $(temp, m(substringsSeparatedBySymbols, RCString)), RS(" .,;:!?=+-()") );
-    if(result != NULL) {
-        printerOfRArray(result);
-        deleteRA(result);
-    }
-    deleteRCS(temp);
     return 0;
 }
 

@@ -18,8 +18,6 @@
 #ifndef __RAY_FOUNDATION__
 #define __RAY_FOUNDATION__
 
-#define RAY_SHORT_DEBUG 451
-
 #include "RSyntax.h"
 #include "RBasics/RBasics.h"
 #include "RArray/RArray.h"

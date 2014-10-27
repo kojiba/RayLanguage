@@ -49,7 +49,7 @@ typedef enum RArrayFlags {
 
 } RArrayFlags;
 
-static const size_t startSizeOfRArrayDefault      = 50;
+static const size_t startSizeOfRArrayDefault      = 10;
 static const size_t sizeMultiplierOfRArrayDefault = 2;
 
 class(RArray) //--------------------------------------------------------------
