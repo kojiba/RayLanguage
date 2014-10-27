@@ -61,7 +61,7 @@ typedef enum RVirtualCodes {
 
 } RInstructions;
 
-static const uint64_t memorySizeOfRVM = 1024;
+static const size_t memorySizeOfRVM = 1024;
 
 class(RVirtualMachine)
     RByteArray       *memory;               // memory 1 kB size
@@ -71,7 +71,7 @@ class(RVirtualMachine)
     byte             *command;              // pointer to rasm byte-code
     byte             *functionStartAddress; // pointer to place, where function starts
 
-    uint64_t          tickCount;
+    size_t          tickCount;
     byte              breakFlag;            // for force quit
 
 endOf(RVirtualMachine)
@@ -84,7 +84,7 @@ singleton   (RVirtualMachine);
 method(void,     executeFunction, RVirtualMachine),    RVirtualFunction *function);
 
 // workings methods
-method(uint64_t, executeCode,     RVirtualMachine));
+method(size_t, executeCode,     RVirtualMachine));
 method(void,     setUpDataBlock,  RVirtualMachine));
 
 #define RVM singletonCall(RVirtualMachine)

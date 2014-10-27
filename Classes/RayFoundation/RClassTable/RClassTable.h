@@ -30,9 +30,9 @@ destructor  (RClassTable);
 printer     (RClassTable);
 singleton   (RClassTable);
 
-method (uint64_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant
-method (uint64_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant
-method (uint64_t,      getNumberOfClasses,       RClassTable));
+method (size_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant
+method (size_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant
+method (size_t,      getNumberOfClasses,       RClassTable));
 
 //----------------------------------------------------------------------------------
 

@@ -19,13 +19,13 @@ destructor(RVirtualFunction) {
 }
 
 printer(RVirtualFunction) {
-    uint64_t iterator;
+    size_t iterator;
     RPrintf("%s object - %p : \n", toString(RVirtualFunction), object);
     RPrintf("Name : \"%s\" \n", object->name->baseString);
     RPrintf("Byte Code : \" \n");
 
     forAll(iterator, master(object, RByteArray)->size) {
-        RPrintf("\t %qu - ",iterator);
+        RPrintf("\t %q - ",iterator);
         switch (master(object, RByteArray)->array[iterator]) {
 
             case r_increment : {
@@ -55,18 +55,18 @@ printer(RVirtualFunction) {
 
             case r_if : {
                 RPrintf("if \n ");
-                RPrintf("\t\tfalse : goto %qu \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintf("\t\tfalse : goto %q \n", master(object, RByteArray)->array[iterator += 2]);
                 RPrintf("\t\ttrue :");
             } break;
 
             case r_if_not : {
                 RPrintf("if NOT \n ");
-                RPrintf("\t\tfalse : goto %qu \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintf("\t\tfalse : goto %q \n", master(object, RByteArray)->array[iterator += 2]);
                 RPrintf("\t\ttrue :");
             } break;
 
             case r_goto_address : {
-                RPrintf("goto %qu ", master(object, RByteArray)->array[++iterator]);
+                RPrintf("goto %q ", master(object, RByteArray)->array[++iterator]);
                 RPrintf("\n");
             } break;
 
@@ -76,7 +76,7 @@ printer(RVirtualFunction) {
             } break;
 
             default: {
-                RPrintf("%qu", master(object, RByteArray)->array[iterator]);
+                RPrintf("%q", master(object, RByteArray)->array[iterator]);
                 RPrintf("\n");
             } break;
         }

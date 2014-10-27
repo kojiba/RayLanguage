@@ -19,7 +19,7 @@
 constructor(RDictionary)) {
     object = allocator(RDictionary);
     if(object == NULL) {
-        RPrintf("ERROR. RD. Allocation error.");
+        RError("RD. Constructor allocation error.", object);
     } else {
         // set up class ID
         object->classId = registerClassOnce(toString(RDictionary));
@@ -48,7 +48,7 @@ destructor(RDictionary) {
         deleteRA(object->values);
         deallocator(master(object, RCompareDelegate));
     } else {
-        RPrintf("Warning. RD. Destructing a NULL, do nothing, please delete function call, or fix it.\n");
+        RWarning("Warning. RD. Destructing a NULL, do nothing, please delete function call, or fix it.", object);
     }
 }
 
@@ -84,12 +84,12 @@ method(pointer, getObjectForKey, RDictionary), pointer key) {
 }
 
 printer(RDictionary){
-    uint64_t iterator;
+    size_t iterator;
     RPrintf("\n%s object %p: { \n", toString(RDictionary), object);
-    RPrintf(" Count : %qu \n", object->keys->count);
-    RPrintf(" Free  : %qu \n", object->keys->freePlaces);
+    RPrintf(" Count : %q \n", object->keys->count);
+    RPrintf(" Free  : %q \n", object->keys->freePlaces);
     forAll(iterator, object->keys->count) {
-        RPrintf("\t %qu - {", iterator);
+        RPrintf("\t %q - {", iterator);
         RPrintf(" %p : %p } \n", $(object->keys, m(elementAtIndex, RArray)), iterator),
                                  $(object->values, m(elementAtIndex, RArray)), iterator) );
     }

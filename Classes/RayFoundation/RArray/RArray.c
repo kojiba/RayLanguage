@@ -43,7 +43,7 @@ constructor(RArray), RArrayFlags *error) {
 
     if (object == NULL) {
         *error = allocation_error;
-        RPrintf("ERROR. RA. BAD ALLOCATION\n");
+        RError("RA. Bad allocation on constructor.", object);
         return NULL;
 
     } else {
@@ -72,7 +72,7 @@ constructor(RArray), RArrayFlags *error) {
 
 destructor(RArray) {
 
-    register uint64_t iterator;
+    register size_t iterator;
 
     if (object != NULL) {
 
@@ -90,7 +90,7 @@ destructor(RArray) {
         object->destructorDelegate = NULL;
         object->printerDelegate    = NULL;
     } else {
-        RPrintf("Warning. RA. Destructing a NULL, do nothing, please delete function call, or fix it.\n");
+        RWarning("RA. Destructing a NULL, do nothing, please delete function call, or fix it.", object);
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -98,38 +98,27 @@ destructor(RArray) {
 #endif
 }
 
-method(RArrayFlags, addSize, RArray), uint64_t newSize) {
+method(RArrayFlags, addSize, RArray), size_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
         RPrintf("RA %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
-        register uint64_t iterator;
-
-        // create temp array
-        pointer *tempArray = RAlloc((size_t) (newSize * sizeof(pointer)));
-
-        if (tempArray == NULL) {
-            return temp_allocation_error;
+        RReAlloc(object->array, (size_t) (newSize * sizeof(pointer)));
+        if (object->array == NULL) {
+            return reallocation_error;
         } else {
-
-            // copy pointers to temp array
-            forAll(iterator, object->count) {
-                tempArray[iterator] = object->array[iterator];
-            }
-            deallocator(object->array); // delete old
-            object->array = tempArray;  // switch to new
             object->freePlaces = newSize - object->count; // add some free
             return no_error;
         }
     } else {
-        RPrintf("Warning. RA. Bad new size, do nothing, please delete function call, or fix it.\n");
+        RWarning("RA. Bad new size, do nothing, please delete function call, or fix it.", object);
         return bad_size;
     }
 }
 
 method(void, flush, RArray)) {
-    register uint64_t iterator;
+    register size_t iterator;
 
     if (object != NULL) {
 
@@ -140,11 +129,10 @@ method(void, flush, RArray)) {
             }
             // dealloc array pointer
             deallocator(object->array);
-
             object->array = RAlloc(object->startSize * sizeof(pointer));
 
             if (object->array == NULL) {
-                RPrintf("Warning. RA. Flush allocation error.\n");
+                RError("RA. Flush allocation error", object);
                 return;
             }
 
@@ -153,7 +141,7 @@ method(void, flush, RArray)) {
         }
 
     } else {
-        RPrintf("Warning. RA. Flushing a NULL, do nothing, please delete function call, or fix it.\n");
+        RWarning("RA. Flushing a NULL, do nothing, please delete function call, or fix it.", object);
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -162,7 +150,7 @@ method(void, flush, RArray)) {
 }
 
 method(byte, sizeToFit, RArray)){
-    register uint64_t iterator;
+    register size_t iterator;
     // create temp array
     pointer *tempArray = RAlloc((size_t) (object->count * sizeof(pointer)));
 
@@ -218,9 +206,9 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     return errors;
 }
 
-method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
+method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RA %p setObject atIndex = %qu \n", object, index);
+        RPrintf("RA %p setObject atIndex = %q \n", object, index);
 #endif
     // if at that index exist some object
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
@@ -230,8 +218,8 @@ method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
     } else {
 
         // if space at index is not allocated
-        if(index > (object->freePlaces + object->count)){
-            RPrintf("Error. RA. Setting to a not allocated space, do nothing, please delete function call, or fix it.\n");
+        if(index > (object->freePlaces + object->count)) {
+            RWarning("RA. Setting to a not allocated space, do nothing, please delete function call, or fix it.", object);
         // if space is allocated
         } else {
             object->array[index] = newObject;
@@ -242,7 +230,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, uint64_t index){
     }
 }
 
-method(RArrayFlags, deleteObjectAtIndex, RArray), uint64_t index){
+method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA deleteObjectAtIndex of %p\n", object);
 #endif
@@ -256,7 +244,7 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), uint64_t index){
     }
 }
 
-method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
+method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA fastDeleteObjectAtIndex of %p\n", object);
 #endif
@@ -274,9 +262,9 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), uint64_t index){
 }
 
 method(void, deleteObjects, RArray), RRange range){
-    register uint64_t iterator;
+    register size_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range.from, range.count);
+    RPrintf("RA deleteObjectsInRange of %p, from - %q, count - %q \n", object, range.from, range.count);
 #endif
     fromStartForAll(iterator, range.from, range.count) {
         destroyElementAtIndex(iterator);
@@ -292,7 +280,7 @@ method(void, deleteLast, RArray)){
 #pragma mark Get - Find
 
 method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
-    register uint64_t iterator;
+    register size_t iterator;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
 #endif
@@ -311,7 +299,7 @@ method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *de
     return NULL;
 }
 
-method(pointer, elementAtIndex, RArray), uint64_t index) {
+method(pointer, elementAtIndex, RArray), size_t index) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA elementAtIndex of %p\n", object);
 #endif
@@ -325,7 +313,7 @@ method(pointer, elementAtIndex, RArray), uint64_t index) {
 
 method(RArray *, getSubarray, RArray), RRange range){
 
-    uint64_t iterator = 0;
+    size_t iterator = 0;
     RArray *result = makeRArray();
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA getSubarray of %p\n", object);
@@ -367,8 +355,8 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     RPrintf("RA bubbleSortWithDelegate of %p\n", object);
 #endif
 
-    register uint64_t inner;
-    register uint64_t outer;
+    register size_t inner;
+    register size_t outer;
 
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
@@ -389,18 +377,18 @@ byte RArrayStandartComporator(pointer first, pointer second) {
     }
 }
 
-method(void, quickSortWithDelegate, RArray), uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer)) {
+method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*comparator)(pointer, pointer)) {
 
 #if RAY_SHORT_DEBUG == 1
-    static uint64_t number = 0;
-    RPrintf("RA quickSortWithDelegate of %p recursive #%qu\n", object, number);
+    static size_t number = 0;
+    RPrintf("RA quickSortWithDelegate of %p recursive #%q\n", object, number);
     ++number;
 #endif
 
     if (last > first) {
         register pointer pivot = object->array[first];
-        register uint64_t left = first;
-        register uint64_t right = last;
+        register size_t left = first;
+        register size_t right = last;
         while (left < right) {
             if (comparator(object->array[left], pivot) != swap_objects) {
                 left += 1;
@@ -435,13 +423,13 @@ printer(RArray) {
 #if RAY_SHORT_DEBUG == 1
       RPrintf("%s printer of %p \n", toString(RArray), object);
 #else
-    register uint64_t iterator;
+    register size_t iterator;
 
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
-    RPrintf(" Count : %qu \n", object->count);
-    RPrintf(" Free  : %qu \n", object->freePlaces);
+    RPrintf(" Count : %q \n", object->count);
+    RPrintf(" Free  : %q \n", object->freePlaces);
     forAll(iterator, object->count) {
-        RPrintf("\t %qu - ", iterator);
+        RPrintf("\t %q - ", iterator);
         printElementAtIndex(iterator); // or print value
         else {
             RPrintf("%p \n", object->array[iterator]);
@@ -452,7 +440,7 @@ printer(RArray) {
 
 }
 
-method(static inline byte, checkIfIndexIn, RArray), uint64_t index) {
+method(static inline byte, checkIfIndexIn, RArray), size_t index) {
     if (index < object->count) {
         return index_exists;
     } else {
@@ -469,7 +457,7 @@ method(void, shift, RArray), byte side, RRange range) {
          sideName = "right";
     } RPrintf("RA shift of %p on %s\n", object, sideName);
 #endif
-    register uint64_t iterator;
+    register size_t iterator;
     if(range.count != 0) {
         if (side == shift_left) {
             // do not call destructor
@@ -486,6 +474,6 @@ method(void, shift, RArray), byte side, RRange range) {
         object->count -= range.count;
         object->freePlaces += range.count;
     } else {
-        RPrintf("Warning. RA. Shifts of RArray do nothing, please delete function call, or fix it.\n");
+        RWarning("RA. Shifts of RArray do nothing, please delete function call, or fix it.", object);
     }
 }

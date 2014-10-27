@@ -30,7 +30,7 @@ method(void, setUpDataBlock, RVirtualMachine)) {
     }
 }
 
-method(uint64_t, executeCode, RVirtualMachine)) {
+method(size_t, executeCode, RVirtualMachine)) {
 
     switch(*object->command) {
 
@@ -130,7 +130,7 @@ method(uint64_t, executeCode, RVirtualMachine)) {
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
-    uint64_t result = 0;
+    size_t result = 0;
     // copy pointer
     object->functionExecuting = function;
 
@@ -160,7 +160,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
 
     // at end of processing print analytics
     RPrintf("\nRVM. End Executing Function : \"%s\"\n", function->name->baseString);
-    RPrintf("Ticks count for executing is - %qu\n", object->tickCount);
+    RPrintf("Ticks count for executing is - %q\n", object->tickCount);
     RPrintf("Memory snapshot : {\n\n");
     $(object->memory, p(RByteArray)) );
     RPrintf("\n } end memory snapshot\n\n");

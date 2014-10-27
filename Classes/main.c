@@ -143,16 +143,16 @@ void StringArrayTest() {
 void RATimingTest() {
     initRClock();
     double average = 0;
-    uint64_t count = 173137;
+    size_t count = 173137;
 
     for(double multiplier = 1.5; multiplier < 40; multiplier += 0.5) {
 
-        for (uint64_t i = 0; i < 30; ++i) {
+        for (size_t i = 0; i < 30; ++i) {
             RArray *stringArray = makeRArray();
             stringArray->destructorDelegate = RFree;
             stringArray->sizeMultiplier = multiplier;
 
-            for (uint64_t j = 0; j < count; ++j) {
+            for (size_t j = 0; j < count; ++j) {
                 char *a = (char *) malloc(sizeof(char) * 8);
                 memmove(a, "Hello  ", sizeof("Hello  "));
                 a[6] = (char) (j % 10 + 48);
@@ -171,10 +171,10 @@ void RATimingTest() {
 
 void RDictionaryTest(void){
     RDictionary *dictionary = makeRDictionary();
-    uint64_t iterator;
+    size_t iterator;
     fromStartForAll(iterator, 1, 20){
-        uint64_t value = iterator;
-        uint64_t key = iterator;
+        size_t value = iterator;
+        size_t key = iterator;
         $(dictionary, m(setObjectForKey, RDictionary)), value, key);
     }
 
@@ -190,7 +190,7 @@ void RClassTableTest(void){
     registerClassOnce("Leia");
     registerClassOnce("Han Solo");
     // try once more, but here is only one record
-    uint64_t iterator;
+    size_t iterator;
     forAll(iterator, 1000000) {
         registerClassOnce("Leia");
         registerClassOnce("Dart");
@@ -200,7 +200,7 @@ void RClassTableTest(void){
     printRCTS;
 
     char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
+    RPrintf("Identifier of %s is - %q \n", checkName, registerClassOnce(checkName));
 
     tickRClock();
 }

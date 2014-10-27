@@ -17,14 +17,14 @@
 
 #pragma mark RRange
 
-RRange makeRRange(uint64_t from, uint64_t count) {
+RRange makeRRange(size_t from, size_t count) {
     RRange range;
     range.from = from;
     range.count = count;
     return range;
 }
 
-RRange makeRRangeTo(uint64_t from, uint64_t to) {
+RRange makeRRangeTo(size_t from, size_t to) {
     RRange range;
     range.from = from;
     range.count = to - from;
@@ -49,7 +49,7 @@ RCompareFlags compareRRange(RRange first, RRange second) {
     }
 }
 
-byte isInRange(RRange range, uint64_t value) {
+byte isInRange(RRange range, size_t value) {
     if(value >= range.from && value <= range.from + range.count) {
         return 1;
     } else {

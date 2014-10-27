@@ -17,8 +17,8 @@
 
 #pragma mark Basics
 
-uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char character) {
-    register uint64_t iterator = 0;
+size_t indexOfFirstCharacterCString(const char *string, size_t size, char character) {
+    register size_t iterator = 0;
     while(iterator < size) {
         if(string[iterator] == character) {
             break;
@@ -29,9 +29,9 @@ uint64_t indexOfFirstCharacterCString(const char *string, uint64_t size, char ch
     return iterator;
 }
 
-uint64_t indexOfLastCharacterCString(const char *string, uint64_t size, char character) {
-    register uint64_t iterator = 0;
-    register uint64_t last = size;
+size_t indexOfLastCharacterCString(const char *string, size_t size, char character) {
+    register size_t iterator = 0;
+    register size_t last = size;
     while(iterator < size) {
         if(string[iterator] == character) {
             last = iterator;
@@ -51,13 +51,13 @@ char randomCharacter(void) {
 }
 
 RCString *randomRCString(void) {
-    register uint64_t  iterator;
+    register size_t  iterator;
              RCString *string = makeRCString();
-    register uint64_t  size   = ((uint64_t)rand()) % 50;
+    register size_t  size   = ((size_t)rand()) % 50;
     char     *cstring;
 
     while(size == 0) {
-        size = ((uint64_t)rand()) % 50;
+        size = ((size_t)rand()) % 50;
     }
     cstring = RAlloc(size * sizeof(char));
     forAll(iterator, size - 1){
@@ -100,13 +100,18 @@ method(void, flush, RCString)) {
 
 method(RCString *, setString, RCString), const char *string) {
     if(string != NULL) {
-        register uint64_t stringSize = RStringLenght(string) + 1;
+        register size_t stringSize = RStringLenght(string) + 1;
 
         // checking, if exist and size like copying
-        if(object->size != 0 && object->baseString != NULL
-                || object->size < stringSize) {
-            deallocator(object->baseString);
+        if(object->baseString == NULL) {
             object->baseString = RAlloc(stringSize * sizeof(char));
+        }
+        if(object->baseString != NULL
+                && object->size < stringSize) {
+            RReAlloc(object->baseString, stringSize * sizeof(char));
+        }
+        if(object->baseString == NULL) {
+            RError("RCS. SetString alloc or realloc returned NULL.", object);
         }
 
         // final copying
@@ -114,7 +119,7 @@ method(RCString *, setString, RCString), const char *string) {
         RMemCpy(object->baseString, string, object->size);
         --object->size;
     } else {
-        RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
+        RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
     }
     return object;
 }
@@ -125,7 +130,7 @@ method(RCString *, setConstantString, RCString), char const *string) {
         object->baseString = string;
         object->size       = RStringLenght(string);
     } else {
-        RPrintf("Warning. RCS. Setted strings is empty, please delete function call, or fix it.\n");
+        RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
     }
     return object;
 }
@@ -133,7 +138,7 @@ method(RCString *, setConstantString, RCString), char const *string) {
 #pragma mark Replace
 
 method(void, replaceCharacters, RCString), char characterToReplace, char replacer) {
-    register uint64_t iterator = 0;
+    register size_t iterator = 0;
     while(iterator < object->size) {
         if(object->baseString[iterator] == characterToReplace) {
             object->baseString[iterator] = replacer;
@@ -149,7 +154,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
             && replacer->size  != 0
             && toReplace->size <= object->size) {
 
-        register uint64_t iterator;
+        register size_t iterator;
         forAll(iterator, object->size) {
 
             // search first symbol
@@ -166,15 +171,15 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
             }
         }
     } else {
-        RPrintf("Warning. RCS. Bad strings, or sizes, please delete function call, or fix it.\n");
+        RWarning("RCS. Bad strings, or sizes, please delete function call, or fix it.", object);
     }
 }
 
 #pragma mark Info
 
-method(uint64_t, numberOfRepetitions, RCString), char character) {
-    register uint64_t reps     = 0;
-    register uint64_t iterator;
+method(size_t, numberOfRepetitions, RCString), char character) {
+    register size_t reps     = 0;
+    register size_t iterator;
 
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -187,7 +192,7 @@ method(uint64_t, numberOfRepetitions, RCString), char character) {
 #pragma mark Deletions
 
 method(RCString *, deleteAllCharacters, RCString), char character) {
-    register uint64_t iterator;
+    register size_t iterator;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
             RMemCpy(object->baseString + iterator, object->baseString + iterator + 1, object->size + 1 - iterator);
@@ -199,8 +204,8 @@ method(RCString *, deleteAllCharacters, RCString), char character) {
 }
 
 method(void, removeRepetitionsOf, RCString), char character) {
-    register uint64_t iterator;
-    register uint64_t inner;
+    register size_t iterator;
+    register size_t inner;
     forAll(iterator, object->size - 1) {
         if(object->baseString[iterator] == character) {
 
@@ -220,8 +225,8 @@ method(void, removeRepetitionsOf, RCString), char character) {
 }
 
 method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
-    register uint64_t iterator;
-    register uint64_t inner;
+    register size_t iterator;
+    register size_t inner;
     register byte flag = 1;
 
     if(substring->size != 0
@@ -253,7 +258,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
         }
         return object;
     } else {
-        RPrintf("Warning. RCS. Substring size is 0, or, substring is NULL.\n");
+        RWarning("RCS. Substring size is 0, or, substring is NULL.", object);
     }
     return NULL;
 }
@@ -263,9 +268,9 @@ method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
     if($(object->baseString, m(compareWith, RCString)), substring) != equals
             && object->size >= substring->size * 2) {
 
-        register uint64_t iterator;
-        register uint64_t place;
-        register uint64_t repetitionsCount;
+        register size_t iterator;
+        register size_t place;
+        register size_t repetitionsCount;
 
         forAll(iterator, object->size - substring->size) {
             // first symbols compare
@@ -299,9 +304,9 @@ method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
     }
 }
 
-method(RCString *, deleteCharacterAt, RCString), uint64_t index) {
+method(RCString *, deleteCharacterAt, RCString), size_t index) {
     if(index > object->size) {
-        RPrintf("Error. RCS. Bad index!");
+        RError("RCS. Bad index!", object);
     } else {
         RMemMove(object->baseString + index, object->baseString + index + 1, object->size - index);
     }
@@ -327,12 +332,12 @@ method(RCString *, setSubstringInRange, RCString), RRange range, const char *str
     if(range.count != 0 && ((range.from + range.count - 1) < object->size)) {
         RMemMove(object->baseString + range.from, string, range.count);
     } else {
-        RPrintf("ERROR. RCS. BAD RANGE!\n");
+        RError("RCS. BAD RANGE!\n", object);
     }
     return object;
 }
 
-method(RCString *, insertSubstringAt, RCString), RCString *substring, uint64_t place) {
+method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t place) {
     if(place < object->size) {
         char *result = RAlloc(object->size + substring->size + 1);
         RMemMove(result,                           object->baseString,         place);
@@ -345,7 +350,7 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, uint64_t p
     } else if(place == object->size) {
         $(object, m(concatenate, RCString)), substring);
     } else {
-        RPrintf("Warning. RCS. BAD place to insert!\n");
+        RWarning("RCS. BAD place to insert!", object);
     }
 
     return object;
@@ -364,14 +369,14 @@ method(RCString *, substringInRange, RCString), RRange range) {
 
         return rcString;
     } else {
-        RPrintf("ERROR. RCS. BAD RANGE!\n");
+        RError("RCS. BAD RANGE!\n", object);
         return NULL;
     }
 
 }
 
 method(RCString *, substringToSymbol, RCString), char symbol) {
-    register uint64_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
+    register size_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
     if(index != object->size) {
         return $(object, m(substringInRange, RCString)), makeRRange(0, index));
     } else {
@@ -411,9 +416,9 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 }
 
 method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsString) {
-    register uint64_t  iterator;
-    register uint64_t  endOfSubstring   = 0;
-    register uint64_t  startOfSubstring = 0;
+    register size_t  iterator;
+    register size_t  endOfSubstring   = 0;
+    register size_t  startOfSubstring = 0;
     register byte      isFirst          = 1;
              RArray   *result           =  NULL;
              RCString *substring;
@@ -483,9 +488,9 @@ method(RCString *, copy, RCString)) {
 #pragma mark Comparator
 
 method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
-    static uint64_t iterator;
+    static size_t iterator;
     if(checkString == NULL || object == NULL) {
-        RPrintf("Warning. RCS. One of compare strings is empty, please delete function call, or fix it.\n");
+        RWarning("RCS. One of compare strings is empty, please delete function call, or fix it.", object);
         return not_equals;
     } else {
         if (checkString == object) {
@@ -526,7 +531,7 @@ method(void, fromFile, RCString), const RCString *filename) {
         RFClose(file);
         $(object, m(setConstantString, RCString)), buffer);
     } else {
-        RPrintf("Warning. RCS. Cannot open file.\n");
+        RWarning("RCS. Cannot open file.\n", object);
     }
 }
 
@@ -543,14 +548,14 @@ method(void, concatenate, RCString), const RCString *string) {
         object->baseString = concatenationResult;
         object->size += string->size;
     } else {
-        RPrintf("Warning. RCS. Bad concatenate string.\n");
+        RWarning("RCS. Bad concatenate string.", object);
     }
 }
 
 #pragma mark Conversions
 
 method(RCString*, toUpperCase, RCString)) {
-    register uint64_t iterator;
+    register size_t iterator;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] > 96 && object->baseString[iterator] < 123 ) {
             object->baseString[iterator] -= 32;
@@ -560,7 +565,7 @@ method(RCString*, toUpperCase, RCString)) {
 }
 
 method(RCString*, toLowerCase, RCString)) {
-    register uint64_t iterator;
+    register size_t iterator;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] > 64 && object->baseString[iterator] < 91 ) {
             object->baseString[iterator] += 32;

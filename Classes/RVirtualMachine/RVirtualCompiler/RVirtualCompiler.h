@@ -10,19 +10,19 @@ class(RVirtualCompiler)
     RCString   *code;          // copy of source-code
 
     // iterators for counting
-    uint64_t    lines;
-    uint64_t    numberOfLines;
-    uint64_t    symbols;
+    size_t      lines;
+    size_t      numberOfLines;
+    size_t      symbols;
 
     // for code processing
-    uint64_t    iterator;
-    uint64_t    iteratorShift;
-    uint64_t    forwardRepetitions;
-    uint64_t    backwardRepetitions;
+    size_t      iterator;
+    size_t      iteratorShift;
+    size_t      forwardRepetitions;
+    size_t      backwardRepetitions;
 
     // workers
-    uint64_t    deltaToNext;
-    uint64_t    toPrev;
+    size_t      deltaToNext;
+    size_t      toPrev;
 
     RByteArray *body;          // pointer to byte-code, that will be returned
 

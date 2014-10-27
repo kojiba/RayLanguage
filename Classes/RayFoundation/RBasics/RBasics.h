@@ -28,14 +28,14 @@ typedef enum RCompareFlags{
 } RCompareFlags;
 
 typedef struct RRange {
-    uint64_t from;
-    uint64_t count;
+    size_t from;
+    size_t count;
 } RRange;
 
-inline RRange          makeRRange    (uint64_t from, uint64_t count);
-inline RRange          makeRRangeTo  (uint64_t from, uint64_t to);
+inline RRange          makeRRange    (size_t from, size_t count);
+inline RRange          makeRRangeTo  (size_t from, size_t to);
 inline RCompareFlags   compareRRange (RRange first, RRange second);
-inline byte            isInRange     (RRange range, uint64_t value);
+inline byte            isInRange     (RRange range, size_t value);
 
 typedef struct RBounds {
     char startSymbol;

@@ -41,13 +41,16 @@
                                                           start = clock(); \
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", diff / 1000 / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
+#define RError(string, object)                            RFPrintf(stderr, "%p ERROR. "string"\n", object)
+#define RWarning(string, object)                          RPrintf("Warning. %p - "string"\n", object)
+
 // typedefs
 typedef void* pointer;
 typedef uint8_t byte;
 
 // declarations
 #define class(className)                                  typedef struct className { \
-                                                          uint64_t classId;
+                                                          size_t classId;
 #define protocol(protocolName)                            typedef struct protocolaName {
 
 #define discipleOf(className)                             className *concatenate(master, concatenate(className, Object));

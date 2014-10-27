@@ -20,20 +20,20 @@
 
 class(RByteArray)
     byte    *array;
-    uint64_t size;
+    size_t size;
 endOf(RByteArray)
 
 // basics
-byte*          makeByteArray              (uint64_t size);
-byte*          flushAllToByte             (byte *array,       uint64_t size, byte symbol); // not copy
-void           printByteArrayInHex        (const byte *array, uint64_t size);
-byte*          getByteArrayCopy           (const byte *array, uint64_t size);
+byte*          makeByteArray              (size_t size);
+byte*          flushAllToByte             (byte *array,       size_t size, byte symbol); // not copy
+void           printByteArrayInHex        (const byte *array, size_t size);
+byte*          getByteArrayCopy           (const byte *array, size_t size);
 byte*          getSubArray                (const byte *array, RRange range );              // sub-array copy
-RByteArray*    getSubArrayToFirstSymbol   (const byte *array, uint64_t size, byte symbol); // sub-array copy, or NULL
-RArray*        getArraysSeparatedBySymbol (const byte *array, uint64_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or NULL
+RByteArray*    getSubArrayToFirstSymbol   (const byte *array, size_t size, byte symbol); // sub-array copy, or NULL
+RArray*        getArraysSeparatedBySymbol (const byte *array, size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or NULL
 
 // RByteArray
-constructor (RByteArray), uint64_t size);
+constructor (RByteArray), size_t size);
 destructor  (RByteArray);
 printer     (RByteArray);
 

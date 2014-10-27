@@ -21,7 +21,7 @@
 class(RFloatingEnum)
     discipleOf(RDictionary)
 
-    byte     isChangesAfterCall;                 // if == 1 - rebase enum after each compare
+    byte      isChangesAfterCall;                 // if == 1 - rebase enum after each compare
     pointer (*nextElementForCode)(pointer code); // get - set delegate, to create random elements
 endOf(RFloatingEnum)
 

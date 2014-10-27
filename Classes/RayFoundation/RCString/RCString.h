@@ -22,15 +22,15 @@
 typedef struct RCString RCString;
 
 // basics
-uint64_t  indexOfFirstCharacterCString (const char *string, uint64_t size, char character); // returns index, or size
-uint64_t  indexOfLastCharacterCString  (const char *string, uint64_t size, char character); // returns index, or size
+size_t  indexOfFirstCharacterCString (const char *string, size_t size, char character); // returns index, or size
+size_t  indexOfLastCharacterCString  (const char *string, size_t size, char character); // returns index, or size
 RCString* randomRCString               (void);
 char      randomCharacter              (void);
 
 class(RCString) //------------------------------------
 
     char    *baseString; // 0-terminated c-string
-    uint64_t size;       // size without '\0' character
+    size_t size;       // size without '\0' character
 
 endOf(RCString) //------------------------------------
 
@@ -50,7 +50,7 @@ method(void,             replaceCharacters,            RCString),    char charac
 method(void,             replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
 
 // Info
-method(uint64_t,         numberOfRepetitions,          RCString),    char character);
+method(size_t,         numberOfRepetitions,          RCString),    char character);
 
 // Deletions
 method(RCString *,       deleteAllCharacters,          RCString),    char character);                   // returns not copy!
@@ -59,12 +59,12 @@ method(void,             removeRepetitionsOf,          RCString),    char charac
 method(RCString *,       deleteAllSubstrings,          RCString),    const RCString *substring);        // returns not copy!
 method(void,             removeRepetitionsOfString,    RCString),    const RCString *substring);
 
-method(RCString *,       deleteCharacterAt,            RCString),    uint64_t index);                   // returns not copy!
+method(RCString *,       deleteCharacterAt,            RCString),    size_t index);                   // returns not copy!
 method(void,             deleteInRange,                RCString),    RRange range);                     // shifts string
 
 // Substrings and Copies
 method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string);    // returns not copy!
-method(RCString *,       insertSubstringAt,            RCString),    RCString *substring, uint64_t place); // returns not copy!
+method(RCString *,       insertSubstringAt,            RCString),    RCString *substring, size_t place); // returns not copy!
 
 method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
 method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy, basic method, that uses others

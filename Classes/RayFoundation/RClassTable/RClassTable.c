@@ -59,12 +59,12 @@ destructor(RClassTable) {
     }
 }
 
-method(uint64_t, registerClassWithName, RClassTable), char *name) {
+method(size_t, registerClassWithName, RClassTable), char *name) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
     if(name != NULL) {
-        register uint64_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
+        register size_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
         if(result == 0) {
             RClassNamePair *pair = $(NULL, c(RClassNamePair)));
             if (pair != NULL) {
@@ -93,18 +93,18 @@ method(uint64_t, registerClassWithName, RClassTable), char *name) {
     }
 }
 
-method(uint64_t, getNumberOfClasses, RClassTable)) {
+method(size_t, getNumberOfClasses, RClassTable)) {
     return master(object, RArray)->count;
 }
 
 printer(RClassTable) {
     RPrintf("\n%s object %p: { \n", toString(RClassTable), object);
     $(master(object, RArray), p(RArray)));
-    RPrintf("\t\tTOTAL: %qu classes registered \n", master(object, RArray)->count);
+    RPrintf("\t\tTOTAL: %q classes registered \n", master(object, RArray)->count);
     RPrintf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 
-method(uint64_t, getIdentifierByClassName, RClassTable), char *name) {
+method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     RClassNamePair *pair = $(NULL, c(RClassNamePair)));
     $(master(pair, RCString), m(setConstantString, RCString)), name);
 

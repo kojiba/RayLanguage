@@ -22,7 +22,7 @@
 class(RClassNamePair)
     discipleOf(RCString)
 
-    uint64_t idForClassName;
+    size_t idForClassName;
 endOf(RClassNamePair)
 
 

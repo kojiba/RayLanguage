@@ -31,7 +31,7 @@ singleton(RVirtualCompiler) {
 
 method(RCString *, getFunctionName, RVirtualCompiler)) {
     if(object->code->size != 0) {
-        uint64_t place;
+        size_t place;
 
         // finding to startSymbol
         place = indexOfFirstCharacterCString(object->code->baseString, object->code->size, ':');
@@ -55,7 +55,7 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     RByteArray *body;
     byte        character;
-    uint64_t    sizeOfByteCode;
+    size_t      sizeOfByteCode;
     object->iterator      = 0;
     object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
 
@@ -126,19 +126,19 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         case '[': {
             // complicated case
-            uint64_t realPath;
+            size_t realPath;
 
             object->deltaToNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator + object->iteratorShift], object->code->size - object->deltaToNext, ']');
             --object->forwardRepetitions;
             realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("Warning. RVC (BrainFuck). '[' Too long loop\n");
+                RWarning("RVC (BrainFuck). '[' Too long loop", object);
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            object->body->array[object->iterator + object->iteratorShift + 2] = realPath;
+            object->body->array[object->iterator + object->iteratorShift + 2] = (byte) realPath;
 
             object->iteratorShift += 2;
             byteCode = r_ignore;
@@ -146,19 +146,19 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         case ']': {
             // complicated case
-            uint64_t realPath;
+            size_t realPath;
 
             object->toPrev = indexOfLastCharacterCString(object->code->baseString, object->toPrev ? object->toPrev : object->code->size, '[');
             --object->backwardRepetitions;
             realPath = object->toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("Warning. RVC (BrainFuck). ']' Too long loop\n");
+                RWarning("Warning. RVC (BrainFuck). ']' Too long loop", object);
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if_not;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            object->body->array[object->iterator + object->iteratorShift + 2] = realPath;
+            object->body->array[object->iterator + object->iteratorShift + 2] = (byte) realPath;
 
             object->iteratorShift += 2;
             byteCode = r_ignore;
@@ -178,7 +178,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("ERROR. RVC (BrainFuck). Undefined symbol on line: %qu, place: %qu !\n", object->lines, object->symbols);
+            RPrintf("Warning. RVC (BrainFuck). Undefined symbol on line: %q, place: %q !\n", object->lines, object->symbols);
         }
     }
 
@@ -207,7 +207,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         }
         $(object->code, d(RCString)) );
 
-        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
+        RPrintf("RVC. Brainfuck. Processed lines - %q of %q, in %q iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
         //  $(function, p(RVirtualFunction)) );
         return function;

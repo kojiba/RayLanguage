@@ -24,14 +24,16 @@
 // mem management
 #define RAlloc          malloc
 #define RFree           free
-#define RReallock       realloc
+#define RReAlloc        realloc
 
 // io
 #define RPrintf         printf
 #define RScanf          scanf
+#define RPError         perror
 
 // files-io
 #define RFOpen          fopen
+#define RFPrintf        fprintf
 #define RFClose         fclose
 #define RFRead          fread
 #define RFSeek          fseek

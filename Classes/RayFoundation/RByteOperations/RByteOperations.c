@@ -18,21 +18,21 @@
 
 #pragma mark Basics
 
-byte* makeByteArray(uint64_t size) {
+byte* makeByteArray(size_t size) {
     return RAlloc(size);
 }
 
-byte* flushAllToByte(byte *array, uint64_t size, byte symbol) {
-    uint64_t iterator;
+byte* flushAllToByte(byte *array, size_t size, byte symbol) {
+    size_t iterator;
     forAll(iterator, size) {
         array[iterator] = symbol;
     }
     return array;
 }
 
-void printByteArrayInHex(const byte *array, uint64_t size) {
+void printByteArrayInHex(const byte *array, size_t size) {
     if(array != NULL) {
-        uint64_t iterator;
+        size_t iterator;
         forAll(iterator, size) {
             if (iterator % 20 == 0 && iterator != 0) {
                 RPrintf("\n");
@@ -45,7 +45,7 @@ void printByteArrayInHex(const byte *array, uint64_t size) {
     }
 }
 
-byte* getByteArrayCopy(const byte *array, uint64_t size) {
+byte* getByteArrayCopy(const byte *array, size_t size) {
     byte *arrayCopy = RAlloc(size);
     RMemMove(arrayCopy, array, size);
     return arrayCopy;
@@ -57,9 +57,9 @@ byte* getSubArray(const byte *array, RRange range) {
     return subArray;
 }
 
-RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symbol) {
+RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol) {
     RByteArray *result   = NULL;
-    uint64_t    iterator = 0;
+    size_t    iterator = 0;
 
     while(array[iterator] != symbol
             && iterator < size) {
@@ -73,7 +73,7 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, uint64_t size, byte symb
     return result;
 }
 
-RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol) {
+RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) {
     RByteArray         *subArray    = NULL;
     RArray             *resultArray = NULL;
     byte               *tempArray   = array;
@@ -103,7 +103,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, uint64_t size, byte symbol
 
 #pragma mark RByteArray
 
-constructor(RByteArray), uint64_t size) {
+constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
     if(object != NULL) {
         object->array   = makeByteArray(size);

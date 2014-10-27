@@ -20,7 +20,7 @@
 
 typedef struct RArrayFindResult {
     pointer result;
-    uint64_t index;
+    size_t index;
 } RArrayFindResult;
 
 typedef enum RArrayFlags {
@@ -28,6 +28,7 @@ typedef enum RArrayFlags {
     // basic errors
                  no_error,
     temp_allocation_error,
+       reallocation_error,
          allocation_error,
 
     // sort-flags for sortWithDelegate
@@ -48,16 +49,16 @@ typedef enum RArrayFlags {
 
 } RArrayFlags;
 
-static const uint64_t startSizeOfRArrayDefault      = 50;
-static const uint64_t sizeMultiplierOfRArrayDefault = 2;
+static const size_t startSizeOfRArrayDefault      = 50;
+static const size_t sizeMultiplierOfRArrayDefault = 2;
 
 class(RArray) //--------------------------------------------------------------
 
 members
-    uint64_t  startSize;                     // start size of array in elements
-    uint64_t  sizeMultiplier;                // size multiplier when auto-add-size
-    uint64_t  count;                         // count of elements in array
-    uint64_t  freePlaces;                    // count of free places for elements
+    size_t  startSize;                     // start size of array in elements
+    size_t  sizeMultiplier;                // size multiplier when auto-add-size
+    size_t  count;                         // count of elements in array
+    size_t  freePlaces;                    // count of free places for elements
     void    (*destructorDelegate)(pointer);  // destructor of elements delegate
     void    (*printerDelegate)   (pointer);  // printer of elements delegate
     pointer  *array;                         // array
@@ -70,31 +71,31 @@ destructor  (RArray);
 printer     (RArray);
 
 // allocation - reallocation
-method(RArrayFlags,        addSize,                   RArray),    uint64_t newSize);
+method(RArrayFlags,        addSize,                   RArray),    size_t newSize);
 method(void,               flush,                     RArray));                                       // destroys all old elements, creates new empty array
 method(byte,               sizeToFit,                 RArray));
 
 // add - set - delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
-method(void,               setObjectAtIndex,          RArray),    pointer newObject, uint64_t index); // be aware with this, addObject cause memory leak with this
+method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
 method(void,               deleteObjects,             RArray),    RRange   range);                    // delete with shift
-method(RArrayFlags,        deleteObjectAtIndex,       RArray),    uint64_t index);                    // delete with shift
-method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    uint64_t index);                    // delete, and the last object will be on its place
+method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
+method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
 // get - find
 method(RArrayFindResult *, findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
 method(RArray *,           getSubarray,               RArray),    RRange range);
-method(pointer,            elementAtIndex,            RArray),    uint64_t index);
+method(pointer,            elementAtIndex,            RArray),    size_t index);
 
 // sort
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
-method(void,               quickSortWithDelegate,     RArray),    uint64_t first, uint64_t last, byte (*comparator)(pointer, pointer));
+method(void,               quickSortWithDelegate,     RArray),    size_t first, size_t last, byte (*comparator)(pointer, pointer));
 method(void,               sort,                      RArray));
 
 // work
 method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
-method(static inline byte, checkIfIndexIn,            RArray),    uint64_t index);
+method(static inline byte, checkIfIndexIn,            RArray),    size_t index);
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);
 
