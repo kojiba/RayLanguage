@@ -13,7 +13,10 @@ set(HEADER_FILES #utf-8
                  Classes/RayFoundation/RArray/RArray.h
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair/RClassNamePair.h
+
                  Classes/RayFoundation/RCString/RCString.h
+                 Classes/RayFoundation/RCString/RCString_Numbers.h
+
                  Classes/RayFoundation/RDictionary/RDictionary.h
                  Classes/RayFoundation/RStringDictionary/RStringDictionary.h
                  Classes/RayFoundation/RByteOperations/RByteOperations.h
@@ -33,7 +36,10 @@ set(SOURCE_FILES #utf-8
                  Classes/RayFoundation/RArray/RArray.c
                  Classes/RayFoundation/RClassTable/RClassTable.c
                  Classes/RayFoundation/RClassTable/RClassNamePair/RClassNamePair.c
+
                  Classes/RayFoundation/RCString/RCString.c
+                 Classes/RayFoundation/RCString/RCString_Numbers.c
+
                  Classes/RayFoundation/RDictionary/RDictionary.c
                  Classes/RayFoundation/RStringDictionary/RStringDictionary.c
                  Classes/RayFoundation/RByteOperations/RByteOperations.c

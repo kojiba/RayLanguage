@@ -22,6 +22,7 @@
 #include "RBasics/RBasics.h"
 #include "RArray/RArray.h"
 #include "RCString/RCString.h"
+#include "RCString/RCString_Numbers.h"
 #include "RClassTable/RClassTable.h"
 #include "RDictionary/RDictionary.h"
 #include "RStringDictionary/RStringDictionary.h"
