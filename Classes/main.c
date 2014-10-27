@@ -14,8 +14,10 @@ int main(int argc, const char *argv[]) {
     printerOfRCString(temp);
     toUpperCaseRCString(temp);
     printerOfRCString(temp);
-    insertSubstringAtRCString(temp, RS(" and HABRAHABR,"), 30);
+    insertSubstringAtRCString(temp, RS(" and HABRAHABR, HABRAHABR"), 30);
     printerOfRCString(temp);
+    size_t times = numberOfSubstringsRCString(temp, RS("HABRAHABR"));
+    RPrintf("Contatins HABRAHABR %qu - times \n", times);
     RArray *result = $(temp, m(substringsSeparatedBySymbols, RCString)), RS(" .,;:!?=+-()") );
     if(result != NULL) {
         printerOfRArray(result);
@@ -200,7 +202,7 @@ void RClassTableTest(void){
     printRCTS;
 
     char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %q \n", checkName, registerClassOnce(checkName));
+    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
 
     tickRClock();
 }

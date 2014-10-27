@@ -86,10 +86,10 @@ method(pointer, getObjectForKey, RDictionary), pointer key) {
 printer(RDictionary){
     size_t iterator;
     RPrintf("\n%s object %p: { \n", toString(RDictionary), object);
-    RPrintf(" Count : %q \n", object->keys->count);
-    RPrintf(" Free  : %q \n", object->keys->freePlaces);
+    RPrintf(" Count : %qu \n", object->keys->count);
+    RPrintf(" Free  : %qu \n", object->keys->freePlaces);
     forAll(iterator, object->keys->count) {
-        RPrintf("\t %q - {", iterator);
+        RPrintf("\t %qu - {", iterator);
         RPrintf(" %p : %p } \n", $(object->keys, m(elementAtIndex, RArray)), iterator),
                                  $(object->values, m(elementAtIndex, RArray)), iterator) );
     }

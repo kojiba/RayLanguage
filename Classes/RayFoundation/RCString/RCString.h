@@ -22,15 +22,15 @@
 typedef struct RCString RCString;
 
 // basics
-size_t  indexOfFirstCharacterCString (const char *string, size_t size, char character); // returns index, or size
-size_t  indexOfLastCharacterCString  (const char *string, size_t size, char character); // returns index, or size
+size_t    indexOfFirstCharacterCString (const char *string, size_t size, char character); // returns index, or size
+size_t    indexOfLastCharacterCString  (const char *string, size_t size, char character); // returns index, or size
 RCString* randomRCString               (void);
 char      randomCharacter              (void);
 
 class(RCString) //------------------------------------
 
     char    *baseString; // 0-terminated c-string
-    size_t size;       // size without '\0' character
+    size_t   size;       // size without '\0' character
 
 endOf(RCString) //------------------------------------
 
@@ -39,53 +39,56 @@ constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
 
-method(void,             flush,                        RCString));                                      // deletes old string
+method(void,                flush,                        RCString));                                         // deletes old string
 
 // Setters
-method(RCString *,       setString,                    RCString),    const char *string);               // copy characters
-method(RCString *,       setConstantString,            RCString),    char const *string);               // copy pointer
+method(RCString *,          setString,                    RCString),    const char *string);                  // copy characters
+method(RCString *,          setConstantString,            RCString),    char const *string);                  // copy pointer
 
 // Replace
-method(void,             replaceCharacters,            RCString),    char characterToReplace, char replacer);
-method(void,             replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
+method(void,                replaceCharacters,            RCString),    char characterToReplace, char replacer);
+method(void,                replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
 
 // Info
-method(size_t,         numberOfRepetitions,          RCString),    char character);
+method(size_t,              numberOfCharacters,           RCString),    char character);
+method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
+method(static inline RBool, isContains,                   RCString),    char character);
+method(static inline RBool, isContainsSubsting,           RCString),    RCString *string);
 
 // Deletions
-method(RCString *,       deleteAllCharacters,          RCString),    char character);                   // returns not copy!
-method(void,             removeRepetitionsOf,          RCString),    char character);
+method(RCString *,          deleteAllCharacters,          RCString),    char character);                      // returns reference (not copy!)
+method(void,                removeRepetitionsOf,          RCString),    char character);
 
-method(RCString *,       deleteAllSubstrings,          RCString),    const RCString *substring);        // returns not copy!
-method(void,             removeRepetitionsOfString,    RCString),    const RCString *substring);
+method(RCString *,          deleteAllSubstrings,          RCString),    const RCString *substring);           // returns reference (not copy!)
+method(void,                removeRepetitionsOfString,    RCString),    const RCString *substring);
 
-method(RCString *,       deleteCharacterAt,            RCString),    size_t index);                   // returns not copy!
-method(void,             deleteInRange,                RCString),    RRange range);                     // shifts string
+method(RCString *,          deleteCharacterAt,            RCString),    size_t index);                        // returns reference (not copy!)
+method(void,                deleteInRange,                RCString),    RRange range);                        // shifts string
 
 // Substrings and Copies
-method(RCString *,       setSubstringInRange,          RCString),    RRange range, const char *string);    // returns not copy!
-method(RCString *,       insertSubstringAt,            RCString),    RCString *substring, size_t place); // returns not copy!
+method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
+method(RCString *,          insertSubstringAt,            RCString),    RCString *substring, size_t place);   // returns reference (not copy!)
 
-method(RCString *,       substringToSymbol,            RCString),    char symbol);                      // or NULL
-method(RCString *,       substringInRange,             RCString),    RRange range);                     // substring is a copy, basic method, that uses others
-method(RCString *,       substringByBounds,            RCString),    RBounds bounds);                   // substring is a copy, by nesting
-method(RArray *,         substringsSeparatedBySymbol,  RCString),    char symbol);                      // or NULL, RArray is sizeToFit, subs are copies
-method(RArray *,         substringsSeparatedBySymbols, RCString),    RCString *separatorsString);       // or NULL, RArray is sizeToFit, subs are copies
+method(RCString *,          substringToSymbol,            RCString),    char symbol);                         // or NULL
+method(RCString *,          substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
+method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting
+method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or NULL, RArray is sizeToFit, subs are copies
+method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or NULL, RArray is sizeToFit, subs are copies
 
-method(RCString *,       copy,                         RCString));
+method(RCString *,          copy,                         RCString));
 
 // Comparator
-method(RCompareFlags,    compareWith,                  RCString),    const RCString *checkString);
+method(RCompareFlags,       compareWith,                  RCString),    const RCString *checkString);
 
 // With file
-method(void,             fromFile,                     RCString),    const RCString *filename);          // deletes old string
+method(void,                fromFile,                     RCString),    const RCString *filename);             // deletes old string
 
 // Concatenate
-method(void,             concatenate,                  RCString),    const RCString *string);
+method(void,                concatenate,                  RCString),    const RCString *string);
 
 // Conversions
-method(RCString*,        toUpperCase,                  RCString));                                       // returns not copy!
-method(RCString*,        toLowerCase,                  RCString));                                       // returns not copy!
+method(RCString*,           toUpperCase,                  RCString));                                          // returns reference (not copy!)
+method(RCString*,           toLowerCase,                  RCString));                                          // returns reference (not copy!)
 
 //----------------------------------------------------------------------------------
 

@@ -31,7 +31,7 @@ size_t indexOfFirstCharacterCString(const char *string, size_t size, char charac
 
 size_t indexOfLastCharacterCString(const char *string, size_t size, char character) {
     register size_t iterator = 0;
-    register size_t last = size;
+    register size_t last     = size;
     while(iterator < size) {
         if(string[iterator] == character) {
             last = iterator;
@@ -60,7 +60,7 @@ RCString *randomRCString(void) {
         size = ((size_t)rand()) % 50;
     }
     cstring = RAlloc(size * sizeof(char));
-    forAll(iterator, size - 1){
+    forAll(iterator, size - 2){
         cstring[iterator] = randomCharacter();
     }
     cstring[++iterator] = 0;
@@ -177,7 +177,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
 
 #pragma mark Info
 
-method(size_t, numberOfRepetitions, RCString), char character) {
+method(size_t, numberOfCharacters, RCString), char character) {
     register size_t reps     = 0;
     register size_t iterator;
 
@@ -187,6 +187,52 @@ method(size_t, numberOfRepetitions, RCString), char character) {
         }
     }
     return reps;
+}
+
+method(size_t, numberOfSubstrings, RCString), RCString *string) {
+    if(string->size == 1) {
+        return $(object, m(numberOfCharacters, RCString)), string->baseString[0]);
+    } else if(object->size >= string->size) {
+        size_t iterator;
+        size_t count    = 0;
+        forAll(iterator, object->size) {
+            // search for first symbol
+            if(object->baseString[iterator] == string->baseString[0]) {
+                // compare others
+                if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
+                    ++count;
+                }
+            }
+        }
+       return count;
+    } else {
+        return 0;
+    }
+}
+
+method(static inline RBool, isContains, RCString), char character) {
+    size_t iterator = 0;
+    forAll(iterator, object->size) {
+        if(object->baseString[iterator] == character) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+method(static inline RBool, isContainsSubsting, RCString), RCString *string) {
+    // search for first symbol
+    size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
+    if(iterator != string->size) {
+        // compare others
+        if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark Deletions
@@ -430,7 +476,7 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
 
         forAll(iterator, object->size) {
             // check if separator
-            if($(separatorsString, m(numberOfRepetitions, RCString)), object->baseString[iterator]) > 0) {
+            if($(separatorsString, m(isContains, RCString)), object->baseString[iterator]) == YES) {
                 if(isFirst == 1) {
                     // if first separator set end
                     endOfSubstring = iterator;
@@ -539,14 +585,14 @@ method(void, fromFile, RCString), const RCString *filename) {
 
 method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != NULL) {
-        char *concatenationResult = RAlloc(string->size + object->size + 1);
-        RMemMove(concatenationResult,                object->baseString, object->size);
-        RMemMove(concatenationResult + object->size, string->baseString, string->size);
-        concatenationResult[string->size + object->size + 1] = 0;
-
-        deallocator(object->baseString);
-        object->baseString = concatenationResult;
-        object->size += string->size;
+        RReAlloc(object->baseString, string->size + object->size + 1);
+        if(object->baseString == NULL) {
+            RError("RCS. Concatenate realloc error.", object);
+        } else {
+            RMemMove(object->baseString + object->size, string->baseString, string->size);
+            object->baseString[string->size + object->size] = 0;
+            object->size += string->size;
+        }
     } else {
         RWarning("RCS. Bad concatenate string.", object);
     }

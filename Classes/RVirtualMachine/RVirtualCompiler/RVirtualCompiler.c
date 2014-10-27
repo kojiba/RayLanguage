@@ -61,12 +61,12 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
 
     // delete spaces
     $(object->code, m(deleteAllCharacters, RCString)), ' ');
-    object->numberOfLines = $(object->code, m(numberOfRepetitions, RCString)), '\n');
+    object->numberOfLines = $(object->code, m(numberOfCharacters, RCString)), '\n');
 
     // all [, ] instructions will be doubled in the byte-code,
     // because of r_if instruction build
-    object->forwardRepetitions  = $(object->code, m(numberOfRepetitions, RCString)), '[');
-    object->backwardRepetitions = $(object->code, m(numberOfRepetitions, RCString)), ']');
+    object->forwardRepetitions  = $(object->code, m(numberOfCharacters, RCString)), '[');
+    object->backwardRepetitions = $(object->code, m(numberOfCharacters, RCString)), ']');
 
     if(object->forwardRepetitions != object->backwardRepetitions) {
         RPrintf("Warning. RVC (BrainFuck). Count of \'[\' and \']\' isn't equal!");
@@ -178,7 +178,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("Warning. RVC (BrainFuck). Undefined symbol on line: %q, place: %q !\n", object->lines, object->symbols);
+            RPrintf("Warning. RVC (BrainFuck). Undefined symbol on line: %qu, place: %qu !\n", object->lines, object->symbols);
         }
     }
 
@@ -207,7 +207,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         }
         $(object->code, d(RCString)) );
 
-        RPrintf("RVC. Brainfuck. Processed lines - %q of %q, in %q iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
+        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
         //  $(function, p(RVirtualFunction)) );
         return function;

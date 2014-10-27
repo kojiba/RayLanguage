@@ -45,8 +45,12 @@
 #define RWarning(string, object)                          RPrintf("Warning. %p - "string"\n", object)
 
 // typedefs
-typedef void* pointer;
+typedef void*   pointer;
 typedef uint8_t byte;
+typedef byte    RBool;
+
+#define YES                                               ((RBool)1)
+#define NO                                                ((RBool)0)
 
 // declarations
 #define class(className)                                  typedef struct className { \

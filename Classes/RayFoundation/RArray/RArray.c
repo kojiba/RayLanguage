@@ -208,7 +208,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RA %p setObject atIndex = %q \n", object, index);
+        RPrintf("RA %p setObject atIndex = %qu \n", object, index);
 #endif
     // if at that index exist some object
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
@@ -264,7 +264,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 method(void, deleteObjects, RArray), RRange range){
     register size_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA deleteObjectsInRange of %p, from - %q, count - %q \n", object, range.from, range.count);
+    RPrintf("RA deleteObjectsInRange of %p, from - %qu, count - %qu \n", object, range.from, range.count);
 #endif
     fromStartForAll(iterator, range.from, range.count) {
         destroyElementAtIndex(iterator);
@@ -381,7 +381,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 
 #if RAY_SHORT_DEBUG == 1
     static size_t number = 0;
-    RPrintf("RA quickSortWithDelegate of %p recursive #%q\n", object, number);
+    RPrintf("RA quickSortWithDelegate of %p recursive #%qu\n", object, number);
     ++number;
 #endif
 
@@ -426,10 +426,10 @@ printer(RArray) {
     register size_t iterator;
 
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
-    RPrintf(" Count : %q \n", object->count);
-    RPrintf(" Free  : %q \n", object->freePlaces);
+    RPrintf(" Count : %qu \n", object->count);
+    RPrintf(" Free  : %qu \n", object->freePlaces);
     forAll(iterator, object->count) {
-        RPrintf("\t %q - ", iterator);
+        RPrintf("\t %qu - ", iterator);
         printElementAtIndex(iterator); // or print value
         else {
             RPrintf("%p \n", object->array[iterator]);
