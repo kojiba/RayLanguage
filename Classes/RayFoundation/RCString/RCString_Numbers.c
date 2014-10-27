@@ -73,6 +73,7 @@ method(RCString *, toRCString, RNumberSystemBase)) {
 
         case RDecimal : {
             return RS(toString(RDecimal));
+        }
     }
 }
 

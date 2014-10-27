@@ -10,7 +10,7 @@
 int main(int argc, const char *argv[]) {
     RNumberSystemBase temp = $(RS("0xffff"), m(isNumber, RCString)));
 
-    RPrintf("%d", temp);
+    RPrintf($(&temp, m(toRCString, RNumberSystemBase)))->baseString);
     return 0;
 }
 
