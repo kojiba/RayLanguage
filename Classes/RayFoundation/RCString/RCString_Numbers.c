@@ -17,7 +17,7 @@
 
 #pragma mark Basics
 
-static inline RBool isDecimalDigit(char character) {
+static inline rbool isDecimalDigit(char character) {
     if(character < '0' || character > '9') {
         return NO;
     } else {
@@ -25,7 +25,7 @@ static inline RBool isDecimalDigit(char character) {
     }
 }
 
-static inline RBool isOctalDigit(char character) {
+static inline rbool isOctalDigit(char character) {
     if(character < '0' || character > '7') {
         return NO;
     } else {
@@ -33,7 +33,7 @@ static inline RBool isOctalDigit(char character) {
     }
 }
 
-static inline RBool isHexDigit(char character) {
+static inline rbool isHexDigit(char character) {
     if(isDecimalDigit(character)
             || character > 64 && character < 71
             || character > 96 && character < 103) {
@@ -43,7 +43,7 @@ static inline RBool isHexDigit(char character) {
     }
 }
 
-static inline RBool isBinaryDigit(char character) {
+static inline rbool isBinaryDigit(char character) {
     if(character == '0' || character == '1') {
         return YES;
     } else {

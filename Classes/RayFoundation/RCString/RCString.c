@@ -212,7 +212,7 @@ method(size_t, numberOfSubstrings, RCString), RCString *string) {
     }
 }
 
-method(static inline RBool, isContains, RCString), char character) {
+method(static inline rbool, isContains, RCString), char character) {
     size_t iterator = 0;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -222,7 +222,7 @@ method(static inline RBool, isContains, RCString), char character) {
     return NO;
 }
 
-method(static inline RBool, isContainsSubsting, RCString), RCString *string) {
+method(static inline rbool, isContainsSubsting, RCString), RCString *string) {
     // search for first symbol
     size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
     if(iterator != string->size) {

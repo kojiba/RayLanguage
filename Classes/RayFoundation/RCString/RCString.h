@@ -52,8 +52,8 @@ method(void,                replaceSubstrings,            RCString),    RCString
 // Info
 method(size_t,              numberOfCharacters,           RCString),    char character);
 method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
-method(static inline RBool, isContains,                   RCString),    char character);
-method(static inline RBool, isContainsSubsting,           RCString),    RCString *string);
+method(static inline rbool, isContains,                   RCString),    char character);
+method(static inline rbool, isContainsSubsting,           RCString),    RCString *string);
 
 // Deletions
 method(RCString *,          deleteAllCharacters,          RCString),    char character);                      // returns reference (not copy!)

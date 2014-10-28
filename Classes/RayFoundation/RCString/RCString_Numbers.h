@@ -19,10 +19,10 @@
 #include "RCString.h"
 
 // Basics
-static inline RBool isDecimalDigit (char character);
-static inline RBool isOctalDigit   (char character);
-static inline RBool isHexDigit     (char character);
-static inline RBool isBinaryDigit  (char character);
+static inline rbool isDecimalDigit (char character);
+static inline rbool isOctalDigit   (char character);
+static inline rbool isHexDigit     (char character);
+static inline rbool isBinaryDigit  (char character);
 
 typedef enum RNumberSystemBase { //--------------------------
     RNotNumber = 0,

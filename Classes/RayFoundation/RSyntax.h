@@ -48,10 +48,10 @@
 // typedefs
 typedef void*   pointer;
 typedef uint8_t byte;
-typedef byte    RBool;
+typedef byte    rbool;
 
-#define YES                                               ((RBool)1)
-#define NO                                                ((RBool)0)
+#define YES                                               ((rbool)1)
+#define NO                                                ((rbool)0)
 
 // declarations
 #define class(className)                                  typedef struct className { \
@@ -65,7 +65,6 @@ typedef byte    RBool;
 #define deallocator(object)                               RFree(object);
 
 #define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object
-#define virtualMethod(returnValue, methodName, className) returnValue (*concatenate(concatenate(virtualMethod,methodName),concatenate(Of,className)))(struct className *object
 
 #define constructor(className)                            className* concatenate(constructorOf,className) (className *object
 #define destructor(className)                             void concatenate(destructorOf,className) (className *object)
@@ -79,7 +78,6 @@ typedef byte    RBool;
 #define p(className)                                      concatenate(printerOf, className)                                      // printer function name
 #define m(methodName, className)                          concatenate(methodName,className)                                      // some method function name
 #define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className))    // static method function name
-#define vm(methodName, className)                         object->concatenate(concatenate(virtualMethod,methodName),concatenate(Of,className))
 #define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))           // call to masterClassObject
 #define singletonCall(className)                          concatenate(singletonOf,className)()                                   // singleton call
 
