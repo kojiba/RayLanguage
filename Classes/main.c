@@ -8,9 +8,6 @@
 #include "RayFoundation/RayFoundation.h"
 
 int main(int argc, const char *argv[]) {
-    RNumberSystemBase temp = $(RS("0xffff"), m(isNumber, RCString)));
-
-    RPrintf($(&temp, m(toRCString, RNumberSystemBase)))->baseString);
     return 0;
 }
 

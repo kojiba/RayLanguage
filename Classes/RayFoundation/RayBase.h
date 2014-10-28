@@ -21,30 +21,34 @@
 #include <stdio.h>
 #include <string.h>
 
-// mem management
-#define RAlloc          malloc
-#define RFree           free
-#define RReAlloc        realloc
+// Memory management
+#define RAlloc            malloc
+#define RFree             free
+#define RReAlloc          realloc
 
-// io
-#define RPrintf         printf
-#define RScanf          scanf
-#define RPError         perror
+// I/O
+#define RPrintf           printf
+#define RScanf            scanf
+#define RPError           perror
 
-// files-io
-#define RFOpen          fopen
-#define RFPrintf        fprintf
-#define RFClose         fclose
-#define RFRead          fread
-#define RFSeek          fseek
-#define RFTell          ftell
-#define RRewind         rewind
+// Files I/O
+#define RFOpen            fopen
+#define RFPrintf          fprintf
+#define RFClose           fclose
+#define RFRead            fread
+#define RFSeek            fseek
+#define RFTell            ftell
+#define RRewind           rewind
 
-// mem operations
-#define RMemCpy         memcpy
-#define RMemMove        memmove
-#define RMemCmp         memcmp
+// Memory operations
+#define RMemCpy           memcpy
+#define RMemMove          memmove
+#define RMemCmp           memcmp
 
-#define RStringLenght   strlen
+// Basics for strings
+#define RStringLenght     strlen
+#define RStringToUnsigned strtoul
+#define RStringToInt      atoi
+#define RStringToDouble   atof
 
 #endif /*__RAY_BASE_H__*/

@@ -34,15 +34,13 @@ typedef enum RNumberSystemBase { //--------------------------
 
 method(RCString *,        toRCString, RNumberSystemBase));
 
-//----------------------------------------------------------
+//-----------------------------------------------------------
 
 // RCString Additions
 method(RNumberSystemBase, isNumber,       RCString));
 
-method(unsigned,          toUnsgined,     RCString));
-method(long,              toLong,         RCString));
-method(int,               toInt,          RCString));
-method(float,             toFloat,        RCString));
-method(double,            toDouble,       RCString));
+#define toUnsignedRCString(object) RStringToUnsigned(object->baseString, NULL, 0)
+#define toIntRCString(object)      RStringToInt(object->baseString)
+#define toDoubleRCString(object)   RStringToDouble(object->baseString)
 
 #endif __R_C_STRING_NUMBERS_H__

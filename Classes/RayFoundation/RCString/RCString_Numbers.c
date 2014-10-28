@@ -83,8 +83,9 @@ method(RNumberSystemBase, isNumber, RCString)) {
     size_t iterator;
     // not too large
     if(object->size < 200) {
-        // it may be hex, or octal
+        // it may be hex, or octal, or binary
         if(object->baseString[0] == '0') {
+
             // if hex
             if(object->baseString[1] == 'x'
                     || object->baseString[1] == 'X') {
@@ -95,6 +96,15 @@ method(RNumberSystemBase, isNumber, RCString)) {
                     }
                 }
                 return RHex;
+
+            // binary
+            } else if (object->baseString[0] == 'b'){
+                // check symbols
+                for(iterator = 1; iterator < object->size; ++iterator) {
+                    if(isBinaryDigit(object->baseString[iterator]) == NO) {
+                        return RNotNumber;
+                    }
+                }
 
             // octal
             } else {

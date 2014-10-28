@@ -19,6 +19,7 @@
 #define __RAY_FOUNDATION__
 
 #include "RSyntax.h"
+#include "RColors.h"
 #include "RBasics/RBasics.h"
 #include "RArray/RArray.h"
 #include "RCString/RCString.h"

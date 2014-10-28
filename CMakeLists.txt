@@ -8,6 +8,7 @@ set(HEADER_FILES #utf-8
 
                  Classes/RayFoundation/RayBase.h
                  Classes/RayFoundation/RayCheckFoundation.h
+                 Classes/RayFoundation/RColors.h
                  Classes/RayFoundation/RSyntax.h
                  Classes/RayFoundation/RBasics/RBasics.h
                  Classes/RayFoundation/RArray/RArray.h
