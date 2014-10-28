@@ -13,7 +13,6 @@
  *         |__/
  **/
 
-#include <CoreFoundation/CoreFoundation.h>
 #include "RCString.h"
 
 #pragma mark Basics
