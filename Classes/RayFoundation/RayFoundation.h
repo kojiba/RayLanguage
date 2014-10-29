@@ -29,5 +29,6 @@
 #include "RStringDictionary/RStringDictionary.h"
 #include "RFloatingEnum/RFloatingEnum.h"
 #include "RByteOperations/RByteOperations.h"
+#include "RNetwork/RNetwork.h"
 
 #endif /*__RAY_FOUNDATION__*/

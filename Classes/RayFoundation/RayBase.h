@@ -40,15 +40,19 @@
 #define RFTell            ftell
 #define RRewind           rewind
 
+#define RSocketOpen       socket
+
 // Memory operations
 #define RMemCpy           memcpy
 #define RMemMove          memmove
 #define RMemCmp           memcmp
 
 // Basics for strings
+#define RSPrintf          sprintf
 #define RStringLenght     strlen
 #define RStringToUnsigned strtoul
 #define RStringToInt      atoi
 #define RStringToDouble   atof
+#define RIntToString      itoa
 
 #endif /*__RAY_BASE_H__*/

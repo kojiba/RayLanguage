@@ -6,13 +6,31 @@
  */
 
 #include "RayFoundation/RayFoundation.h"
+#include "RayFoundation/RSystem.h"
 
 int main(int argc, const char *argv[]) {
+    RPrintCurrentSystem();
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+//    RSocket *socket = $(NULL, c(RSocket)), AF_INET, SOCK_DGRAM, 0);
+//    RByteArray *byteArray = makeRByteArray(1024);
+//    ssize_t dataSize;
+//    RPrintLn("Server start");
+//    while(1) {
+//        dataSize = recvfrom(socket->socket, byteArray->array, byteArray->size, 0, NULL, NULL);
+//        if(dataSize > 0) {
+//            byteArray->array[dataSize] = 0;
+//            $(byteArray, p(RByteArray)));
+//        } else {
+//            break;
+//        }
+//    }
+//    RPrintLn("End of work!");
+//    deallocator(socket);
 
 void BRFinterpreter() {
     char *code = RAlloc(1000);

@@ -19,8 +19,8 @@
 #include "../RArray/RArray.h"
 
 class(RByteArray)
-    byte    *array;
-    size_t size;
+    byte   *array;
+    size_t  size;
 endOf(RByteArray)
 
 // basics

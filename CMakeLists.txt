@@ -7,6 +7,7 @@ set(HEADER_FILES #utf-8
                  #Classes/RayFoundation/UTF-8/utf8proc.h
 
                  Classes/RayFoundation/RayBase.h
+                 Classes/RayFoundation/RSystem.h
                  Classes/RayFoundation/RayCheckFoundation.h
                  Classes/RayFoundation/RColors.h
                  Classes/RayFoundation/RSyntax.h
@@ -23,6 +24,9 @@ set(HEADER_FILES #utf-8
                  Classes/RayFoundation/RByteOperations/RByteOperations.h
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
                  Classes/RayFoundation/RayFoundation.h
+
+                 #RNetwork
+                 Classes/RayFoundation/RNetwork/RNetwork.h
 
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
@@ -45,6 +49,9 @@ set(SOURCE_FILES #utf-8
                  Classes/RayFoundation/RStringDictionary/RStringDictionary.c
                  Classes/RayFoundation/RByteOperations/RByteOperations.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
+
+                 #RNetwork
+                 Classes/RayFoundation/RNetwork/RNetwork.c
 
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
