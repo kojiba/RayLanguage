@@ -16,6 +16,50 @@
 #include "RByteOperations.h"
 #include "../RClassTable/RClassTable.h"
 
+#pragma mark Memory Operations
+
+pointer Xor(const pointer data,
+            const pointer key,
+                  size_t  sizeOfData,
+                  size_t  sizeOfKey) {
+    byte  *result = RAlloc(sizeOfData);
+    size_t iterator;
+    if(result != NULL) {
+        forAll(iterator, sizeOfData) {
+            result[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
+        }
+    }
+    return result;
+}
+
+pointer Add(const pointer data,
+            const pointer key,
+                  size_t  sizeOfData,
+                  size_t  sizeOfKey) {
+    byte  *result = RAlloc(sizeOfData);
+    size_t iterator;
+    if(result != NULL) {
+        forAll(iterator, sizeOfData) {
+            result[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
+        }
+    }
+    return result;
+}
+
+pointer Sub(const pointer data,
+        const pointer key,
+        size_t  sizeOfData,
+        size_t  sizeOfKey) {
+    byte  *result = RAlloc(sizeOfData);
+    size_t iterator;
+    if(result != NULL) {
+        forAll(iterator, sizeOfData) {
+            result[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
+        }
+    }
+    return result;
+}
+
 #pragma mark Basics
 
 byte* makeByteArray(size_t size) {

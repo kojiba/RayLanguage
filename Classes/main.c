@@ -10,6 +10,24 @@
 
 int main(int argc, const char *argv[]) {
     RPrintCurrentSystem();
+    byte buffer[1000];
+    byte buffer2[5] = "Hello";
+    byte *result;
+    byte *result2;
+
+    flushAllToByte(buffer, 40, 0x2);
+    RPrintLn("Start");
+    printByteArrayInHex(buffer, 40);
+    result = Add(buffer, buffer2, 40, 5);
+    RPrintLn("add");
+    printByteArrayInHex(result, 40);
+    result2 = Sub(result, buffer2, 40, 5);
+    RPrintLn("sub");
+    printByteArrayInHex(result2, 40);
+
+    deallocator(result);
+    deallocator(result2);
+
     return 0;
 }
 

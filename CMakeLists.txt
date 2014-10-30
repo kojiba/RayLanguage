@@ -3,55 +3,57 @@ project(RayLanguage)
 
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
 
-set(HEADER_FILES #utf-8
-                 #Classes/RayFoundation/UTF-8/utf8proc.h
-
+set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
                  Classes/RayFoundation/RSystem.h
                  Classes/RayFoundation/RayCheckFoundation.h
                  Classes/RayFoundation/RColors.h
                  Classes/RayFoundation/RSyntax.h
                  Classes/RayFoundation/RBasics/RBasics.h
-                 Classes/RayFoundation/RArray/RArray.h
-                 Classes/RayFoundation/RClassTable/RClassTable.h
-                 Classes/RayFoundation/RClassTable/RClassNamePair/RClassNamePair.h
 
+                 # Containers
+                 Classes/RayFoundation/RContainers/RArray.h
+                 Classes/RayFoundation/RContainers/RDictionary.h
+                 Classes/RayFoundation/RContainers/RStringDictionary.h
+
+                 # Strings
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString_Numbers.h
 
-                 Classes/RayFoundation/RDictionary/RDictionary.h
-                 Classes/RayFoundation/RStringDictionary/RStringDictionary.h
+                 # Memory operations
                  Classes/RayFoundation/RByteOperations/RByteOperations.h
-                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
-                 Classes/RayFoundation/RayFoundation.h
 
-                 #RNetwork
-                 Classes/RayFoundation/RNetwork/RNetwork.h
+                 # Others
+                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
+                 Classes/RayFoundation/RClassTable/RClassTable.h
+                 Classes/RayFoundation/RClassTable/RClassNamePair.h
+
+                 # Core header
+                 Classes/RayFoundation/RayFoundation.h
 
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
 
-set(SOURCE_FILES #utf-8
-                 #Classes/RayFoundation/UTF-8/utf8proc_data.c
-                 #Classes/RayFoundation/UTF-8/utf8proc.c
+set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
 
-                 Classes/RayFoundation/RBasics/RBasics.c
-                 Classes/RayFoundation/RArray/RArray.c
-                 Classes/RayFoundation/RClassTable/RClassTable.c
-                 Classes/RayFoundation/RClassTable/RClassNamePair/RClassNamePair.c
+                 # Containers
+                 Classes/RayFoundation/RContainers/RArray.c
+                 Classes/RayFoundation/RContainers/RDictionary.c
+                 Classes/RayFoundation/RContainers/RStringDictionary.c
 
+                 # Strings
                  Classes/RayFoundation/RCString/RCString.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
 
-                 Classes/RayFoundation/RDictionary/RDictionary.c
-                 Classes/RayFoundation/RStringDictionary/RStringDictionary.c
+                 # Memory operations
                  Classes/RayFoundation/RByteOperations/RByteOperations.c
-                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
 
-                 #RNetwork
-                 Classes/RayFoundation/RNetwork/RNetwork.c
+                 # Others
+                 Classes/RayFoundation/RClassTable/RClassTable.c
+                 Classes/RayFoundation/RClassTable/RClassNamePair.c
+                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
 
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c

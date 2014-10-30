@@ -1,7 +1,7 @@
 /**
  * RColors.h
  * A ray of light in the realm of darkness.
- * Defines some console-colors, to better work.
+ * Defines some console-colors (ANSI), to better work.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _

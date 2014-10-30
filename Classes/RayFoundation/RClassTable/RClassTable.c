@@ -88,7 +88,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
             return result;
         }
     } else {
-        RPrintf("Warning. RCT. Register classname is null, do nothig, please remove function call, or fix it.\n");
+        RWarning("RCT. Register classname is null, do nothig, please remove function call, or fix it.", object);
         return 0;
     }
 }

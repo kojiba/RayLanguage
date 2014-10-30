@@ -18,17 +18,33 @@
 #ifndef __RAY_FOUNDATION__
 #define __RAY_FOUNDATION__
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
+// Workers
 #include "RSyntax.h"
 #include "RColors.h"
 #include "RBasics/RBasics.h"
-#include "RArray/RArray.h"
+
+// Containers
+#include "RContainers/RArray.h"
+#include "RContainers/RDictionary.h"
+#include "RContainers/RStringDictionary.h"
+
+// Strings
 #include "RCString/RCString.h"
 #include "RCString/RCString_Numbers.h"
-#include "RClassTable/RClassTable.h"
-#include "RDictionary/RDictionary.h"
-#include "RStringDictionary/RStringDictionary.h"
-#include "RFloatingEnum/RFloatingEnum.h"
+
+// Memory operations
 #include "RByteOperations/RByteOperations.h"
-#include "RNetwork/RNetwork.h"
+
+// Others
+#include "RClassTable/RClassTable.h"
+#include "RFloatingEnum/RFloatingEnum.h"
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif /*__RAY_FOUNDATION__*/

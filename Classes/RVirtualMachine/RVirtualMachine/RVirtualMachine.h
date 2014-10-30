@@ -3,7 +3,6 @@
 
 #include "../../RayFoundation/RayFoundation.h"
 #include "../../RayFoundation/RayFoundation.h"
-#include "../../RayFoundation/RArray/RArray.h"
 #include "../RVirtualFunction/RVirtualFunction.h"
 #include "../../RayFoundation/RByteOperations/RByteOperations.h"
 

@@ -16,19 +16,35 @@
 #ifndef __R_BYTE_OPERATIONS_H__
 #define __R_BYTE_OPERATIONS_H__
 
-#include "../RArray/RArray.h"
+#include "../RContainers/RArray.h"
 
 class(RByteArray)
     byte   *array;
     size_t  size;
 endOf(RByteArray)
 
+// Memory operations
+pointer        Xor (const pointer data,       // ATTENTION! for all operations:
+                    const pointer key,        // returns dynamically allocated buffer
+                          size_t  sizeOfData, // or NULL if allocation fails
+                          size_t  sizeOfKey); // all sizes are in bytes
+
+pointer        Add (const pointer data,
+                    const pointer key,
+                          size_t  sizeOfData,
+                          size_t  sizeOfKey);
+
+pointer        Sub (const pointer data,
+                    const pointer key,
+                          size_t  sizeOfData,
+                          size_t  sizeOfKey);
+
 // basics
 byte*          makeByteArray              (size_t size);
 byte*          flushAllToByte             (byte *array,       size_t size, byte symbol); // not copy
 void           printByteArrayInHex        (const byte *array, size_t size);
 byte*          getByteArrayCopy           (const byte *array, size_t size);
-byte*          getSubArray                (const byte *array, RRange range );              // sub-array copy
+byte*          getSubArray                (const byte *array, RRange range );            // sub-array copy
 RByteArray*    getSubArrayToFirstSymbol   (const byte *array, size_t size, byte symbol); // sub-array copy, or NULL
 RArray*        getArraysSeparatedBySymbol (const byte *array, size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or NULL
 

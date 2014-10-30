@@ -16,7 +16,7 @@
 #ifndef __R_STRING_DICTIONARY_H__
 #define __R_STRING_DICTIONARY_H__
 
-#include "../RDictionary/RDictionary.h"
+#include "RDictionary.h"
 #include "../RCString/RCString.h"
 
 class(RStringDictionary)
