@@ -38,7 +38,7 @@ constructor(RClassTable)) {
             master(object, RArray)->printerDelegate    = p(RClassNamePair);
 
             // 4 it's for self
-            object->classId =  3;
+            object->classId = 3;
         }
     }
 #if RAY_SHORT_DEBUG == 1

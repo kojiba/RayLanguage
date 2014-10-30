@@ -46,7 +46,7 @@ method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
             }
         }
     } else {
-        RPrintf("Warning. RCNP. Name and Id (or Object), is NULL, please delete function call, or fix it\n");
+        RWarning("RCNP. Name and Id (or Object), is NULL, please delete function call, or fix it", object);
         return not_equals;
     }
     return not_equals;
