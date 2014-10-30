@@ -110,11 +110,11 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
 
     master(object, RCompareDelegate)->etaloneObject = pair;
 
-    RArrayFindResult *foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-    if(foundedObject == NULL){
+    RFindResult foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    if(foundedObject.object == NULL){
         return 0;
     } else {
-        return ((RClassNamePair*)foundedObject->result)->idForClassName;
+        return ((RClassNamePair*)foundedObject.object)->idForClassName;
     }
 }
 

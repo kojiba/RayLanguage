@@ -284,24 +284,25 @@ method(void, deleteLast, RArray)){
 
 #pragma mark Get - Find
 
-method(RArrayFindResult *, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
-    register size_t iterator;
+method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
+    register size_t      iterator;
+             RFindResult result;
+    result.object = NULL;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
 #endif
     if(delegate != NULL) {
         forAll(iterator, object->count) {
             if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
-                RArrayFindResult *result = allocator(RArrayFindResult);
-                result->index            = iterator;
-                result->result           = object->array[iterator];
-                return result;
+                result.index  = iterator;
+                result.object = object->array[iterator];
+                break;
             }
         }
     } else {
         RPrintf("ERROR. RA - %p. Delegate for searching is NULL, please delete function call, or fix it.\n\n", object);
     }
-    return NULL;
+    return result;
 }
 
 method(pointer, elementAtIndex, RArray), size_t index) {

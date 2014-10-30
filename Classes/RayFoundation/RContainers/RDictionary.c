@@ -59,25 +59,25 @@ method(void, initDelegate, RDictionary), const RCompareDelegate *delegate) {
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
-    RArrayFindResult *rArrayFindResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
     // if object for key not exist
-    if(rArrayFindResult == NULL){
+    if(findResult.object == NULL){
         $(object->keys,   m(addObject, RArray)), key);    // adding
         $(object->values, m(addObject, RArray)), value);  // adding
 
     // if key exist
     } else {
-        $(object->values, m(setObjectAtIndex, RArray)), value, rArrayFindResult->index);
+        $(object->values, m(setObjectAtIndex, RArray)), value, findResult.index);
     }
 }
 
 method(pointer, getObjectForKey, RDictionary), pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
-    RArrayFindResult *rArrayFindResult              = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
-    if(rArrayFindResult != NULL) {
-        return $(object->values, m(elementAtIndex, RArray)), rArrayFindResult->index);
+    if(findResult.object != NULL) {
+        return $(object->values, m(elementAtIndex, RArray)), findResult.index);
     } else {
         return NULL;
     }

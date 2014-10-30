@@ -46,6 +46,11 @@ inline RBounds makeRBounds     (char startSymbol, char endSymbol);
 inline byte    isValueInBounds (RBounds bounds, char value);
 inline byte    compareRBounds  (RBounds first, RBounds second);
 
+typedef struct RFindResult {
+    pointer object;
+    size_t  index;
+} RFindResult;
+
 protocol(RCompareDelegate) //--------------------------------------------
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);
     pointer         etaloneObject;

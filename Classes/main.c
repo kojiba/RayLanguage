@@ -10,45 +10,20 @@
 
 int main(int argc, const char *argv[]) {
     RPrintCurrentSystem();
-    byte buffer[1000];
-    byte buffer2[5] = "Hello";
-    byte *result;
-    byte *result2;
-
-    flushAllToByte(buffer, 40, 0x2);
-    RPrintLn("Start");
-    printByteArrayInHex(buffer, 40);
-    result = Add(buffer, buffer2, 40, 5);
-    RPrintLn("add");
-    printByteArrayInHex(result, 40);
-    result2 = Sub(result, buffer2, 40, 5);
-    RPrintLn("sub");
-    printByteArrayInHex(result2, 40);
-
-    deallocator(result);
-    deallocator(result2);
-
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
 
-//    RSocket *socket = $(NULL, c(RSocket)), AF_INET, SOCK_DGRAM, 0);
-//    RByteArray *byteArray = makeRByteArray(1024);
-//    ssize_t dataSize;
-//    RPrintLn("Server start");
-//    while(1) {
-//        dataSize = recvfrom(socket->socket, byteArray->array, byteArray->size, 0, NULL, NULL);
-//        if(dataSize > 0) {
-//            byteArray->array[dataSize] = 0;
-//            $(byteArray, p(RByteArray)));
-//        } else {
-//            break;
-//        }
-//    }
-//    RPrintLn("End of work!");
-//    deallocator(socket);
+void StringDictionaryTest() {
+    RStringDictionary *stringDictionary = makeRStringDictionary();
+    $(stringDictionary, m(setObjectForKey, RStringDictionary)), RS("Value"),   RSC("Key"));
+    $(stringDictionary, m(setObjectForKey, RStringDictionary)), RS("Value-2"), RSC("Key-2"));
+    $(stringDictionary, p(RStringDictionary)) );
+
+    deleteRStringDictionary(stringDictionary);
+}
 
 void BRFinterpreter() {
     char *code = RAlloc(1000);

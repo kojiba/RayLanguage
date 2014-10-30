@@ -30,7 +30,6 @@ constructor(RStringDictionary)) {
 
             // set-up delegates destructors
             master(object, RDictionary)->keys->destructorDelegate = d(RCString);
-            master(object, RDictionary)->values->destructorDelegate = d(RCString);
         }
     }
     return object;
@@ -59,7 +58,7 @@ printer(RStringDictionary) {
     RPrintf("} end of %s object %p \n\n", toString(RStringDictionary), object);
 }
 
-method(void, setObjectForKey, RStringDictionary), RCString *value, RCString *key) {
+method(void, setObjectForKey, RStringDictionary), pointer value, RCString *key) {
     $(master(object, RDictionary), m(setObjectForKey, RDictionary)), value, key);
 }
 

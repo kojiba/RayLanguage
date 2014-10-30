@@ -2,9 +2,7 @@
 #define __R_VIRTUAL_MACHINE_H__
 
 #include "../../RayFoundation/RayFoundation.h"
-#include "../../RayFoundation/RayFoundation.h"
 #include "../RVirtualFunction/RVirtualFunction.h"
-#include "../../RayFoundation/RByteOperations/RByteOperations.h"
 
 // rasm - ray assembler for RVM
 

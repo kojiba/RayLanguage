@@ -18,11 +18,6 @@
 
 #include "../RBasics/RBasics.h"
 
-typedef struct RArrayFindResult {
-    pointer result;
-    size_t index;
-} RArrayFindResult;
-
 typedef enum RArrayFlags {
 
     // basic errors
@@ -49,16 +44,16 @@ typedef enum RArrayFlags {
 
 } RArrayFlags;
 
-static const size_t startSizeOfRArrayDefault      = 10;
+static const size_t startSizeOfRArrayDefault      = 20;
 static const size_t sizeMultiplierOfRArrayDefault = 2;
 
 class(RArray) //--------------------------------------------------------------
 
 members
-    size_t  startSize;                     // start size of array in elements
-    size_t  sizeMultiplier;                // size multiplier when auto-add-size
-    size_t  count;                         // count of elements in array
-    size_t  freePlaces;                    // count of free places for elements
+    size_t    startSize;                     // start size of array in elements
+    size_t    sizeMultiplier;                // size multiplier when auto-add-size
+    size_t    count;                         // count of elements in array
+    size_t    freePlaces;                    // count of free places for elements
     void    (*destructorDelegate)(pointer);  // destructor of elements delegate
     void    (*printerDelegate)   (pointer);  // printer of elements delegate
     pointer  *array;                         // array
@@ -79,12 +74,12 @@ method(byte,               sizeToFit,                 RArray));
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
-method(void,               deleteObjects,             RArray),    RRange   range);                    // delete with shift
+method(void,               deleteObjects,             RArray),    RRange range);                      // delete with shift
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
 // get - find
-method(RArrayFindResult *, findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
+method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(pointer,            elementAtIndex,            RArray),    size_t index);
 

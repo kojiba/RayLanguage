@@ -37,7 +37,7 @@ extern "C" {
 #include "RCString/RCString_Numbers.h"
 
 // Memory operations
-#include "RByteOperations/RByteOperations.h"
+#include "RMemoryOperations/RByteOperations.h"
 
 // Others
 #include "RClassTable/RClassTable.h"

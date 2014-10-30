@@ -21,7 +21,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RCString/RCString_Numbers.h
 
                  # Memory operations
-                 Classes/RayFoundation/RByteOperations/RByteOperations.h
+                 Classes/RayFoundation/RMemoryOperations/RByteOperations.h
 
                  # Others
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
@@ -48,7 +48,7 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
 
                  # Memory operations
-                 Classes/RayFoundation/RByteOperations/RByteOperations.c
+                 Classes/RayFoundation/RMemoryOperations/RByteOperations.c
 
                  # Others
                  Classes/RayFoundation/RClassTable/RClassTable.c

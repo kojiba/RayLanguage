@@ -2,7 +2,6 @@
 #define __R_VIRTUAL_FUNCTION_H__
 
 #include "../../RayFoundation/RayFoundation.h"
-#include "../../RayFoundation/RByteOperations/RByteOperations.h"
 
 class(RVirtualFunction)
     discipleOf(RByteArray)
