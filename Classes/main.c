@@ -8,22 +8,32 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 
-pointer mySandBoxAlloc(size_t size) {
-    static RSandBox *sandBox = NULL;
-    if(sandBox == NULL) {
-        sandBox = $(NULL, c(RSandBox)), 1024, 20);
+RSandBox* mySingleton(void) {
+    static RSandBox *instance = nullPtr;
+    if(instance == nullPtr) {
+        instance = $(NULL, c(RSandBox)), 1024, 100 );
     }
-    RPrintf("RSandBox malloc in - %p\n", sandBox);
-    return $(sandBox, m(malloc, RSandBox)), size);
+    return instance;
+}
+
+pointer mySandBoxAlloc(size_t size) {
+    RPrintf("RSandBox malloc in - %p\n", mySingleton());
+    return $(mySingleton(), m(malloc, RSandBox)), size);
 }
 
 int main(int argc, const char *argv[]) {
     RPrintCurrentSystem();
-
-    enableSandBoxMalloc(mySandBoxAlloc);
-    int *a = malloc(10);
-    int *c = malloc(20);
+    const size_t size = 20;
+    size_t iterator;
+    enableSandBoxMalloc(mySandBoxAlloc); // enable our sandbox
+    int *a = malloc(size);
+    forAll(iterator, size) {
+        a[iterator] = 1;
+    }
     disableSandBoxMalloc();
+
+    $(mySingleton(), p(RSandBox)) );
+    $(mySingleton(), d(RSandBox)) );
 
     int *b = malloc(10);
     return 0;

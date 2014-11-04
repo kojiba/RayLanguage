@@ -18,6 +18,18 @@ destructor(RSandBox) {
     deallocator(object->memPart);
     deallocator(object->descriptorTable);
 }
+
+printer(RSandBox) {
+    size_t iterator;
+    RPrintf("%s object - %p {\n", toString(RSandBox), object);
+    RPrintf("\t Count - %qu\n",   object->descriptorsInfo.count);
+    RPrintf("\t Filled - %qu\n",  object->descriptorsInfo.from);
+    forAll(iterator, object->descriptorsInfo.from) {
+        RPrintf("\t\t[%qu : %qu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
+    }
+    RPrintLn("}\n");
+}
+
 singleton(RSandBox) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
@@ -53,5 +65,5 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         placeToAlloc.from = rand() % object->memPart->size;
     }
     $(object, m(addFilledRange, RSandBox)), placeToAlloc);
-    return placeToAlloc.from;
+    return object->memPart + placeToAlloc.from;
 }

@@ -66,6 +66,11 @@ rbool isOverlapping(RRange first, RRange second) {
     }
 }
 
+printer(RRange) {
+    RPrintf("[ %qu ; %qu ]", object->from, object->from + object->count);
+}
+
+
 #pragma mark RBounds
 
 RBounds makeRBounds(char startSymbol, char endSymbol) {

@@ -37,6 +37,7 @@ inline RRange          makeRRangeTo  (size_t from, size_t to);
 inline RCompareFlags   compareRRange (RRange first, RRange second);
 inline rbool           isInRange     (RRange range, size_t value);
 inline rbool           isOverlapping (RRange first, RRange second);
+printer(RRange);
 
 typedef struct RBounds {
     char startSymbol;
