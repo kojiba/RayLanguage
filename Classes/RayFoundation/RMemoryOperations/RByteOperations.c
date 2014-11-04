@@ -24,7 +24,7 @@ pointer Xor(const pointer data,
                   size_t  sizeOfKey) {
     byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != NULL) {
+    if(result != nullPtr) {
         forAll(iterator, sizeOfData) {
             result[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
         }
@@ -38,7 +38,7 @@ pointer Add(const pointer data,
                   size_t  sizeOfKey) {
     byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != NULL) {
+    if(result != nullPtr) {
         forAll(iterator, sizeOfData) {
             result[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
         }
@@ -52,7 +52,7 @@ pointer Sub(const pointer data,
         size_t  sizeOfKey) {
     byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != NULL) {
+    if(result != nullPtr) {
         forAll(iterator, sizeOfData) {
             result[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
         }
@@ -75,7 +75,7 @@ byte* flushAllToByte(byte *array, size_t size, byte symbol) {
 }
 
 void printByteArrayInHex(const byte *array, size_t size) {
-    if(array != NULL) {
+    if(array != nullPtr) {
         size_t iterator;
         forAll(iterator, size) {
             if (iterator % 20 == 0 && iterator != 0) {
@@ -102,7 +102,7 @@ byte* getSubArray(const byte *array, RRange range) {
 }
 
 RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray *result   = NULL;
+    RByteArray *result   = nullPtr;
     size_t    iterator = 0;
 
     while(array[iterator] != symbol
@@ -111,27 +111,27 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol
     }
 
     if(iterator != 0) {
-        result = $(NULL, c(RByteArray)), iterator);
+        result = $(nullPtr, c(RByteArray)), iterator);
         RMemMove(result->array, array, iterator);
     }
     return result;
 }
 
 RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray         *subArray    = NULL;
-    RArray             *resultArray = NULL;
+    RByteArray         *subArray    = nullPtr;
+    RArray             *resultArray = nullPtr;
     byte               *tempArray   = array;
 
     subArray = getSubArrayToFirstSymbol(array, size, symbol);
 
-    if(subArray != NULL) {
+    if(subArray != nullPtr) {
         resultArray = makeRArray();
         // init RArray
         resultArray->destructorDelegate = d(RByteArray);
         resultArray->printerDelegate    = p(RByteArray);
     }
 
-    while(subArray != NULL && size > 0) {
+    while(subArray != nullPtr && size > 0) {
         addObjectToRA(resultArray, subArray);
         size = size - subArray->size - 1;
         tempArray += subArray->size + 1;
@@ -139,7 +139,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
     }
 
     // size to fit RArray
-    if(resultArray != NULL) {
+    if(resultArray != nullPtr) {
         $(resultArray, m(sizeToFit, RArray)) );
     }
     return resultArray;
@@ -149,7 +149,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
 
 constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
-    if(object != NULL) {
+    if(object != nullPtr) {
         object->array   = makeByteArray(size);
         object->size    = size;
         object->classId = registerClassOnce(toString(RByteArray));
@@ -158,10 +158,10 @@ constructor(RByteArray), size_t size) {
 }
 
 destructor(RByteArray) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         RFree(object->array);
     } else {
-        RPrintf("Warning. RBA. Destructor of NULL.\n");
+        RPrintf("Warning. RBA. Destructor of nullPtr.\n");
     }
 }
 

@@ -3,7 +3,7 @@
 
 constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
-    if(object != NULL) {
+    if(object != nullPtr) {
 
         object->classId = registerClassOnce(toString(RVirtualCompiler));
         object->lines = 1;
@@ -14,7 +14,7 @@ constructor(RVirtualCompiler)) {
 }
 
 destructor(RVirtualCompiler) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         $(object->code, d(RCString)) );
         deallocator(object->code);
 
@@ -22,9 +22,9 @@ destructor(RVirtualCompiler) {
 }
 
 singleton(RVirtualCompiler) {
-    static RVirtualCompiler *instance = NULL;
-    if(instance == NULL) {
-        instance = $(NULL, c(RVirtualCompiler)));
+    static RVirtualCompiler *instance = nullPtr;
+    if(instance == nullPtr) {
+        instance = $(nullPtr, c(RVirtualCompiler)));
     }
     return instance;
 }
@@ -47,7 +47,7 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
             return name;
         }
     }
-    return NULL;
+    return nullPtr;
 }
 
 #pragma mark Brainfuck lang to rasm
@@ -189,7 +189,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), const RCString *sourceCode) {
 
     if(sourceCode->size != 0) {
-        RVirtualFunction *function = $(NULL, c(RVirtualFunction)) );
+        RVirtualFunction *function = $(nullPtr, c(RVirtualFunction)) );
 
         // copy source to object
         object->code = $(sourceCode, m(copy, RCString)) );
@@ -202,7 +202,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
         master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
-        if(function->name == NULL) {
+        if(function->name == nullPtr) {
             function->name = RSC("Unnamed");
         }
         $(object->code, d(RCString)) );
@@ -214,5 +214,5 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
     } else {
         RPrintf("Error. RVC. Bad virtual-code size\n");
     }
-    return NULL;
+    return nullPtr;
 }

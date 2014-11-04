@@ -18,7 +18,7 @@
 constructor(RClassNamePair)) {
     object = allocator(RClassNamePair);
 
-    if (object != NULL) {
+    if (object != nullPtr) {
         master(object, RCString) = makeRCString();
         // 2 - it's for RClassNamePair
         object->classId = 2;
@@ -34,19 +34,19 @@ printer(RClassNamePair) {
 }
 
 method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         if(checkPair->idForClassName != 0) {
             if (checkPair->idForClassName == object->idForClassName) {
                 return equals;
             }
         }
-        if(master(checkPair, RCString) != NULL && master(object, RCString) != NULL) {
+        if(master(checkPair, RCString) != nullPtr && master(object, RCString) != nullPtr) {
             if($(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString)) == equals){
                 return equals;
             }
         }
     } else {
-        RWarning("RCNP. Name and Id (or Object), is NULL, please delete function call, or fix it", object);
+        RWarning("RCNP. Name and Id (or Object), is nullPtr, please delete function call, or fix it", object);
         return not_equals;
     }
     return not_equals;

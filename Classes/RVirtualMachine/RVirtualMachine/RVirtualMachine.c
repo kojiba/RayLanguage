@@ -2,9 +2,9 @@
 
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
-    if(object != NULL) {
+    if(object != nullPtr) {
         object->memory = allocator(RByteArray);
-        if(object->memory != NULL) {
+        if(object->memory != nullPtr) {
             object->classId = registerClassOnce(toString(RVirtualMachine));
         }
     }
@@ -12,21 +12,21 @@ constructor(RVirtualMachine)) {
 }
 
 destructor(RVirtualMachine) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         $(object->memory, d(RByteArray)));
         deallocator(object->memory);
     }
 }
 
 method(void, setUpDataBlock, RVirtualMachine)) {
-    if(object->functionExecuting != NULL) {
+    if(object->functionExecuting != nullPtr) {
         // set-up break flag
         object->breakFlag     = 0;
 
         object->memory->array = makeFlushedBytes(memorySizeOfRVM, 0x00);
         object->memory->size  = memorySizeOfRVM;
     } else {
-        RPrintf("ERROR. RVM. Set-up function is NULL.");
+        RPrintf("ERROR. RVM. Set-up function is nullPtr.");
     }
 }
 
@@ -167,9 +167,9 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
 }
 
 singleton(RVirtualMachine) {
-    static RVirtualMachine *instance = NULL;
-    if(instance == NULL) {
-        instance = $(NULL, c(RVirtualMachine)) );
+    static RVirtualMachine *instance = nullPtr;
+    if(instance == nullPtr) {
+        instance = $(nullPtr, c(RVirtualMachine)) );
     }
     return instance;
 }

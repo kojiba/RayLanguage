@@ -8,8 +8,24 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 
+pointer mySandBoxAlloc(size_t size) {
+    static RSandBox *sandBox = NULL;
+    if(sandBox == NULL) {
+        sandBox = $(NULL, c(RSandBox)), 1024, 20);
+    }
+    RPrintf("RSandBox malloc in - %p\n", sandBox);
+    return $(sandBox, m(malloc, RSandBox)), size);
+}
+
 int main(int argc, const char *argv[]) {
     RPrintCurrentSystem();
+
+    enableSandBoxMalloc(mySandBoxAlloc);
+    int *a = malloc(10);
+    int *c = malloc(20);
+    disableSandBoxMalloc();
+
+    int *b = malloc(10);
     return 0;
 }
 
@@ -29,7 +45,7 @@ void BRFinterpreter() {
     char *code = RAlloc(1000);
     RPrintf("Input some brainfuck code:\n");
     RScanf("%1000s", code);
-    if(code != NULL) {
+    if(code != nullPtr) {
         RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
                 RS(code));
 
@@ -94,7 +110,7 @@ void StringDictionaryTest() {
     RCString *key = RS("Veider");
 
     // create dictionary
-    RStringDictionary *dictionary = $(NULL, c(RStringDictionary)) );
+    RStringDictionary *dictionary = $(nullPtr, c(RStringDictionary)) );
 
     // fill dictionary with some object-keys,
     // use RSC, cause we need copies of constant,
@@ -113,7 +129,7 @@ void StringDictionaryTest() {
 
     // find some object for key
     RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
-    if(object != NULL) {
+    if(object != nullPtr) {
         RPrintf("Found something for key : %s is value: %s\n", key->baseString, object->baseString);
     }
 
@@ -203,7 +219,7 @@ void RClassTableTest(void){
 }
 
 void RClassNamePairTest(void){
-    RClassNamePair *pair = $(NULL, c(RClassNamePair)) );
+    RClassNamePair *pair = $(nullPtr, c(RClassNamePair)) );
 
     pair->className = toString(RClassNamePair);
     pair->idForClassName = 4;
@@ -273,7 +289,7 @@ void RDynamicArrayTest2(void){
     printRA(dynamicArray);
 
     // get sub-arrays, there will be two errorrs logged in console,
-    // and subarray will consist two last elements like null
+    // and subarray will consist two last elements like nullPtr
     RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
     printRA(sub);
 

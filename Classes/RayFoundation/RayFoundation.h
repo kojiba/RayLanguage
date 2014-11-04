@@ -38,6 +38,7 @@ extern "C" {
 
 // Memory operations
 #include "RMemoryOperations/RByteOperations.h"
+#include "RMemoryOperations/RSandBox.h"
 
 // Others
 #include "RClassTable/RClassTable.h"

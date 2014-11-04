@@ -69,11 +69,11 @@ method(void,                deleteInRange,                RCString),    RRange r
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
 method(RCString *,          insertSubstringAt,            RCString),    RCString *substring, size_t place);   // returns reference (not copy!)
 
-method(RCString *,          substringToSymbol,            RCString),    char symbol);                         // or NULL
+method(RCString *,          substringToSymbol,            RCString),    char symbol);                         // or nullPtr
 method(RCString *,          substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
 method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting
-method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or NULL, RArray is sizeToFit, subs are copies
-method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or NULL, RArray is sizeToFit, subs are copies
+method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nullPtr, RArray is sizeToFit, subs are copies
+method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or nullPtr, RArray is sizeToFit, subs are copies
 
 method(RCString *,          copy,                         RCString));
 
@@ -92,7 +92,7 @@ method(RCString*,           toLowerCase,                  RCString));           
 
 //----------------------------------------------------------------------------------
 
-#define makeRCString()          $(NULL, c(RCString)))
+#define makeRCString()          $(nullPtr, c(RCString)))
 #define printRString(string)    $(string, p(RCString)) );
 #define RS(CString)             $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant
 #define RSC(CString)            $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant

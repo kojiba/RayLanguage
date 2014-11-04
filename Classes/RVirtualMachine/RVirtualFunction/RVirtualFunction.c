@@ -3,18 +3,18 @@
 
 constructor(RVirtualFunction)) {
     object = allocator(RVirtualFunction);
-    if(object != NULL) {
+    if(object != nullPtr) {
         object->classId = registerClassOnce(toString(RVirtualFunction));
     }
     return object;
 }
 
 destructor(RVirtualFunction) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         $(master(object, RByteArray), d(RByteArray)) );
         deallocator(master(object, RByteArray));
     } else {
-        RPrintf("Warning. RVF. Destructor of NULL.\n");
+        RPrintf("Warning. RVF. Destructor of nullPtr.\n");
     }
 }
 

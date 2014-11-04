@@ -37,7 +37,7 @@ method(pointer,    getObjectForKey, RDictionary),    pointer key);
 printer(RDictionary);
 
 // some macros for shorter work
-#define makeRDictionary()       $(NULL, c(RDictionary)) );
+#define makeRDictionary()       $(nullPtr, c(RDictionary)) );
 #define printRD(rayDictionary)  $(rayDictionary, p(RDictionary)) );
 #define deleteRD(rayDictionary) $(rayDictionary, d(RDictionary)) );\
                                 deallocator(rayDictionary)

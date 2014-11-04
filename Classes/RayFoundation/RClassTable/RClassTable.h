@@ -37,7 +37,7 @@ method (size_t,      getNumberOfClasses,       RClassTable));
 
 //----------------------------------------------------------------------------------
 
-#define makeRCTable() $(NULL, c(RClassTable)) );
+#define makeRCTable() $(nullPtr, c(RClassTable)) );
 
 // some substitutions macro for better syntax
 #if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) \

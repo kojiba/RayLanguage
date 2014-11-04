@@ -35,7 +35,8 @@ typedef struct RRange {
 inline RRange          makeRRange    (size_t from, size_t count);
 inline RRange          makeRRangeTo  (size_t from, size_t to);
 inline RCompareFlags   compareRRange (RRange first, RRange second);
-inline byte            isInRange     (RRange range, size_t value);
+inline rbool           isInRange     (RRange range, size_t value);
+inline rbool           isOverlapping (RRange first, RRange second);
 
 typedef struct RBounds {
     char startSymbol;
@@ -43,8 +44,8 @@ typedef struct RBounds {
 } RBounds;
 
 inline RBounds makeRBounds     (char startSymbol, char endSymbol);
-inline byte    isValueInBounds (RBounds bounds, char value);
-inline byte    compareRBounds  (RBounds first, RBounds second);
+inline rbool   isValueInBounds (RBounds bounds, char value);
+inline rbool   compareRBounds  (RBounds first, RBounds second);
 
 typedef struct RFindResult {
     pointer object;

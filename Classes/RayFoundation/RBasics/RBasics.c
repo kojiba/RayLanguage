@@ -49,11 +49,20 @@ RCompareFlags compareRRange(RRange first, RRange second) {
     }
 }
 
-byte isInRange(RRange range, size_t value) {
+rbool isInRange(RRange range, size_t value) {
     if(value >= range.from && value <= range.from + range.count) {
-        return 1;
+        return yes;
     } else {
-        return 0;
+        return no;
+    }
+}
+
+rbool isOverlapping(RRange first, RRange second) {
+    if((second.from > (first.from + first.count))
+            || ((second.from + second.count) < first.from)) {
+        return no;
+    } else {
+        return yes;
     }
 }
 
@@ -66,34 +75,34 @@ RBounds makeRBounds(char startSymbol, char endSymbol) {
     return bounds;
 }
 
-byte isValueInBounds(RBounds bounds, char value) {
+rbool isValueInBounds(RBounds bounds, char value) {
     if(value >= bounds.startSymbol && value <= bounds.endSymbol) {
-        return 1;
+        return yes;
     } else {
-        return 0;
+        return no;
     }
 }
 
-inline byte compareRBounds(RBounds first, RBounds second) {
+rbool compareRBounds(RBounds first, RBounds second) {
     if(first.startSymbol == second.startSymbol
             && first.endSymbol == second.endSymbol) {
-        return 1;
+        return yes;
     } else {
-        return 0;
+        return no;
     }
 }
 
 #pragma mark RCompareDelegate
 
 method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
-    if(object->virtualCompareMethod != NULL) {
+    if(object->virtualCompareMethod != nullPtr) {
         return object->virtualCompareMethod(object->etaloneObject, objectToCheck);
     } else if(object->etaloneObject == objectToCheck) {
         return equals;
     }
     #if RAY_SHORT_DEBUG == 1
             else {
-                static pointer lastObject = NULL;
+                static pointer lastObject = nullPtr;
                 if(lastObject != object) {
                     lastObject = object;
                     RPrintf("Warning. RFD - %p virtual method is not implemented.\n", object);

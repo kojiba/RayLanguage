@@ -36,7 +36,7 @@ method(void,          rebase,            RFloatingEnum));                       
 #define RFloatingEnumName(enumName)           concatenate(RFloatingEnum, enumName)
 
 #define createFloatingEnum(enumName, delegate, enumFirstValue, enumValuesCount) \
-    const RFloatingEnum *RFloatingEnumName(enumName) = $(NULL, c(RFloatingEnum)), delegate, makeRRange(enumFirstValue, enumValuesCount))
+    const RFloatingEnum *RFloatingEnumName(enumName) = $(nullPtr, c(RFloatingEnum)), delegate, makeRRange(enumFirstValue, enumValuesCount))
 
 #define checkValueToKey(enumName, value, key) $(RFloatingEnumName(enumName), m(compareValueToKey, RFloatingEnum)), value, key)
 #define printEnum(enumName)                   $(RFloatingEnumName(enumName), p(RFloatingEnum)) )

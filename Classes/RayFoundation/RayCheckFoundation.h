@@ -18,7 +18,7 @@
 #define __RAY_CHECK_FOUNDATION_H__
 
     #if defined(toString) || defined(_TOSTRING) || defined(_concatenate) || defined(concatenate) || defined(initRClock) || defined(tickRClock) \
-                          || defined(YES)       || defined(NO)
+                          || defined(yes)       || defined(no)
             #error "Some of working RayFoundation defines are already defined!"
         #elif defined(class) || defined(discipleOf) || defined(endOf) || defined(protocol)
             #error "Some of core defines of RayFoundation are already defined!"

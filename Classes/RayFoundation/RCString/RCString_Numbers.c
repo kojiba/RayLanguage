@@ -19,17 +19,17 @@
 
 static inline rbool isDecimalDigit(char character) {
     if(character < '0' || character > '9') {
-        return NO;
+        return no;
     } else {
-        return YES;
+        return yes;
     }
 }
 
 static inline rbool isOctalDigit(char character) {
     if(character < '0' || character > '7') {
-        return NO;
+        return no;
     } else {
-        return YES;
+        return yes;
     }
 }
 
@@ -37,17 +37,17 @@ static inline rbool isHexDigit(char character) {
     if(isDecimalDigit(character)
             || character > 64 && character < 71
             || character > 96 && character < 103) {
-        return YES;
+        return yes;
     } else {
-        return NO;
+        return no;
     }
 }
 
 static inline rbool isBinaryDigit(char character) {
     if(character == '0' || character == '1') {
-        return YES;
+        return yes;
     } else {
-        return NO;
+        return no;
     }
 }
 
@@ -91,7 +91,7 @@ method(RNumberSystemBase, isNumber, RCString)) {
                     || object->baseString[1] == 'X') {
                 // check symbols
                 for(iterator = 2; iterator < object->size; ++iterator) {
-                    if(isHexDigit(object->baseString[iterator]) == NO) {
+                    if(isHexDigit(object->baseString[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
@@ -101,7 +101,7 @@ method(RNumberSystemBase, isNumber, RCString)) {
             } else if (object->baseString[0] == 'b'){
                 // check symbols
                 for(iterator = 1; iterator < object->size; ++iterator) {
-                    if(isBinaryDigit(object->baseString[iterator]) == NO) {
+                    if(isBinaryDigit(object->baseString[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
@@ -110,7 +110,7 @@ method(RNumberSystemBase, isNumber, RCString)) {
             } else {
                 // check symbols
                 for(iterator = 2; iterator < object->size; ++iterator) {
-                    if(isOctalDigit(object->baseString[iterator]) == NO) {
+                    if(isOctalDigit(object->baseString[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
@@ -120,7 +120,7 @@ method(RNumberSystemBase, isNumber, RCString)) {
         // decimal
         } else {
             forAll(iterator, object->size) {
-                if (isDecimalDigit(object->baseString[iterator]) == NO) {
+                if (isDecimalDigit(object->baseString[iterator]) == no) {
                     return RNotNumber;
                 }
             }

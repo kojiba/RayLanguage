@@ -18,9 +18,9 @@
 
 constructor(RStringDictionary)) {
     object = allocator(RStringDictionary);
-    if(object != NULL) {
+    if(object != nullPtr) {
         master(object, RDictionary) = makeRDictionary();
-        if(master(object, RDictionary) != NULL) {
+        if(master(object, RDictionary) != nullPtr) {
 
             // register self
             object->classId = registerClassOnce(toString(RStringDictionary));
@@ -36,11 +36,11 @@ constructor(RStringDictionary)) {
 }
 
 destructor(RStringDictionary) {
-    if(object != NULL) {
+    if(object != nullPtr) {
         $(master(object, RDictionary), d(RDictionary)) );
         deallocator(master(object, RDictionary));
     } else {
-        RPrintf("Warning. RSD. Destructing a NULL, do nothing, please delete function call, or fix it.\n");
+        RPrintf("Warning. RSD. Destructing a nullPtr, do nothing, please delete function call, or fix it.\n");
     }
 }
 

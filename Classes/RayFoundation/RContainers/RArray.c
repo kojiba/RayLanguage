@@ -15,10 +15,10 @@
 
 #include "RArray.h"
 
-#define destroyElementAtIndex(index) if (object->destructorDelegate != NULL) \
+#define destroyElementAtIndex(index) if (object->destructorDelegate != nullPtr) \
                                         object->destructorDelegate(object->array[index])
 
-#define printElementAtIndex(index) if (object->printerDelegate != NULL) \
+#define printElementAtIndex(index) if (object->printerDelegate != nullPtr) \
                                         object->printerDelegate(object->array[iterator])
 
 #define swapElementsAtIndexes(index1, index2) pointer temp = object->array[index1]; \
@@ -41,10 +41,10 @@ constructor(RArray), RArrayFlags *error) {
     RPrintf("RA constructor of %p\n", object);
 #endif
 
-    if (object == NULL) {
+    if (object == nullPtr) {
         *error = allocation_error;
         RError("RA. Bad allocation on constructor.", object);
-        return NULL;
+        return nullPtr;
 
     } else {
         // default start size in elements
@@ -52,9 +52,9 @@ constructor(RArray), RArrayFlags *error) {
         object->sizeMultiplier = sizeMultiplierOfRArrayDefault;
         object->array          = RAlloc(object->startSize * sizeof(pointer));
 
-        if (object->array == NULL) {
+        if (object->array == nullPtr) {
             *error = allocation_error;
-            return NULL;
+            return nullPtr;
         } else {
 
             // registers its class identifier like 0
@@ -63,8 +63,8 @@ constructor(RArray), RArrayFlags *error) {
             object->count = 0;
             object->freePlaces = object->startSize;
             // set up delegates
-            object->destructorDelegate = NULL;
-            object->printerDelegate    = NULL;
+            object->destructorDelegate = nullPtr;
+            object->printerDelegate    = nullPtr;
             return object;
         }
     }
@@ -74,9 +74,9 @@ destructor(RArray) {
 
     register size_t iterator;
 
-    if (object != NULL) {
+    if (object != nullPtr) {
 
-        if (object->array != NULL) {
+        if (object->array != nullPtr) {
             forAll(iterator, object->count) {
                 // call destructors for all of objects in array
                 destroyElementAtIndex(iterator);
@@ -87,10 +87,10 @@ destructor(RArray) {
 
         object->count              = 0;
         object->freePlaces         = 0;
-        object->destructorDelegate = NULL;
-        object->printerDelegate    = NULL;
+        object->destructorDelegate = nullPtr;
+        object->printerDelegate    = nullPtr;
     } else {
-        RWarning("RA. Destructing a NULL, do nothing, please delete function call, or fix it.", object);
+        RWarning("RA. Destructing a nullPtr, do nothing, please delete function call, or fix it.", object);
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -113,7 +113,7 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 #if RAY_SHORT_DEBUG == 1
         RPrintf(", new - %p\n", object->array);
 #endif
-        if (object->array == NULL) {
+        if (object->array == nullPtr) {
             return reallocation_error;
         } else {
             object->freePlaces = newSize - object->count; // add some free
@@ -128,9 +128,9 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 method(void, flush, RArray)) {
     register size_t iterator;
 
-    if (object != NULL) {
+    if (object != nullPtr) {
 
-        if (object->array != NULL) {
+        if (object->array != nullPtr) {
             forAll(iterator, object->count) {
                 // call destructors for all of objects in array
                 destroyElementAtIndex(iterator); // or do nothing
@@ -139,7 +139,7 @@ method(void, flush, RArray)) {
             deallocator(object->array);
             object->array = RAlloc(object->startSize * sizeof(pointer));
 
-            if (object->array == NULL) {
+            if (object->array == nullPtr) {
                 RError("RA. Flush allocation error", object);
                 return;
             }
@@ -149,7 +149,7 @@ method(void, flush, RArray)) {
         }
 
     } else {
-        RWarning("RA. Flushing a NULL, do nothing, please delete function call, or fix it.", object);
+        RWarning("RA. Flushing a nullPtr, do nothing, please delete function call, or fix it.", object);
     }
 
 #if RAY_SHORT_DEBUG == 1
@@ -164,7 +164,7 @@ method(byte, sizeToFit, RArray)){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA %p SIZE_TO_FIT\n", object);
 #endif
-    if (tempArray == NULL) {
+    if (tempArray == nullPtr) {
         return temp_allocation_error;
     } else {
 
@@ -287,11 +287,11 @@ method(void, deleteLast, RArray)){
 method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
     register size_t      iterator;
              RFindResult result;
-    result.object = NULL;
+    result.object = nullPtr;
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA findObjectWithDelegate of %p\n", object);
 #endif
-    if(delegate != NULL) {
+    if(delegate != nullPtr) {
         forAll(iterator, object->count) {
             if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
                 result.index  = iterator;
@@ -300,7 +300,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
             }
         }
     } else {
-        RPrintf("ERROR. RA - %p. Delegate for searching is NULL, please delete function call, or fix it.\n\n", object);
+        RPrintf("ERROR. RA - %p. Delegate for searching is nullPtr, please delete function call, or fix it.\n\n", object);
     }
     return result;
 }
@@ -313,7 +313,7 @@ method(pointer, elementAtIndex, RArray), size_t index) {
         return object->array[index];
     } else {
         RPrintf("ERROR. RA - %p. Index not_exist!\n", object);
-        return NULL;
+        return nullPtr;
     }
 }
 
@@ -324,7 +324,7 @@ method(RArray *, getSubarray, RArray), RRange range){
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA getSubarray of %p\n", object);
 #endif
-    if(result != NULL) {
+    if(result != nullPtr) {
 
         // set up subArray delegates:
         result->destructorDelegate = object->destructorDelegate;
@@ -340,7 +340,7 @@ method(RArray *, getSubarray, RArray), RRange range){
                 // cleanup and alert
                 deleteRA(result);
                 RPrintf("ERROR. RA - %p. Get-subarray error.\n", object);
-                return NULL;
+                return nullPtr;
             }
         }
     }
