@@ -18,6 +18,7 @@ RSandBox* mySingleton(void) {
     if(instance == nullPtr) {
         instance = $(NULL, c(RSandBox)), 1024, 100, RTrueMalloc, RTrueFree);
         instance->innerMallocPtr = mySandBoxAlloc;
+        instance->allocationMode = RSandBoxAllocationModeStandart;
     }
     return instance;
 }
@@ -35,19 +36,23 @@ int main(int argc, const char *argv[]) {
     size_t iterator;
 
     enableSandBoxMalloc(mySandBoxAlloc); // enable our sandbox
+    RCString *string = RS("Hello misha"); // allocatest in heap 3*sizeof(size_t) - 2 inner pointers, 1 - basic *string pointer
+    RCString *string2 = RS("Hello misha vasya");
+    RCString *string3 = RS("Hello IVAN!");
+//    int *a = RAlloc(size);
+//    int *b = RAlloc(10);
 
-    int *a = malloc(size);
-    int *b = RAlloc(10);
+//    RArray *array = $(nullPtr, c(RArray)), nullPtr);
+//    $(RSC("Hello all!"), p(RCString)));          // leak
+//    $(RSC("Omg, its radiation!"), p(RCString))); // leak
+//    forAll(iterator, size) {
+//        a[iterator] = 1;
+//        addObjectToRA(array, a[iterator]);
+//    }
+//    printRA(array);
 
-    RArray *string = $(nullPtr, c(RArray)), nullPtr);
-    forAll(iterator, size) {
-        a[iterator] = 1;
-        addObjectToRA(string, a[iterator]);
-    }
-    printRA(string);
-
-    free(a);
-    free(string); // leak
+//    free(a);
+//    free(array); // leak, cause don't call destructor
 
     disableSandBoxMalloc();         // disable sandbox
 

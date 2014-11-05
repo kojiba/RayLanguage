@@ -22,6 +22,12 @@
 #include "../RBasics/RBasics.h"
 #include "RByteOperations.h"
 
+typedef enum RSandBoxAllocationMode {
+    RSandBoxAllocationModeStandart,
+    RSandBoxAllocationModeRandom,
+    RSandBoxAllocationModeDelegated
+} RSandBoxAllocationMode;
+
 // free, that is do nothing
 void emptyFree(pointer ptr);
 
@@ -30,13 +36,14 @@ typedef struct RControlDescriptor {
     RRange memRange;
 } RControlDescriptor;
 
-
 class(RSandBox)
     RControlDescriptor *descriptorTable;
-    RRange              descriptorsInfo; // count - count of free, from - placed
+    RRange              descriptorsInfo; // count - count of places, from - placed
     RByteArray         *memPart;
     pointer           (*innerMallocPtr)(size_t size);
     void              (*innerFreePtr)  (pointer ptr);
+    size_t            (*rangeGenerator)(struct RSandBox *currentSandBox);
+    RSandBoxAllocationMode allocationMode; // by default is RSandBoxAllocationModeRandom
 endOf(RSandBox)
 
 constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr));

@@ -9,7 +9,7 @@ void emptyFree(pointer ptr) {
     return;
 }
 
-constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr)) {
+constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t), void (*innerFreePtr)(pointer)) {
     // store old malloc
     pointer (*oldMalloc)(size_t) = RMallocPtr;
     // switch to inner malloc
@@ -17,13 +17,15 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
 
     object = RAlloc(sizeof(RSandBox));
     if(object != nullPtr) {
-        object->classId = registerClassOnce(toString(RSandBox));
-        object->descriptorTable = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
-        object->memPart = makeRByteArray(sizeOfMemory);
+        object->classId               = registerClassOnce(toString(RSandBox));
+        object->descriptorTable       = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
+        object->memPart               = makeRByteArray(sizeOfMemory);
         object->descriptorsInfo.count = descriptorsCount;
-        object->descriptorsInfo.from = 0;
-        object->innerMallocPtr = innerMallocPtr;
-        object->innerFreePtr = innerFreePtr;
+        object->descriptorsInfo.from  = 0;
+        object->innerMallocPtr        = innerMallocPtr;
+        object->innerFreePtr          = innerFreePtr;
+        object->allocationMode        = RSandBoxAllocationModeRandom;
+        object->rangeGenerator        = nullPtr;
     }
 
     // switch to old
@@ -102,13 +104,39 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 
     RRange placeToAlloc;
     placeToAlloc.count = sizeInBytes;
-    placeToAlloc.from = rand() % object->memPart->size;
-    while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
-        placeToAlloc.from = rand() % object->memPart->size;
+    switch (object->allocationMode) {
+
+        case RSandBoxAllocationModeRandom : {
+            // based on std rand
+            placeToAlloc.from = rand() % object->memPart->size;
+            while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
+                placeToAlloc.from = rand() % object->memPart->size;
+            }
+        } break;
+
+        case RSandBoxAllocationModeStandart : {
+            // if first
+            if(object->descriptorsInfo.from == 0) {
+                placeToAlloc.from = 0;
+
+            // will be next to last
+            } else {
+            placeToAlloc.from =
+                    object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
+                            +
+                    object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
+            }
+        } break;
+
+        case RSandBoxAllocationModeDelegated : {
+            // based on delegate
+            placeToAlloc.from = object->rangeGenerator(object);
+        } break;
     }
+
     $(object, m(addFilledRange, RSandBox)), placeToAlloc);
 
     // switch to old
     revertPtrs();
-    return object->memPart + placeToAlloc.from;
+    return object->memPart->array + placeToAlloc.from;
 }

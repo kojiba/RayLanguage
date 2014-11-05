@@ -19,5 +19,5 @@ void initPointers() {
     printf("Init Ray Pointers\n");
 #endif
     RMallocPtr = RTrueMalloc;
-    RFreePtr = RTrueFree;
+    RFreePtr   = RTrueFree;
 }
