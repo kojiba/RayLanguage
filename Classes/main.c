@@ -35,7 +35,6 @@ int main(int argc, const char *argv[]) {
     size_t iterator;
 
     enableSandBoxMalloc(mySandBoxAlloc); // enable our sandbox
-     // enable our sandbox
 
     int *a = malloc(size);
     int *b = RAlloc(10);
@@ -50,7 +49,7 @@ int main(int argc, const char *argv[]) {
     free(a);
     free(string); // leak
 
-    disableSandBoxMalloc();
+    disableSandBoxMalloc();         // disable sandbox
 
 
     $(mySingleton(), p(RSandBox)) );

@@ -5,7 +5,7 @@
 #define revertPtrs()   RMallocPtr = oldMalloc; RFreePtr = oldFree;
 
 void emptyFree(pointer ptr) {
-    RPrintf("\t\tFree for%p\n", ptr);
+    RPrintf("\tFree for %p\n", ptr);
     return;
 }
 
@@ -23,6 +23,7 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
         object->descriptorsInfo.count = descriptorsCount;
         object->descriptorsInfo.from = 0;
         object->innerMallocPtr = innerMallocPtr;
+        object->innerFreePtr = innerFreePtr;
     }
 
     // switch to old
@@ -31,6 +32,9 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
 }
 
 destructor(RSandBox) {
+    // higher lvl free
+    RFreePtr = object->innerFreePtr;
+
     $(object->memPart, d(RByteArray)) );
     deallocator(object->memPart);
     deallocator(object->descriptorTable);
