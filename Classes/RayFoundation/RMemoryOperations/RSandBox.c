@@ -1,20 +1,32 @@
 #include "RSandBox.h"
 #include "../RClassTable/RClassTable.h"
 
+#define storeOldPtrs() pointer (*oldMalloc)(size_t) = RMallocPtr;  void (*oldFree)(void* pointer) = RFreePtr; RMallocPtr = object->innerMallocPtr; RFreePtr = object->innerFreePtr;
+#define revertPtrs()   RMallocPtr = oldMalloc; RFreePtr = oldFree;
+
 void emptyFree(pointer ptr) {
-    RPrintf("Called free for %p\n", ptr);
+    RPrintf("\t\tFree for%p\n", ptr);
     return;
 }
 
-constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount) {
-    object = trueMalloc(sizeof(RSandBox));
+constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr)) {
+    // store old malloc
+    pointer (*oldMalloc)(size_t) = RMallocPtr;
+    // switch to inner malloc
+    RMallocPtr = innerMallocPtr;
+
+    object = RAlloc(sizeof(RSandBox));
     if(object != nullPtr) {
         object->classId = registerClassOnce(toString(RSandBox));
-        object->descriptorTable = trueMalloc(sizeof(RControlDescriptor) * descriptorsCount);
+        object->descriptorTable = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
         object->memPart = makeRByteArray(sizeOfMemory);
         object->descriptorsInfo.count = descriptorsCount;
         object->descriptorsInfo.from = 0;
+        object->innerMallocPtr = innerMallocPtr;
     }
+
+    // switch to old
+    RMallocPtr = oldMalloc;
     return object;
 }
 
@@ -25,6 +37,9 @@ destructor(RSandBox) {
 }
 
 printer(RSandBox) {
+    // store old malloc
+    storeOldPtrs();
+
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
     RPrintf("\t Count - %qu\n",   object->descriptorsInfo.count);
@@ -33,36 +48,54 @@ printer(RSandBox) {
         RPrintf("\t\t [%qu : %qu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
     }
     RPrintLn("}\n");
+
+    // switch to old
+    revertPtrs();
 }
 
 singleton(RSandBox) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
-        $(instance, c(RSandBox)), 1024, 100 );
+        $(instance, c(RSandBox)), 1024, 100, RTrueMalloc, RTrueFree);
     }
     return instance;
 }
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
+    // store old malloc
+    storeOldPtrs();
+
     size_t iterator;
     forAll(iterator, object->descriptorsInfo.from) {
         if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
+            // switch to old
+            revertPtrs();
             return no;
         }
     }
+    // switch to old
+    revertPtrs();
     return yes;
 }
 
 method(void, addFilledRange, RSandBox), RRange range) {
+    // store old malloc
+    storeOldPtrs();
+
     if(object->descriptorsInfo.from != object->descriptorsInfo.count) {
         object->descriptorTable[object->descriptorsInfo.from].memRange = range;
         ++object->descriptorsInfo.from;
     } else {
         RError("RSB. Not enought descriptor places.", object);
     }
+    // switch to old
+    revertPtrs();
 }
 
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
+    // store old malloc
+    storeOldPtrs();
+
     RRange placeToAlloc;
     placeToAlloc.count = sizeInBytes;
     placeToAlloc.from = rand() % object->memPart->size;
@@ -70,5 +103,8 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         placeToAlloc.from = rand() % object->memPart->size;
     }
     $(object, m(addFilledRange, RSandBox)), placeToAlloc);
+
+    // switch to old
+    revertPtrs();
     return object->memPart + placeToAlloc.from;
 }

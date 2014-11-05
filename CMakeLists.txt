@@ -38,6 +38,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
+                Classes/RayFoundation/RayBase.c
 
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.c

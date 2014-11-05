@@ -8,10 +8,16 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 
+//void*   (*RMallocPtr)(size_t size) = RTrueMalloc;
+//void    (*RFreePtr)  (void*  ptr) = RTrueFree;
+
+pointer mySandBoxAlloc(size_t size);
+
 RSandBox* mySingleton(void) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
-        instance = $(NULL, c(RSandBox)), 1024, 100 );
+        instance = $(NULL, c(RSandBox)), 1024, 100, RTrueMalloc, RTrueFree);
+        instance->innerMallocPtr = mySandBoxAlloc;
     }
     return instance;
 }
@@ -22,21 +28,34 @@ pointer mySandBoxAlloc(size_t size) {
 }
 
 int main(int argc, const char *argv[]) {
+    initPointers();
+
     RPrintCurrentSystem();
     const size_t size = 20;
     size_t iterator;
+
     enableSandBoxMalloc(mySandBoxAlloc); // enable our sandbox
+     // enable our sandbox
+
     int *a = malloc(size);
+    int *b = RAlloc(10);
+
+    RArray *string = $(nullPtr, c(RArray)), nullPtr);
     forAll(iterator, size) {
         a[iterator] = 1;
+        addObjectToRA(string, a[iterator]);
     }
+    printRA(string);
+
     free(a);
+    free(string); // leak
+
     disableSandBoxMalloc();
+
 
     $(mySingleton(), p(RSandBox)) );
     $(mySingleton(), d(RSandBox)) );
 
-    int *b = malloc(10);
     return 0;
 }
 

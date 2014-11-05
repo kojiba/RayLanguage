@@ -22,10 +22,6 @@
 #include "../RBasics/RBasics.h"
 #include "RByteOperations.h"
 
-// constant pointers to stdlib (OS) functions
-static pointer (*const trueMalloc)(size_t size) = malloc;
-static void    (*const trueFree)  (pointer ptr) = free;
-
 // free, that is do nothing
 void emptyFree(pointer ptr);
 
@@ -39,9 +35,11 @@ class(RSandBox)
     RControlDescriptor *descriptorTable;
     RRange              descriptorsInfo; // count - count of free, from - placed
     RByteArray         *memPart;
+    pointer           (*innerMallocPtr)(size_t size);
+    void              (*innerFreePtr)  (pointer ptr);
 endOf(RSandBox)
 
-constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount);
+constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr));
 destructor  (RSandBox);
 printer     (RSandBox);
 singleton   (RSandBox);
@@ -50,19 +48,11 @@ method(rbool,   isRangeFree,    RSandBox), RRange range);
 method(void,    addFilledRange, RSandBox), RRange range);
 method(pointer, malloc,         RSandBox), size_t sizeInBytes);
 
-// pointers to our functions
-static pointer (*mallocPtr)(size_t size) = malloc;
-static void    (*freePtr)  (pointer ptr) = free;
-
-// malloc entry point is pointer
-#define malloc(sizeInBytes) mallocPtr(sizeInBytes)
-#define free(ptr)           freePtr(ptr)
-
 // change to sandbox function and free to nothing-does function
-#define enableSandBoxMalloc(sandBoxFunction)  mallocPtr = sandBoxFunction; freePtr = emptyFree
-#define enableSandBoxFree  (sandBoxFree)      freePtr = sandBoxFree;
+#define enableSandBoxMalloc(sandBoxFunction)  RMallocPtr = sandBoxFunction; RFreePtr = emptyFree
+#define enableSandBoxFree  (sandBoxFree)      RFreePtr   = sandBoxFree;
 
 // back to constant standart
-#define disableSandBoxMalloc()                mallocPtr = trueMalloc; freePtr = trueFree
+#define disableSandBoxMalloc()                RMallocPtr = RTrueMalloc;// RFreePtr = RTrueFree
 
 #endif /*__R_SAND_BOX_H__*/

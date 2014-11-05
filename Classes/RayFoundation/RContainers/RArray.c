@@ -35,7 +35,7 @@
 
 constructor(RArray), RArrayFlags *error) {
 
-    object = allocator(RArray);
+    object = malloc(sizeof(RArray));
 
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA constructor of %p\n", object);

@@ -21,8 +21,31 @@
 #include <stdio.h>
 #include <string.h>
 
+// Hooks for malloc, free ---------------------------------\
+                                                           //
+// constant pointers to stdlib (OS) functions              //
+static void*   (*const RTrueMalloc)(size_t size) = malloc; //
+static void    (*const RTrueFree)  (void*  ptr) = free;    //
+                                                           //
+//// pointers to our functions                             //
+void*   (*RMallocPtr)(size_t size);                        //
+void    (*RFreePtr)  (void*  ptr) ;                        //
+                                                           //
+void* mallocFunc(size_t size);                             //
+void  freeFunc  (void* ptr);                               //
+                                                           //
+// malloc entry point is pointer                           //
+#define malloc                mallocFunc                   //
+#define free                  freeFunc                     //
+                                                           //
+inline void initPointers();                                //
+//---------------------------------------------------------/
+
+
+
+
 // Memory management
-#define RAlloc            malloc
+#define RAlloc(size)      malloc(size)
 #define RFree             free
 #define RReAlloc          realloc
 

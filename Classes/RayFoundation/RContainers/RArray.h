@@ -47,18 +47,17 @@ typedef enum RArrayFlags {
 static const size_t startSizeOfRArrayDefault      = 20;
 static const size_t sizeMultiplierOfRArrayDefault = 2;
 
-class(RArray) //--------------------------------------------------------------
-
-members
-    size_t    startSize;                     // start size of array in elements
-    size_t    sizeMultiplier;                // size multiplier when auto-add-size
-    size_t    count;                         // count of elements in array
-    size_t    freePlaces;                    // count of free places for elements
-    void    (*destructorDelegate)(pointer);  // destructor of elements delegate
-    void    (*printerDelegate)   (pointer);  // printer of elements delegate
-    pointer  *array;                         // array
-
-endOf(RArray) //--------------------------------------------------------------
+class(RArray) //---------------------------------------------------------------------\
+                                                                                     //
+    size_t    startSize;                     // start size of array in elements      //
+    size_t    sizeMultiplier;                // size multiplier when auto-add-size   //
+    size_t    count;                         // count of elements in array           //
+    size_t    freePlaces;                    // count of free places for elements    //
+    void    (*destructorDelegate)(pointer);  // destructor of elements delegate      //
+    void    (*printerDelegate)   (pointer);  // printer of elements delegate         //
+    pointer  *array;                         // array                                //
+                                                                                     //
+endOf(RArray) //---------------------------------------------------------------------/
 
 // constructor - destructor - printer
 constructor (RArray), RArrayFlags *error);

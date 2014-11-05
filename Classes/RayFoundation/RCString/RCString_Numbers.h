@@ -43,4 +43,4 @@ method(RNumberSystemBase, isNumber,       RCString));
 #define toIntRCString(object)      RStringToInt(object->baseString)
 #define toDoubleRCString(object)   RStringToDouble(object->baseString)
 
-#endif __R_C_STRING_NUMBERS_H__
+#endif /*__R_C_STRING_NUMBERS_H__*/
