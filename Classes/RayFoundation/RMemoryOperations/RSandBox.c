@@ -1,6 +1,11 @@
 #include "RSandBox.h"
 #include "../RClassTable/RClassTable.h"
 
+void emptyFree(pointer ptr) {
+    RPrintf("Called free for %p\n", ptr);
+    return;
+}
+
 constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount) {
     object = trueMalloc(sizeof(RSandBox));
     if(object != nullPtr) {
@@ -25,7 +30,7 @@ printer(RSandBox) {
     RPrintf("\t Count - %qu\n",   object->descriptorsInfo.count);
     RPrintf("\t Filled - %qu\n",  object->descriptorsInfo.from);
     forAll(iterator, object->descriptorsInfo.from) {
-        RPrintf("\t\t[%qu : %qu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
+        RPrintf("\t\t [%qu : %qu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
     }
     RPrintLn("}\n");
 }

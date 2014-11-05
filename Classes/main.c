@@ -30,6 +30,7 @@ int main(int argc, const char *argv[]) {
     forAll(iterator, size) {
         a[iterator] = 1;
     }
+    free(a);
     disableSandBoxMalloc();
 
     $(mySingleton(), p(RSandBox)) );
