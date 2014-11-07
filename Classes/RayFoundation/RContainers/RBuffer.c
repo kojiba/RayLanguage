@@ -1,3 +1,4 @@
+#include <AppKit/AppKit.h>
 #include "RBuffer.h"
 #include "../RClassTable/RClassTable.h"
 
@@ -53,15 +54,76 @@ printer(RBuffer) {
 }
 
 #pragma mark Reallocation
-//
-//method(RByteArray*, addSize,   RBuffer),    size_t newSize); // adds some size, store data, returns self
-//method(RByteArray*, flush,     RBuffer));                    // flushes buffer, returns self
-//method(RByteArray*, sizeToFit, RBuffer));                    // make without free places, store data, returns self
-//
-//#pragma mark Data operations
-//
-//method(void, addData, RBuffer), pointer *data) {
-//
-//}
-//
-//method(void, getData, RBuffer), size_t iterator);
+
+method(size_t*, addSizeToSizes, RBuffer), size_t newSize) {
+    object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(size_t));
+    if(object->sizesArray != nullPtr) {
+        // add free places
+        object->freePlaces = newSize - object->count;
+    }
+    return object->sizesArray;
+}
+
+method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
+    master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, newSize);
+    if(master(object, RByteArray)->array != nullPtr) {
+        // set newSize
+        master(object, RByteArray)->size = newSize;
+    }
+    return master(object, RByteArray);
+}
+
+//method(RBuffer*, flush,     RBuffer));                    // flushes buffer, returns self
+//method(RBuffer*, sizeToFit, RBuffer));                    // make without free places, store data, returns self
+
+#pragma mark Workers
+
+method(size_t, shiftForPlace, RBuffer), size_t place) {
+    size_t iterator;
+    size_t shift = 0;
+    forAll(iterator, place) {
+        shift += object->sizesArray[iterator];
+    }
+    return shift;
+}
+
+#pragma mark Data operations
+
+method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
+
+    if(object->freePlaces == 0) {
+        // add free to sizes
+        $(object, m(addSizeToSizes, RBuffer)), object->count * sizeMultiplierOfRBufferDefault);
+    }
+
+    if(object->totalPlaced == master(object, RByteArray)->size) {
+        // add free to buffer
+        $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault);
+    }
+
+    if(master(object, RByteArray)->size != nullPtr
+            && object->sizesArray != nullPtr) {
+
+        // add object
+        RMemMove(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
+        object->sizesArray[object->totalPlaced] = sizeInBytes;
+
+        object->totalPlaced += sizeInBytes;
+        ++object->count;
+        --object->freePlaces;
+    }
+}
+
+method(pointer, getDataCopy, RBuffer), size_t index) {
+    byte *result = nullPtr;
+    if(index < object->count) {
+        result = RAlloc(object->sizesArray[index]);
+        if (result != nullPtr) {
+            size_t shift = $(object, m(shiftForPlace, RBuffer)), index);
+            RMemMove(result, master(object, RByteArray)->array + shift, object->sizesArray[index]);
+        }
+    } else {
+        RError("RBuffer. Bad index.", object);
+    }
+    return result;
+}
