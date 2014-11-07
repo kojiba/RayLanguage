@@ -49,11 +49,8 @@ printer(RSandBox) {
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
     RPrintf("\t Mem total  - %qu (bytes)\n", object->memPart->size);
-    if(object->allocationMode == RSandBoxAllocationModeStandart) {
-        RPrintf("\t Mem placed - %qu (bytes)\n",
-                object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
-                +
-                object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count);
+    if(object->allocationMode == RSandBoxAllocationModeStandart || object->allocationMode == RSandBoxAllocationModeRandom) {
+        RPrintf("\t Mem placed - %qu (bytes)\n", $(object, m(memoryPlaced,RSandBox))));
     }
     RPrintf("\t Descriptors count - %qu\n", object->descriptorsInfo.count);
     RPrintf("\t Descriptors filled - %qu\n", object->descriptorsInfo.from);
@@ -109,6 +106,29 @@ method(size_t, sizeForPointer, RSandBox), pointer ptr) {
     }
 }
 
+method(size_t, memoryPlaced, RSandBox)) {
+    size_t iterator;
+    switch(object->allocationMode) {
+        case RSandBoxAllocationModeStandart : {
+
+            return object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
+                    + object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
+        }
+
+        case RSandBoxAllocationModeRandom : {
+            size_t result = 0;
+            forAll(iterator, object->descriptorsInfo.from) {
+                result +=object->descriptorTable[iterator].memRange.count;
+            }
+            return result;
+        }
+
+        default:
+            RError("Bad case for memPlaced. Only ModeStandart and ModeRandom\n", object);
+            return 0;
+    }
+}
+
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
     if(object->descriptorsInfo.count != object->descriptorsInfo.from) {
         // store old malloc
@@ -122,7 +142,7 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
                 // based on std rand
                 placeToAlloc.from = rand() % (object->memPart->size - sizeInBytes);
                 while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
-                    placeToAlloc.from = rand() % object->memPart->size;
+                    placeToAlloc.from = rand() % (object->memPart->size - sizeInBytes);
                 }
             } break;
 

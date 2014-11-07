@@ -16,9 +16,9 @@ pointer mySandBoxAlloc(size_t size);
 RSandBox* mySingleton(void) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
-        instance = $(NULL, c(RSandBox)), 2048, 100, RTrueMalloc, RTrueFree);
+        instance = $(NULL, c(RSandBox)), 4096, 100, RTrueMalloc, RTrueFree);
         instance->innerMallocPtr = mySandBoxAlloc;
-        instance->allocationMode = RSandBoxAllocationModeStandart;
+//        instance->allocationMode = RSandBoxAllocationModeStandart;
     }
     return instance;
 }
@@ -42,7 +42,6 @@ pointer emptyRealloc(pointer ptr, size_t size) {
 int main(int argc, const char *argv[]) {
     initPointers();
     RReallocPtr = emptyRealloc;
-
     RPrintCurrentSystem();
     RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
     const size_t size = 70;
