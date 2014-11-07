@@ -48,8 +48,15 @@ printer(RSandBox) {
 
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
-    RPrintf("\t Count - %qu\n",   object->descriptorsInfo.count);
-    RPrintf("\t Filled - %qu\n",  object->descriptorsInfo.from);
+    RPrintf("\t Mem total  - %qu (bytes)\n", object->memPart->size);
+    if(object->allocationMode == RSandBoxAllocationModeStandart) {
+        RPrintf("\t Mem placed - %qu (bytes)\n",
+                object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
+                +
+                object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count);
+    }
+    RPrintf("\t Descriptors count - %qu\n", object->descriptorsInfo.count);
+    RPrintf("\t Descriptors filled - %qu\n", object->descriptorsInfo.from);
     forAll(iterator, object->descriptorsInfo.from) {
         RPrintf("\t\t [%qu : %qu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
     }
@@ -62,81 +69,95 @@ printer(RSandBox) {
 singleton(RSandBox) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
-        $(instance, c(RSandBox)), 1024, 100, RTrueMalloc, RTrueFree);
+        $(instance, c(RSandBox)), 8192, 128, RTrueMalloc, RTrueFree);
     }
     return instance;
 }
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
-    // store old malloc
-    storeOldPtrs();
-
     size_t iterator;
     forAll(iterator, object->descriptorsInfo.from) {
         if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
-            // switch to old
-            revertPtrs();
             return no;
         }
     }
-    // switch to old
-    revertPtrs();
     return yes;
 }
 
 method(void, addFilledRange, RSandBox), RRange range) {
-    // store old malloc
-    storeOldPtrs();
-
     if(object->descriptorsInfo.from != object->descriptorsInfo.count) {
         object->descriptorTable[object->descriptorsInfo.from].memRange = range;
         ++object->descriptorsInfo.from;
     } else {
         RError("RSB. Not enought descriptor places.", object);
     }
-    // switch to old
-    revertPtrs();
+}
+
+method(size_t, sizeForPointer, RSandBox), pointer ptr) {
+    __darwin_ptrdiff_t shift = ptr - (pointer)(object->memPart->array);
+    if(shift < 0) {
+        RError("Pointer wasn't allocated with sandBox.", object);
+        return 0;
+    } else {
+        size_t iterator;
+        forAll(iterator, object->descriptorsInfo.from) {
+            if(object->descriptorTable[iterator].memRange.from == shift) {
+                return object->descriptorTable[iterator].memRange.count;
+            }
+        }
+        return 0;
+    }
 }
 
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
-    // store old malloc
-    storeOldPtrs();
+    if(object->descriptorsInfo.count != object->descriptorsInfo.from) {
+        // store old malloc
+        storeOldPtrs();
 
-    RRange placeToAlloc;
-    placeToAlloc.count = sizeInBytes;
-    switch (object->allocationMode) {
+        RRange placeToAlloc;
+        placeToAlloc.count = sizeInBytes;
+        switch (object->allocationMode) {
 
-        case RSandBoxAllocationModeRandom : {
-            // based on std rand
-            placeToAlloc.from = rand() % object->memPart->size;
-            while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
-                placeToAlloc.from = rand() % object->memPart->size;
-            }
-        } break;
+            case RSandBoxAllocationModeRandom : {
+                // based on std rand
+                placeToAlloc.from = rand() % (object->memPart->size - sizeInBytes);
+                while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
+                    placeToAlloc.from = rand() % object->memPart->size;
+                }
+            } break;
 
-        case RSandBoxAllocationModeStandart : {
-            // if first
-            if(object->descriptorsInfo.from == 0) {
-                placeToAlloc.from = 0;
+            case RSandBoxAllocationModeStandart : {
+                // if first
+                if(object->descriptorsInfo.from == 0) {
+                    placeToAlloc.from = 0;
 
-            // will be next to last
-            } else {
-            placeToAlloc.from =
-                    object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
-                            +
-                    object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
-            }
-        } break;
+                // will be next to last
+                } else {
+                placeToAlloc.from =
+                        object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
+                                +
+                        object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
+                }
+            } break;
 
-        case RSandBoxAllocationModeDelegated : {
-            // based on delegate
-            placeToAlloc.from = object->rangeGenerator(object);
-        } break;
+            case RSandBoxAllocationModeDelegated : {
+                // based on delegate
+                placeToAlloc.from = object->rangeGenerator(object);
+            } break;
+        }
+
+        $(object, m(addFilledRange, RSandBox)), placeToAlloc);
+
+        // switch to old
+        revertPtrs();
+        if(placeToAlloc.from + sizeInBytes > object->memPart->size) {
+            RError("RSB. Not enought memory", object);
+            return nullPtr;
+        } else {
+            return object->memPart->array + placeToAlloc.from;
+        }
+    } else {
+        RError("RSB. Not enought descriptors", object);
+        return nullPtr;
     }
-
-    $(object, m(addFilledRange, RSandBox)), placeToAlloc);
-
-    // switch to old
-    revertPtrs();
-    return object->memPart->array + placeToAlloc.from;
 }

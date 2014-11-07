@@ -158,24 +158,14 @@ method(void, flush, RArray)) {
 }
 
 method(byte, sizeToFit, RArray)){
-    // create temp array
-    pointer *tempArray = RAlloc(object->count * sizeof(pointer));
+    object->array = RReAlloc(object->array, object->count * sizeof(pointer));
 
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RA %p SIZE_TO_FIT\n", object);
 #endif
-    if (tempArray == nullPtr) {
+    if (object->array == nullPtr) {
         return temp_allocation_error;
     } else {
-
-        // copy pointers to temp array
-        RMemMove(tempArray, object->array, sizeof(pointer) * object->count);
-
-        // delete old
-        deallocator(object->array);
-
-        // switch to new
-        object->array = tempArray;
         object->freePlaces = 0;
         return no_error;
     }

@@ -16,7 +16,7 @@ pointer mySandBoxAlloc(size_t size);
 RSandBox* mySingleton(void) {
     static RSandBox *instance = nullPtr;
     if(instance == nullPtr) {
-        instance = $(NULL, c(RSandBox)), 1024, 100, RTrueMalloc, RTrueFree);
+        instance = $(NULL, c(RSandBox)), 2048, 100, RTrueMalloc, RTrueFree);
         instance->innerMallocPtr = mySandBoxAlloc;
         instance->allocationMode = RSandBoxAllocationModeStandart;
     }
@@ -28,32 +28,33 @@ pointer mySandBoxAlloc(size_t size) {
     return $(mySingleton(), m(malloc, RSandBox)), size);
 }
 
+pointer emptyRealloc(pointer ptr, size_t size) {
+    RPrintf("--- Realloc for %p, new size : %qu (bytes)\n", ptr, size);
+    size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
+    if(oldSize == 0) {
+        RError("Bad pointer", mySingleton());
+    }
+    pointer newBuffer = mySandBoxAlloc(size);
+    RMemMove(newBuffer, ptr, oldSize);
+    return newBuffer;
+}
+
 int main(int argc, const char *argv[]) {
     initPointers();
+    RReallocPtr = emptyRealloc;
 
     RPrintCurrentSystem();
-    const size_t size = 20;
+    RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
+    const size_t size = 70;
     size_t iterator;
 
-    enableSandBoxMalloc(mySandBoxAlloc); // enable our sandbox
-    RCString *string = RS("Hello misha"); // allocatest in heap 3*sizeof(size_t) - 2 inner pointers, 1 - basic *string pointer
-    RCString *string2 = RS("Hello misha vasya");
-    RCString *string3 = RS("Hello IVAN!");
-//    int *a = RAlloc(size);
-//    int *b = RAlloc(10);
-
-//    RArray *array = $(nullPtr, c(RArray)), nullPtr);
-//    $(RSC("Hello all!"), p(RCString)));          // leak
-//    $(RSC("Omg, its radiation!"), p(RCString))); // leak
-//    forAll(iterator, size) {
-//        a[iterator] = 1;
-//        addObjectToRA(array, a[iterator]);
-//    }
-//    printRA(array);
-
-//    free(a);
-//    free(array); // leak, cause don't call destructor
-
+    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
+    RArray *array = $(nullPtr, c(RArray)), nullPtr); // leaks
+    forAll(iterator, size) {
+        addObjectToRA(array, iterator);
+    }
+    printRA(array);
+    $(array, m(sizeToFit, RArray)));
     disableSandBoxMalloc();         // disable sandbox
 
 

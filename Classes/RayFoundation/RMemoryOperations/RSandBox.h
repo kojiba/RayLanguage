@@ -52,6 +52,8 @@ printer     (RSandBox);
 singleton   (RSandBox);
 
 method(rbool,   isRangeFree,    RSandBox), RRange range);
+method(size_t,  sizeForPointer, RSandBox), pointer ptr);
+
 method(void,    addFilledRange, RSandBox), RRange range);
 method(pointer, malloc,         RSandBox), size_t sizeInBytes);
 

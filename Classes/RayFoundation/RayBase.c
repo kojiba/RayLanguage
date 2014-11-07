@@ -7,6 +7,13 @@ void* mallocFunc(size_t size) {
     return RMallocPtr(size);
 }
 
+void* reallocFunc(void *ptr, size_t size) {
+#if RAY_SHORT_DEBUG == 1
+    printf("Ray realloc hook\n");
+#endif
+    return RReallocPtr(ptr, size);
+}
+
 void freeFunc(void *pointer) {
 #if RAY_SHORT_DEBUG == 1
     printf("Ray free hook\n");
@@ -18,6 +25,7 @@ void initPointers() {
 #if RAY_SHORT_DEBUG == 1
     printf("Init Ray Pointers\n");
 #endif
-    RMallocPtr = RTrueMalloc;
-    RFreePtr   = RTrueFree;
+    RMallocPtr  = RTrueMalloc;
+    RFreePtr    = RTrueFree;
+    RReallocPtr = RTrueRealloc;
 }

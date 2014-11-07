@@ -21,31 +21,33 @@
 #include <stdio.h>
 #include <string.h>
 
-// Hooks for malloc, free ---------------------------------\
-                                                           //
-// constant pointers to stdlib (OS) functions              //
-static void*   (*const RTrueMalloc)(size_t size) = malloc; //
-static void    (*const RTrueFree)  (void*  ptr) = free;    //
-                                                           //
-//// pointers to our functions                             //
-void*   (*RMallocPtr)(size_t size);                        //
-void    (*RFreePtr)  (void*  ptr) ;                        //
-                                                           //
-void* mallocFunc(size_t size);                             //
-void  freeFunc  (void* ptr);                               //
-                                                           //
-// malloc entry point is pointer                           //
-#define malloc                mallocFunc                   //
-#define free                  freeFunc                     //
-                                                           //
-inline void initPointers();                                //
-//---------------------------------------------------------/
+// Hooks for malloc, free ---------------------------------
 
+// constant pointers to stdlib (OS) functions
+static void*   (*const RTrueMalloc) (size_t size) = malloc;
+static void    (*const RTrueFree)   (void*  ptr) = free;
+static void*   (*const RTrueRealloc)(void*  ptr, size_t size) = realloc;
 
+// pointers to functions
+void*   (*RMallocPtr)(size_t size);
+void    (*RFreePtr)  (void*  ptr) ;
+void*   (*RReallocPtr)(void*  ptr,  size_t size);
+
+inline void* mallocFunc (size_t size);
+inline void  freeFunc   (void* ptr);
+inline void* reallocFunc(void *ptr, size_t size);
+
+// malloc entry point is pointer
+#define malloc                mallocFunc
+#define free                  freeFunc
+#define realloc               reallocFunc
+
+inline void initPointers();
+//---------------------------------------------------------
 
 
 // Memory management
-#define RAlloc(size)      malloc(size)
+#define RAlloc            malloc
 #define RFree             free
 #define RReAlloc          realloc
 
