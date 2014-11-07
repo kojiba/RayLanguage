@@ -18,46 +18,34 @@
 
 #pragma mark Memory Operations
 
-pointer Xor(const pointer data,
+void    Xor(const pointer data,
             const pointer key,
                   size_t  sizeOfData,
                   size_t  sizeOfKey) {
-    byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != nullPtr) {
-        forAll(iterator, sizeOfData) {
-            result[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
-        }
+    forAll(iterator, sizeOfData) {
+        ((byte*)data)[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
     }
-    return result;
 }
 
-pointer Add(const pointer data,
+void    Add(const pointer data,
             const pointer key,
                   size_t  sizeOfData,
                   size_t  sizeOfKey) {
-    byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != nullPtr) {
-        forAll(iterator, sizeOfData) {
-            result[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
-        }
+    forAll(iterator, sizeOfData) {
+        ((byte*)data)[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
     }
-    return result;
 }
 
-pointer Sub(const pointer data,
+void    Sub(const pointer data,
         const pointer key,
         size_t  sizeOfData,
         size_t  sizeOfKey) {
-    byte  *result = RAlloc(sizeOfData);
     size_t iterator;
-    if(result != nullPtr) {
-        forAll(iterator, sizeOfData) {
-            result[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
-        }
+    forAll(iterator, sizeOfData) {
+        ((byte*)data)[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
     }
-    return result;
 }
 
 #pragma mark Basics
@@ -169,9 +157,9 @@ printer(RByteArray) {
     printByteArrayInHex(object->array, object->size);
 }
 
-RByteArray* flushAllToByteRByteArray(RByteArray *array, byte symbol) {
-    array->array = flushAllToByte(array->array, array->size, symbol);
-    return array;
+method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
+    object->array = flushAllToByte(object->array, object->size, symbol);
+    return object;
 }
 
 method (RByteArray*, copy, RByteArray)) {
@@ -179,4 +167,12 @@ method (RByteArray*, copy, RByteArray)) {
     copy->array      = getByteArrayCopy(object->array, object->size);
     copy->size       = object->size;
     return copy;
+}
+
+method(RByteArray*, fromRCString, RByteArray), RCString *string) {
+    if(object->size <= string->size && object->size != 0) {
+        RMemMove(object->array, string->baseString, string->size);
+        return object;
+    }
+    return nullPtr;
 }

@@ -17,6 +17,7 @@
 #define __R_BYTE_OPERATIONS_H__
 
 #include "../RContainers/RArray.h"
+#include "../RCString/RCString.h"
 
 class(RByteArray)
     byte   *array;
@@ -24,17 +25,17 @@ class(RByteArray)
 endOf(RByteArray)
 
 // Memory operations
-pointer        Xor (const pointer data,       // ATTENTION! for all operations:
+void           Xor (const pointer data,       // ATTENTION! for all operations:
                     const pointer key,        // returns dynamically allocated buffer
                           size_t  sizeOfData, // or nullPtr if allocation fails
                           size_t  sizeOfKey); // all sizes are in bytes
 
-pointer        Add (const pointer data,
+void           Add (const pointer data,
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);
 
-pointer        Sub (const pointer data,
+void           Sub (const pointer data,
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);
@@ -55,9 +56,11 @@ printer     (RByteArray);
 
 method(RByteArray*, flushAllToByte, RByteArray),    byte symbol);
 method(RByteArray*, copy,           RByteArray));
+method(RByteArray*, fromRCString,   RByteArray),    RCString *string);
 
 
-#define makeRByteArray(size)         $(nullPtr, c(RByteArray)), size)
+#define makeRByteArray(size)           $(nullPtr, c(RByteArray)), size)
 #define makeFlushedBytes(size, symbol) flushAllToByte(makeByteArray(size), size, symbol)
+#define RBfromRCS(string)              $(makeRByteArray(string->size), m(fromRCString, RByteArray)), string)
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

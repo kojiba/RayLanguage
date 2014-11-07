@@ -24,8 +24,9 @@ RSandBox* mySingleton(void) {
 }
 
 pointer mySandBoxAlloc(size_t size) {
-    RPrintf("RSandBox malloc in - %p\n", mySingleton());
-    return $(mySingleton(), m(malloc, RSandBox)), size);
+    pointer ptr = $(mySingleton(), m(malloc, RSandBox)), size);
+    RPrintf("RSandBox malloc in - %p, of pointer - %p\n", mySingleton(), ptr);
+    return ptr;
 }
 
 pointer emptyRealloc(pointer ptr, size_t size) {
@@ -42,6 +43,9 @@ pointer emptyRealloc(pointer ptr, size_t size) {
 int main(int argc, const char *argv[]) {
     initPointers();
     RReallocPtr = emptyRealloc;
+
+    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
+
     RPrintCurrentSystem();
     RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
     const size_t size = 70;
@@ -54,6 +58,14 @@ int main(int argc, const char *argv[]) {
     }
     printRA(array);
     $(array, m(sizeToFit, RArray)));
+    RPrintf("Sadbox ptr - %p\n", mySingleton());
+//    RByteArray *key2 = RBfromRCS(RS("Hello misha it's my new key ololo")); // error on array print if in sandbox declare
+    $(mySingleton(), m(XorCrypt, RSandBox)), key); //key2);
+    RPrintf("Sadbox ptr - %p\n", mySingleton());
+    $(mySingleton(), m(XorDecrypt, RSandBox)), key); //key2);
+
+    printRA(array); // error here if key2
+
     disableSandBoxMalloc();         // disable sandbox
 
 

@@ -49,7 +49,8 @@ printer(RSandBox) {
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
     RPrintf("\t Mem total  - %qu (bytes)\n", object->memPart->size);
-    if(object->allocationMode == RSandBoxAllocationModeStandart || object->allocationMode == RSandBoxAllocationModeRandom) {
+    if(object->allocationMode == RSandBoxAllocationModeStandart
+            || object->allocationMode == RSandBoxAllocationModeRandom) {
         RPrintf("\t Mem placed - %qu (bytes)\n", $(object, m(memoryPlaced,RSandBox))));
     }
     RPrintf("\t Descriptors count - %qu\n", object->descriptorsInfo.count);
@@ -70,6 +71,8 @@ singleton(RSandBox) {
     }
     return instance;
 }
+
+#pragma mark Workings
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
     size_t iterator;
@@ -129,6 +132,8 @@ method(size_t, memoryPlaced, RSandBox)) {
     }
 }
 
+#pragma mark Main methods
+
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
     if(object->descriptorsInfo.count != object->descriptorsInfo.from) {
         // store old malloc
@@ -181,3 +186,22 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         return nullPtr;
     }
 }
+
+#pragma mark Simple crypt
+
+method(void, XorCrypt, RSandBox), RByteArray *key) {
+    Xor(object->memPart->array,  key, object->memPart->size, key->size);         // crypt memory chunk
+    Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // cryptr memory ptr
+    Xor(object->descriptorTable, key,
+            object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // crypt descriptors table
+    Xor(object, key, sizeof(object), key->size); // crypt pointers
+}
+
+method(void, XorDecrypt, RSandBox), RByteArray *key) {
+    Xor(object, key, sizeof(object), key->size); // decrypt pointers
+    Xor(object->descriptorTable, key,
+            object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
+    Xor(object->memPart, key, sizeof(RByteArray), key->size);                       // decrypt memory ptr
+    Xor(object->memPart->array,  key, object->memPart->size, key->size);            // decrypt memory chunk
+}
+
