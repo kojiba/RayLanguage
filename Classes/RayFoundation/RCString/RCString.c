@@ -59,12 +59,17 @@ RCString *randomRCString(void) {
     while(size == 0) {
         size = ((size_t)rand()) % 50;
     }
+
     cstring = RAlloc(size * sizeof(char));
-    forAll(iterator, size - 2){
-        cstring[iterator] = randomCharacter();
+    if(cstring != nullPtr) {
+        forAll(iterator, size - 1){
+            cstring[iterator] = randomCharacter();
+        }
+        cstring[++iterator] = 0;
+        $(string, m(setConstantString, RCString)), cstring);
+    } else {
+        RError("RCS. Allocation error.", cstring);
     }
-    cstring[++iterator] = 0;
-    $(string, m(setConstantString, RCString)), cstring);
     return string;
 }
 

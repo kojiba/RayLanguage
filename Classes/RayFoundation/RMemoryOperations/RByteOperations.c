@@ -167,7 +167,7 @@ method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
     return object;
 }
 
-method (RByteArray*, copy, RByteArray)) {
+method(RByteArray*, copy, RByteArray)) {
     RByteArray *copy = allocator(RByteArray);
     copy->array      = getByteArrayCopy(object->array, object->size);
     copy->size       = object->size;

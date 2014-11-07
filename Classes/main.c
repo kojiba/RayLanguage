@@ -37,6 +37,20 @@ pointer emptyRealloc(pointer ptr, size_t size) {
     return newBuffer;
 }
 
+void StringArrayTest() {
+    RArray *stringArray = makeRArray();
+    stringArray->printerDelegate = p(RCString);
+    stringArray->destructorDelegate = d(RCString);
+
+    for(unsigned i = 0; i < 10000; ++i) {
+        addObjectToRA(stringArray, randomRCString());
+    }
+    printRA(stringArray);
+
+    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
+
+    printRA(stringArray);
+}
 
 int main(int argc, const char *argv[]) {
     initPointers();
@@ -70,12 +84,14 @@ int main(int argc, const char *argv[]) {
 //    $(mySingleton(), p(RSandBox)) );
 //    $(mySingleton(), d(RSandBox)) );
 
-    RBuffer *buffer = $(nullPtr, c(RBuffer)));
-    $(buffer, m(addData, RBuffer)), "Some constant", sizeof("Some constant"));
-    $(buffer, p(RBuffer)) );
-    $(buffer, d(RBuffer)) );
+//    RBuffer *buffer = $(nullPtr, c(RBuffer)));
+//    $(buffer, m(addData, RBuffer)), "Some constant", sizeof("Some constant"));
+//    $(buffer, p(RBuffer)) );
+//    $(buffer, d(RBuffer)) );
+//
+//    deallocator(buffer);
+    StringArrayTest();
 
-    deallocator(buffer);
     return 0;
 }
 
