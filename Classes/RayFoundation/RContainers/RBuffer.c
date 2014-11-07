@@ -42,13 +42,15 @@ destructor(RBuffer) {
 
 printer(RBuffer) {
     size_t iterator;
+    size_t shift = 0;
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
     RPrintf("\t Total   size : %qu (bytes)\n", master(object, RByteArray)->size);
     RPrintf("\t Placed  size : %qu (bytes)\n", object->totalPlaced);
     RPrintf("\t Count objcts : %qu\n", object->count);
     RPrintf("\t Free  places : %qu\n", object->freePlaces);
     forAll(iterator, object->count) {
-        RPrintf("");
+        printByteArrayInHex(master(object, RByteArray)->array + shift, object->sizesArray[iterator]);
+        shift += object->sizesArray[iterator];
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
 }
