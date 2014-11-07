@@ -194,11 +194,11 @@ method(void, XorCrypt, RSandBox), RByteArray *key) {
     Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // cryptr memory ptr
     Xor(object->descriptorTable, key,
             object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // crypt descriptors table
-    Xor(object, key, sizeof(object), key->size); // crypt pointers
+    Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
 }
 
 method(void, XorDecrypt, RSandBox), RByteArray *key) {
-    Xor(object, key, sizeof(object), key->size); // decrypt pointers
+    Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
     Xor(object->descriptorTable, key,
             object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
     Xor(object->memPart, key, sizeof(RByteArray), key->size);                       // decrypt memory ptr
