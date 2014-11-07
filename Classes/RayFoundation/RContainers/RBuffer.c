@@ -1,4 +1,19 @@
-#include <AppKit/AppKit.h>
+/**
+ * RArray.c
+ * Realization of C dynamic memory buffer, in Ray additions.
+ * May use like array of sized elements.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #include "RBuffer.h"
 #include "../RClassTable/RClassTable.h"
 
@@ -49,8 +64,10 @@ printer(RBuffer) {
     RPrintf("\t Count objcts : %qu\n", object->count);
     RPrintf("\t Free  places : %qu\n", object->freePlaces);
     forAll(iterator, object->count) {
+        RPrintf("\t\t %qu :\n", iterator);
         printByteArrayInHex(master(object, RByteArray)->array + shift, object->sizesArray[iterator]);
         shift += object->sizesArray[iterator];
+        RPrintf("\n");
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
 }

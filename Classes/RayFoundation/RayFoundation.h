@@ -29,6 +29,7 @@ extern "C" {
 
 // Containers
 #include "RContainers/RArray.h"
+#include "RContainers/RBuffer.h"
 #include "RContainers/RDictionary.h"
 #include "RContainers/RStringDictionary.h"
 

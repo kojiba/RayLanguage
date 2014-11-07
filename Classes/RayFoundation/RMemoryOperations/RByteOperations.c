@@ -139,8 +139,13 @@ constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
     if(object != nullPtr) {
         object->array   = makeByteArray(size);
-        object->size    = size;
-        object->classId = registerClassOnce(toString(RByteArray));
+        if(object->array != nullPtr) {
+            object->size = size;
+            object->classId = registerClassOnce(toString(RByteArray));
+        } else {
+            RError("RBA. Array allocation failed", object);
+            return nullPtr;
+        }
     }
     return object;
 }

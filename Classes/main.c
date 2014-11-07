@@ -69,10 +69,13 @@ int main(int argc, const char *argv[]) {
 //
 //    $(mySingleton(), p(RSandBox)) );
 //    $(mySingleton(), d(RSandBox)) );
-    RArray *a = allocator(RArray);
-    RPrintf("Size of RArray struct - %qu\n", sizeof(RArray));
-    RPrintf("Size of RArray obj - %qu\n", sizeof(a));
-    RPrintf("Size of RArray ptr - %qu\n", sizeof((pointer)a));
+
+    RBuffer *buffer = $(nullPtr, c(RBuffer)));
+    $(buffer, m(addData, RBuffer)), "Some constant", sizeof("Some constant"));
+    $(buffer, p(RBuffer)) );
+    $(buffer, d(RBuffer)) );
+
+    deallocator(buffer);
     return 0;
 }
 

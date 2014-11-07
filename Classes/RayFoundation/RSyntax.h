@@ -21,8 +21,9 @@
 
 #define RAY_SHORT_DEBUG 451
 
-#include "RayBase.h"
 #include "RayCheckFoundation.h"
+#include "RColors.h"
+#include "RayBase.h"
 #include <stdint.h>
 
 // working defines
@@ -42,7 +43,7 @@
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", diff / 1000 / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
 #define RError(string, object)                            RFPrintf(stderr, "%p ERROR. "string"\n", object)
-#define RWarning(string, object)                          RPrintf("Warning. %p - "string"\n", object)
+#define RWarning(string, object)                          RPrintf(RYellow"Warning. %p - "string"\n"RNC, object)
 #define RPrintLn(string)                                  RPrintf(string"\n")
 
 // typedefs
