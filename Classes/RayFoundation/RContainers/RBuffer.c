@@ -13,9 +13,9 @@ constructor(RBuffer)) {
             object->sizesArray = RAlloc(sizeof(size_t) * sizeOfObjectsOfRBufferDefault);
 
             if(object->sizesArray != NULL) {
-                object->classId = registerClassOnce(toString(RBuffer));
-                object->freePlaces = startSizeOfRBufferDefault;
-                object->count = 0;
+                object->classId     = registerClassOnce(toString(RBuffer));
+                object->freePlaces  = startSizeOfRBufferDefault;
+                object->count       = 0;
                 object->totalPlaced = 0;
             } else {
                 RError("RBuffer. Allocation of sizes array failed.", object);
@@ -73,8 +73,27 @@ method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
     return master(object, RByteArray);
 }
 
-//method(RBuffer*, flush,     RBuffer));                    // flushes buffer, returns self
-//method(RBuffer*, sizeToFit, RBuffer));                    // make without free places, store data, returns self
+method(RBuffer*, flush, RBuffer)) {
+    // kills
+    $(master(object, RByteArray), d(RByteArray)) );
+    deallocator(master(object, RByteArray));
+    deallocator(object->sizesArray);
+
+    // new
+    master(object, RByteArray) = makeRByteArray(startSizeOfRBufferDefault);
+    object->sizesArray = RAlloc(sizeof(size_t) * sizeOfObjectsOfRBufferDefault);
+    object->freePlaces  = startSizeOfRBufferDefault;
+    object->count       = 0;
+    object->totalPlaced = 0;
+    return object;
+}
+
+method(RBuffer*, sizeToFit, RBuffer)) {
+    master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, object->totalPlaced);
+    object->sizesArray = RReAlloc(object->sizesArray, object->count * sizeof(size_t));
+    object->freePlaces = 0;
+    return object;
+}
 
 #pragma mark Workers
 
@@ -101,7 +120,7 @@ method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
         $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault);
     }
 
-    if(master(object, RByteArray)->size != nullPtr
+    if(master(object, RByteArray)->array != nullPtr
             && object->sizesArray != nullPtr) {
 
         // add object
