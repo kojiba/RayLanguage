@@ -39,7 +39,7 @@ method(RCString *,        toRCString, RNumberSystemBase));
 // RCString Additions
 method(RNumberSystemBase, isNumber,       RCString));
 
-#define toUnsignedRCString(object) RStringToUnsigned(object->baseString, nullPtr, 0)
+#define toUnsignedRCString(object) RStringToUnsigned(object->baseString, nil, 0)
 #define toIntRCString(object)      RStringToInt(object->baseString)
 #define toDoubleRCString(object)   RStringToDouble(object->baseString)
 

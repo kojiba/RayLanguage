@@ -37,7 +37,7 @@ method(size_t,      getNumberOfClasses,       RClassTable));
 
 //----------------------------------------------------------------------------------
 
-#define makeRCTable() $(nullPtr, c(RClassTable)) );
+#define makeRCTable() $(nil, c(RClassTable)) );
 
 // some substitutions macro for better syntax
 #if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) \
@@ -47,7 +47,7 @@ method(size_t,      getNumberOfClasses,       RClassTable));
 #define RCTSingleton              singletonCall(RClassTable)
 #define flushRCTS                 $(master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
 #define releaseRCTS               d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
-#define registerClassOnce(name)   $(RCTSingleton, m(registerClassWithName, RClassTable)), name) // return id, or 0 if fails. [0;3] ids is reserved
+#define registerClassOnce(name)   $(RCTSingleton, m(registerClassWithName, RClassTable)), name) // return id, or 0 if fails. [0; 3] ids is reserved
 #define printRCTS                 $(RCTSingleton, p(RClassTable)) )
 #define getIdentifierByName(name) $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), name)
 #endif

@@ -21,13 +21,13 @@ constructor(RClassTable)) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("----- RCT constructor START of %p\n", object);
 #endif
-    if (object != nullPtr) {
+    if (object != nil) {
 
         // alloc RArray
         master(object, RArray) = makeRArray();
-        if (master(object, RArray) != nullPtr) {
+        if (master(object, RArray) != nil) {
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
-            if(master(object, RCompareDelegate) != nullPtr) {
+            if(master(object, RCompareDelegate) != nil) {
                 // overload delegate function
                 master(object, RCompareDelegate)->virtualCompareMethod = m(compareWith, RClassNamePair);
             } else {
@@ -51,7 +51,7 @@ destructor(RClassTable) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RCT destructor of %p\n", object);
 #endif
-    if (object != nullPtr) {
+    if (object != nil) {
         // destructor for RArray
         $(master(object, RArray), d(RArray)));
         deallocator(master(object, RArray));
@@ -63,11 +63,11 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
-    if(name != nullPtr) {
+    if(name != nil) {
         register size_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
         if(result == 0) {
-            RClassNamePair *pair = $(nullPtr, c(RClassNamePair)));
-            if (pair != nullPtr) {
+            RClassNamePair *pair = $(nil, c(RClassNamePair)));
+            if (pair != nil) {
                 $(master(pair, RCString), m(setConstantString, RCString)), name);
                 pair->idForClassName = master(object, RArray)->count;
 
@@ -80,15 +80,15 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
                 } else {
                     return 0;
                 }
-            // alloc error
             } else {
+                RError("RCT. Allocation of pair error", object);
                 return 0;
             }
         } else {
             return result;
         }
     } else {
-        RWarning("RCT. Register classname is nullPtr, do nothig, please remove function call, or fix it.", object);
+        RWarning("RCT. Register classname is nil, do nothig, please remove function call, or fix it.", object);
         return 0;
     }
 }
@@ -105,13 +105,13 @@ printer(RClassTable) {
 }
 
 method(size_t, getIdentifierByClassName, RClassTable), char *name) {
-    RClassNamePair *pair = $(nullPtr, c(RClassNamePair)));
+    RClassNamePair *pair = $(nil, c(RClassNamePair)));
     $(master(pair, RCString), m(setConstantString, RCString)), name);
 
     master(object, RCompareDelegate)->etaloneObject = pair;
 
     RFindResult foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-    if(foundedObject.object == nullPtr){
+    if(foundedObject.object == nil){
         return 0;
     } else {
         return ((RClassNamePair*)foundedObject.object)->idForClassName;
@@ -120,11 +120,11 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
 
 singleton(RClassTable) {
     static RClassTable *instance;
-    if (instance == nullPtr) {
+    if (instance == nil) {
 #if RAY_SHORT_DEBUG == 1
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
 #endif
-        instance = $(nullPtr, c(RClassTable)));
+        instance = $(nil, c(RClassTable)));
         // register classes on that  RClassTable was built (only our singleton)
         $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
         $(instance, m(registerClassWithName, RClassTable)), toString(RCString));

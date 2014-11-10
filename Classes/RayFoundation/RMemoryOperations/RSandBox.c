@@ -16,7 +16,7 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
     RMallocPtr = innerMallocPtr;
 
     object = RAlloc(sizeof(RSandBox));
-    if(object != nullPtr) {
+    if(object != nil) {
         object->classId               = registerClassOnce(toString(RSandBox));
         object->descriptorTable       = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
         object->memPart               = makeRByteArray(sizeOfMemory);
@@ -25,7 +25,7 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
         object->innerMallocPtr        = innerMallocPtr;
         object->innerFreePtr          = innerFreePtr;
         object->allocationMode        = RSandBoxAllocationModeRandom;
-        object->rangeGenerator        = nullPtr;
+        object->rangeGenerator        = nil;
     }
 
     // switch to old
@@ -65,8 +65,8 @@ printer(RSandBox) {
 }
 
 singleton(RSandBox) {
-    static RSandBox *instance = nullPtr;
-    if(instance == nullPtr) {
+    static RSandBox *instance = nil;
+    if(instance == nil) {
         $(instance, c(RSandBox)), 8192, 128, RTrueMalloc, RTrueFree);
     }
     return instance;
@@ -94,7 +94,7 @@ method(void, addFilledRange, RSandBox), RRange range) {
 }
 
 method(size_t, sizeForPointer, RSandBox), pointer ptr) {
-    __darwin_ptrdiff_t shift = ptr - (pointer)(object->memPart->array);
+    long shift = ptr - (pointer)(object->memPart->array);
     if(shift < 0) {
         RError("Pointer wasn't allocated with sandBox.", object);
         return 0;
@@ -177,13 +177,13 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         revertPtrs();
         if(placeToAlloc.from + sizeInBytes > object->memPart->size) {
             RError("RSB. Not enought memory", object);
-            return nullPtr;
+            return nil;
         } else {
             return object->memPart->array + placeToAlloc.from;
         }
     } else {
         RError("RSB. Not enought descriptors", object);
-        return nullPtr;
+        return nil;
     }
 }
 

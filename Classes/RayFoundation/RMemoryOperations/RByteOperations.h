@@ -27,7 +27,7 @@ endOf(RByteArray)
 // Memory operations
 void           Xor (const pointer data,       // ATTENTION! for all operations:
                     const pointer key,        // returns dynamically allocated buffer
-                          size_t  sizeOfData, // or nullPtr if allocation fails
+                          size_t  sizeOfData, // or nil if allocation fails
                           size_t  sizeOfKey); // all sizes are in bytes
 
 void           Add (const pointer data,
@@ -41,13 +41,12 @@ void           Sub (const pointer data,
                           size_t  sizeOfKey);
 
 // Basics
-byte*          makeByteArray              (size_t size);
 byte*          flushAllToByte             (byte *array,       size_t size, byte symbol); // not copy
 void           printByteArrayInHex        (const byte *array, size_t size);
 byte*          getByteArrayCopy           (const byte *array, size_t size);
 byte*          getSubArray                (const byte *array, RRange range );            // sub-array copy
-RByteArray*    getSubArrayToFirstSymbol   (const byte *array, size_t size, byte symbol); // sub-array copy, or nullPtr
-RArray*        getArraysSeparatedBySymbol (const byte *array, size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nullPtr
+RByteArray*    getSubArrayToFirstSymbol   (const byte *array, size_t size, byte symbol); // sub-array copy, or nil
+RArray*        getArraysSeparatedBySymbol (const byte *array, size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nil
 
 // RByteArray
 constructor (RByteArray), size_t size);
@@ -59,8 +58,8 @@ method(RByteArray*, copy,           RByteArray));
 method(RByteArray*, fromRCString,   RByteArray),    RCString *string);
 
 
-#define makeRByteArray(size)           $(nullPtr, c(RByteArray)), size)
-#define makeFlushedBytes(size, symbol) flushAllToByte(makeByteArray(size), size, symbol)
+#define makeRByteArray(size)           $(nil, c(RByteArray)), size)
+#define makeFlushedBytes(size, symbol) flushAllToByte(RAlloc(size), size, symbol)
 #define RBfromRCS(string)              $(makeRByteArray(string->size), m(fromRCString, RByteArray)), string)
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

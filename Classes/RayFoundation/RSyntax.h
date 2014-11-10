@@ -19,8 +19,6 @@
 #ifndef __R_SYNTAX_H__
 #define __R_SYNTAX_H__
 
-#define RAY_SHORT_DEBUG 451
-
 #include "RayCheckFoundation.h"
 #include "RColors.h"
 #include "RayBase.h"
@@ -54,7 +52,7 @@ typedef byte    rbool;
 #define yes                                               ((rbool)1)
 #define no                                                ((rbool)0)
 
-#define nullPtr                                           ((pointer)0)
+#define nil                                               ((pointer)0)
 
 // declarations
 #define class(className)                                  typedef struct className { \

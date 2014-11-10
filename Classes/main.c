@@ -1,7 +1,6 @@
 /**
  * main.c
  * Ray additions test.
- * C additions like dynamic array.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
@@ -11,9 +10,9 @@
 pointer mySandBoxAlloc(size_t size);
 
 RSandBox* mySingleton(void) {
-    static RSandBox *instance = nullPtr;
-    if(instance == nullPtr) {
-        instance = $(NULL, c(RSandBox)), 4096, 100, RTrueMalloc, RTrueFree);
+    static RSandBox *instance = nil;
+    if(instance == nil) {
+        instance = $(nil, c(RSandBox)), 4096, 100, RTrueMalloc, RTrueFree);
         instance->innerMallocPtr = mySandBoxAlloc;
 //        instance->allocationMode = RSandBoxAllocationModeStandart;
     }
@@ -37,55 +36,70 @@ pointer emptyRealloc(pointer ptr, size_t size) {
     return newBuffer;
 }
 
-void RByteArrayTest() {
-    for(size_t i = 0; i < 1024; ++i) {
-        RByteArray *array = makeRByteArray(i);
-        if(i == 9999) {
-            $(array, p(RByteArray)) );
-        }
-        $(array, d(RByteArray)) );
-        deallocator(array);
-    }
-}
+
 
 int main(int argc, const char *argv[]) {
     initPointers();
-//    RReallocPtr = emptyRealloc;
-//
-//    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
-//
-//    RPrintCurrentSystem();
-//    RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
-//    const size_t size = 70;
-//    size_t iterator;
-//
-//    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
-//    RArray *array = $(nullPtr, c(RArray)), nullPtr); // leaks
-//    forAll(iterator, size) {
-//        addObjectToRA(array, iterator);
-//    }
-//    printRA(array);
-//    $(array, m(sizeToFit, RArray)));
-//    RPrintf("Sadbox ptr - %p\n", mySingleton());
-////    RByteArray *key2 = RBfromRCS(RS("Hello misha it's my new key ololo")); // error on array print if in sandbox declare
-//    $(mySingleton(), m(XorCrypt, RSandBox)), key); //key2);
-//    RPrintf("Sadbox ptr - %p\n", mySingleton());
-//    $(mySingleton(), m(XorDecrypt, RSandBox)), key); //key2);
-//
-//    printRA(array); // error here if key2
-//
-//    disableSandBoxMalloc();         // disable sandbox
-//
-//
-//    $(mySingleton(), p(RSandBox)) );
-//    $(mySingleton(), d(RSandBox)) );
-    RByteArrayTest();
+    RBuffer *buffer = $(nil, c(RBuffer)));
+    $(buffer, m(addData, RBuffer)), "Hello", sizeof("Hello"));
+    $(buffer, p(RBuffer)) );
+    $(buffer, d(RBuffer)) );
+    deallocator(buffer);
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
+
+void SandBoxTest() {
+    initPointers();
+    RReallocPtr = emptyRealloc;
+
+    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
+
+    RPrintCurrentSystem();
+    RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
+    const size_t size = 70;
+    size_t iterator;
+
+    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
+    RArray *array = $(nil, c(RArray)), nil); // leaks
+    forAll(iterator, size) {
+        addObjectToRA(array, iterator);
+    }
+    printRA(array);
+    $(array, m(sizeToFit, RArray)));
+    RPrintf("Sadbox ptr - %p\n", mySingleton());
+//    RByteArray *key2 = RBfromRCS(RS("Hello misha it's my new key ololo")); // error on array print if in sandbox declare
+    $(mySingleton(), m(XorCrypt, RSandBox)), key); //key2);
+    RPrintf("Sadbox ptr - %p\n", mySingleton());
+    $(mySingleton(), m(XorDecrypt, RSandBox)), key); //key2);
+
+    printRA(array); // error here if key2
+
+    disableSandBoxMalloc();         // disable sandbox
+
+
+    $(mySingleton(), p(RSandBox)) );
+    $(mySingleton(), d(RSandBox)) );
+}
+
+void RByteArrayTest() {
+    size_t i;
+    size_t j;
+    for(i = 0; i < 1024; ++i) {
+        RByteArray *array = makeRByteArray(i);
+        if(i == 1023) {
+            for(j = 0; j < 1024; ++j) {
+                array->array[j] = (byte) j;
+            }
+            $(array, p(RByteArray)) );
+        }
+        $(array, d(RByteArray)) );
+        deallocator(array);
+    }
+}
 
 void StringDictionaryTest() {
     RStringDictionary *stringDictionary = makeRStringDictionary();
@@ -100,7 +114,7 @@ void BRFinterpreter() {
     char *code = RAlloc(1000);
     RPrintf("Input some brainfuck code:\n");
     RScanf("%1000s", code);
-    if(code != nullPtr) {
+    if(code != nil) {
         RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
                 RS(code));
 
@@ -165,7 +179,7 @@ void StringDictionaryTest() {
     RCString *key = RS("Veider");
 
     // create dictionary
-    RStringDictionary *dictionary = $(nullPtr, c(RStringDictionary)) );
+    RStringDictionary *dictionary = $(nil, c(RStringDictionary)) );
 
     // fill dictionary with some object-keys,
     // use RSC, cause we need copies of constant,
@@ -184,7 +198,7 @@ void StringDictionaryTest() {
 
     // find some object for key
     RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
-    if(object != nullPtr) {
+    if(object != nil) {
         RPrintf("Found something for key : %s is value: %s\n", key->baseString, object->baseString);
     }
 
@@ -274,7 +288,7 @@ void RClassTableTest(void){
 }
 
 void RClassNamePairTest(void){
-    RClassNamePair *pair = $(nullPtr, c(RClassNamePair)) );
+    RClassNamePair *pair = $(nil, c(RClassNamePair)) );
 
     pair->className = toString(RClassNamePair);
     pair->idForClassName = 4;
@@ -344,7 +358,7 @@ void RDynamicArrayTest2(void){
     printRA(dynamicArray);
 
     // get sub-arrays, there will be two errorrs logged in console,
-    // and subarray will consist two last elements like nullPtr
+    // and subarray will consist two last elements like nil
     RArray *sub = $(dynamicArray, m(getSubarray, RArray)), 1, 11);
     printRA(sub);
 

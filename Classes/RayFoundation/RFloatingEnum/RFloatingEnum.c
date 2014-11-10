@@ -19,10 +19,10 @@
 constructor (RFloatingEnum), pointer (*nextElementForCode)(pointer), RRange range) {
     pointer iterator;
     object = allocator(RFloatingEnum);
-    if(object != nullPtr && nextElementForCode != nullPtr) {
+    if(object != nil && nextElementForCode != nil) {
         master(object, RDictionary) = makeRDictionary();
 
-        if(master(object, RDictionary) != nullPtr) {
+        if(master(object, RDictionary) != nil) {
             object->classId            = registerClassOnce(toString(RFloatingEnum));
             object->nextElementForCode = nextElementForCode;
             object->isChangesAfterCall = 0;
@@ -36,10 +36,10 @@ constructor (RFloatingEnum), pointer (*nextElementForCode)(pointer), RRange rang
 }
 
 destructor(RFloatingEnum) {
-    if(object != nullPtr) {
+    if(object != nil) {
         deleteRD(master(object, RDictionary));
     } else {
-        RPrintf("ERROR. RFE. Destruct nullPtr!\n");
+        RPrintf("ERROR. RFE. Destruct nil!\n");
     }
 }
 
@@ -77,7 +77,7 @@ method(void, changesAfterCall,  RFloatingEnum), byte flag) {
 
 method(void, rebase, RFloatingEnum)) {
     pointer iterator;
-    if(object->nextElementForCode != nullPtr) {
+    if(object->nextElementForCode != nil) {
         $(master(object, RDictionary)->values, m(flush, RArray)) );
         // rebase only values array
         forAll(iterator, master(object, RDictionary)->keys->count) {

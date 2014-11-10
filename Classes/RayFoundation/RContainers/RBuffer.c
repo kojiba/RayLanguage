@@ -19,15 +19,15 @@
 
 constructor(RBuffer)) {
     object = allocator(object);
-    if(object != nullPtr) {
+    if(object != nil) {
         // allocation of buffer
         master(object, RByteArray) = makeRByteArray(startSizeOfRBufferDefault);
-        if(master(object, RByteArray) != nullPtr) {
+        if(master(object, RByteArray) != nil) {
 
             // allocation of sizes array
             object->sizesArray = RAlloc(sizeof(size_t) * sizeOfObjectsOfRBufferDefault);
 
-            if(object->sizesArray != NULL) {
+            if(object->sizesArray  != nil) {
                 object->classId     = registerClassOnce(toString(RBuffer));
                 object->freePlaces  = startSizeOfRBufferDefault;
                 object->count       = 0;
@@ -76,7 +76,7 @@ printer(RBuffer) {
 
 method(size_t*, addSizeToSizes, RBuffer), size_t newSize) {
     object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(size_t));
-    if(object->sizesArray != nullPtr) {
+    if(object->sizesArray != nil) {
         // add free places
         object->freePlaces = newSize - object->count;
     }
@@ -85,7 +85,7 @@ method(size_t*, addSizeToSizes, RBuffer), size_t newSize) {
 
 method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
     master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, newSize);
-    if(master(object, RByteArray)->array != nullPtr) {
+    if(master(object, RByteArray)->array != nil) {
         // set newSize
         master(object, RByteArray)->size = newSize;
     }
@@ -139,8 +139,8 @@ method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
         $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault);
     }
 
-    if(master(object, RByteArray)->array != nullPtr
-            && object->sizesArray != nullPtr) {
+    if(master(object, RByteArray)->array != nil
+            && object->sizesArray != nil) {
 
         // add object
         RMemMove(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
@@ -153,10 +153,10 @@ method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
 }
 
 method(pointer, getDataCopy, RBuffer), size_t index) {
-    byte *result = nullPtr;
+    byte *result = nil;
     if(index < object->count) {
         result = RAlloc(object->sizesArray[index]);
-        if (result != nullPtr) {
+        if (result != nil) {
             size_t shift = $(object, m(shiftForPlace, RBuffer)), index);
             RMemMove(result, master(object, RByteArray)->array + shift, object->sizesArray[index]);
         }

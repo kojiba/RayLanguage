@@ -31,7 +31,7 @@ printer     (RStringDictionary);
 method(void,     setObjectForKey, RStringDictionary),    pointer value, RCString *key); // must be copies, use RSC, or RCString copy
 method(pointer,  getObjectForKey, RStringDictionary),    RCString *key);                // return POINTER, NOT COPY, be aware!
 
-#define makeRStringDictionary()       $(nullPtr, c(RStringDictionary)) )
+#define makeRStringDictionary()       $(nil, c(RStringDictionary)) )
 #define deleteRStringDictionary(dict) $(dict, d(RStringDictionary)) ); deallocator(dict)
 
 #endif /*__R_STRING_DICTIONARY_H__*/

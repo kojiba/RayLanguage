@@ -90,12 +90,13 @@ method(void,               sort,                      RArray));
 // work
 method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
 method(static inline byte, checkIfIndexIn,            RArray),    size_t index);
+
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);
 
 //----------------------------------------------------------------------------------
 
-#define makeRArray()                          $(nullPtr, c(RArray)), nullPtr)
+#define makeRArray()                          $(nil, c(RArray)), nil)
 #define deleteRA(dynamicArray)                $(dynamicArray, d(RArray))); \
                                               deallocator(dynamicArray)
 #define printRA(dynamicArray)                 $(dynamicArray, p(RArray)))

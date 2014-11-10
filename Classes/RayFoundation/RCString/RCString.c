@@ -61,7 +61,7 @@ RCString *randomRCString(void) {
     }
 
     cstring = RAlloc(size * sizeof(char));
-    if(cstring != nullPtr) {
+    if(cstring != nil) {
         forAll(iterator, size - 1){
             cstring[iterator] = randomCharacter();
         }
@@ -77,11 +77,11 @@ RCString *randomRCString(void) {
 
 constructor(RCString)) {
     object = allocator(RCString);
-    if(object != nullPtr) {
+    if(object != nil) {
         // 1 - it's for RCString
         object->classId    = 1;
         object->size       = 0;
-        object->baseString = nullPtr;
+        object->baseString = nil;
     }
     return object;
 }
@@ -96,7 +96,7 @@ printer(RCString) {
 }
 
 method(void, flush, RCString)) {
-    if(object->size != 0 && object->baseString != nullPtr) {
+    if(object->size != 0 && object->baseString != nil) {
         deallocator(object->baseString);
         object->size = 0;
     }
@@ -105,19 +105,19 @@ method(void, flush, RCString)) {
 #pragma mark Setters
 
 method(RCString *, setString, RCString), const char *string) {
-    if(string != nullPtr) {
+    if(string != nil) {
         register size_t stringSize = RStringLenght(string) + 1;
 
         // checking, if exist and size like copying
-        if(object->baseString == nullPtr) {
+        if(object->baseString == nil) {
             object->baseString = RAlloc(stringSize * sizeof(char));
 
         } else if(object->size < stringSize) {
             object->baseString = RReAlloc(object->baseString, stringSize * sizeof(char));
         }
 
-        if(object->baseString == nullPtr) {
-            RError("RCS. SetString alloc or realloc returned nullPtr.", object);
+        if(object->baseString == nil) {
+            RError("RCS. SetString alloc or realloc returned nil.", object);
         }
 
         // final copying
@@ -131,7 +131,7 @@ method(RCString *, setString, RCString), const char *string) {
 }
 
 method(RCString *, setConstantString, RCString), char const *string) {
-    if(string != nullPtr) {
+    if(string != nil) {
         // copy pointer, and compute length
         object->baseString = string;
         object->size       = RStringLenght(string);
@@ -154,8 +154,8 @@ method(void, replaceCharacters, RCString), char characterToReplace, char replace
 }
 
 method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replacer) {
-    if(toReplace != nullPtr
-            && replacer != nullPtr
+    if(toReplace != nil
+            && replacer != nil
             && toReplace->size != 0
             && replacer->size  != 0
             && toReplace->size <= object->size) {
@@ -282,7 +282,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     register byte flag = 1;
 
     if(substring->size != 0
-            || substring->baseString == nullPtr) {
+            || substring->baseString == nil) {
         forAll(iterator, object->size - substring->size) {
 
             // compare to substring
@@ -310,9 +310,9 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
         }
         return object;
     } else {
-        RWarning("RCS. Substring size is 0, or, substring is nullPtr.", object);
+        RWarning("RCS. Substring size is 0, or, substring is nil.", object);
     }
-    return nullPtr;
+    return nil;
 }
 
 method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
@@ -416,14 +416,14 @@ method(RCString *, substringInRange, RCString), RRange range) {
         RMemMove(cstring, object->baseString + range.from, range.count);
         cstring[range.count] = 0;
 
-        RCString *rcString   = $(nullPtr, c(RCString)) );
+        RCString *rcString   = $(nil, c(RCString)) );
         rcString->size       = range.count;
         rcString->baseString = cstring;
 
         return rcString;
     } else {
         RError("RCS. BAD RANGE!\n", object);
-        return nullPtr;
+        return nil;
     }
 
 }
@@ -433,28 +433,28 @@ method(RCString *, substringToSymbol, RCString), char symbol) {
     if(index != object->size) {
         return $(object, m(substringInRange, RCString)), makeRRange(0, index));
     } else {
-        return nullPtr;
+        return nil;
     }
 }
 
 method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     // store value of original pointers and size
     RCString tempObject = *object;
-    RArray   *result    =  nullPtr;
+    RArray   *result    =  nil;
     RCString *string    = $(object, m(substringToSymbol, RCString)), symbol);
 
-    if(string != nullPtr) {
+    if(string != nil) {
         result = makeRArray();
         result->destructorDelegate = d(RCString);
         result->printerDelegate    = p(RCString);
     }
 
-    while(string != nullPtr) {
+    while(string != nil) {
         $(result, m(addObject, RArray)), string);
         object->baseString += string->size + 1;
         object->size       -= string->size + 1;
         string = $(object, m(substringToSymbol, RCString)), symbol);
-        if(string == nullPtr) {
+        if(string == nil) {
             $(result, m(addObject, RArray)), $(object, m(copy, RCString))) );
         }
     }
@@ -462,7 +462,7 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     // restore original pointers and size
     *object = tempObject;
     // size to fit RArray
-    if(result != nullPtr) {
+    if(result != nil) {
         $(result, m(sizeToFit, RArray)) );
     }
     return result;
@@ -473,12 +473,12 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
     register size_t  endOfSubstring   = 0;
     register size_t  startOfSubstring = 0;
     register byte      isFirst          = 1;
-             RArray   *result           =  nullPtr;
+             RArray   *result           =  nil;
              RCString *substring;
 
-    if(separatorsString != nullPtr
+    if(separatorsString != nil
             && separatorsString->size != 0
-            && object != nullPtr
+            && object != nil
             && object->size != 0) {
 
         forAll(iterator, object->size) {
@@ -488,7 +488,7 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
                     // if first separator set end
                     endOfSubstring = iterator;
                     isFirst = 0;
-                    if(result == nullPtr) {
+                    if(result == nil) {
                         result = makeRArray();
                         // set-up delegates
                         result->printerDelegate    = p(RCString);
@@ -510,14 +510,14 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
         }
 
         // if we found some
-        if(result != nullPtr) {
+        if(result != nil) {
             // if last it is not separator
             if(endOfSubstring < object->size) {
                 endOfSubstring = object->size;
             }
             // add last and sizeToFit
             substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
-            if(substring != nullPtr) {
+            if(substring != nil) {
                 addObjectToRA(result, substring);
             }
             $(result, m(sizeToFit, RArray)) );
@@ -542,7 +542,7 @@ method(RCString *, copy, RCString)) {
 
 method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     static size_t iterator;
-    if(checkString == nullPtr || object == nullPtr) {
+    if(checkString == nil || object == nil) {
         RWarning("RCS. One of compare strings is empty, please delete function call, or fix it.", object);
         return not_equals;
     } else {
@@ -575,7 +575,7 @@ method(void, fromFile, RCString), const RCString *filename) {
     char *buffer;
     long fileSize;
 
-    if(file != nullPtr) {
+    if(file != nil) {
         RFSeek(file, 0, SEEK_END);
         fileSize = RFTell(file);
         RRewind(file);
@@ -591,9 +591,9 @@ method(void, fromFile, RCString), const RCString *filename) {
 #pragma mark Concatenate
 
 method(void, concatenate, RCString), const RCString *string) {
-    if(string->size != 0 && string->baseString != nullPtr) {
+    if(string->size != 0 && string->baseString != nil) {
         object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
-        if(object->baseString == nullPtr) {
+        if(object->baseString == nil) {
             RError("RCS. Concatenate realloc error.", object);
         } else {
             RMemMove(object->baseString + object->size, string->baseString, string->size);

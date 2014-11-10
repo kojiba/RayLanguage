@@ -18,30 +18,30 @@
 
 #pragma mark Memory Operations
 
-void    Xor(const pointer data,
-            const pointer key,
-                  size_t  sizeOfData,
-                  size_t  sizeOfKey) {
+void Xor(const pointer data,
+         const pointer key,
+               size_t  sizeOfData,
+               size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
     }
 }
 
-void    Add(const pointer data,
-            const pointer key,
-                  size_t  sizeOfData,
-                  size_t  sizeOfKey) {
+void Add(const pointer data,
+         const pointer key,
+               size_t  sizeOfData,
+               size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
     }
 }
 
-void    Sub(const pointer data,
-        const pointer key,
-        size_t  sizeOfData,
-        size_t  sizeOfKey) {
+void Sub(const pointer data,
+         const pointer key,
+               size_t  sizeOfData,
+               size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
@@ -49,10 +49,6 @@ void    Sub(const pointer data,
 }
 
 #pragma mark Basics
-
-byte* makeByteArray(size_t size) {
-    return RAlloc(size);
-}
 
 byte* flushAllToByte(byte *array, size_t size, byte symbol) {
     size_t iterator;
@@ -63,7 +59,7 @@ byte* flushAllToByte(byte *array, size_t size, byte symbol) {
 }
 
 void printByteArrayInHex(const byte *array, size_t size) {
-    if(array != nullPtr) {
+    if(array != nil) {
         size_t iterator;
         forAll(iterator, size) {
             if (iterator % 20 == 0 && iterator != 0) {
@@ -90,7 +86,7 @@ byte* getSubArray(const byte *array, RRange range) {
 }
 
 RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray *result   = nullPtr;
+    RByteArray *result   = nil;
     size_t    iterator = 0;
 
     while(array[iterator] != symbol
@@ -99,27 +95,27 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol
     }
 
     if(iterator != 0) {
-        result = $(nullPtr, c(RByteArray)), iterator);
+        result = $(nil, c(RByteArray)), iterator);
         RMemMove(result->array, array, iterator);
     }
     return result;
 }
 
 RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray         *subArray    = nullPtr;
-    RArray             *resultArray = nullPtr;
+    RByteArray         *subArray    = nil;
+    RArray             *resultArray = nil;
     byte               *tempArray   = array;
 
     subArray = getSubArrayToFirstSymbol(array, size, symbol);
 
-    if(subArray != nullPtr) {
+    if(subArray != nil) {
         resultArray = makeRArray();
         // init RArray
         resultArray->destructorDelegate = d(RByteArray);
         resultArray->printerDelegate    = p(RByteArray);
     }
 
-    while(subArray != nullPtr && size > 0) {
+    while(subArray != nil && size > 0) {
         addObjectToRA(resultArray, subArray);
         size = size - subArray->size - 1;
         tempArray += subArray->size + 1;
@@ -127,7 +123,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
     }
 
     // size to fit RArray
-    if(resultArray != nullPtr) {
+    if(resultArray != nil) {
         $(resultArray, m(sizeToFit, RArray)) );
     }
     return resultArray;
@@ -137,29 +133,31 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
 
 constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
-    if(object != nullPtr) {
-        object->array   = makeByteArray(size);
-        if(object->array != nullPtr) {
-            object->size = size;
+    if(object != nil) {
+        object->array = RAlloc(size);
+        if(object->array != nil) {
             object->classId = registerClassOnce(toString(RByteArray));
+            object->size    = size;
         } else {
             RError("RBA. Array allocation failed", object);
-            return nullPtr;
+            return nil;
         }
     }
     return object;
 }
 
 destructor(RByteArray) {
-    if(object != nullPtr) {
+    if(object != nil) {
         RFree(object->array);
     } else {
-        RPrintf("Warning. RBA. Destructor of nullPtr.\n");
+        RPrintf("Warning. RBA. Destructor of nil.\n");
     }
 }
 
 printer(RByteArray) {
+    RPrintf("%s object - %p {\n", toString(RByteArray), object);
     printByteArrayInHex(object->array, object->size);
+    RPrintf("} - %p \n\n", object);
 }
 
 method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
@@ -179,5 +177,5 @@ method(RByteArray*, fromRCString, RByteArray), RCString *string) {
         RMemMove(object->array, string->baseString, string->size);
         return object;
     }
-    return nullPtr;
+    return nil;
 }

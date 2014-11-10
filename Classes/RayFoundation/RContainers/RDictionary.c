@@ -18,7 +18,7 @@
 
 constructor(RDictionary)) {
     object = allocator(RDictionary);
-    if(object == nullPtr) {
+    if(object == nil) {
         RError("RD. Constructor allocation error.", object);
     } else {
         // set up class ID
@@ -26,29 +26,29 @@ constructor(RDictionary)) {
         object->keys    = makeRArray();
         object->values  = makeRArray();
 
-        if(object->keys == nullPtr
-                || object->values == nullPtr) {
+        if(object->keys == nil
+                || object->values == nil) {
             RPrintf("ERROR. RD. Allocation keys or values error.");
         } else {
-            object->values->destructorDelegate = nullPtr;
-            object->keys->destructorDelegate   = nullPtr;
-            object->values->printerDelegate    = nullPtr;
-            object->keys->printerDelegate      = nullPtr;
+            object->values->destructorDelegate = nil;
+            object->keys->destructorDelegate   = nil;
+            object->values->printerDelegate    = nil;
+            object->keys->printerDelegate      = nil;
 
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
-            master(object, RCompareDelegate)->virtualCompareMethod = nullPtr;
+            master(object, RCompareDelegate)->virtualCompareMethod = nil;
         }
     }
     return object;
 }
 
 destructor(RDictionary) {
-    if(object != nullPtr) {
+    if(object != nil) {
         deleteRA(object->keys);
         deleteRA(object->values);
         deallocator(master(object, RCompareDelegate));
     } else {
-        RWarning("Warning. RD. Destructing a nullPtr, do nothing, please delete function call, or fix it.", object);
+        RWarning("Warning. RD. Destructing a nil, do nothing, please delete function call, or fix it.", object);
     }
 }
 
@@ -62,7 +62,7 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
     RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
     // if object for key not exist
-    if(findResult.object == nullPtr){
+    if(findResult.object == nil){
         $(object->keys,   m(addObject, RArray)), key);    // adding
         $(object->values, m(addObject, RArray)), value);  // adding
 
@@ -76,10 +76,10 @@ method(pointer, getObjectForKey, RDictionary), pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
     RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
-    if(findResult.object != nullPtr) {
+    if(findResult.object != nil) {
         return $(object->values, m(elementAtIndex, RArray)), findResult.index);
     } else {
-        return nullPtr;
+        return nil;
     }
 }
 

@@ -20,7 +20,7 @@
 #include "../RSyntax.h"
 #include "../RMemoryOperations/RByteOperations.h"
 
-static const size_t startSizeOfRBufferDefault      = 1024; // 1mb of place
+static const size_t startSizeOfRBufferDefault      = 1024; // 1kb of place
 static const size_t sizeMultiplierOfRBufferDefault = 2;
 static const size_t sizeOfObjectsOfRBufferDefault  = 128;  // 128 sizes stores
 
