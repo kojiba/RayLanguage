@@ -40,12 +40,28 @@ pointer emptyRealloc(pointer ptr, size_t size) {
 
 int main(int argc, const char *argv[]) {
     initPointers();
-    RBuffer *buffer = $(nil, c(RBuffer)));
-    $(buffer, m(addData, RBuffer)), "Hello", sizeof("Hello"));
-    $(buffer, p(RBuffer)) );
-    $(buffer, d(RBuffer)) );
-    deallocator(buffer);
-
+//    size_t iterator;
+//    RBuffer *buffer = $(nil, c(RBuffer)));
+//    forAll(iterator, 10) {
+//        RCString *random = randomRCString();
+//        $(buffer, m(addData, RBuffer)), random, random->size);
+//    }
+//    $(buffer, p(RBuffer)) );
+//    $(buffer, d(RBuffer)) );
+//    deallocator(buffer);
+    size_t i;
+    size_t j;
+    for(i = 0; i < 1024; ++i) {
+        RByteArray *array = makeRByteArray(i);
+        if(i == 1023) {
+            for(j = 0; j < 1024; ++j) {
+                array->array[j] = (byte) j;
+            }
+            $(array, p(RByteArray)) );
+        }
+        $(array, d(RByteArray)) );
+        deallocator(array);
+    }
     return 0;
 }
 

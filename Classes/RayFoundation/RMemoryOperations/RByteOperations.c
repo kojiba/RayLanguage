@@ -134,7 +134,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
 constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
     if(object != nil) {
-        object->array = RAlloc(size);
+        object->array = RAlloc(size * sizeof(byte));
         if(object->array != nil) {
             object->classId = registerClassOnce(toString(RByteArray));
             object->size    = size;
@@ -147,11 +147,7 @@ constructor(RByteArray), size_t size) {
 }
 
 destructor(RByteArray) {
-    if(object != nil) {
-        RFree(object->array);
-    } else {
-        RPrintf("Warning. RBA. Destructor of nil.\n");
-    }
+    deallocator(object->array);
 }
 
 printer(RByteArray) {

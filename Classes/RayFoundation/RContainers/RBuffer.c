@@ -18,7 +18,7 @@
 #include "../RClassTable/RClassTable.h"
 
 constructor(RBuffer)) {
-    object = allocator(object);
+    object = allocator(RBuffer);
     if(object != nil) {
         // allocation of buffer
         master(object, RByteArray) = makeRByteArray(startSizeOfRBufferDefault);

@@ -17,7 +17,7 @@
 #ifndef __RAY_BASE_H__
 #define __RAY_BASE_H__
 
-#define RAY_SHORT_DEBUG 1//451
+#define RAY_SHORT_DEBUG 451
 
 #include <stdlib.h>
 #include <stdio.h>
