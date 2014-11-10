@@ -46,11 +46,11 @@ destructor(RFloatingEnum) {
 printer(RFloatingEnum) {
     size_t iterator;
     RPrintf("\n%s object %p: { \n", toString(RFloatingEnum), object);
-    RPrintf(" Count : %qu \n", master(object, RDictionary)->keys->count);
-    RPrintf(" Free  : %qu \n", master(object, RDictionary)->keys->freePlaces);
+    RPrintf(" Count : %lu \n", master(object, RDictionary)->keys->count);
+    RPrintf(" Free  : %lu \n", master(object, RDictionary)->keys->freePlaces);
     forAll(iterator, master(object, RDictionary)->keys->count) {
-        RPrintf("\t %qu - {", iterator);
-        RPrintf(" %qu : %qu } \n", $(master(object, RDictionary)->keys, m(elementAtIndex, RArray)), iterator),
+        RPrintf("\t %lu - {", iterator);
+        RPrintf(" %lu : %lu } \n", $(master(object, RDictionary)->keys, m(elementAtIndex, RArray)), iterator),
                 $(master(object, RDictionary)->values, m(elementAtIndex, RArray)), iterator) );
     }
     RPrintf("} end of %s object %p \n\n", toString(RFloatingEnum), object);

@@ -67,7 +67,7 @@ rbool isOverlapping(RRange first, RRange second) {
 }
 
 printer(RRange) {
-    RPrintf("[ %qu ; %qu ]", object->from, object->from + object->count);
+    RPrintf("[ %lu ; %lu ]", object->from, object->from + object->count);
 }
 
 

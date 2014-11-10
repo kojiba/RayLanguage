@@ -59,12 +59,12 @@ printer(RBuffer) {
     size_t iterator;
     size_t shift = 0;
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
-    RPrintf("\t Total   size : %qu (bytes)\n", master(object, RByteArray)->size);
-    RPrintf("\t Placed  size : %qu (bytes)\n", object->totalPlaced);
-    RPrintf("\t Count objcts : %qu\n", object->count);
-    RPrintf("\t Free  places : %qu\n", object->freePlaces);
+    RPrintf("\t Total   size : %lu (bytes)\n", master(object, RByteArray)->size);
+    RPrintf("\t Placed  size : %lu (bytes)\n", object->totalPlaced);
+    RPrintf("\t Free  places : %lu (bytes)\n", object->freePlaces);
+    RPrintf("\t Count objcts : %lu\n", object->count);
     forAll(iterator, object->count) {
-        RPrintf("\t\t %qu :\n", iterator);
+        RPrintf("\t\t %lu :\n", iterator);
         printByteArrayInHex(master(object, RByteArray)->array + shift, object->sizesArray[iterator]);
         shift += object->sizesArray[iterator];
         RPrintf("\n");
@@ -144,7 +144,7 @@ method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
 
         // add object
         RMemMove(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
-        object->sizesArray[object->totalPlaced] = sizeInBytes;
+        object->sizesArray[object->count] = sizeInBytes;
 
         object->totalPlaced += sizeInBytes;
         ++object->count;

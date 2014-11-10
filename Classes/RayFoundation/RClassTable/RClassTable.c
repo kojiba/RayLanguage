@@ -100,7 +100,7 @@ method(size_t, getNumberOfClasses, RClassTable)) {
 printer(RClassTable) {
     RPrintf("\n%s object %p: { \n", toString(RClassTable), object);
     $(master(object, RArray), p(RArray)));
-    RPrintf("\t\tTOTAL: %qu classes registered \n", master(object, RArray)->count);
+    RPrintf("\t\tTOTAL: %lu classes registered \n", master(object, RArray)->count);
     RPrintf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 

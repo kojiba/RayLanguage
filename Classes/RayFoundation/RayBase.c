@@ -2,14 +2,14 @@
 
 void* mallocFunc(size_t size) {
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("Ray malloc hook, size - %qu\n", size);
+    RPrintf("Ray malloc hook, size - %lu\n", size);
 #endif
     return RMallocPtr(size);
 }
 
 void* reallocFunc(void *ptr, size_t size) {
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("Ray realloc hook, ptr - %p, size - %qu\n", ptr, size);
+    RPrintf("Ray realloc hook, ptr - %p, size - %lu\n", ptr, size);
 #endif
     return RReallocPtr(ptr, size);
 }

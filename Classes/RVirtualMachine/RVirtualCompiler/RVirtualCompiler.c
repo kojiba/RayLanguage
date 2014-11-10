@@ -178,7 +178,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("Warning. RVC (BrainFuck). Undefined symbol on line: %qu, place: %qu !\n", object->lines, object->symbols);
+            RPrintf("Warning. RVC (BrainFuck). Undefined symbol on line: %lu, place: %lu !\n", object->lines, object->symbols);
         }
     }
 
@@ -207,7 +207,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         }
         $(object->code, d(RCString)) );
 
-        RPrintf("RVC. Brainfuck. Processed lines - %qu of %qu, in %qu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
+        RPrintf("RVC. Brainfuck. Processed lines - %lu of %lu, in %lu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug
         //  $(function, p(RVirtualFunction)) );
         return function;

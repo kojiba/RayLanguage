@@ -26,7 +26,7 @@ pointer mySandBoxAlloc(size_t size) {
 }
 
 pointer emptyRealloc(pointer ptr, size_t size) {
-    RPrintf("--- Realloc for %p, new size : %qu (bytes)\n", ptr, size);
+    RPrintf("--- Realloc for %p, new size : %lu (bytes)\n", ptr, size);
     size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
     if(oldSize == 0) {
         RError("Bad pointer", mySingleton());
@@ -36,32 +36,17 @@ pointer emptyRealloc(pointer ptr, size_t size) {
     return newBuffer;
 }
 
-
-
 int main(int argc, const char *argv[]) {
     initPointers();
-//    size_t iterator;
-//    RBuffer *buffer = $(nil, c(RBuffer)));
-//    forAll(iterator, 10) {
+    size_t iterator;
+    RBuffer *buffer = $(nil, c(RBuffer)));
+    forAll(iterator, 10) {
 //        RCString *random = randomRCString();
-//        $(buffer, m(addData, RBuffer)), random, random->size);
-//    }
-//    $(buffer, p(RBuffer)) );
-//    $(buffer, d(RBuffer)) );
-//    deallocator(buffer);
-    size_t i;
-    size_t j;
-    for(i = 0; i < 1024; ++i) {
-        RByteArray *array = makeRByteArray(i);
-        if(i == 1023) {
-            for(j = 0; j < 1024; ++j) {
-                array->array[j] = (byte) j;
-            }
-            $(array, p(RByteArray)) );
-        }
-        $(array, d(RByteArray)) );
-        deallocator(array);
+        $(buffer, m(addData, RBuffer)), &iterator, sizeof(size_t));
     }
+    $(buffer, p(RBuffer)) );
+    $(buffer, d(RBuffer)) );
+    deallocator(buffer);
     return 0;
 }
 
@@ -75,7 +60,7 @@ void SandBoxTest() {
     RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
 
     RPrintCurrentSystem();
-    RPrintf("Sizeof pointer - %qu\n", sizeof(pointer));
+    RPrintf("Sizeof pointer - %lu\n", sizeof(pointer));
     const size_t size = 70;
     size_t iterator;
 
@@ -298,7 +283,7 @@ void RClassTableTest(void){
     printRCTS;
 
     char *checkName = "Han Solo";
-    RPrintf("Identifier of %s is - %qu \n", checkName, registerClassOnce(checkName));
+    RPrintf("Identifier of %s is - %lu \n", checkName, registerClassOnce(checkName));
 
     tickRClock();
 }

@@ -59,18 +59,14 @@ byte* flushAllToByte(byte *array, size_t size, byte symbol) {
 }
 
 void printByteArrayInHex(const byte *array, size_t size) {
-    if(array != nil) {
-        size_t iterator;
-        forAll(iterator, size) {
-            if (iterator % 20 == 0 && iterator != 0) {
-                RPrintf("\n");
-            }
-            RPrintf("%02x ", array[iterator]);
+    size_t iterator;
+    forAll(iterator, size) {
+        if (iterator % 20 == 0 && iterator != 0) {
+            RPrintf("\n");
         }
-        RPrintf("\n");
-    } else {
-        RPrintf("Empty byte array.\n");
+        RPrintf("%02X ", array[iterator]);
     }
+    RPrintf("\n");
 }
 
 byte* getByteArrayCopy(const byte *array, size_t size) {

@@ -30,7 +30,7 @@ destructor(RClassNamePair) {
 }
 
 printer(RClassNamePair) {
-    RPrintf("%p , { %qu : %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
+    RPrintf("%p , { %lu : %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
 }
 
 method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {

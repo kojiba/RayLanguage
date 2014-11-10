@@ -47,10 +47,10 @@ destructor(RStringDictionary) {
 printer(RStringDictionary) {
     size_t iterator;
     RPrintf("\n%s object %p: { \n", toString(RStringDictionary), object);
-    RPrintf(" Count : %qu \n", master(object, RDictionary)->keys->count);
-    RPrintf(" Free  : %qu \n", master(object, RDictionary)->keys->freePlaces);
+    RPrintf(" Count : %lu \n", master(object, RDictionary)->keys->count);
+    RPrintf(" Free  : %lu \n", master(object, RDictionary)->keys->freePlaces);
     forAll(iterator, master(object, RDictionary)->keys->count) {
-        RPrintf("\t %qu - {", iterator);
+        RPrintf("\t %lu - {", iterator);
         RCString *key   = $(master(object, RDictionary)->keys, m(elementAtIndex, RArray)), iterator);
         RCString *value = $(master(object, RDictionary)->values, m(elementAtIndex, RArray)), iterator);
         RPrintf(" %s : %s } \n", key->baseString, value->baseString);
