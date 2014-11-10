@@ -29,7 +29,7 @@ constructor(RBuffer)) {
 
             if(object->sizesArray  != nil) {
                 object->classId     = registerClassOnce(toString(RBuffer));
-                object->freePlaces  = startSizeOfRBufferDefault;
+                object->freePlaces  = sizeOfObjectsOfRBufferDefault;
                 object->count       = 0;
                 object->totalPlaced = 0;
             } else {
@@ -61,10 +61,10 @@ printer(RBuffer) {
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
     RPrintf("\t Total   size : %lu (bytes)\n", master(object, RByteArray)->size);
     RPrintf("\t Placed  size : %lu (bytes)\n", object->totalPlaced);
-    RPrintf("\t Free  places : %lu (bytes)\n", object->freePlaces);
+    RPrintf("\t Free  places : %lu\n", object->freePlaces);
     RPrintf("\t Count objcts : %lu\n", object->count);
     forAll(iterator, object->count) {
-        RPrintf("\t\t %lu :\n", iterator);
+        RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator]);
         printByteArrayInHex(master(object, RByteArray)->array + shift, object->sizesArray[iterator]);
         shift += object->sizesArray[iterator];
         RPrintf("\n");
@@ -134,7 +134,7 @@ method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
         $(object, m(addSizeToSizes, RBuffer)), object->count * sizeMultiplierOfRBufferDefault);
     }
 
-    if(object->totalPlaced == master(object, RByteArray)->size) {
+    if(sizeInBytes > master(object, RByteArray)->size - object->totalPlaced) {
         // add free to buffer
         $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault);
     }

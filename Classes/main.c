@@ -40,9 +40,9 @@ int main(int argc, const char *argv[]) {
     initPointers();
     size_t iterator;
     RBuffer *buffer = $(nil, c(RBuffer)));
-    forAll(iterator, 10) {
-//        RCString *random = randomRCString();
-        $(buffer, m(addData, RBuffer)), &iterator, sizeof(size_t));
+    forAll(iterator, 129) {
+        RCString *random = randomRCString();
+        $(buffer, m(addData, RBuffer)), random->baseString, random->size);
     }
     $(buffer, p(RBuffer)) );
     $(buffer, d(RBuffer)) );
