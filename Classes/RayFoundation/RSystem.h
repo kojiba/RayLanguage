@@ -19,7 +19,7 @@
 // Bit architecture
 #if UINTPTR_MAX == 0xffffffff
     #define R32BIT
-    #define RSystemBitVersion = "32-bit ";
+    #define RSystemBitVersion "32-bit "
 #else
     #define R64BIT
     #define RSystemBitVersion "64-bit "

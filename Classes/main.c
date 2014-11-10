@@ -12,9 +12,9 @@ pointer mySandBoxAlloc(size_t size);
 RSandBox* mySingleton(void) {
     static RSandBox *instance = nil;
     if(instance == nil) {
-        instance = $(nil, c(RSandBox)), 4096, 100, RTrueMalloc, RTrueFree);
+        instance = $(nil, c(RSandBox)), 4096, 128, RTrueMalloc, RTrueFree);
         instance->innerMallocPtr = mySandBoxAlloc;
-//        instance->allocationMode = RSandBoxAllocationModeStandart;
+        instance->allocationMode = RSandBoxAllocationModeStandart;
     }
     return instance;
 }
@@ -38,15 +38,23 @@ pointer emptyRealloc(pointer ptr, size_t size) {
 
 int main(int argc, const char *argv[]) {
     initPointers();
+    RReallocPtr = emptyRealloc;
+    RPrintCurrentSystem();
+    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
+
     size_t iterator;
     RBuffer *buffer = $(nil, c(RBuffer)));
-    forAll(iterator, 129) {
+    forAll(iterator, 10) {
         RCString *random = randomRCString();
         $(buffer, m(addData, RBuffer)), random->baseString, random->size);
     }
     $(buffer, p(RBuffer)) );
     $(buffer, d(RBuffer)) );
     deallocator(buffer);
+
+    disableSandBoxMalloc();
+    $(mySingleton(), p(RSandBox)) );
+    $(mySingleton(), d(RSandBox)) );
     return 0;
 }
 

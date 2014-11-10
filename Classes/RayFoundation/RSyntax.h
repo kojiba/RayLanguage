@@ -72,12 +72,14 @@ typedef byte    rbool;
 #define printer(className)                                void concatenate(printerOf,className) (className *object)
 #define singleton(className)                              className* concatenate(singletonOf,className)(void)
 #define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
+#define virtualmethod(returnValue, methodName, className) returnValue (*concatenate(methodName, className))(className *object
+#define linkMethod(methodName)                            concatenate(methodName, className) = concatenate(methodName, className)
 
 // calls
 #define c(className)                                      concatenate(constructorOf, className)                                  // constructor function name
-#define d(className)                                      concatenate(destructorOf, className)                                   // destructor function name
-#define p(className)                                      concatenate(printerOf, className)                                      // printer function name
-#define m(methodName, className)                          concatenate(methodName,className)                                      // some method function name
+#define d(className)                                      concatenate(destructorOf,  className)                                  // destructor function name
+#define p(className)                                      concatenate(printerOf,     className)                                  // printer function name
+#define m(methodName, className)                          concatenate(methodName,    className)                                  // some method function name
 #define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className))    // static method function name
 #define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))           // call to masterClassObject
 #define singletonCall(className)                          concatenate(singletonOf,className)()                                   // singleton call
