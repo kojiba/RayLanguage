@@ -94,7 +94,7 @@ method(void, addFilledRange, RSandBox), RRange range) {
 }
 
 method(size_t, sizeForPointer, RSandBox), pointer ptr) {
-    long shift = ptr - (pointer)(object->memPart->array);
+    ssize_t shift = ptr - (pointer)(object->memPart->array);
     if(shift < 0) {
         RError("Pointer wasn't allocated with sandBox.", object);
         return 0;

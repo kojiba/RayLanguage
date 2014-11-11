@@ -72,7 +72,7 @@ typedef byte    rbool;
 #define printer(className)                                void concatenate(printerOf,className) (className *object)
 #define singleton(className)                              className* concatenate(singletonOf,className)(void)
 #define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
-#define virtualmethod(returnValue, methodName, className) returnValue (*concatenate(methodName, className))(className *object
+#define virtualMethod(returnValue, methodName, className) returnValue (*concatenate(methodName, className))(className *object
 #define linkMethod(methodName)                            concatenate(methodName, className) = concatenate(methodName, className)
 
 // calls
@@ -89,6 +89,7 @@ typedef byte    rbool;
 // cases/if/for ...
 #define forAll(iterator, count)                           for(iterator = 0; iterator < count; ++iterator)
 #define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < start + count; ++iterator)
+#define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.count; ++iterator)
 
 // naming rules
 #define members

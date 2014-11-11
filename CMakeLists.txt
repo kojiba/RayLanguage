@@ -36,7 +36,9 @@ set(HEADER_FILES # Worker headers
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
-                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
+                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h
+
+                 Classes/Tests.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                 Classes/RayFoundation/RayBase.c
@@ -65,6 +67,7 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c
 
+                 Classes/Tests.c
                  Classes/main.c)
 
 add_executable(RayLanguage ${HEADER_FILES} ${SOURCE_FILES})
