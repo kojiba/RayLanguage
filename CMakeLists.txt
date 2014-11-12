@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.4)
 project(RayLanguage)
 
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
+file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
@@ -79,8 +80,6 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RInterpreter/RInterpreter.c
 
                  Classes/main.c)
-
-file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 add_executable(RayLanguage ${HEADER_FILES} ${SOURCE_FILES})
 

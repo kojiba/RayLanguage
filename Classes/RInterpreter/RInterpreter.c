@@ -21,6 +21,14 @@ constructor(RInterpreter)) {
     object = allocator(RInterpreter);
     if(object != nil) {
         object->classId = registerClassOnce(toString(RInterpreter));
+        // all to nil
+        object->codeTokens       = nil;
+        object->sourceFileString = nil;
+        object->tokens           = nil;
+        object->functions        = nil;
+        object->globalVariables  = nil;
+        object->typeDefs         = nil;
+        object->consts           = nil;
     }
     return object;
 }
@@ -28,6 +36,15 @@ constructor(RInterpreter)) {
 destructor(RInterpreter) {
     if(object->sourceFileString != nil) {
         deleteRCS(object->sourceFileString);
+    }
+    if(object->tokens != nil) {
+        deleteRA(object->tokens);
+    }
+    if(object->codeTokens != nil) {
+        deleteRA(object->codeTokens);
+    }
+    if(object->consts != nil) {
+        deleteRA(object->consts);
     }
 }
 
@@ -55,14 +72,108 @@ method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceF
     return result;
 }
 
-method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
-    RCString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), RS(sourceFileName));
-    if(resultName != nil) {
-        if(object->sourceFileString != nil) {
-            deleteRCS(object->sourceFileString);
-        }
-        object->sourceFileString = RCStringFromFile(sourceFileName);
-        // parse and save
+method(void, initContainers, RInterpreter)) {
+    // create source file string
+    if(object->sourceFileString != nil) {
+        deleteRCS(object->sourceFileString);
     }
-    return nil;
+
+    // create source tokens
+    if(object->codeTokens != nil) {
+        deleteRA(object->codeTokens);
+    }
+    object->codeTokens = makeRArray();
+    makeStringArrayFrom(object->codeTokens);
+
+    // create consts
+    if(object->consts != nil) {
+        deleteRA(object->consts);
+    }
+    object->consts = makeRArray();
+    makeStringArrayFrom(object->consts);
+}
+
+method(void, parseTokens, RInterpreter)) {
+    if(object->tokens != nil) {
+        size_t iterator;
+        // for all tokens
+        forAll(iterator, object->tokens->count) {
+            RCString *token = (RCString*) $(object->tokens, m(elementAtIndex, RArray)), iterator);
+            $(token, p(RCString)) );
+        }
+    }
+}
+
+method(size_t, endOfProcessingString, RInterpreter)) {
+    size_t    indexOfQuotes;
+    size_t    indexOfSingleQuote;
+    // get string to first \' or \"
+    indexOfQuotes = indexOfFirstCharacterCString(object->sourceFileString->baseString,
+            object->sourceFileString->size, '\"');
+    indexOfSingleQuote = indexOfFirstCharacterCString(object->sourceFileString->baseString,
+            object->sourceFileString->size, '\'');
+
+    // they can be only equal when == sourceFileString->size, that means they are not found
+    if(indexOfQuotes == indexOfSingleQuote) {
+        return object->sourceFileString->size;
+    } else {
+        if (indexOfQuotes < indexOfSingleQuote) {
+            return indexOfQuotes;
+        } else {
+            return indexOfSingleQuote;
+        }
+    }
+}
+
+method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
+    RCString *sourceName = RS(sourceFileName);
+    RCString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), sourceName);
+
+    if(resultName != nil) {
+        $(object, m(initContainers, RInterpreter)) );
+
+        object->sourceFileString = RCStringFromFile(sourceFileName);
+
+        rbool isBeginOfConst = no;
+        RCString *basicSeparatorString = RS(" \n");
+
+        while(object->sourceFileString->size != 0) {
+            size_t    endOfProcessingSubstring;
+            RCString *processingSubstring = nil;
+
+            endOfProcessingSubstring = $(object, m(endOfProcessingString,  RInterpreter)));
+            // get Processing Substring
+            processingSubstring = $(object->sourceFileString, m(substringInRange, RCString)),
+                    makeRRange(0, endOfProcessingSubstring));
+
+            if(processingSubstring != nil) {
+                // check if constant
+                if(!isBeginOfConst) {
+                    isBeginOfConst = yes;
+                    // tokenize processing substring
+                    if(object->tokens != nil) {
+                        deleteRA(object->tokens)
+                    }
+                    object->tokens = $(processingSubstring,
+                            m(substringsSeparatedBySymbols, RCString)), basicSeparatorString);
+
+                    deleteRCS(processingSubstring);
+
+                    // go next, if have some tokens
+                    $(object, m(parseTokens, RInterpreter)) );
+                } else {
+                    // save to string constants
+                    $(object->consts, m(addObject, RArray)), processingSubstring);
+                    isBeginOfConst = no;
+                }
+
+
+                // trim source string
+                $(object->sourceFileString, m(deleteInRange, RCString)), makeRRange(0, endOfProcessingSubstring + 1));
+            }
+        }
+        deallocator(basicSeparatorString);
+    }
+    deallocator(sourceName);
+    return resultName;
 }

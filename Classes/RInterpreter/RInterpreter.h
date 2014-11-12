@@ -26,8 +26,17 @@ class(RIterpreter)
 // processing data store
     RArray   *classes;
     RArray   *functions;
-    RArray   *types;
+    RArray   *typeDefs;
     RArray   *globalVariables;
+
+// string and char consts
+    RArray   *consts;
+
+// raw tokens, that be separated only by ' ' and '\n'
+    RArray *tokens;
+
+// c code generated tokens
+    RArray *codeTokens;
 
 // string added when file is read
     RCString *sourceFileString;
@@ -37,9 +46,13 @@ constructor (RInterpreter));
 destructor  (RInterpreter);
 singleton   (RInterpreter);
 
-method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceFileName);
+method(RCString*, fileNameFromSourceName, RInterpreter),    const RCString *sourceFileName);
+method(void,      initContainers,         RInterpreter));
+method(size_t,    endOfProcessingString,  RInterpreter));
+method(void,      parseTokens,            RInterpreter));
 
-method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName);
+// Main method
+method(RCString*, convertRayToC,          RInterpreter),    const char *sourceFileName);
 
 #define RISingleton         singletonCall(RInterpreter)
 #define RayToC(fileName)    $(singletonCall(RInterpreter), m(convertRayToC, RInterpreter)), fileName)

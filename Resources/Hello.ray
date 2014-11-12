@@ -6,17 +6,27 @@ typedef struct SomeType {
 
 class BaseHello {
 properties:
-    string helloString; // by default is readonly getter
+    string helloString; // by default is readonly
+    void* somePointer;
 methods:
-    getter(helloString) { //inline if in interface
+    constructor {       // constructor always virtual
+        // here calls master.constructor
+        return object;
+    }
+    destructor;         // but destructor always not virtual
+    getter(helloString) { //inline if in interface, call not directly, but calls getter
         return object.helloString + "getter";
     }
     setter(helloString);
 }
 
 implementation BaseHello {
+    destructor {
+        delete object.somePointer;
+        // here calls master.destructor
+    }
     setter(helloString) {
-        object.helloString = argument;
+        object.helloString = argument + "setter";
     }
 }
 
@@ -28,43 +38,48 @@ properties:
     inner SomeType c;
 
 methods:
-    Hello initWithType: Type type;
+    constructor: SomeType type {
+        
+    }
+    Hello initWithType: SomeType type;
     void sayHelloTo: String name, Object identifier, int a;
 
 static:
     operator(+) {
-        return left.a + right.a;
+        return leftOperand.a + rightOperand.a;
     }
 
     operator(-) {
-        return left.a - right.a;
+        return leftOperand.a - rightOperand.a;
     }
 
     operator(++) postfix {
-        // has only left operand
-        return left.a++;
+        // has only leftOperand operand
+        return leftOperand.a++;
     }
 
     operator(++) prefix {
-        // has only right operand
-        return ++right.b;
+        // has only rightOperand operand
+        return ++rightOperand.b;
     }
 
-    Type getBasicType {
-        Type some;
+    SomeType basicType {
+        SomeType some;
         return some;
     }
 }
 
 implementation Hello {
-    Hello initWithType: Type type {
+    Hello initWithType: SomeType type {
         //some here
     }
 }
 
 void main() {
+    SomeType t;
+    Hello stackObj : t;
     Hello *obj = create 20 Hello;
-    obj.initWithType: Hello.getBasicType;
+    obj.initWithType: Hello.basicType;
     obj.sayHelloTo: "some string", 5, 2;
 
     for(Hello temp in obj) {

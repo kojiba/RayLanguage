@@ -7,12 +7,14 @@
 #include "Tests.h"
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
-
+#include "RInterpreter/RInterpreter.h"
 
 
 int main(int argc, const char *argv[]) {
     initPointers();
     ComplexTest();
-    RPrintf("Pointer 1 - %p, pointer 2 - %p", "Some", "Some");
+    RayToC(RResourcesDir"Simple.ray");
+    $(RISingleton, d(RInterpreter)) );
+    deallocator(RISingleton);
     return 0;
 }

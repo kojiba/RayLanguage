@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+class Simple {
+properties:
+    int a, b;
+methods:
+    printA;
+    printB;
+}
+
+implemantation Simple {
+    printA {
+        printf("A is - %d", object.a);
+    }
+    printfB {
+        printf("B is - %d", object.b);
+    }
+}

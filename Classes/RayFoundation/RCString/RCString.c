@@ -625,7 +625,7 @@ RCString* RCStringFromFile(const char *filename) {
         $(result, m(setConstantString, RCString)), buffer);
         return result;
     } else {
-        RWarning("RCS. Cannot open file.", filename);
+        RError("RCS. Cannot open file.", filename);
         return nil;
     }
 }
