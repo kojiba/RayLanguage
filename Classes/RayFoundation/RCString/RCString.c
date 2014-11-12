@@ -367,7 +367,7 @@ method(RCString *, deleteCharacterAt, RCString), size_t index) {
 
 method(void, deleteInRange, RCString), RRange range) {
     if(range.count != 0
-            && ((range.from + range.count) < object->size)) {
+            && ((range.from + range.count) <= object->size)) {
         RMemMove(object->baseString + range.from,
                 object->baseString + range.from + range.count,
                 object->size - range.count - range.from + 1);
@@ -609,7 +609,7 @@ method(RCString*, toLowerCase, RCString)) {
 
 #pragma mark With file
 
-RCString* fromFileRCString(const char *filename) {
+RCString* RCStringFromFile(const char *filename) {
     FILE *file = RFOpen(filename, "rb");
     char *buffer;
     ssize_t fileSize;
@@ -625,7 +625,17 @@ RCString* fromFileRCString(const char *filename) {
         $(result, m(setConstantString, RCString)), buffer);
         return result;
     } else {
-        RWarning("RCS. Cannot open file.\n", nil);
+        RWarning("RCS. Cannot open file.", filename);
         return nil;
+    }
+}
+
+method(void, appendToFile, RCString), const char *filename) {
+    FILE *file = fopen(filename, "ab");
+    if (file != NULL) {
+        fputs(object->baseString, file);
+        fclose(file);
+    } else {
+        RError("RS. Failed save to file", object);
     }
 }

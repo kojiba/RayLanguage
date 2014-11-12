@@ -88,7 +88,8 @@ method(RCString*,           toUpperCase,                  RCString));           
 method(RCString*,           toLowerCase,                  RCString));                                          // returns reference (not copy!)
 
 // With file
-RCString* fromFileRCString(const char *filename);
+method(void,                appendToFile,                 RCString),    const char *filename);
+RCString* RCStringFromFile(const char *filename);
 
 //----------------------------------------------------------------------------------
 

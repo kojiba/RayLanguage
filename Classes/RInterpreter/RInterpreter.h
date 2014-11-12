@@ -1,4 +1,4 @@
-#include "../RayFoundation/RSyntax.h"/**
+/**
  * RayBase.h
  * A ray of light in the realm of darkness.
  * Defines basic c-functions, to may re-format it if needed.
@@ -20,14 +20,27 @@
 
 #include "../RayFoundation/RSyntax.h"
 #include "../RayFoundation/RContainers/RArray.h"
+#include "../RayFoundation/RCString/RCString.h"
 
 class(RIterpreter)
-    RArray *array;
+// processing data store
+    RArray   *classes;
+    RArray   *functions;
+    RArray   *types;
+    RArray   *globalVariables;
+
+// string added when file is read
+    RCString *sourceFileString;
 endOf(RInterpreter)
 
 constructor (RInterpreter));
 destructor  (RInterpreter);
 singleton   (RInterpreter);
 
+method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceFileName);
+
+method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName);
+
+#define RISingleton singletonCall(RInterpreter)
 
 #endif /*__R_INTERPRETER_H__*/

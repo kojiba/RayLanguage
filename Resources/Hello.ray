@@ -19,15 +19,17 @@ static:
     }
 
     operator(-) {
-            return left.a + right.a;
+        return left.a - right.a;
     }
 
     operator(++) postfix {
-                return left.a + right.a;
+    // has only left operand
+        return left.a++;
     }
 
     operator(++) prefix {
-
+    // has only right operand
+        return ++right.b;
     }
 
     Type getBasicType {

@@ -67,7 +67,7 @@ printer(RSandBox) {
 singleton(RSandBox) {
     static RSandBox *instance = nil;
     if(instance == nil) {
-        $(instance, c(RSandBox)), 8192, 128, RTrueMalloc, RTrueFree);
+        $(instance, c(RSandBox)), 16348, 128, RTrueMalloc, RTrueFree);
     }
     return instance;
 }

@@ -22,7 +22,7 @@ pointer emptyRealloc(pointer ptr, size_t size) {
 //    RPrintf("--- Realloc for %p, new size : %lu (bytes)\n", ptr, size);
     size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
     if(oldSize == 0) {
-        RError("Bad pointer", mySingleton());
+        RError("RSB. Bad pointer", mySingleton());
     }
     pointer newBuffer = mySandBoxAlloc(size);
     RMemMove(newBuffer, ptr, oldSize);
