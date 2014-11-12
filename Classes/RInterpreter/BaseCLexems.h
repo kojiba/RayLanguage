@@ -1,39 +1,65 @@
 #ifndef __BASE_C_LEXEMS_H__
 #define __BASE_C_LEXEMS_H__
 
-char *basicLexems[] = {
-        "inline", "extern",
+const char const *funcTypeLexems[] = {
+        "inline", "extern" };
 
-        "restrict", "register", "const", "volatile", "auto", "static",
+const char const *accessLexems[] = {
+        "restrict", "register", "const", "volatile", "auto", "static" };
 
-        "void", "int", "char", "float", "double",
+const char const *typesLexems[] = {
+        "void", "int", "char", "float", "double" };
 
-        "long", "short", "signed", "unsigned",
+const char const *typeOfTypesLexems[] = {
+        "long", "short", "signed", "unsigned" };
 
-        "enum", "union", "struct",
+const char const *declarationLexems[] = {
+        "enum", "union", "struct", "typedef" };
 
-        "if", "else", "switch",
+const char const *logicLexems[] = {
+        "if", "else", "switch" };
 
-        "for", "do", "while",
+const char const *cyclesLexems[] = {
+        "for", "while" };
 
-        "goto",  "case", "default",
+const char const *caseLexems[] = {
+        "case", "default" };
 
-        "break", "continue", "return",
+const char const *actionsLexems[] = {
+        "break", "continue", "return", "do", "goto" };
 
-        "sizeof", "typedef"
-};
+const char const *sizeLexems[] = {
+        "sizeof" };
 
-char basicSeparators[] = {
+const char const basicSeparators[] = {
         '.', ',', ' ', '[', ']', '{', '}', ';'
 };
 
-char *pointersOperations[] = {
-        "->", "*", "&"
+const char const thernarSeparators[] = {
+        '?', ':'
 };
 
-char defineLexem = '#';
+const char const *mathematicalSeparators[] = {
+        "+", "-", "*", "/", "%", "++", "--"
+};
 
-char *commentLexems[] = {
+const char const *logicalSeparators[] = {
+        "!", "&&", "||", "==", ">=", "<=", "!="
+};
+
+const char const *boolSeparators[] = {
+        "~", "&", "|", ">>", "<<" , "^"
+};
+
+const char const *pointersOperations[] = {
+        "->", "*", "&", "="
+};
+
+const char const *compilerLexems[] =  {
+        "#include", "#pragma", "#define"
+};
+
+const char const *commentLexems[] = {
         "//", "/*"
 };
 

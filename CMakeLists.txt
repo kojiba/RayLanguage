@@ -43,6 +43,7 @@ set(HEADER_FILES # Worker headers
 
                  # Interpreter
                  Classes/RInterpreter/BaseCLexems.h
+                 Classes/RInterpreter/RayLexemes.h
                  Classes/RInterpreter/RInterpreter.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c

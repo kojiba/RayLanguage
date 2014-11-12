@@ -1,11 +1,29 @@
+#include <stdio.h>
+
 typedef struct SomeType {
     int a;
 } SomeType;
 
-class Hello {
+class BaseHello {
+properties:
+    string helloString; // by default is readonly getter
+methods:
+    getter(helloString) { //inline if in interface
+        return object.helloString + "getter";
+    }
+    setter(helloString);
+}
+
+implementation BaseHello {
+    setter(helloString) {
+        object.helloString = argument;
+    }
+}
+
+class Hello disciple of BaseHello {
 properties:
     readonly int a;
-    copy uint b;
+    copy uint b;          // getter returns copy
     read, write double d;
     inner SomeType c;
 
@@ -38,13 +56,20 @@ static:
     }
 }
 
-space NameSpace {
-
+implementation Hello {
+    Hello initWithType: Type type {
+        //some here
+    }
 }
 
 void main() {
     Hello *obj = create 20 Hello;
     obj.initWithType: Hello.getBasicType;
+    obj.sayHelloTo: "some string", 5, 2;
+
+    for(Hello temp in obj) {
+
+    }
 
 
     delete obj;
