@@ -33,12 +33,16 @@ set(HEADER_FILES # Worker headers
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
 
+                 # Tests
+                 Classes/Tests.h
+
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
                  Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h
 
-                 Classes/Tests.h)
+                 # Interpreter
+                 Classes/RInterpreter/RInterpreter.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                 Classes/RayFoundation/RayBase.c
@@ -61,14 +65,20 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RayFoundation/RClassTable/RClassTable.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
+                 # Tests
+                 Classes/Tests.c
 
                  # RVM
                  Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
                  Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
                  Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c
 
-                 Classes/Tests.c
+                 # Interpreter
+                 Classes/RInterpreter/RInterpreter.c
+
                  Classes/main.c)
+
+file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 add_executable(RayLanguage ${HEADER_FILES} ${SOURCE_FILES})
 

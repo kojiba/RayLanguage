@@ -80,15 +80,15 @@ method(RCString *,          copy,                         RCString));
 // Comparator
 method(RCompareFlags,       compareWith,                  RCString),    const RCString *checkString);
 
-// With file
-method(void,                fromFile,                     RCString),    const RCString *filename);             // deletes old string
-
 // Concatenate
 method(void,                concatenate,                  RCString),    const RCString *string);
 
 // Conversions
 method(RCString*,           toUpperCase,                  RCString));                                          // returns reference (not copy!)
 method(RCString*,           toLowerCase,                  RCString));                                          // returns reference (not copy!)
+
+// With file
+RCString* fromFileRCString(const char *filename);
 
 //----------------------------------------------------------------------------------
 

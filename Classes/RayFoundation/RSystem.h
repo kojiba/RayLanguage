@@ -74,5 +74,6 @@
 #define RSystemType RSystemBitVersion RSystemString RSystemDetails RPosixSupport
 
 #define RPrintCurrentSystem() RPrintLn("System : " RSystemType)
+#define RResourcesDir "Resources/"
 
 #endif /*__R_SYSTEM_H__*/

@@ -568,26 +568,6 @@ method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     return not_equals;
 }
 
-#pragma mark With file
-
-method(void, fromFile, RCString), const RCString *filename) {
-    FILE *file = RFOpen(filename->baseString, "rb");
-    char *buffer;
-    long fileSize;
-
-    if(file != nil) {
-        RFSeek(file, 0, SEEK_END);
-        fileSize = RFTell(file);
-        RRewind(file);
-        buffer = RAlloc(fileSize * (sizeof(char)));
-        RFRead(buffer, sizeof(char), fileSize, file);
-        RFClose(file);
-        $(object, m(setConstantString, RCString)), buffer);
-    } else {
-        RWarning("RCS. Cannot open file.\n", object);
-    }
-}
-
 #pragma mark Concatenate
 
 method(void, concatenate, RCString), const RCString *string) {
@@ -625,4 +605,27 @@ method(RCString*, toLowerCase, RCString)) {
         }
     }
     return object;
+}
+
+#pragma mark With file
+
+RCString* fromFileRCString(const char *filename) {
+    FILE *file = RFOpen(filename, "rb");
+    char *buffer;
+    ssize_t fileSize;
+
+    if(file != nil) {
+        RFSeek(file, 0, SEEK_END);
+        fileSize = RFTell(file);
+        RRewind(file);
+        buffer = RAlloc(fileSize * (sizeof(char)));
+        RFRead(buffer, sizeof(char), fileSize, file);
+        RFClose(file);
+        RCString *result = allocator(RCString);
+        $(result, m(setConstantString, RCString)), buffer);
+        return result;
+    } else {
+        RWarning("RCS. Cannot open file.\n", nil);
+        return nil;
+    }
 }

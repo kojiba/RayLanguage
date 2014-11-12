@@ -1,0 +1,35 @@
+
+typedef struct SomeType {
+    int a;
+} SomeType;
+
+class Hello {
+properties:
+    readonly int a;
+    copy uint b;
+    read, write double d;
+    inner SomeType c;
+
+methods:
+    Hello initWithType: Type type;
+    void sayHelloTo: String name, Object identifier, int a;
+
+static:
+    Type getBasicType {
+        Type some;
+        return some;
+    }
+}
+
+space NameSpace {
+
+}
+
+void main() {
+    Hello *obj = create 20 Hello;
+    obj.initWithType: Hello.getBasicType;
+
+
+    delete obj;
+    return 0;
+}

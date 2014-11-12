@@ -12,5 +12,8 @@
 
 int main(int argc, const char *argv[]) {
     ComplexTest();
+    RCString *string = fromFileRCString(RResourcesDir"Hello.ray");
+    $(string, p(RCString)));
+    deleteRCS(string);
     return 0;
 }
