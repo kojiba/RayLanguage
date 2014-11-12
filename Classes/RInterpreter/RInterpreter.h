@@ -1,9 +1,9 @@
 /**
- * RayBase.h
+ * RInterpreter.h
  * A ray of light in the realm of darkness.
- * Defines basic c-functions, to may re-format it if needed.
+ * Interpreter of Ray language to pure C.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 2014 Ukraine Kharkiv
+ * 12.11.2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -41,6 +41,7 @@ method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceF
 
 method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName);
 
-#define RISingleton singletonCall(RInterpreter)
+#define RISingleton         singletonCall(RInterpreter)
+#define RayToC(fileName)    $(singletonCall(RInterpreter), m(convertRayToC, RInterpreter)), fileName)
 
 #endif /*__R_INTERPRETER_H__*/

@@ -69,6 +69,6 @@ method(void,    XorDecrypt,       RSandBox),    RByteArray *key);
 #define enableSandBoxFree  (sandBoxFree)      RFreePtr   = sandBoxFree;
 
 // back to constant standart
-#define disableSandBoxMalloc()                RMallocPtr = RTrueMalloc;// RFreePtr = RTrueFree
+#define disableSandBoxMalloc()                RMallocPtr = RTrueMalloc; RFreePtr = RTrueFree; RReallocPtr = RTrueRealloc
 
 #endif /*__R_SAND_BOX_H__*/

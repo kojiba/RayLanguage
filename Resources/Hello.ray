@@ -23,12 +23,12 @@ static:
     }
 
     operator(++) postfix {
-    // has only left operand
+        // has only left operand
         return left.a++;
     }
 
     operator(++) prefix {
-    // has only right operand
+        // has only right operand
         return ++right.b;
     }
 

@@ -27,6 +27,7 @@ constructor(RClassNamePair)) {
 }
 
 destructor(RClassNamePair) {
+    deallocator(master(object, RCString));
 }
 
 printer(RClassNamePair) {

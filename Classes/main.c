@@ -12,6 +12,7 @@
 
 int main(int argc, const char *argv[]) {
     initPointers();
-//    ComplexTest();
+    ComplexTest();
+    RPrintf("Pointer 1 - %p, pointer 2 - %p", "Some", "Some");
     return 0;
 }

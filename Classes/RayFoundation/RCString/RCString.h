@@ -95,7 +95,7 @@ RCString* RCStringFromFile(const char *filename);
 
 #define makeRCString()          $(nil, c(RCString)))
 #define printRString(string)    $(string, p(RCString)) );
-#define RS(CString)             $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant
+#define RS(CString)             $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant, ATTENTION need to be deallocated, but not destructed
 #define RSC(CString)            $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
 #define deleteRCS(string)       $(string , d(RCString)) ); deallocator(string)
 
