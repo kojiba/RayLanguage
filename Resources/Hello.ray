@@ -1,4 +1,3 @@
-
 typedef struct SomeType {
     int a;
 } SomeType;
@@ -15,6 +14,22 @@ methods:
     void sayHelloTo: String name, Object identifier, int a;
 
 static:
+    operator(+) {
+        return left.a + right.a;
+    }
+
+    operator(-) {
+            return left.a + right.a;
+    }
+
+    operator(++) postfix {
+                return left.a + right.a;
+    }
+
+    operator(++) prefix {
+
+    }
+
     Type getBasicType {
         Type some;
         return some;

@@ -1,4 +1,4 @@
-/**
+#include "../RayFoundation/RSyntax.h"/**
  * RayBase.h
  * A ray of light in the realm of darkness.
  * Defines basic c-functions, to may re-format it if needed.
@@ -19,9 +19,15 @@
 #define __R_INTERPRETER_H__
 
 #include "../RayFoundation/RSyntax.h"
+#include "../RayFoundation/RContainers/RArray.h"
 
 class(RIterpreter)
-
+    RArray *array;
 endOf(RInterpreter)
+
+constructor (RInterpreter));
+destructor  (RInterpreter);
+singleton   (RInterpreter);
+
 
 #endif /*__R_INTERPRETER_H__*/
