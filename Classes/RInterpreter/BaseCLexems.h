@@ -2,13 +2,25 @@
 #define __BASE_C_LEXEMS_H__
 
 char *basicLexems[] = {
-        "auto",     "break",   "case",     "char",    "const",
-        "continue", "default", "do",       "double",  "int",
-        "else",     "enum",    "extern",   "float",   "long",
-        "for",      "goto",    "if",       "inline",  "register",
-        "restrict", "return",  "short",    "signed",  "sizeof",
-        "static",   "struct",  "switch",   "typedef", "union",
-        "unsigned", "void",    "volatile", "while"
+        "inline", "extern",
+
+        "restrict", "register", "const", "volatile", "auto", "static",
+
+        "void", "int", "char", "float", "double",
+
+        "long", "short", "signed", "unsigned",
+
+        "enum", "union", "struct",
+
+        "if", "else", "switch",
+
+        "for", "do", "while",
+
+        "goto",  "case", "default",
+
+        "break", "continue", "return",
+
+        "sizeof", "typedef"
 };
 
 char basicSeparators[] = {
