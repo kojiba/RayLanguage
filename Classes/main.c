@@ -12,11 +12,11 @@
 
 int main(int argc, const char *argv[]) {
     initPointers();
-//    ComplexTest();
-//    initPointers();
-//    RayToC(RResourcesDir"Simple.ray");
-//    $(RISingleton->stringConsts, p(RArray)));
-//    $(RISingleton, d(RInterpreter)) );
-//    deallocator(RISingleton);
+    ComplexTest();
+    initPointers();
+    RayToC(RResourcesDir"Simple.ray");
+    $(RISingleton->stringConsts, p(RArray)));
+    $(RISingleton, d(RInterpreter)) );
+    deallocator(RISingleton);
     return 0;
 }

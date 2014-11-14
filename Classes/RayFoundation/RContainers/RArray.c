@@ -353,7 +353,7 @@ method(RArray *, getSubarray, RArray), RRange range){
 
                 // cleanup and alert
                 deleteRA(result);
-                RError("RA - %p. Get subarray error.", object);
+                RError("RA. Get subarray error.", object);
                 return nil;
             }
         }

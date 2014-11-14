@@ -189,7 +189,7 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
 
                 if(object->sourceFileString->size != endOfProcessingSubstring) {
                     // trim source string
-                    $(object->sourceFileString, m(trimHead, RCString)),  endOfProcessingSubstring + 1));
+                    $(object->sourceFileString, m(trimHead, RCString)),  endOfProcessingSubstring + 1);
                 } else {
                     // delete at all
                     deleteRCS(object->sourceFileString);

@@ -63,7 +63,7 @@ method(RCString *,          deleteAllSubstrings,          RCString),    const RC
 method(void,                removeRepetitionsOfString,    RCString),    const RCString *substring);
 
 method(RCString *,          deleteCharacterAt,            RCString),    size_t index);                        // returns reference (not copy!)
-method(void,                deleteInRange,                RCString),    RRange range);                        // shifts string
+method(void,                deleteInRange,                RCString),    RRange range);                        // shifts string, main method
 method(inline void,         trimTail,                     RCString),    size_t size);                         // deletes from end
 method(inline void,         trimHead,                     RCString),    size_t size);                         // deletes from start
 

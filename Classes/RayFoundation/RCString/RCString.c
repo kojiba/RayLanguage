@@ -378,11 +378,11 @@ method(void, deleteInRange, RCString), RRange range) {
     }
 }
 
-method(inline void, trimTail, RCString), size_t size) {
+method(void, trimTail, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(object->size - size, size));
 }
 
-method(inline void, trimHead, RCString), size_t size) {
+method(void, trimHead, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(0, size));
 }
 
