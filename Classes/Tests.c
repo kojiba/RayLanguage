@@ -175,10 +175,6 @@ int RClassTableTest(void){
     registerClassOnce("Dart");
     registerClassOnce("Leia");
     registerClassOnce("Han Solo");
-
-    forAll(iterator, 1000) {
-        registerClassOnce(randomRCString()->baseString);
-    }
     // try once more, but here is only one record
 
     forAll(iterator, 1000) {
@@ -186,8 +182,8 @@ int RClassTableTest(void){
         registerClassOnce("Dart");
         registerClassOnce("Luke");
     }
-    if(RCTSingleton->masterRArrayObject->count > 1008) {
-        RError("RCTSingleton->masterRArrayObject->count > 108", RCTSingleton);
+    if(RCTSingleton->masterRArrayObject->count > 8) {
+        RError("RCTSingleton->masterRArrayObject->count > 8", RCTSingleton);
         return 1;
     }
     if(RCTSingleton->masterRArrayObject->count == 0) {
@@ -200,7 +196,6 @@ int RClassTableTest(void){
         RError("RCT. REGISTER", RCTSingleton);
         return 1;
     }
-   $(RCTSingleton->masterRArrayObject, m(deleteObjects, RArray)), makeRRange(4, RCTSingleton->masterRArrayObject->count - 4));
     return 0;
 }
 

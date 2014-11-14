@@ -57,7 +57,7 @@ destructor  (RayMethod);
 printer     (RayMethod);
 
 // Setters
-method(void, addArgument,  RayMethod), size_t type, RCString *name);     // name - is key, type is value
+method(void, addArgument,  RayMethod), size_t type, RCString *name);      // name - is key, type is value, type - from typeTable of interpreter
 method(void, setArguments, RayMethod), RStringDictionary *args);          // not copies arg dict
 
 // Workers

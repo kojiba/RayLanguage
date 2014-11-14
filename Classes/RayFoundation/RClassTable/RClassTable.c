@@ -39,6 +39,7 @@ constructor(RClassTable)) {
 
             // 4 it's for self
             object->classId = 3;
+            object->cacheTable = nil;
         }
     }
 #if RAY_SHORT_DEBUG == 1

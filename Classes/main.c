@@ -30,8 +30,12 @@ int main(int argc, const char *argv[]) {
 //    deallocator(RISingleton);
 //    RayMethod *method = $(nil, c(RayMethod)), MTInline | MTOperator, RSC("void"));
 //
-//    $(method, m(addArgument, RayMethod)), 1, "argument");
-//
+//    $(method, m(addArgument, RayMethod)), 1, RSC("argument"));
+//    RCString *cstring = $(method, m(serializetoCFunc, RayMethod)));
+//    if(cstring != nil) {
+//        $(cstring, p(RCString)));
+//        deleteRCS(cstring);
+//    }
 //    $(method, d(RayMethod)) );
 //    deallocator(method);
     return 0;

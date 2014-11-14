@@ -13,6 +13,7 @@
  *         |__/
  **/
 
+#include <CoreFoundation/CoreFoundation.h>
 #include "RIMethods.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
 
@@ -151,7 +152,6 @@ method(RCString*, CArgs, RayMethod)) {
 #pragma mark Main method
 
 method(RCString*, serializetoCFunc, RayMethod)) {
-    RCString  *result = nil;
-
+    RCString *result = nil;
     return result;
 }
