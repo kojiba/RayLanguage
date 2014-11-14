@@ -4,6 +4,39 @@ project(RayLanguage)
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
 file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
+# RVM -----------------------------------------------------------------------
+set(RVM_HEADERS
+               Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
+               Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
+               Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
+
+set(RVM_SOURCES
+               Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
+               Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
+               Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
+# RVM -----------------------------------------------------------------------
+
+# RInterpreter --------------------------------------------------------------
+set(RINTERPRETER_HEADERS # Interpreter
+                        Classes/RInterpreter/BaseCLexems.h
+                        Classes/RInterpreter/RayLexemes.h
+
+                        Classes/RInterpreter/RIProperties/RIProperties.h
+                        Classes/RInterpreter/RIMethods/RIMethods.h
+                        Classes/RInterpreter/RIClass/RIClass.h
+
+                        Classes/RInterpreter/RInterpreter.h)
+
+
+set(RINTERPRETER_SOURCES # Interpreter
+                         Classes/RInterpreter/RIProperties/RIProperties.c
+                         Classes/RInterpreter/RIMethods/RIMethods.c
+                         Classes/RInterpreter/RIClass/RIClass.c
+
+                         Classes/RInterpreter/RInterpreter.c)
+
+# RInterpreter --------------------------------------------------------------
+
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
                  Classes/RayFoundation/RSystem.h
@@ -35,17 +68,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayFoundation.h
 
                  # Tests
-                 Classes/Tests.h
-
-                 # RVM
-                 Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
-                 Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
-                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h
-
-                 # Interpreter
-                 Classes/RInterpreter/BaseCLexems.h
-                 Classes/RInterpreter/RayLexemes.h
-                 Classes/RInterpreter/RInterpreter.h)
+                 Classes/Tests.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                 Classes/RayFoundation/RayBase.c
@@ -71,16 +94,13 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  # Tests
                  Classes/Tests.c
 
-                 # RVM
-                 Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
-                 Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
-                 Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c
-
-                 # Interpreter
-                 Classes/RInterpreter/RInterpreter.c
-
                  Classes/main.c)
 
-add_executable(RayLanguage ${HEADER_FILES} ${SOURCE_FILES})
+add_executable(RayLanguage ${HEADER_FILES} ${RINTERPRETER_HEADERS} ${RVM_HEADERS} ${SOURCE_FILES} ${RINTERPRETER_SOURCES} ${RVM_SOURCES})
+
+#add_executable(RayInterpreter ${RINTERPRETER_HEADERS} ${RINTERPRETER_SOURCES})
+
+#add_executable(RVM ${RVM_HEADERS} ${RVM_SOURCES})
+
 
 
