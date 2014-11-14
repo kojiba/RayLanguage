@@ -56,7 +56,7 @@ const char const *pointersOperations[] = {
 };
 
 const char const *compilerLexems[] =  {
-        "#include", "#pragma", "#define"
+        "include", "pragma", "define"
 };
 
 const char const *commentLexems[] = {

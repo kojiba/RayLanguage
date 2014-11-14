@@ -28,14 +28,15 @@ class(RIterpreter)
     RArray   *functions;
     RArray   *typeDefs;
     RArray   *globalVariables;
+    RArray   *includes;
 
 // string and char consts
-    RArray   *consts;
+    RArray   *stringConsts;
 
-// raw tokens, that be separated only by ' ' and '\n'
-    RArray *tokens;
+// raw rayTokens, that be separated only by ' ' and '\n'
+    RArray *rayTokens;
 
-// c code generated tokens
+// c code generated rayTokens
     RArray *codeTokens;
 
 // string added when file is read

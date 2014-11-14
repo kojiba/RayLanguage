@@ -2,7 +2,7 @@
 
 class Simple {
 properties:
-    int a, b;
+    int a, b;   // readonly by default
 methods:
     printA;
     printB;

@@ -59,17 +59,17 @@ class(RArray) //----------------------------------------------------------------
                                                                                      //
 endOf(RArray) //---------------------------------------------------------------------/
 
-// constructor - destructor - printer
+// Constructor - Destructor - Printer
 constructor (RArray), RArrayFlags *error);
 destructor  (RArray);
 printer     (RArray);
 
-// allocation - reallocation
+// Allocation - Reallocation
 method(RArrayFlags,        addSize,                   RArray),    size_t newSize);                    // adds some size, store data
 method(void,               flush,                     RArray));                                       // destroys all old elements, creates new empty array
 method(byte,               sizeToFit,                 RArray));
 
-// add - set - delete
+// Add - Set - Delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
@@ -77,18 +77,20 @@ method(void,               deleteObjects,             RArray),    RRange range);
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
-// get - find
+// Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(pointer,            elementAtIndex,            RArray),    size_t index);
 
-// sort
+// Sorts
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
 method(void,               quickSortWithDelegate,     RArray),    size_t first, size_t last, byte (*comparator)(pointer, pointer));
 method(void,               sort,                      RArray));
 
-// work
+// Work
 method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
+
+// Info
 method(static inline byte, checkIfIndexIn,            RArray),    size_t index);
 
 // standart comparator

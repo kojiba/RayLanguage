@@ -31,7 +31,7 @@
 #define incrementFreePlaces() --object->count; \
                               ++object->freePlaces
 
-#pragma mark Constructor - Destructor - Reallocation
+#pragma mark Constructor - Destructor - Printer
 
 constructor(RArray), RArrayFlags *error) {
 
@@ -97,6 +97,30 @@ destructor(RArray) {
     RPrintf("RA destructor of %p\n", object);
 #endif
 }
+
+printer(RArray) {
+
+#if RAY_SHORT_DEBUG == 1
+      RPrintf("%s printer of %p \n", toString(RArray), object);
+#else
+    register size_t iterator;
+
+    RPrintf("\n%s object %p: { \n", toString(RArray), object);
+    RPrintf(" Count : %lu \n", object->count);
+    RPrintf(" Free  : %lu \n", object->freePlaces);
+    forAll(iterator, object->count) {
+        RPrintf("\t %lu - ", iterator);
+        printElementAtIndex(iterator); // or print value
+        else {
+            RPrintf("%p \n", object->array[iterator]);
+        }
+    }
+    RPrintf("} end of %s object %p \n\n", toString(RArray), object);
+#endif
+
+}
+
+#pragma mark Allocation - Reallocation
 
 method(RArrayFlags, addSize, RArray), size_t newSize) {
 
@@ -290,7 +314,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
             }
         }
     } else {
-        RPrintf("ERROR. RA - %p. Delegate for searching is nil, please delete function call, or fix it.\n\n", object);
+        RError("RA. Delegate for searching is nil, please delete function call, or fix it.", object);
     }
     return result;
 }
@@ -302,7 +326,7 @@ method(pointer, elementAtIndex, RArray), size_t index) {
     if($(object, m(checkIfIndexIn,RArray)), index) == index_exists) {
         return object->array[index];
     } else {
-        RPrintf("ERROR. RA - %p. Index not_exist!\n", object);
+        RError("RA. Index not exist!", object);
         return nil;
     }
 }
@@ -329,14 +353,14 @@ method(RArray *, getSubarray, RArray), RRange range){
 
                 // cleanup and alert
                 deleteRA(result);
-                RPrintf("ERROR. RA - %p. Get-subarray error.\n", object);
+                RError("RA - %p. Get subarray error.", object);
                 return nil;
             }
         }
     }
 #if RAY_SHORT_DEBUG == 1
     else {
-        RPrintf("ERROR. RA - %p. GetSubarray allocation error.\n", object);
+        RError("RA. GetSubarray allocation error.\n", object);
     }
 #endif
 
@@ -414,36 +438,6 @@ method(void, sort, RArray)) {
 
 #pragma mark Work
 
-printer(RArray) {
-
-#if RAY_SHORT_DEBUG == 1
-      RPrintf("%s printer of %p \n", toString(RArray), object);
-#else
-    register size_t iterator;
-
-    RPrintf("\n%s object %p: { \n", toString(RArray), object);
-    RPrintf(" Count : %lu \n", object->count);
-    RPrintf(" Free  : %lu \n", object->freePlaces);
-    forAll(iterator, object->count) {
-        RPrintf("\t %lu - ", iterator);
-        printElementAtIndex(iterator); // or print value
-        else {
-            RPrintf("%p \n", object->array[iterator]);
-        }
-    }
-    RPrintf("} end of %s object %p \n\n", toString(RArray), object);
-#endif
-
-}
-
-method(static inline byte, checkIfIndexIn, RArray), size_t index) {
-    if (index < object->count) {
-        return index_exists;
-    } else {
-        return index_does_not_exist;
-    }
-}
-
 method(void, shift, RArray), byte side, RRange range) {
 #if RAY_SHORT_DEBUG == 1
     char *sideName;
@@ -473,3 +467,15 @@ method(void, shift, RArray), byte side, RRange range) {
         RWarning("RA. Shifts of RArray do nothing, please delete function call, or fix it.", object);
     }
 }
+
+#pragma mark Info
+
+method(static inline byte, checkIfIndexIn, RArray), size_t index) {
+    if (index < object->count) {
+        return index_exists;
+    } else {
+        return index_does_not_exist;
+    }
+}
+
+

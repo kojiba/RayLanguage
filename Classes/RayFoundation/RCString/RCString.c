@@ -374,8 +374,16 @@ method(void, deleteInRange, RCString), RRange range) {
         object->size -= range.count;
         object->baseString[object->size + 1] = 0;
     } else {
-        RPrintf("ERRROR. RCS. deleteInRange, bad range, do nothing.\n");
+        RError("RCS. deleteInRange, bad range, do nothing.", object);
     }
+}
+
+method(inline void, trimTail, RCString), size_t size) {
+    $(object, m(deleteInRange, RCString)), makeRRange(object->size - size, size));
+}
+
+method(inline void, trimHead, RCString), size_t size) {
+    $(object, m(deleteInRange, RCString)), makeRRange(0, size));
 }
 
 #pragma mark Substrings and Copies
