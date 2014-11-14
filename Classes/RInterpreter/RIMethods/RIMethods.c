@@ -58,8 +58,8 @@ constructor(RayMethod), RayMethodType type, RCString *returnType) {
         if(master(object, RIObject) != nil) {
             object->classId    = registerClassOnce(toString(RayMethod));
             object->type       = type;
-            object->returnType = $(returnType, m(copy, RCString)));
-            object->arguments = makeRArray();
+            object->returnType = returnType;
+            object->arguments  = $(nil, c(RStringDictionary)));
             // link some
             linkMethod(master(object, RIObject), printer, p(RayMethod));
         }
@@ -79,7 +79,7 @@ printer(RayMethod) {
 
 #pragma mark Setters
 
-method(void, addArgument,  RayMethod), RCString *type, RCString *name) {
+method(void, addArgument,  RayMethod), size_t type, RCString *name) {
     $(object->arguments, m(setObjectForKey, RStringDictionary)), type, name);
 }
 

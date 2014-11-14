@@ -8,6 +8,7 @@
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 #include "RInterpreter/RInterpreter.h"
+#include "RInterpreter/RIMethods/RIMethods.h"
 
 //typedef struct methodSingeton methodSingleton;
 //typedef struct Some Some;
@@ -20,13 +21,18 @@
 
 
 int main(int argc, const char *argv[]) {
-//    initPointers();
-//    ComplexTest();
+    initPointers();
+    ComplexTest();
 //    initPointers();
 //    RayToC(RResourcesDir"Simple.ray");
 //    $(RISingleton->stringConsts, p(RArray)));
 //    $(RISingleton, d(RInterpreter)) );
 //    deallocator(RISingleton);
-    some();
+//    RayMethod *method = $(nil, c(RayMethod)), MTInline | MTOperator, RSC("void"));
+//
+//    $(method, m(addArgument, RayMethod)), 1, "argument");
+//
+//    $(method, d(RayMethod)) );
+//    deallocator(method);
     return 0;
 }

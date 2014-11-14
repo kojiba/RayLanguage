@@ -21,10 +21,14 @@
 #include "../RayFoundation/RSyntax.h"
 #include "../RayFoundation/RContainers/RArray.h"
 #include "../RayFoundation/RCString/RCString.h"
+#include "../RayFoundation/RClassTable/RClassTable.h"
 
 class(RIterpreter)
+// table of types
+    RClassTable *typesTable;
+
 // processing data store
-    RArray   *classes;
+    RArray   *classes;    // array of RIClass objects
     RArray   *functions;
     RArray   *typeDefs;
     RArray   *globalVariables;

@@ -20,16 +20,34 @@
 constructor(RInterpreter)) {
     object = allocator(RInterpreter);
     if(object != nil) {
-        object->classId = registerClassOnce(toString(RInterpreter));
-        // all to nil
-        object->codeTokens       = nil;
-        object->sourceFileString = nil;
-        object->rayTokens = nil;
-        object->functions        = nil;
-        object->globalVariables  = nil;
-        object->typeDefs         = nil;
-        object->stringConsts     = nil;
+        object->typesTable = $(nil, c(RClassTable)));
+
+        if(object->typesTable != nil) {
+            object->classId = registerClassOnce(toString(RInterpreter));
+            // all to nil
+            object->codeTokens       = nil;
+            object->sourceFileString = nil;
+            object->rayTokens        = nil;
+            object->functions        = nil;
+            object->globalVariables  = nil;
+            object->typeDefs         = nil;
+            object->stringConsts     = nil;
+
+            // register some basic c types
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(int));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(char));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(float));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(double));
+
+            // type of types
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(short));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(long));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(signed));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(unsigned));
+        }
     }
+
     return object;
 }
 
@@ -99,26 +117,40 @@ method(void, parseTokens, RInterpreter)) {
         // for all rayTokens
         forAll(iterator, object->rayTokens->count) {
             RCString *token = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), iterator);
-//            switch(token->baseString[0]) {
-//                case '#': {
-//                    if(RMemCmp(token->baseString, "include", token->size - 1) == 0) {
-//                        // add include
-//                        $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
-//                    } else if (RMemCmp(token->baseString, "define", token->size - 1) == 0) {
-//                        // add define
-//
-//                    } else if (RMemCmp(token->baseString, "pragma", token->size - 1) == 0) {
-//                        // add pragma
-//                    }
-//                    return;
-//                }
-//                case '<' : {
-//                    return;
-//                }
-//                case 'c' : { // start of class
-//                    return;
-//                }
-//            }
+            switch(token->baseString[0]) {
+                case '#': {
+                    if(RMemCmp(token->baseString, "include", token->size - 1) == 0) {
+                        // add include
+                        $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
+                    } else if (RMemCmp(token->baseString, "define", token->size - 1) == 0) {
+                        // add define
+
+                    } else if (RMemCmp(token->baseString, "pragma", token->size - 1) == 0) {
+                        // add pragma
+                    }
+                    break;
+                }
+                case '<' : {
+                    if(token->baseString[token->size] == '>') {
+                        // add import name
+                    }
+                    break;
+                }
+
+                // start of class
+                case 'c' : {
+                    if(RMemCmp(token->baseString, "lass", token->size - 1) == 0) {
+                        // register new type
+                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        size_t identifier = $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
+                        if(identifier != object->typesTable->masterRArrayObject->count) {
+                            RError("RI. Duplicate declaration of class", object);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
             $(token, p(RCString)) );
         }
     }

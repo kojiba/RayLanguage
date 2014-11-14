@@ -24,6 +24,8 @@ class(RClassTable) //-----------------------------------------------------------
     discipleOf(RArray)
     discipleOf(RCompareDelegate)
 
+    RArray *cacheTable;
+
 endOf(RClassTable) //-------------------------------------------------------
 
 constructor (RClassTable));
@@ -45,7 +47,7 @@ method(size_t,      getNumberOfClasses,       RClassTable));
     #error "Ray Class Table Defines Error - some already defined"
 #else
 #define RCTSingleton              singletonCall(RClassTable)
-#define flushRCTS                 $(master(RCTSingleton,RDynamicArray), m(flush, RDynamicArray)));
+#define flushRCTS()               $(master(RCTSingleton, RArray), m(flush, RArray)));
 #define releaseRCTS               d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
 #define registerClassOnce(name)   $(RCTSingleton, m(registerClassWithName, RClassTable)), name) // return id, or 0 if fails. [0; 3] ids is reserved
 #define printRCTS                 $(RCTSingleton, p(RClassTable)) )

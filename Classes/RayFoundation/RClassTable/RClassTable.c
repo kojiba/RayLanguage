@@ -52,9 +52,8 @@ destructor(RClassTable) {
     RPrintf("RCT destructor of %p\n", object);
 #endif
     if (object != nil) {
-        // destructor for RArray
-        $(master(object, RArray), d(RArray)));
-        deallocator(master(object, RArray));
+        deleteRA(master(object, RArray));
+        deleteRA(object->cacheTable);
         deallocator(master(object, RCompareDelegate));
     }
 }
@@ -71,8 +70,20 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
                 $(master(pair, RCString), m(setConstantString, RCString)), name);
                 pair->idForClassName = master(object, RArray)->count;
 
+                if(master(object, RArray)->count > 20) {
+                    object->cacheTable = makeRArray();
+                    // do not set destructor
+                    object->cacheTable->printerDelegate = p(RClassNamePair);
+                }
+
                 // successfully register new class
                 if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
+                    if(object->cacheTable != nil) {
+                        if(object->cacheTable->count > 20) {
+                            $(object->cacheTable, m(deleteObjects, RArray)), makeRRange(0, 5));
+                        }
+                        $(object->cacheTable, m(addObject, RArray)), pair);
+                    }
 #if RAY_SHORT_DEBUG == 1
                         RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
 #endif
@@ -88,7 +99,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
             return result;
         }
     } else {
-        RWarning("RCT. Register classname is nil, do nothig, please remove function call, or fix it.", object);
+        RError("RCT. Register classname is nil, do nothig, please remove function call, or fix it.", object);
         return 0;
     }
 }
@@ -107,10 +118,23 @@ printer(RClassTable) {
 method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     RClassNamePair *pair = $(nil, c(RClassNamePair)));
     $(master(pair, RCString), m(setConstantString, RCString)), name);
-
     master(object, RCompareDelegate)->etaloneObject = pair;
-
-    RFindResult foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    RFindResult foundedObject;
+    foundedObject.object = nil;
+    // search cache
+    if(object->cacheTable != nil) {
+        foundedObject = $(object->cacheTable, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    }
+    // if not found in cache
+    if(foundedObject.object == nil) {
+        foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+        if(object->cacheTable != nil) {
+            if(object->cacheTable->count > 20) {
+                $(object->cacheTable, m(deleteObjects, RArray)), makeRRange(0, 5));
+            }
+            $(object->cacheTable, m(addObject, RArray)), foundedObject.object);
+        }
+    }
     if(foundedObject.object == nil){
         return 0;
     } else {

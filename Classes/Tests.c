@@ -170,21 +170,24 @@ int RDictionaryTest(void){
 }
 
 int RClassTableTest(void){
-
+    size_t iterator;
     registerClassOnce("Luke");
     registerClassOnce("Dart");
     registerClassOnce("Leia");
     registerClassOnce("Han Solo");
 
+    forAll(iterator, 1000) {
+        registerClassOnce(randomRCString()->baseString);
+    }
     // try once more, but here is only one record
-    size_t iterator;
-    forAll(iterator, 100) {
+
+    forAll(iterator, 1000) {
         registerClassOnce("Leia");
         registerClassOnce("Dart");
         registerClassOnce("Luke");
     }
-    if(RCTSingleton->masterRArrayObject->count > 8) {
-        RError("RCTSingleton->masterRArrayObject->count > 8", RCTSingleton);
+    if(RCTSingleton->masterRArrayObject->count > 1008) {
+        RError("RCTSingleton->masterRArrayObject->count > 108", RCTSingleton);
         return 1;
     }
     if(RCTSingleton->masterRArrayObject->count == 0) {
@@ -194,9 +197,10 @@ int RClassTableTest(void){
     char *checkName = "Han Solo";
 //    RPrintf("Identifier of %s is - %lu \n", checkName, registerClassOnce(checkName));
     if(registerClassOnce(checkName) < 4) {
-        RError("RCT. ERROR REGISTER", RCTSingleton);
+        RError("RCT. REGISTER", RCTSingleton);
         return 1;
     }
+   $(RCTSingleton->masterRArrayObject, m(deleteObjects, RArray)), makeRRange(4, RCTSingleton->masterRArrayObject->count - 4));
     return 0;
 }
 

@@ -52,12 +52,12 @@ class(RayMethod)
     rbool          isImplemented;
 endOf(RayMethod)
 
-constructor (RayMethod),    RayMethodType type, RCString *returnType); // copies return type
+constructor (RayMethod),    RayMethodType type, RCString *returnType); // not copies return type
 destructor  (RayMethod);
 printer     (RayMethod);
 
 // Setters
-method(void, addArgument,  RayMethod), RCString *type, RCString *name);   // name - is key
+method(void, addArgument,  RayMethod), size_t type, RCString *name);     // name - is key, type is value
 method(void, setArguments, RayMethod), RStringDictionary *args);          // not copies arg dict
 
 // Workers
