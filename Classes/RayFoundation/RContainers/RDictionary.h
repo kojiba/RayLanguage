@@ -21,7 +21,6 @@
 class(RDictionary) //---------------------------------------------------------------------
     discipleOf(RCompareDelegate)
 
-members
     RArray *keys;
     RArray *values;
 

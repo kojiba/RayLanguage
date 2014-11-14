@@ -6,7 +6,7 @@
 
 protocol(RIObject)
     virtualMethod(void, printer)(void);
-    RCString *description;
+//    RCString *description;
 endOf(RIObject)
 
 #endif /*__RAY_INTERPRETATOR_OBJECT_H__*/

@@ -1,4 +1,4 @@
-/**
+#include "../../RayFoundation/RSyntax.h"/**
  * RIMethod.h
  * Method lexical struct of Ray.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
@@ -18,6 +18,7 @@
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RCString/RCString.h"
+#include "../RIObject/RIObject.h"
 
 typedef enum RayMethodType {
     MTVirtual,
@@ -29,15 +30,25 @@ typedef enum RayMethodType {
     MTConstructor,
     MTDestructor,
 
-    MTOperator
+    MTOperator,
+
+    MTInner,
 } RayMethodType;
 
+char* toStringRayMethodType(RayMethodType object);
+
 class(RayMethod)
+    discipleOf(RIObject)
+
     RayMethodType  type;
     RCString      *returnType;
     RArray        *arguments;
 
     rbool          isImplemented;
 endOf(RayMethod)
+
+constructor (RayMethod),    RayMethodType type, RCString *returnType); // copies return type
+destructor  (RayMethod);
+printer     (RayMethod);
 
 #endif /*__RAY_METHOD_H__*/

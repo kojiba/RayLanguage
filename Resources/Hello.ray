@@ -32,10 +32,11 @@ implementation BaseHello {
 
 class Hello disciple of BaseHello {
 properties:
-    readonly int a;
-    copy uint b;          // getter returns copy
+    readonly    int a;
+    copy        uint b;          // getter returns copy
     read, write double d;
-    inner SomeType c;
+    writeonly   float f;
+    inner       SomeType c;
 
 methods:
     constructor: SomeType type {

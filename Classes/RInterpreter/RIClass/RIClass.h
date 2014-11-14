@@ -3,8 +3,11 @@
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RContainers/RArray.h"
+#include "../RIObject/RIObject.h"
 
 class(RayClass)
+    discipleOf(RIObject)
+
     RArray *methods;
     RArray *properties;
     RArray *masterClasses;

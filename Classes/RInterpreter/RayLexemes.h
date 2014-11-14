@@ -20,6 +20,8 @@ const char const *operatorTypesLexems[] = {
 const char const *innerCallsLexems[] = {
         "object", "master", "argument", "leftOperand", "rightOperand"
 };
-
+const char const *mmLexems[] = {
+        "create", "delete"
+};
 
 #endif /*__RAY_LEXEMES_H__*/

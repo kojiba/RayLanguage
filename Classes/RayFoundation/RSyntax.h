@@ -72,7 +72,7 @@ typedef byte    rbool;
 #define singleton(className)                              className* concatenate(singletonOf,className)(void)
 #define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
 #define virtualMethod(returnValue, methodName)            returnValue (*methodName)
-#define linkMethod(methodName)                            concatenate(methodName = concatenate(methodName, className)
+#define linkMethod(object, virtualName, realName)         object->virtualName = realName;
 
 // calls
 #define c(className)                                      concatenate(constructorOf, className)                                  // constructor function name
