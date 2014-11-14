@@ -42,7 +42,7 @@ methods:
         
     }
     Hello initWithType: SomeType type;
-    void sayHelloTo: String name, Object identifier, int a;
+    sayHelloTo: String name, Object identifier, int a;
 
 static:
     operator(+) {

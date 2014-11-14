@@ -56,7 +56,7 @@ typedef byte    rbool;
 // declarations
 #define class(className)                                  typedef struct className { \
                                                           size_t classId;
-#define protocol(protocolName)                            typedef struct protocolaName {
+#define protocol(protocolName)                            typedef struct protocolName {
 
 #define discipleOf(className)                             className *concatenate(master, concatenate(className, Object));
 #define endOf(className)                                  } className;
@@ -71,8 +71,8 @@ typedef byte    rbool;
 #define printer(className)                                void concatenate(printerOf,className) (className *object)
 #define singleton(className)                              className* concatenate(singletonOf,className)(void)
 #define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
-#define virtualMethod(returnValue, methodName, className) returnValue (*concatenate(methodName, className))(className *object
-#define linkMethod(methodName)                            concatenate(methodName, className) = concatenate(methodName, className)
+#define virtualMethod(returnValue, methodName)            returnValue (*methodName)
+#define linkMethod(methodName)                            concatenate(methodName = concatenate(methodName, className)
 
 // calls
 #define c(className)                                      concatenate(constructorOf, className)                                  // constructor function name
@@ -90,8 +90,8 @@ typedef byte    rbool;
 #define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < start + count; ++iterator)
 #define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.count; ++iterator)
 
-// naming rules
-#define members
-#define methods
+//// naming rules
+//#define members
+//#define methods
 
 #endif /*__R_SYNTAX_H__*/
