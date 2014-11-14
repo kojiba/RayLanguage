@@ -9,4 +9,6 @@ protocol(RIObject)
 //    RCString *description;
 endOf(RIObject)
 
+void deleteRIObject(RIObject *object);
+
 #endif /*__RAY_INTERPRETATOR_OBJECT_H__*/

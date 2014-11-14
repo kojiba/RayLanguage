@@ -3,11 +3,15 @@
 printer(RIObject) {
     if(object != nil) {
         if(object->printer == nil) {
-            RPrintf("RI object - %p %s\n", object, object->description->baseString);
+            RPrintf("%s object - %p\n", toString(RIOjbect), object);
         } else {
             $(object->printer,));
         }
     } else {
         RPrintf("nil");
     }
+}
+
+void deleteRIObject(RIObject *object) {
+    deallocator(object);
 }

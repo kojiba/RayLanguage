@@ -1,4 +1,4 @@
-#include "../../RayFoundation/RSyntax.h"/**
+/**
  * RIMethod.h
  * Method lexical struct of Ray.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
@@ -19,20 +19,22 @@
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RCString/RCString.h"
 #include "../RIObject/RIObject.h"
+#include "../../RayFoundation/RContainers/RStringDictionary.h"
 
 typedef enum RayMethodType {
-    MTVirtual,
-    MTInline,
+    MTVirtual = 0,
+    MTInline  = 2,
 
-    MTSetter,
-    MTGetter,
+    MTSetter  = 4,
+    MTGetter  = 8,
 
-    MTConstructor,
-    MTDestructor,
+    MTConstructor = 16,
+    MTDestructor  = 32,
 
-    MTOperator,
+    MTOperator = 64,
 
-    MTInner,
+    MTInner = 128,
+    MTStatic = 256,
 } RayMethodType;
 
 char* toStringRayMethodType(RayMethodType object);
@@ -41,8 +43,11 @@ class(RayMethod)
     discipleOf(RIObject)
 
     RayMethodType  type;
+
     RCString      *returnType;
-    RArray        *arguments;
+    RCString      *nativeName;
+
+    RStringDictionary *arguments;
 
     rbool          isImplemented;
 endOf(RayMethod)
@@ -50,5 +55,17 @@ endOf(RayMethod)
 constructor (RayMethod),    RayMethodType type, RCString *returnType); // copies return type
 destructor  (RayMethod);
 printer     (RayMethod);
+
+// Setters
+method(void, addArgument,  RayMethod), RCString *type, RCString *name);   // name - is key
+method(void, setArguments, RayMethod), RStringDictionary *args);          // not copies arg dict
+
+// Workers
+method(RCString*, CPrefix, RayMethod)); // creates prefix like extern, inline
+method(RCString*, CName,   RayMethod)); // serialize types to name
+method(RCString*, CArgs,   RayMethod)); // serialize arguments
+
+// Main method
+method(RCString*, serializetoCFunc, RayMethod));
 
 #endif /*__RAY_METHOD_H__*/

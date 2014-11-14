@@ -13,7 +13,6 @@
  *         |__/
  **/
 
-#include <Foundation/Foundation.h>
 #include "RIMethods.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
 
@@ -43,29 +42,116 @@ char* toStringRayMethodType(RayMethodType object) {
         case MTOperator: {
             return toString(MTOperator);
         }
+        case MTStatic: {
+            return toString(MTStatic);
+        }
     }
     return nil;
 }
 
+#pragma mark Constructor - Destructor - Method
+
 constructor(RayMethod), RayMethodType type, RCString *returnType) {
     object = allocator(RayMethod);
     if(object != nil) {
-        object->classId    = registerClassOnce(toString(RayMethod));
-        object->type       = type;
-        object->returnType = $(returnType, m(copy, RCString)));
-        object->arguments = makeRArray();
-
-        linkMethod(master(object, RIObject), printer, p(RayMethod));
+        master(object, RIObject) = allocator(RIObject);
+        if(master(object, RIObject) != nil) {
+            object->classId    = registerClassOnce(toString(RayMethod));
+            object->type       = type;
+            object->returnType = $(returnType, m(copy, RCString)));
+            object->arguments = makeRArray();
+            // link some
+            linkMethod(master(object, RIObject), printer, p(RayMethod));
+        }
     }
     return object;
 }
 
 destructor(RayMethod) {
-
+    deleteRIObject(master(object, RIObject));
 }
 
 printer(RayMethod) {
     RPrintf("%s object - %p {\n", toString(RayMethod), object);
     RPrintf("\t Method type : %s", $(object->type, toStringRayMethodType)));
     RPrintf("} - %p\n", object);
+}
+
+#pragma mark Setters
+
+method(void, addArgument,  RayMethod), RCString *type, RCString *name) {
+    $(object->arguments, m(setObjectForKey, RStringDictionary)), type, name);
+}
+
+method(void, setArguments, RayMethod), RStringDictionary *args) {
+    if(object->arguments != nil) {
+        $(object->arguments, d(RStringDictionary)) );
+        deallocator(object->arguments);
+    }
+    object->arguments = args;
+}
+
+#pragma mark Workers
+
+method(RCString*, CPrefix, RayMethod)) {
+    RCString *result = RSC("");
+    // can be inline always
+    if(object->type & MTInline) {
+        RCString *inlineStr = RS("inline ");
+        $(result, m(concatenate, RCString)), inlineStr);
+        deallocator(inlineStr);
+    }
+    return result;
+}
+
+method(RCString*, CName, RayMethod)) {
+    RCString *result = RSC("");
+
+    // can be inline always
+//    if(object->type & MTInline) {
+//        RCString *inlineStr = RS("inline_");
+//        $(result, m(concatenate, RCString)), inlineStr);
+//        deallocator(inlineStr);
+//    }
+
+    // can be inner always
+    if (object->type & MTInner) {
+        RCString *inner = RS("inner_");
+        $(result, m(concatenate, RCString)), inner);
+        deallocator(inner);
+    }
+
+    // if static
+    if(object->type & MTStatic) {
+        RCString *staticStr = RS("static_");
+        $(result, m(concatenate, RCString)), staticStr);
+        deallocator(staticStr);
+
+    // if not static
+    } else {
+         if (object->type & MTConstructor) {
+            result = RSC("constructor_");
+        } else if (object->type & MTDestructor) {
+            result = RSC("destructor_");
+        } else if (object->type & MTOperator) {
+            result = RSC("operator_");
+        }
+    }
+
+    // append native name
+    $(result, m(concatenate, RCString)), object->nativeName);
+    return result;
+}
+
+method(RCString*, CArgs, RayMethod)) {
+    RCString *result = nil;
+    return result;
+}
+
+#pragma mark Main method
+
+method(RCString*, serializetoCFunc, RayMethod)) {
+    RCString  *result = nil;
+
+    return result;
 }
