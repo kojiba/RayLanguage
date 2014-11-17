@@ -34,6 +34,9 @@ class(RCString) //------------------------------------
 
 endOf(RCString) //------------------------------------
 
+// Make RCS constant from constant ""-string
+RCString makeRCSConstant(char *string);
+
 // Constructor - Destructor - Reallocation
 constructor (RCString));
 destructor  (RCString);

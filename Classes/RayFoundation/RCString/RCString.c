@@ -73,6 +73,16 @@ RCString *randomRCString(void) {
     return string;
 }
 
+#pragma mark  Make RCS constant from constant ""-string
+
+RCString makeRCSConstant(char *string) {
+    RCString result;
+    result.baseString = string;
+    result.size       = strlen(string);
+    result.classId    = 1;
+    return result;
+}
+
 #pragma mark Constructor - Destructor - Reallocation
 
 constructor(RCString)) {

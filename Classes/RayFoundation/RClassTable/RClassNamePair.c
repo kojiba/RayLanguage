@@ -35,6 +35,9 @@ printer(RClassNamePair) {
 }
 
 method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
+    if(object == checkPair) {
+        return equals;
+    }
     if(object != nil) {
         if(checkPair->idForClassName != 0) {
             if (checkPair->idForClassName == object->idForClassName) {
@@ -47,7 +50,7 @@ method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
             }
         }
     } else {
-        RWarning("RCNP. Name and Id (or Object), is nil, please delete function call, or fix it", object);
+        RError("RCNP. Name and Id (or Object), is nil, please delete function call, or fix it", object);
         return not_equals;
     }
     return not_equals;

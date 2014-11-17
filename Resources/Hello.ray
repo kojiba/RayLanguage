@@ -42,10 +42,10 @@ methods:
     constructor: SomeType type {
         
     }
+
     Hello initWithType: SomeType type;
     sayHelloTo: String name, Object identifier, int a;
 
-static:
     operator(+) {
         return leftOperand.a + rightOperand.a;
     }
@@ -64,6 +64,7 @@ static:
         return ++rightOperand.b;
     }
 
+static:
     SomeType basicType {
         SomeType some;
         return some;

@@ -1,4 +1,5 @@
 #include "RayFoundation/RayFoundation.h"
+#include "RayFoundation/RSystem.h"
 
 pointer mySandBoxAlloc(size_t size);
 
@@ -253,6 +254,7 @@ int RDynamicArrayTest(void){
 
 void ComplexTest() {
     initPointers();
+    RPrintCurrentSystem();
     if(!RDynamicArrayTest()
         && !RClassNamePairTest()
         && !RClassTableTest()

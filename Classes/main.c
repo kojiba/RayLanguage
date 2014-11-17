@@ -23,20 +23,22 @@
 int main(int argc, const char *argv[]) {
     initPointers();
     ComplexTest();
-//    initPointers();
+    initPointers();
 //    RayToC(RResourcesDir"Simple.ray");
 //    $(RISingleton->stringConsts, p(RArray)));
 //    $(RISingleton, d(RInterpreter)) );
 //    deallocator(RISingleton);
-//    RayMethod *method = $(nil, c(RayMethod)), MTInline | MTOperator, RSC("void"));
-//
-//    $(method, m(addArgument, RayMethod)), 1, RSC("argument"));
-//    RCString *cstring = $(method, m(serializetoCFunc, RayMethod)));
-//    if(cstring != nil) {
-//        $(cstring, p(RCString)));
-//        deleteRCS(cstring);
-//    }
-//    $(method, d(RayMethod)) );
-//    deallocator(method);
+
+    RayMethod *method = $(nil, c(RayMethod)), MTInline | MTVirtual, RSC("void"));
+    method->nativeName = RSC("printA");
+    $(method, m(addArgument, RayMethod)), 0, RSC("argument1"));
+    $(method, m(addArgument, RayMethod)), 1, RSC("argument2"));
+    RCString *cstring = $(method, m(serializetoCFunc, RayMethod)), RISingleton->typesTable);
+    if(cstring != nil) {
+        $(cstring, p(RCString)));
+        deleteRCS(cstring);
+    }
+    $(method, d(RayMethod)) );
+    deallocator(method);
     return 0;
 }

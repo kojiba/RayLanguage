@@ -20,6 +20,7 @@
 #include "../../RayFoundation/RCString/RCString.h"
 #include "../RIObject/RIObject.h"
 #include "../../RayFoundation/RContainers/RStringDictionary.h"
+#include "../../RayFoundation/RClassTable/RClassTable.h"
 
 typedef enum RayMethodType {
     MTVirtual = 0,
@@ -37,22 +38,41 @@ typedef enum RayMethodType {
     MTStatic = 256,
 } RayMethodType;
 
+typedef enum RayOperatorType {
+    OTPrefix = 0,
+    OTPostfix = 1,
+
+// one operand
+    OTPlusPlus,
+    OTMinusMinus,
+
+// two operands
+    OTMinus,
+    OTPlus,
+    OTMultiplication,
+    OTDivision,
+    OTModulo,
+
+
+} RayOperatorType;
+
 char* toStringRayMethodType(RayMethodType object);
 
 class(RayMethod)
     discipleOf(RIObject)
 
-    RayMethodType  type;
+    RayMethodType    type;
+    RayOperatorType  operatorType;
 
-    RCString      *returnType;
-    RCString      *nativeName;
+    RCString        *returnType;
+    RCString        *nativeName;
 
     RStringDictionary *arguments;
 
     rbool          isImplemented;
 endOf(RayMethod)
 
-constructor (RayMethod),    RayMethodType type, RCString *returnType); // not copies return type
+constructor (RayMethod),    RayMethodType type, RCString *returnType); // strings mustn't be copies
 destructor  (RayMethod);
 printer     (RayMethod);
 
@@ -63,9 +83,9 @@ method(void, setArguments, RayMethod), RStringDictionary *args);          // not
 // Workers
 method(RCString*, CPrefix, RayMethod)); // creates prefix like extern, inline
 method(RCString*, CName,   RayMethod)); // serialize types to name
-method(RCString*, CArgs,   RayMethod)); // serialize arguments
+method(RCString*, CArgs,   RayMethod),    RClassTable *delegate); // serialize arguments from size_t to strings, need classTable delegate with registered types
 
 // Main method
-method(RCString*, serializetoCFunc, RayMethod));
+method(RCString*, serializetoCFunc, RayMethod),    RClassTable *delegate);
 
 #endif /*__RAY_METHOD_H__*/

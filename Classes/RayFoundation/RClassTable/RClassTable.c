@@ -143,6 +143,15 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     }
 }
 
+method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
+    if(id <= master(object, RArray)->count) {
+        RClassNamePair *temp = master(object, RArray)->array[id];
+        return master(temp, RCString);
+    } else {
+        return nil;
+    }
+}
+
 singleton(RClassTable) {
     static RClassTable *instance;
     if (instance == nil) {

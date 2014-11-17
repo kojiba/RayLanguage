@@ -35,6 +35,7 @@ singleton   (RClassTable);
 
 method(size_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant
 method(size_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant
+method(RCString*,   getClassNameByIdentifier, RClassTable),    size_t id);
 method(size_t,      getNumberOfClasses,       RClassTable));
 
 //----------------------------------------------------------------------------------

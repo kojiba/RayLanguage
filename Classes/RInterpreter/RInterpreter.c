@@ -20,7 +20,7 @@
 constructor(RInterpreter)) {
     object = allocator(RInterpreter);
     if(object != nil) {
-        object->typesTable = $(nil, c(RClassTable)));
+        object->typesTable = makeRCTable();
 
         if(object->typesTable != nil) {
             object->classId = registerClassOnce(toString(RInterpreter));
@@ -34,7 +34,7 @@ constructor(RInterpreter)) {
             object->stringConsts     = nil;
 
             // register some basic c types
-            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void));
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void)); // must be 0
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(int));
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(char));
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(float));
