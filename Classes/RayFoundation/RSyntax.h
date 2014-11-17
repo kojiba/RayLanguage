@@ -82,6 +82,8 @@ typedef byte    rbool;
 #define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className))    // static method function name
 #define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))           // call to masterClassObject
 #define singletonCall(className)                          concatenate(singletonOf,className)()                                   // singleton call
+#define deleter(object, className)                        $(object, d(className))); deallocator(object)
+
 
 #define $(object, methodName)                             methodName(object
 

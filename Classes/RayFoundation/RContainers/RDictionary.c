@@ -44,8 +44,8 @@ constructor(RDictionary)) {
 
 destructor(RDictionary) {
     if(object != nil) {
-        deleteRA(object->keys);
-        deleteRA(object->values);
+        deleter(object->keys, RArray);
+        deleter(object->values, RArray);
         deallocator(master(object, RCompareDelegate));
     } else {
         RWarning("Warning. RD. Destructing a nil, do nothing, please delete function call, or fix it.", object);

@@ -26,7 +26,7 @@
             #error "Some of declaration defines of RayFoundation are already defined!"
         #elif defined(c) || defined(d) || defined(p) || defined(m) || defined(sm) || defined(singletonCall)
             #error "Some of function-call defines of RayFoundation are already defined!"
-        #elif defined($) || defined(allocator) || defined(deallocator) || defined(master) || defined(forAll) || defined(fromStartForAll)
+        #elif defined($) || defined(allocator) || defined(deallocator) || defined(master) || defined(forAll) || defined(fromStartForAll) || defined(deleter)
             #error "Some of core-function-call defines of RayFoundation are already defined!"
     #endif
 

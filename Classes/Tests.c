@@ -247,7 +247,7 @@ int RDynamicArrayTest(void){
         return 1;
     }
 
-    deleteRA(dynamicArray);
+    deleter(dynamicArray, RArray);
     deallocator(sub);
     return 0;
 }

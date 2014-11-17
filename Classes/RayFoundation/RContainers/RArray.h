@@ -99,8 +99,6 @@ byte RArrayStandartComporator(pointer first, pointer second);
 //----------------------------------------------------------------------------------
 
 #define makeRArray()                          $(nil, c(RArray)), nil)
-#define deleteRA(dynamicArray)                $(dynamicArray, d(RArray))); \
-                                              deallocator(dynamicArray)
 #define printRA(dynamicArray)                 $(dynamicArray, p(RArray)))
 #define addObjectToRA(dynamicArray, object)   $(dynamicArray, m(addObject, RArray)), object)
 #define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))

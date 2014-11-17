@@ -8,7 +8,7 @@ methods:
     printB;
 }
 
-implemantation Simple {
+implementation Simple {
     printA {
         printf("A is - %d", object.a);
     }

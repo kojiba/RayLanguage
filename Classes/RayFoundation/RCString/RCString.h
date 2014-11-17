@@ -102,7 +102,6 @@ RCString* RCStringFromFile(const char *filename);
 #define printRString(string)       $(string, p(RCString)) );
 #define RS(CString)                $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant, ATTENTION need to be deallocated, but not destructed
 #define RSC(CString)               $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
-#define deleteRCS(string)          $(string , d(RCString)) ); deallocator(string)
 #define makeStringArrayFrom(array) array->destructorDelegate = d(RCString); array->printerDelegate = p(RCString);
 
 #endif /*__R_C_STRING_H__*/

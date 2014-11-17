@@ -53,8 +53,8 @@ destructor(RClassTable) {
     RPrintf("RCT destructor of %p\n", object);
 #endif
     if (object != nil) {
-        deleteRA(master(object, RArray));
-        deleteRA(object->cacheTable);
+        deleter(master(object, RArray), RArray);
+        deleter(object->cacheTable, RArray);
         deallocator(master(object, RCompareDelegate));
     }
 }

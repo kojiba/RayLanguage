@@ -352,7 +352,7 @@ method(RArray *, getSubarray, RArray), RRange range){
             } else {
 
                 // cleanup and alert
-                deleteRA(result);
+                deleter(result, RArray);
                 RError("RA. Get subarray error.", object);
                 return nil;
             }

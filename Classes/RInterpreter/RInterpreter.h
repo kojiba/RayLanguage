@@ -34,6 +34,11 @@ class(RIterpreter)
     RArray   *globalVariables;
     RArray   *includes;
 
+// for checking places
+    rbool isInProperties;
+    rbool isInMethods;
+    rbool isInStatics;
+
 // string and char consts
     RArray   *stringConsts;
 
@@ -45,6 +50,7 @@ class(RIterpreter)
 
 // string added when file is read
     RCString *sourceFileString;
+
 endOf(RInterpreter)
 
 constructor (RInterpreter));

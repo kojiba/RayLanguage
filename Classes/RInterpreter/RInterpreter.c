@@ -15,7 +15,6 @@
  **/
 
 #include "RInterpreter.h"
-#include "../RayFoundation/RClassTable/RClassTable.h"
 
 constructor(RInterpreter)) {
     object = allocator(RInterpreter);
@@ -53,16 +52,16 @@ constructor(RInterpreter)) {
 
 destructor(RInterpreter) {
     if(object->sourceFileString != nil) {
-        deleteRCS(object->sourceFileString);
+        deleter(object->sourceFileString, RCString);
     }
     if(object->rayTokens != nil) {
-        deleteRA(object->rayTokens);
+        deleter(object->rayTokens, RArray);
     }
     if(object->codeTokens != nil) {
-        deleteRA(object->codeTokens);
+        deleter(object->codeTokens, RArray);
     }
     if(object->stringConsts != nil) {
-        deleteRA(object->stringConsts);
+        deleter(object->stringConsts, RArray);
     }
 }
 
@@ -93,19 +92,19 @@ method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceF
 method(void, initContainers, RInterpreter)) {
     // create source file string
     if(object->sourceFileString != nil) {
-        deleteRCS(object->sourceFileString);
+        deleter(object->sourceFileString, RCString);
     }
 
     // create source rayTokens
     if(object->codeTokens != nil) {
-        deleteRA(object->codeTokens);
+        deleter(object->codeTokens, RArray);
     }
     object->codeTokens = makeRArray();
     makeStringArrayFrom(object->codeTokens);
 
     // create stringConsts
     if(object->stringConsts != nil) {
-        deleteRA(object->stringConsts);
+        deleter(object->stringConsts, RArray);
     }
     object->stringConsts = makeRArray();
     makeStringArrayFrom(object->stringConsts);
@@ -177,6 +176,8 @@ method(size_t, endOfProcessingString, RInterpreter)) {
     }
 }
 
+#pragma mark Main method
+
 method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
     RCString *sourceName = RS(sourceFileName);
     RCString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), sourceName);
@@ -204,12 +205,12 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
                     isBeginOfConst = yes;
                     // tokenize processing substring
                     if(object->rayTokens != nil) {
-                        deleteRA(object->rayTokens)
+                        deleter(object->rayTokens, RArray);
                     }
                     object->rayTokens = $(processingSubstring,
                             m(substringsSeparatedBySymbols, RCString)), basicSeparatorString);
 
-                    deleteRCS(processingSubstring);
+                    deleter(processingSubstring, RCString);
 
                     // go next, if have some rayTokens
                     $(object, m(parseTokens, RInterpreter)) );
@@ -224,7 +225,7 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
                     $(object->sourceFileString, m(trimHead, RCString)),  endOfProcessingSubstring + 1);
                 } else {
                     // delete at all
-                    deleteRCS(object->sourceFileString);
+                    deleter(object->sourceFileString, RCString);
                     object->sourceFileString = nil;
                 }
             }
