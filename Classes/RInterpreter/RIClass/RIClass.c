@@ -1,5 +1,6 @@
 #include "RIClass.h"
 #include "../RIMethods/RIMethods.h"
+#include "../RIProperties/RIProperties.h"
 
 #define ifdel(object, property, class) if(object->property != nil) { \
                                        deleter(object->property, class) }
@@ -29,6 +30,8 @@ printer(RayClass) {
     RPrintf("} %p object\n", object);
 }
 
+#pragma mark Workers
+
 method(RCString*, methodSingletonName, RayClass)) {
     // copy name
     RCString *result = $(object->name, m(copy, RCString)) );
@@ -38,12 +41,31 @@ method(RCString*, methodSingletonName, RayClass)) {
 
 method(RCString*, methodSingletonFor, RayClass), RClassTable *table) {
     size_t iterator;
+    size_t masterClassIterator;
     RCString *result = RSC("");
     RCString *name = $(object, m(methodSingletonName, RayClass)));
     // declare struct
     $(result, m(appendString, RCString)), "typedef struct ");
     $(result, m(concatenate, RCString)), name );
     $(result, m(appendString, RCString)), " {\n");
+
+    // add some methods-pointers from master-classes
+    forAll(masterClassIterator, object->masterClasses->count){
+        RayClass *masterClass = object->masterClasses->array[masterClassIterator];
+        forAll(iterator, masterClass->methods->count) {
+
+            // if method is not inner
+            if(!(((RayMethod*)masterClass->methods->array[iterator])->type & MTInner)) {
+
+                // serialize it
+                RCString *methodPtr = $((RayMethod*)masterClass->methods->array[iterator], m(serializetoCPointer, RayMethod)), table);
+                $(result, m(appendString, RCString)), "    ");
+                $(result, m(concatenate, RCString)),methodPtr);
+                $(result, m(appendString, RCString)), ";\n");
+                deleter(methodPtr, RCString);
+            }
+        }
+    }
 
     // add some methods-pointers
     forAll(iterator, object->methods->count) {
@@ -64,6 +86,53 @@ method(RCString*, methodSingletonFor, RayClass), RClassTable *table) {
     return result;
 }
 
-method(RCString*, classStructWithMasterClass, RayClass)) {
-    return nil;
+method(RCString*, classStructWithMasterClass, RayClass), RClassTable *table) {
+    size_t iterator;
+    size_t masterClassIterator;
+    RCString *result = RSC("");
+    RCString *singletonName = $(object, m(methodSingletonName, RayClass)));
+
+    // declare struct
+    $(result, m(appendString, RCString)), "typedef struct ");
+    $(result, m(concatenate, RCString)), object->name );
+    $(result, m(appendString, RCString)), " {\n");
+
+    // add method singleton property
+    $(result, m(appendString, RCString)), "    ");
+    $(result, m(concatenate, RCString)), singletonName);
+    $(result, m(appendString, RCString)), " *methodSingleton;\n");
+
+    // add masterClass properties
+    forAll(masterClassIterator, object->masterClasses->count) {
+        // get masterClass
+        RayClass *masterClass = object->masterClasses->array[masterClassIterator];
+        forAll(iterator, masterClass->properties->count) {
+
+            // if property is not inner
+            if(((RayProperty*)masterClass->properties->array[iterator])->type != PTInner) {
+                RCString *property = $((RayProperty*)masterClass->properties->array[iterator], m(serializeToCType, RayProperty)), table);
+
+                // serialize it
+                $(result, m(appendString, RCString)), "    ");
+                $(result, m(concatenate, RCString)), property);
+                $(result, m(appendString, RCString)), ";\n");
+                deleter(property, RCString);
+            }
+        }
+    }
+
+    // add self properties
+    forAll(iterator, object->properties->count) {
+        RCString *property = $((RayProperty*)object->properties->array[iterator], m(serializeToCType, RayProperty)), table);
+        $(result, m(appendString, RCString)), "    ");
+        $(result, m(concatenate, RCString)), property);
+        $(result, m(appendString, RCString)), ";\n");
+        deleter(property, RCString);
+    }
+
+    // end declare struct
+    $(result, m(appendString, RCString)), "} ");
+    $(result, m(concatenate, RCString)), object->name );
+    $(result, m(appendString, RCString)), ";");
+    return result;
 }

@@ -35,6 +35,8 @@ typedef enum RayMethodType {
 
     MTInner = 128,
     MTStatic = 256,
+
+    MTExtern = 512,
 } RayMethodType;
 
 typedef enum RayOperatorType {

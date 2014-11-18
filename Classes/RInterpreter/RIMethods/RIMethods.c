@@ -44,6 +44,9 @@ char* toStringRayMethodType(RayMethodType object) {
         case MTStatic: {
             return toString(MTStatic);
         }
+        case MTExtern: {
+            return toString(MTExtern);
+        }
     }
     return nil;
 }
@@ -69,8 +72,8 @@ destructor(RayMethod) {
 
 printer(RayMethod) {
     RPrintf("%s object - %p {\n", toString(RayMethod), object);
-    RPrintf("\t Method type : %s", $(object->type, toStringRayMethodType)));
-    RPrintf("} - %p\n", object);
+    RPrintf("\t Method type : %s\n", $(object->type, toStringRayMethodType)));
+    RPrintf("} - %p\n\n", object);
 }
 
 #pragma mark Setters
