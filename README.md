@@ -15,97 +15,6 @@ Ray Virtual Machine (RVM) with simple 'rasm' byte-code.
 BrainFuck compiler(to rasm byte-code) for RVM.
 Floating enums(changes value in runtime)
 
-```C
-#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
-
-typedef enum codes {
-    first_opcode,
-    second_opcode,
-    third_opcode,
-    fourth_opcode,
-    opcode_count
-} codes;
-
-int main(int argc, const char *argv[]) {
- createFloatingEnum(codes, rand, first_opcode, opcode_count);
-    // cause not seed rand, in my case 282475249 is Bingo
-    if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
-        RPrintf("Bingo!\n");
-    } else {
-        RPrintf("Not Bingo =(");
-    }
-    // print enum
-    printEnum(codes);
-
-    // rebase manually
-    rebaseEnum(codes);
-    printEnum(codes);
-
-    // enables rebasing after all checks
-    setFloatingEnum(codes);
-
-    checkValueToKey(codes, 282475249, second_opcode);
-    printEnum(codes);
-    printEnum(codes);
-    checkValueToKey(codes, 282475249, second_opcode);
-    printEnum(codes);
-
-    deleteEnum(codes);
-    return 0
-}
-```
-
-BrainFuck samples:
-
-```C
-#include "RayFoundation/RayFoundation.h"
-#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
-#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
-#include "RVirtualMachine/RVirtualCompiler.h"
-
-int main(int argc, const char *argv[]) {
-    // ezy brainfuck hello world
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
-                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
-                    " ++++++++++++.+++++++..+++.-------------------\n"
-                    " ---------------------------------------------\n"
-                    " ---------------.+++++++++++++++++++++++++++++\n"
-                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
-                    " ++++++.+++.------.--------.------------------\n"
-                    " ---------------------------------------------\n"
-                    " ----.-----------------------."));
-
-    // execute of byte-code on RVM singleton
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-
-    // brainfuck compiler multiple-cycles test
-    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-
-    // brainfuck hard(with [, ]) hello world on RVM
-    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
-                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
-                                  " ------.--------.>+.>."));
-
-    // rasm byte-code print in words
-    $(function, p(RVirtualFunction)) );
-
-    executeRay(function);
-    $(function, d(RVirtualFunction)) );
-    
-    // final function delete
-    deallocator(function);
-
-    // RVM singleton cleanup
-    deleteRVM();
-    return 0;
-}
-```
 Work with RArray:
 
 ```C
@@ -185,6 +94,58 @@ int main(int argc, const char *argv[]) {
     $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
 
     printRA(stringArray);
+}
+```
+
+BrainFuck samples:
+
+```C
+#include "RayFoundation/RayFoundation.h"
+#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
+#include "RVirtualMachine/RVirtualCompiler.h"
+
+int main(int argc, const char *argv[]) {
+    // ezy brainfuck hello world
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++\n"
+                    " +++++++++++++++++++++++++++.+++++++++++++++++\n"
+                    " ++++++++++++.+++++++..+++.-------------------\n"
+                    " ---------------------------------------------\n"
+                    " ---------------.+++++++++++++++++++++++++++++\n"
+                    " ++++++++++++++++++++++++++.++++++++++++++++++\n"
+                    " ++++++.+++.------.--------.------------------\n"
+                    " ---------------------------------------------\n"
+                    " ----.-----------------------."));
+
+    // execute of byte-code on RVM singleton
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+
+    // brainfuck compiler multiple-cycles test
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Cycles : +++ [ > +++ [.-] <-]")); // prints '03 02 01' 3-times
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+
+    // brainfuck hard(with [, ]) hello world on RVM
+    function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                                  " ------.--------.>+.>."));
+
+    // rasm byte-code print in words
+    $(function, p(RVirtualFunction)) );
+
+    executeRay(function);
+    $(function, d(RVirtualFunction)) );
+    
+    // final function delete
+    deallocator(function);
+
+    // RVM singleton cleanup
+    deleteRVM();
+    return 0;
 }
 ```
 
@@ -334,3 +295,44 @@ int main(int argc, const char *argv[]) {
     return 0;
 }
 ```
+
+```C
+#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
+
+typedef enum codes {
+    first_opcode,
+    second_opcode,
+    third_opcode,
+    fourth_opcode,
+    opcode_count
+} codes;
+
+int main(int argc, const char *argv[]) {
+ createFloatingEnum(codes, rand, first_opcode, opcode_count);
+    // cause not seed rand, in my case 282475249 is Bingo
+    if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
+        RPrintf("Bingo!\n");
+    } else {
+        RPrintf("Not Bingo =(");
+    }
+    // print enum
+    printEnum(codes);
+
+    // rebase manually
+    rebaseEnum(codes);
+    printEnum(codes);
+
+    // enables rebasing after all checks
+    setFloatingEnum(codes);
+
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+    printEnum(codes);
+    checkValueToKey(codes, 282475249, second_opcode);
+    printEnum(codes);
+
+    deleteEnum(codes);
+    return 0
+}
+```
+
