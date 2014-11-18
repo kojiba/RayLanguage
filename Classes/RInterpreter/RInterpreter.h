@@ -35,12 +35,13 @@ class(RIterpreter)
     RArray   *includes;
 
 // for checking places
+    rbool isInClass;
     rbool isInProperties;
     rbool isInMethods;
     rbool isInStatics;
 
 // string and char consts
-    RArray   *stringConsts;
+    RArray *stringConsts;
 
 // raw rayTokens, that be separated only by ' ' and '\n'
     RArray *rayTokens;

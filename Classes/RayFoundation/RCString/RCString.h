@@ -76,7 +76,7 @@ method(RCString *,          insertSubstringAt,            RCString),    RCString
 
 method(RCString *,          substringToSymbol,            RCString),    char symbol);                         // or nil
 method(RCString *,          substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
-method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting
+method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting (search first and last)
 method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nil, RArray is sizeToFit, subs are copies
 method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
 
@@ -91,8 +91,8 @@ method(void,                appendString,                 RCString),    const ch
 method(void,                append,                       RCString),    const char character);
 
 // Conversions
-method(RCString*,           toUpperCase,                  RCString));                                          // returns reference (not copy!)
-method(RCString*,           toLowerCase,                  RCString));                                          // returns reference (not copy!)
+method(RCString *,           toUpperCase,                 RCString));                                          // returns reference (not copy!)
+method(RCString *,           toLowerCase,                 RCString));                                          // returns reference (not copy!)
 
 // With file
 method(void,                appendToFile,                 RCString),    const char *filename);

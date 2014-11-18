@@ -76,16 +76,21 @@ singleton(RInterpreter) {
 method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceFileName) {
     RCString *oldExtension = RS(".ray");
     RCString *fileExtension = $(sourceFileName, m(substringInRange, RCString)), makeRRange(sourceFileName->size - oldExtension->size, oldExtension->size));
-    RCString *newExtension = RS("c");
     if($(fileExtension, m(compareWith, RCString)), oldExtension) != equals) {
         RError("RInterpreter. Filetype is not a \'.ray\'", object);
+        deallocator(oldExtension);
+        deleter(fileExtension, RCString);
         return nil;
     }
     RCString *result = $(sourceFileName, m(copy, RCString)) );
     $(result, m(deleteInRange, RCString)), makeRRange(sourceFileName->size - oldExtension->size + 1, oldExtension->size - 1));
-    $(result, m(concatenate, RCString)), newExtension);
+
+    // append .c extension
+    $(result, m(append, RCString)), 'c');
+
+    // cleanup
     deallocator(oldExtension);
-    deallocator(newExtension);
+    deleter(fileExtension, RCString);
     return result;
 }
 
@@ -118,13 +123,13 @@ method(void, parseTokens, RInterpreter)) {
             RCString *token = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), iterator);
             switch(token->baseString[0]) {
                 case '#': {
-                    if(RMemCmp(token->baseString, "include", token->size - 1) == 0) {
+                    if(RMemCmp(token->baseString + 1, "include", token->size - 1) == 0) {
                         // add include
                         $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
-                    } else if (RMemCmp(token->baseString, "define", token->size - 1) == 0) {
+                    } else if (RMemCmp(token->baseString + 1, "define", token->size - 1) == 0) {
                         // add define
 
-                    } else if (RMemCmp(token->baseString, "pragma", token->size - 1) == 0) {
+                    } else if (RMemCmp(token->baseString + 1, "pragma", token->size - 1) == 0) {
                         // add pragma
                     }
                     break;
@@ -138,14 +143,22 @@ method(void, parseTokens, RInterpreter)) {
 
                 // start of class
                 case 'c' : {
-                    if(RMemCmp(token->baseString, "lass", token->size - 1) == 0) {
+                    if(RMemCmp(token->baseString + 1, "lass", token->size - 1) == 0) {
                         // register new type
                         RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
-                        size_t identifier = $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
-                        if(identifier != object->typesTable->masterRArrayObject->count) {
-                            RError("RI. Duplicate declaration of class", object);
-                            return;
-                        }
+                        $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
+                        $(name, p(RCString)) );
+                        break;
+                    }
+                }
+
+                // start of typedef
+                case 't' : {
+                    if(RMemCmp(token->baseString + 1, "ypedef", token->size - 1) == 0) {
+                        // register new type
+                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
+                        $(name, p(RCString)) );
                         break;
                     }
                 }
