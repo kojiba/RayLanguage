@@ -36,14 +36,14 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
     // add prefix to name
     switch (object->type) {
         case PTReadOnly: {
-            RCString *temp = RS("readonly_");
+            RCString *temp = RS("readOnly_");
             $(result, m(concatenate, RCString)), temp);
             deallocator(temp);
             break;
         }
 
         case PTReadWrite: {
-            RCString *temp = RS("readwrite_");
+            RCString *temp = RS("readWrite_");
             $(result, m(concatenate, RCString)), temp);
             deallocator(temp);
             break;

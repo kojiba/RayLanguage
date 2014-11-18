@@ -3,15 +3,26 @@
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RContainers/RArray.h"
-#include "../RIObject/RIObject.h"
+#include "../../RayFoundation/RCString/RCString.h"
+#include "../../RayFoundation/RClassTable/RClassTable.h"
 
 class(RayClass)
-    discipleOf(RIObject)
 
-    RArray *methods;
-    RArray *properties;
-    RArray *masterClasses;
-    RArray *statics;
+    RArray  *methods;
+    RArray  *properties;
+    RArray  *masterClasses;
+    RArray  *statics;
+    RCString *name;
 endOf(RayClass)
+
+constructor (RayClass));
+destructor  (RayClass);
+printer     (RayClass);
+
+method(RCString*, methodSingletonName,         RayClass));
+
+// fully typedefs method singleton struct with all methods
+method(RCString*, methodSingletonFor,          RayClass),    RClassTable *table);
+method(RCString*, classStructWithMasterClass,  RayClass));
 
 #endif /*__RAY_CLASS_H__*/

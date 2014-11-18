@@ -21,7 +21,6 @@ set(RINTERPRETER_HEADERS # Interpreter
                         Classes/RInterpreter/BaseCLexems.h
                         Classes/RInterpreter/RayLexemes.h
 
-                        Classes/RInterpreter/RIObject/RIObject.h
                         Classes/RInterpreter/RIProperties/RIProperties.h
                         Classes/RInterpreter/RIMethods/RIMethods.h
                         Classes/RInterpreter/RIClass/RIClass.h
@@ -30,7 +29,6 @@ set(RINTERPRETER_HEADERS # Interpreter
 
 
 set(RINTERPRETER_SOURCES # Interpreter
-                         Classes/RInterpreter/RIObject/RIObject.c
                          Classes/RInterpreter/RIProperties/RIProperties.c
                          Classes/RInterpreter/RIMethods/RIMethods.c
                          Classes/RInterpreter/RIClass/RIClass.c

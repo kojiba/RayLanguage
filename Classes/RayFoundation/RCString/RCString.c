@@ -603,6 +603,33 @@ method(void, concatenate, RCString), const RCString *string) {
     }
 }
 
+method(void, appendString, RCString), const char *string) {
+    if(string != nil) {
+        size_t stringSize = RStringLenght(string);
+        object->baseString = RReAlloc(object->baseString, stringSize + object->size + 1);
+        if(object->baseString == nil) {
+            RError("RCS. Concatenate realloc error.", object);
+        } else {
+            RMemMove(object->baseString + object->size, string, stringSize);
+            object->baseString[stringSize + object->size] = 0;
+            object->size += stringSize;
+        }
+    } else {
+        RWarning("RCS. Bad concatenate string.", object);
+    }
+}
+
+method(void, append, RCString), const char character) {
+    object->baseString = RReAlloc(object->baseString, object->size + 2);
+    if(object->baseString == nil) {
+        RError("RCS. Concatenate realloc error.", object);
+    } else {
+        object->baseString[object->size] = character;
+        object->baseString[object->size + 1] = 0;
+        ++object->size;
+    }
+}
+
 #pragma mark Conversions
 
 method(RCString*, toUpperCase, RCString)) {

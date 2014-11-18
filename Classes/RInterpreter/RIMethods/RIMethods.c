@@ -53,21 +53,18 @@ char* toStringRayMethodType(RayMethodType object) {
 constructor(RayMethod), RayMethodType type, RCString *returnType) {
     object = allocator(RayMethod);
     if(object != nil) {
-        master(object, RIObject) = allocator(RIObject);
-        if(master(object, RIObject) != nil) {
-            object->classId    = registerClassOnce(toString(RayMethod));
-            object->type       = type;
-            object->returnType = returnType;
-            object->arguments  = $(nil, c(RStringDictionary)));
-            // link some
-            linkMethod(master(object, RIObject), printer, p(RayMethod));
-        }
+        object->classId    = registerClassOnce(toString(RayMethod));
+        object->type       = type;
+        object->returnType = returnType;
+        object->arguments  = $(nil, c(RStringDictionary)));
     }
     return object;
 }
 
 destructor(RayMethod) {
-    deleteRIObject(master(object, RIObject));
+    deleter(object->nativeName, RCString);
+    deleter(object->returnType, RCString);
+    deleter(object->arguments,  RStringDictionary);
 }
 
 printer(RayMethod) {
@@ -96,9 +93,7 @@ method(RCString*, CPrefix, RayMethod)) {
     RCString *result = RSC("");
     // can be inline always
     if(object->type & MTInline) {
-        RCString *inlineStr = RS("inline ");
-        $(result, m(concatenate, RCString)), inlineStr);
-        deallocator(inlineStr);
+        $(result, m(appendString, RCString)), "inline ");
     }
     return result;
 }
@@ -108,83 +103,55 @@ method(RCString*, CName, RayMethod)) {
 
     // can be inner always
     if (object->type & MTInner) {
-        RCString *inner = RS("inner_");
-        $(result, m(concatenate, RCString)), inner);
-        deallocator(inner);
+        $(result, m(appendString, RCString)), "inner_");
     }
 
     // if static
     if(object->type & MTStatic) {
-        RCString *staticStr = RS("static_");
-        $(result, m(concatenate, RCString)), staticStr);
-        deallocator(staticStr);
+        $(result, m(appendString, RCString)), "static_");
 
     // if not static
     } else {
         // constructor
         if (object->type & MTConstructor) {
-             RCString *temp = RS("constructor_");
-             $(result, m(concatenate, RCString)), temp);
-             deallocator(temp);
+             $(result, m(appendString, RCString)), "constructor_");
 
         // destructor
         } else if (object->type & MTDestructor) {
-             RCString *temp = RS("destructor_");
-             $(result, m(concatenate, RCString)), temp);
-             deallocator(temp);
+             $(result, m(appendString, RCString)), "destructor_");
 
         // operator
         } else if (object->type & MTOperator) {
-             RCString *temp = RS("operator_");
-             $(result, m(concatenate, RCString)), temp);
-             deallocator(temp);
+             $(result, m(appendString, RCString)), "operator_");
 
              // if prefix or postfix operator
              if(object->operatorType & OTPlusPlus
                      || object->operatorType & OTMinusMinus) {
 
                  if(object->operatorType & OTPostfix) {
-                     RCString *temp2 = RS("postfix_");
-                     $(result, m(concatenate, RCString)), temp2);
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "postfix_");
                  } else if (object->operatorType & OTPrefix) {
-                     RCString *temp2 = RS("prefix_");
-                     $(result, m(concatenate, RCString)), temp2);
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "prefix_");
                  }
 
                  if(object->operatorType & OTPlusPlus) {
-                     RCString *temp2 = RS("plusPlus_");
-                     $(result, m(concatenate, RCString)), temp2);
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "plusPlus_");
                  } else {
-                     RCString *temp2 = RS("minusMinus_");
-                     $(result, m(concatenate, RCString)), temp2);
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "minusMinus_");
                  }
 
              // if other binary operator
              } else {
                  if(object->operatorType & OTMinus) {
-                     RCString *temp2 = RS("minus_");
-                     $(result, m(concatenate, RCString)), temp2 );
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "minus_");
                  } else if(object->operatorType & OTPlus) {
-                     RCString *temp2 = RS("plus_");
-                     $(result, m(concatenate, RCString)), temp2 );
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "plus_");
                  } else if(object->operatorType & OTMultiplication) {
-                     RCString *temp2 = RS("multiplication_");
-                     $(result, m(concatenate, RCString)), temp2 );
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "multiplication_");
                  } else if(object->operatorType & OTDivision) {
-                     RCString *temp2 = RS("division_");
-                     $(result, m(concatenate, RCString)), temp2 );
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "division_");
                  } else if(object->operatorType & OTModulo) {
-                     RCString *temp2 = RS("modulo_");
-                     $(result, m(concatenate, RCString)), temp2 );
-                     deallocator(temp2);
+                     $(result, m(appendString, RCString)), "modulo_");
                  }
              }
         }
@@ -198,8 +165,6 @@ method(RCString*, CName, RayMethod)) {
 method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
     size_t iterator;
     RCString *result = RSC("");
-    RCString *space = RS(" ");
-    RCString *comma = RS(", ");
     forAll(iterator, object->arguments->masterRDictionaryObject->keys->count) {
         size_t type = (size_t) object->arguments->masterRDictionaryObject->values->array[iterator];
         RCString * temp = $(delegate, m(getClassNameByIdentifier, RClassTable)), type);
@@ -208,41 +173,63 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
         $(result, m(concatenate, RCString)), temp );
 
         // add space
-        $(result, m(concatenate, RCString)), space );
+        $(result, m(append, RCString)), ' ');
 
         // add name
         $(result, m(concatenate, RCString)), ((RCString*)object->arguments->masterRDictionaryObject->keys->array[iterator]) );
         // if not last
         if(iterator != object->arguments->masterRDictionaryObject->keys->count - 1) {
             // add ','
-            $(result, m(concatenate, RCString)), comma );
+            $(result, m(append, RCString)), ',' );
+            // add space
+            $(result, m(append, RCString)), ' ');
         }
     }
-    deallocator(space);
-    deallocator(comma);
     return result;
 }
 
-#pragma mark Main method
+#pragma mark Main methods
 
-method(RCString*, serializetoCFunc, RayMethod), RClassTable *delegate) {
+method(RCString*, serializetoCFunction, RayMethod), RClassTable *delegate) {
     RCString *result = RSC("");
-    RCString *temp = RS(" ");
-    RCString *leftQuote = RS(")");
-    RCString *rightQuote = RS("(");
 
-    $(result, m(concatenate, RCString)), $(object, m(CPrefix, RayMethod))) );
+    RCString *prefix = $(object, m(CPrefix, RayMethod)));
+    RCString *cname = $(object, m(CName, RayMethod)));
+    RCString *cargs = $(object, m(CArgs, RayMethod)), delegate);
+
+    $(result, m(concatenate, RCString)), prefix );
     $(result, m(concatenate, RCString)), object->returnType);
-    $(result, m(concatenate, RCString)), temp);
-    $(result, m(concatenate, RCString)), $(object, m(CName, RayMethod))) );
-    $(result, m(concatenate, RCString)), rightQuote);
-    $(result, m(concatenate, RCString)), $(object, m(CArgs, RayMethod)), delegate));
-    $(result, m(concatenate, RCString)), leftQuote);
-
+    $(result, m(append, RCString)), ' ');
+    $(result, m(concatenate, RCString)), cname );
+    $(result, m(append, RCString)), '(');
+    $(result, m(concatenate, RCString)), cargs );
+    $(result, m(append, RCString)), ')');
 
     // cleanup
-    deallocator(temp);
-    deallocator(leftQuote);
-    deallocator(rightQuote);
+    deleter(prefix, RCString);
+    deleter(cname, RCString);
+    deleter(cargs, RCString);
+    return result;
+}
+
+method(RCString*, serializetoCPointer,  RayMethod), RClassTable *delegate) {
+    RCString *result = RSC("");
+
+    RCString *cname = $(object, m(CName, RayMethod)));
+    RCString *cargs = $(object, m(CArgs, RayMethod)), delegate);
+
+    $(result, m(concatenate, RCString)), object->returnType);
+    $(result, m(append, RCString)), ' ');
+    $(result, m(append, RCString)), '(');
+    $(result, m(append, RCString)), '*');
+    $(result, m(concatenate, RCString)), cname );
+    $(result, m(append, RCString)), ')');
+    $(result, m(append, RCString)), '(');
+    $(result, m(concatenate, RCString)), cargs);
+    $(result, m(append, RCString)), ')');
+
+    // cleanup
+    deleter(cname, RCString);
+    deleter(cargs, RCString);
     return result;
 }

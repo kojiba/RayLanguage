@@ -18,7 +18,6 @@
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RCString/RCString.h"
-#include "../RIObject/RIObject.h"
 #include "../../RayFoundation/RContainers/RStringDictionary.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
 
@@ -59,7 +58,6 @@ typedef enum RayOperatorType {
 char* toStringRayMethodType(RayMethodType object);
 
 class(RayMethod)
-    discipleOf(RIObject)
 
     RayMethodType    type;
     RayOperatorType  operatorType;
@@ -85,7 +83,8 @@ method(RCString*, CPrefix, RayMethod)); // creates prefix like extern, inline
 method(RCString*, CName,   RayMethod)); // serialize types to name
 method(RCString*, CArgs,   RayMethod),    RClassTable *delegate); // serialize arguments from size_t to strings, need classTable delegate with registered types
 
-// Main method
-method(RCString*, serializetoCFunc, RayMethod),    RClassTable *delegate);
+// Main methods
+method(RCString*, serializetoCFunction, RayMethod),    RClassTable *delegate);
+method(RCString*, serializetoCPointer,  RayMethod),    RClassTable *delegate);
 
 #endif /*__RAY_METHOD_H__*/

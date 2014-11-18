@@ -87,6 +87,8 @@ method(RCompareFlags,       compareWith,                  RCString),    const RC
 
 // Concatenate
 method(void,                concatenate,                  RCString),    const RCString *string);
+method(void,                appendString,                 RCString),    const char *string);
+method(void,                append,                       RCString),    const char character);
 
 // Conversions
 method(RCString*,           toUpperCase,                  RCString));                                          // returns reference (not copy!)
