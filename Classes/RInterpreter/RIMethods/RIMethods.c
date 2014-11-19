@@ -169,7 +169,7 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
     size_t iterator;
     RCString *result = RSC("");
     forAll(iterator, object->arguments->masterRDictionaryObject->keys->count) {
-        size_t type = (size_t) object->arguments->masterRDictionaryObject->values->array[iterator];
+        size_t type = (size_t) $(master(object->arguments, RDictionary)->values, m(elementAtIndex, RArray)), iterator);
         RCString * temp = $(delegate, m(getClassNameByIdentifier, RClassTable)), type);
 
         // add type
@@ -179,9 +179,9 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
         $(result, m(append, RCString)), ' ');
 
         // add name
-        $(result, m(concatenate, RCString)), ((RCString*)object->arguments->masterRDictionaryObject->keys->array[iterator]) );
+        $(result, m(concatenate, RCString)), ((RCString*)$(master(object->arguments, RDictionary)->keys, m(elementAtIndex, RArray)), iterator)));
         // if not last
-        if(iterator != object->arguments->masterRDictionaryObject->keys->count - 1) {
+        if(iterator != master(object->arguments, RDictionary)->keys->count - 1) {
             // add ','
             $(result, m(append, RCString)), ',' );
             // add space

@@ -40,6 +40,22 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
     }
     return last;
 }
+char* copyOfString(const char *string) {
+    size_t length = RStringLenght(string);
+    if(length > 0) {
+        char *result = RAlloc(length * sizeof(char));
+        if(result != nil) {
+            RMemMove(result, string, length);
+            return result;
+        } else {
+            RError("CString. Bad allocation", result);
+            return nil;
+        }
+    } else {
+        return nil;
+    }
+}
+
 
 char randomCharacter(void) {
     register char character = ((char)rand());

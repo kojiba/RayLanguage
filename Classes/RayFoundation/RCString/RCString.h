@@ -24,6 +24,7 @@ typedef struct RCString RCString;
 // basics
 size_t    indexOfFirstCharacterCString (const char *string, size_t size, char character); // returns index, or size
 size_t    indexOfLastCharacterCString  (const char *string, size_t size, char character); // returns index, or size
+char*     copyOfString                 (const char *string);
 RCString* randomRCString               (void);
 char      randomCharacter              (void);
 

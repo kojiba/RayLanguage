@@ -126,6 +126,11 @@ method(void, parseTokens, RInterpreter)) {
                     if(RMemCmp(token->baseString + 1, "include", token->size - 1) == 0) {
                         // add include
                         $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
+
+                        // add include name
+                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        $(object->codeTokens, m(addObject, RArray)), $(name, m(copy, RCString))) );
+
                     } else if (RMemCmp(token->baseString + 1, "define", token->size - 1) == 0) {
                         // add define
 
@@ -134,20 +139,15 @@ method(void, parseTokens, RInterpreter)) {
                     }
                     break;
                 }
-                case '<' : {
-                    if(token->baseString[token->size] == '>') {
-                        // add import name
-                    }
-                    break;
-                }
 
                 // start of class
                 case 'c' : {
                     if(RMemCmp(token->baseString + 1, "lass", token->size - 1) == 0) {
+                        // fixme check name
+
                         // register new type
                         RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
-                        $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
-                        $(name, p(RCString)) );
+                        $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
                         break;
                     }
                 }
@@ -157,13 +157,11 @@ method(void, parseTokens, RInterpreter)) {
                     if(RMemCmp(token->baseString + 1, "ypedef", token->size - 1) == 0) {
                         // register new type
                         RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
-                        $(object->typesTable, m(registerClassWithName, RClassTable)), name->baseString);
-                        $(name, p(RCString)) );
+                        $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
                         break;
                     }
                 }
             }
-            $(token, p(RCString)) );
         }
     }
 }

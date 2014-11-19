@@ -39,19 +39,27 @@
                                                           start = clock(); \
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", diff / 1000 / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
-#define RError(string, object)                            RFPrintf(stderr, "%p ERROR. "string"\n", object)
-#define RWarning(string, object)                          RPrintf(RYellow"Warning. %p - "string"\n"RNC, object)
+#if RAY_ERRORS_ON == 1
+    #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object)
+#else
+    #define RError(string, object)
+#endif
+
+#if RAY_WARNINGS_ON == 1
+    #define RWarning(string, object)                      RPrintf(RYellow"Warning. %p - "string"\n"RNC, object)
+#else
+    #define RWarning(string, object)
+#endif
+
 #define RPrintLn(string)                                  RPrintf(string"\n")
 
 // typedefs
 typedef void*   pointer;
 typedef uint8_t byte;
 typedef byte    rbool;
-
-#define yes                                               ((rbool)1)
-#define no                                                ((rbool)0)
-
-#define nil                                               ((pointer)0)
+#define yes                                               ((rbool) 1)
+#define no                                                ((rbool) 0)
+#define nil                                               ((pointer) 0)
 
 // declarations
 #define class(className)                                  typedef struct className { \
@@ -91,9 +99,5 @@ typedef byte    rbool;
 #define forAll(iterator, count)                           for(iterator = 0; iterator < count; ++iterator)
 #define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < start + count; ++iterator)
 #define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.count; ++iterator)
-
-//// naming rules
-//#define members
-//#define methods
 
 #endif /*__R_SYNTAX_H__*/
