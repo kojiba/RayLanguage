@@ -560,6 +560,13 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
     return result;
 }
 
+method(inline RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
+    RCString *temp = RS(separatorsString);
+    RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
+    deallocator(temp);
+    return result;
+}
+
 method(RCString *, substringByBounds, RCString), RBounds bounds) {
     register RRange range;
     range.from  = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;

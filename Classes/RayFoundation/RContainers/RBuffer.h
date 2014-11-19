@@ -41,16 +41,20 @@ destructor  (RBuffer);
 printer     (RBuffer);
 
 // Reallocation
-method(size_t*,     addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
-method(RByteArray*, addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RByteArray, store data, returns self, newsize in bytes
-method(RBuffer*,    flush,          RBuffer));                             // flushes buffer, returns self
-method(RBuffer*,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
+method(size_t *,     addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
+method(RByteArray *, addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RByteArray, store data, returns self, newsize in bytes
+method(RBuffer *,    flush,          RBuffer));                             // flushes buffer, returns self
+method(RBuffer *,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
 // Workers
-method(size_t, shiftForPlace, RBuffer), size_t place);
+method(size_t, shiftForPlace, RBuffer),    size_t place);
 
 // Data operations
-method(void,    addData,       RBuffer), pointer *data, size_t sizeInBytes);  // copies data
-method(pointer, getDataCopy,   RBuffer), size_t index);                       // return copy
+method(void,    addData,       RBuffer),    pointer data, size_t sizeInBytes);   // copies data
+method(pointer, getDataCopy,   RBuffer),    size_t index);                       // return copy
+
+
+// Additions to RByteArray
+method(RBuffer *, serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

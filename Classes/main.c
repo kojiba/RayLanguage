@@ -24,20 +24,16 @@
 //    int readOnly_b;
 //} Hello;
 
-
-
-
-
 int main(int argc, const char *argv[]) {
     initPointers();
     ComplexTest();
     initPointers();
-    RayToC(RResourcesDir"Simple.ray");
-    $(RISingleton->stringConsts, p(RArray)));
-    $(RISingleton->typesTable, p(RClassTable)));
-
-    $(RISingleton, d(RInterpreter)) );
-    deallocator(RISingleton);
+//    RayToC(RResourcesDir"Simple.ray");
+//    $(RISingleton->stringConsts, p(RArray)));
+//    $(RISingleton->typesTable, p(RClassTable)));
+//
+//    $(RISingleton, d(RInterpreter)) );
+//    deallocator(RISingleton);
 
 //    RayMethod *method = $(nil, c(RayMethod)), MTInline | MTVirtual, RSC("void"));
 //    method->nativeName = RSC("printA");
@@ -98,5 +94,16 @@ int main(int argc, const char *argv[]) {
 //    deleter(rayProperty, RayProperty);
 //    deleter(rayProperty2, RayProperty);
 //    deleter(class, RayClass);
+    RByteArray *some = allocator(RByteArray);
+    some->array = "12345";
+    some->size = sizeof("12345") - 1;
+    $(some, p(RByteArray)));
+    size_t sizes[] = {1, 1, 1, 1, 1, 0};
+    RBuffer *from = $(some, m(serializeToBuffer, RByteArray)), sizes);
+    $(from, m(addData, RBuffer)), "Hello", sizeof("Hello"));
+    $(from, p(RBuffer)));
+    deleter(from, RBuffer);
+
+    deallocator(some);
     return 0;
 }

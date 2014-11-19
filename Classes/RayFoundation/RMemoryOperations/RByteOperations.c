@@ -158,9 +158,10 @@ method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
 }
 
 method(RByteArray*, copy, RByteArray)) {
-    RByteArray *copy = allocator(RByteArray);
-    copy->array      = getByteArrayCopy(object->array, object->size);
-    copy->size       = object->size;
+    RByteArray *copy = $(nil, c(RByteArray)), object->size);
+    if(copy != nil) {
+        RMemCpy(copy->array, object->array, object->size);
+    }
     return copy;
 }
 

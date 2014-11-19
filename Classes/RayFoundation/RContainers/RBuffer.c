@@ -36,8 +36,7 @@ constructor(RBuffer)) {
                 RError("RBuffer. Allocation of sizes array failed.", object);
 
                 // cleanup
-                $(master(object, RByteArray), d(RByteArray)) );
-                deallocator(master(object, RByteArray));
+                deleter(master(object, RByteArray), RByteArray);
             }
         } else {
             RError("RBuffer. Allocation of master RByteArray failed.", object);
@@ -48,9 +47,7 @@ constructor(RBuffer)) {
 
 destructor(RBuffer) {
     // kills buffer
-    $(master(object, RByteArray), d(RByteArray)) );
-    deallocator(master(object, RByteArray));
-
+    deleter(master(object, RByteArray), RByteArray);
     // kills sizes
     deallocator(object->sizesArray);
 }
@@ -127,16 +124,17 @@ method(size_t, shiftForPlace, RBuffer), size_t place) {
 
 #pragma mark Data operations
 
-method(void, addData, RBuffer), pointer *data, size_t sizeInBytes) {
+method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
 
-    if(object->freePlaces == 0) {
+    while(object->freePlaces == 0) {
         // add free to sizes
         $(object, m(addSizeToSizes, RBuffer)), object->count * sizeMultiplierOfRBufferDefault);
     }
-
-    if(sizeInBytes > master(object, RByteArray)->size - object->totalPlaced) {
+    size_t counter = 1;
+    while(sizeInBytes > master(object, RByteArray)->size - object->totalPlaced) {
         // add free to buffer
-        $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault);
+        $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault * counter);
+        ++counter;
     }
 
     if(master(object, RByteArray)->array != nil
@@ -164,4 +162,34 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
         RError("RBuffer. Bad index.", object);
     }
     return result;
+}
+
+#pragma mark Addition to RByteArray
+
+method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
+    size_t iterator = 0;
+
+    // search end, compute length
+    while(sizesArray[iterator] != 0) {
+        ++iterator;
+    }
+
+    if(iterator != 0) {
+        RBuffer *result = allocator(RBuffer);
+        if(result != nil) {
+            master(result, RByteArray) = $(object, m(copy, RByteArray)));
+            if(master(result, RByteArray) != nil) {
+                result->count = iterator;
+                result->freePlaces = 0;
+                result->classId = registerClassOnce(toString(RBuffer));
+
+                size_t *newSizesArray = RAlloc(sizeof(size_t) * result->count);
+                RMemCpy(newSizesArray, sizesArray, result->count * sizeof(size_t));
+                result->sizesArray = newSizesArray;
+                result->totalPlaced = object->size;
+            }
+        }
+        return result;
+    }
+    return nil;
 }
