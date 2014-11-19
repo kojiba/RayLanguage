@@ -17,11 +17,12 @@ Strings:
 1. Wide range of c-string processing operations (RCString)  
 2. Replacings  
 3. Find of substring or symbol  
-4. delete characters/substrings  
-5. delete of duplicatings characters/substring  
-6. compares  
-7. read from file/ apend to file  
-8. etc...  
+4. Delete characters/substrings  
+5. Delete of duplicatings characters/substring  
+6. Compares  
+7. Read from file/ apend to file  
+8. Tokenization into containeer Array
+9. etc...
 
 Memory operations:  
 1. Self-code easy sandboxing and testing with logging.  
