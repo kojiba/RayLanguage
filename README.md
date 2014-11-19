@@ -4,16 +4,33 @@ RayLanguage
 firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
-All based on defines. Here you can find dynamic array for C.
+All based on defines.
 
-secondly:
-There is BEST dynamic array for C language.
-There is classTable, that can help you to fast audite C code.
+Containers:
+1.  Array (dynamicly self-longs, store pointers to objects)
+2.  Dictionary (NSDictionary, std::map analog, self-longs)
+3.  Buffer (self-longs, sore full copy of objects)
+4.  StringDictionary (Dictionary with keys like strings)
+5.  ClassTable (for store pairs of number and string once)
 
-killer-feature:
-Ray Virtual Machine (RVM) with simple 'rasm' byte-code.
-BrainFuck compiler(to rasm byte-code) for RVM.
-Floating enums(changes value in runtime)
+Strings:
+1. Wide range of c-string processing operations (RCString)
+2. Replacings
+3. Find of substring or symbol
+4. delete characters/substrings
+5. delete of duplicatings characters/substring
+6. compares
+7. read from file/ apend to file
+8. etc...
+
+Memory operations:
+1. Self-code easy sandboxing and testing with logging.
+2. Work with byte buffers
+3. Work with memory chunks
+
+Some test projects based on RayFoundation:
+1. Simple VM with Brainfuck compiler
+2. Simple lang interpreter (unfinished)
 
 Work with RArray:
 
@@ -248,9 +265,7 @@ You can simply use it in Yours C++ projects:
 ```C++
 #include <iostream>
 
-extern "C" {
-    #include "RArray.h"
-}
+#include "RayFoundation.h"
 
 using namespace std;
 
