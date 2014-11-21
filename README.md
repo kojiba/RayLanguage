@@ -21,7 +21,7 @@ Strings:
 5. Delete of duplicatings characters/substring  
 6. Compares  
 7. Read from file/ apend to file  
-8. Tokenization into containeer Array
+8. Tokenization into containeer Array  
 9. etc...
 
 Memory operations:  
