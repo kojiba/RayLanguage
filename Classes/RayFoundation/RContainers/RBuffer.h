@@ -24,7 +24,7 @@ static const size_t startSizeOfRBufferDefault      = 1024; // 1kb of place
 static const size_t sizeMultiplierOfRBufferDefault = 2;
 static const size_t sizeOfObjectsOfRBufferDefault  = 128;  // 128 sizes stores
 
-class(RBuffer)
+class(RBuffer) // -------------------
     discipleOf(RByteArray)
 
     // sizes array
@@ -34,7 +34,7 @@ class(RBuffer)
 
     // total
     size_t totalPlaced;
-endOf(RBuffer)
+endOf(RBuffer) // -------------------
 
 constructor (RBuffer));
 destructor  (RBuffer);
@@ -47,11 +47,19 @@ method(RBuffer *,    flush,          RBuffer));                             // f
 method(RBuffer *,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
 // Workers
-method(size_t, shiftForPlace, RBuffer),    size_t place);
+method(size_t,       shiftForPlace,       RBuffer),    size_t place);       // unsafe
+method(inline rbool, checkIndexWithError, RBuffer),    size_t index);
 
 // Data operations
-method(void,    addData,       RBuffer),    pointer data, size_t sizeInBytes);   // copies data
-method(pointer, getDataCopy,   RBuffer),    size_t index);                       // return copy
+// setters
+method(void,    addData,          RBuffer),    pointer data, size_t sizeInBytes);   // copies data
+
+// getters
+method(pointer, getDataReference, RBuffer),    size_t index);                       // return pointer
+method(pointer, getDataCopy,      RBuffer),    size_t index);                       // return copy
+
+// deleters
+method(void,    deleteDataAt,     RBuffer),    size_t index);
 
 
 // Additions to RByteArray

@@ -122,6 +122,15 @@ method(size_t, shiftForPlace, RBuffer), size_t place) {
     return shift;
 }
 
+method(rbool, checkIndexWithError, RBuffer), size_t index) {
+    if(index < object->count) {
+        return yes;
+    } else {
+        RError("RBuffer. Bad index.", object);
+        return no;
+    }
+}
+
 #pragma mark Data operations
 
 method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
@@ -150,18 +159,45 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
     }
 }
 
+method(pointer, getDataReference, RBuffer), size_t index) {
+    if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
+        return (master(object, RByteArray)->array + $(object, m(shiftForPlace, RBuffer)), index));
+    } else {
+        return nil;
+    }
+}
+
 method(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
-    if(index < object->count) {
+    pointer *ref = $(object, m(getDataReference, RBuffer)), index);
+    if(ref != nil) {
         result = RAlloc(object->sizesArray[index]);
         if (result != nil) {
-            size_t shift = $(object, m(shiftForPlace, RBuffer)), index);
-            RMemMove(result, master(object, RByteArray)->array + shift, object->sizesArray[index]);
+            RMemMove(result, ref, object->sizesArray[index]);
+        } else {
+            RError("RBuffer. Bad allocation on getDataCopy.", object);
         }
-    } else {
-        RError("RBuffer. Bad index.", object);
     }
     return result;
+}
+
+method(void, deleteDataAt, RBuffer), size_t index) {
+    if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
+        size_t shift = $(object, m(shiftForPlace, RBuffer)), index);
+        size_t size = object->sizesArray[index];
+
+        RMemMove(master(object, RByteArray)->array + shift,
+                 master(object, RByteArray)->array + shift + size,
+                 object->totalPlaced - size);
+
+        RMemMove(object->sizesArray + index,
+                 object->sizesArray + index + 1,
+                 object->count - index);
+
+        --object->count;
+        ++object->freePlaces;
+        object->totalPlaced -= size;
+    }
 }
 
 #pragma mark Addition to RByteArray

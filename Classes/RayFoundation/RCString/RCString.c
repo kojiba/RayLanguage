@@ -267,6 +267,10 @@ method(static inline rbool, isContainsSubsting, RCString), RCString *string) {
     }
 }
 
+method(size_t, numberOfLines, RCString)) {
+    return $(object, m(numberOfCharacters, RCString)), '\n');
+}
+
 #pragma mark Deletions
 
 method(RCString *, deleteAllCharacters, RCString), char character) {
