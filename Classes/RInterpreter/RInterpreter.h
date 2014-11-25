@@ -58,11 +58,6 @@ constructor (RInterpreter));
 destructor  (RInterpreter);
 singleton   (RInterpreter);
 
-method(RCString*, fileNameFromSourceName, RInterpreter),    const RCString *sourceFileName);
-method(void,      initContainers,         RInterpreter));
-method(size_t,    endOfProcessingString,  RInterpreter));
-method(void,      parseTokens,            RInterpreter));
-
 // Main method
 method(RCString*, convertRayToC,          RInterpreter),    const char *sourceFileName);
 

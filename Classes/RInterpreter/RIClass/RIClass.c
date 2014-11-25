@@ -10,9 +10,21 @@ constructor(RayClass)) {
     if(object != nil) {
         object->classId = registerClassOnce(toString(RayClass));
         object->methods       = makeRArray();
+
         object->properties    = makeRArray();
+        if(object->properties != nil) {
+            object->properties->destructorDelegate = (void (*)(pointer)) d(RayProperty);
+            object->properties->printerDelegate    = (void (*)(pointer)) p(RayProperty);
+        }
+
         object->masterClasses = makeRArray();
+        if(object->masterClasses != nil) {
+            object->properties->destructorDelegate = (void (*)(pointer)) d(RayClass);
+            object->properties->printerDelegate    = (void (*)(pointer)) p(RayClass);
+        }
+
         object->statics       = makeRArray();
+
     }
     return object;
 }

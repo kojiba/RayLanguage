@@ -15,6 +15,8 @@
  **/
 
 #include "RInterpreter.h"
+#include "RIProperties/RIProperties.h"
+#include "RIClass/RIClass.h"
 
 constructor(RInterpreter)) {
     object = allocator(RInterpreter);
@@ -31,6 +33,7 @@ constructor(RInterpreter)) {
             object->globalVariables  = nil;
             object->typeDefs         = nil;
             object->stringConsts     = nil;
+            object->classes          = nil;
 
             // register some basic c types
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void)); // must be 0
@@ -62,6 +65,9 @@ destructor(RInterpreter) {
     }
     if(object->stringConsts != nil) {
         deleter(object->stringConsts, RArray);
+    }
+    if(object->classes != nil) {
+        deleter(object->classes, RArray);
     }
 }
 
@@ -115,6 +121,43 @@ method(void, initContainers, RInterpreter)) {
     makeStringArrayFrom(object->stringConsts);
 }
 
+method(void, parseClass, RInterpreter), size_t iterator) {
+    size_t inner;
+    RayClass *rayClass =  $(nil, c(RayClass)));
+
+    // add name
+    rayClass->name = copyRCString($(object->rayTokens, m(elementAtIndex, RArray)), iterator - 1));
+
+    for(inner = iterator; inner <  object->rayTokens->count; ++inner) {
+        RCString *token = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+        switch(token->baseString[0]) {
+            case 'p' : {
+                // properties begin
+                if(RMemCmp(token->baseString + 1, "roperties:", token->size - 1) == 0) {
+                    RayProperty *property = $(nil, c(RayProperty)));
+
+                    addObjectToRA(rayClass->properties, property);
+                }
+                break;
+            }
+
+            case 'r' : {
+
+            }
+
+            // start of classBody
+            case '{' : {
+                break;
+            }
+
+            // end of classBody
+            case '}' : {
+                break;
+            }
+        }
+    }
+}
+
 method(void, parseTokens, RInterpreter)) {
     if(object->rayTokens != nil) {
         size_t iterator;
@@ -143,11 +186,17 @@ method(void, parseTokens, RInterpreter)) {
                 // start of class
                 case 'c' : {
                     if(RMemCmp(token->baseString + 1, "lass", token->size - 1) == 0) {
-                        // fixme check name
-
-                        // register new type
+                        // register new class
                         RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
-                        $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                        size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
+
+                        if(identifier == 0) {
+                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                            $(object, m(parseClass, RInterpreter)), iterator);
+                        } else {
+                            RFPrintf(stderr, "%p ERROR. RInterpreter. Class with name \"%s\" already exists.\n", object, name->baseString);
+                            return;
+                        }
                         break;
                     }
                 }
@@ -157,10 +206,17 @@ method(void, parseTokens, RInterpreter)) {
                     if(RMemCmp(token->baseString + 1, "ypedef", token->size - 1) == 0) {
                         // register new type
                         RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
-                        $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                        size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
+
+                        if(identifier == 0) {
+                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                        } else {
+                            RFPrintf(stderr, "%p ERROR. RInterpreter. Type with name \"%s\" already exists.\n", object, name->baseString);
+                        }
                         break;
                     }
                 }
+
             }
         }
     }

@@ -564,7 +564,7 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
     return result;
 }
 
-method(inline RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
+method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
     RCString *temp = RS(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);

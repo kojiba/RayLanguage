@@ -1,6 +1,8 @@
 #ifndef __RAY_LEXEMES_H__
 #define __RAY_LEXEMES_H__
 
+
+
 const char const *declarationLexems[] = {
         "class", "implementation", "disciple of"
 };

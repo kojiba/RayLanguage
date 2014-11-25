@@ -40,6 +40,7 @@
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", diff / 1000 / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
 #if RAY_ERRORS_ON == 1
+    #define RErrStr                                       RFPrintf(stderr,
     #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object)
 #else
     #define RError(string, object)

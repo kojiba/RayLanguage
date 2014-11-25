@@ -72,19 +72,27 @@ printer(RBuffer) {
 #pragma mark Reallocation
 
 method(size_t*, addSizeToSizes, RBuffer), size_t newSize) {
-    object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(size_t));
-    if(object->sizesArray != nil) {
-        // add free places
-        object->freePlaces = newSize - object->count;
+    if(newSize > object->count) {
+        object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(size_t));
+        if (object->sizesArray != nil) {
+            // add free places
+            object->freePlaces = newSize - object->count;
+        }
+    } else {
+        RError("RBuffer. Bad new size for Sizes", object);
     }
     return object->sizesArray;
 }
 
 method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
-    master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, newSize);
-    if(master(object, RByteArray)->array != nil) {
-        // set newSize
-        master(object, RByteArray)->size = newSize;
+    if(newSize > (object->totalPlaced)) {
+        master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, newSize);
+        if (master(object, RByteArray)->array != nil) {
+            // set newSize
+            master(object, RByteArray)->size = newSize;
+        }
+    } else {
+        RError("RBuffer. Bad new size for memory", object);
     }
     return master(object, RByteArray);
 }

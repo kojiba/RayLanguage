@@ -367,6 +367,10 @@ method(RArray *, getSubarray, RArray), RRange range){
     return result;
 }
 
+method(pointer, lastObject, RArray)) {
+    return object->array[object->count - 1];
+}
+
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {

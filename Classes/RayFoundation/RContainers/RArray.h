@@ -81,6 +81,7 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(pointer,            elementAtIndex,            RArray),    size_t index);
+method(inline pointer,     lastObject,                RArray));
 
 // Sorts
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));

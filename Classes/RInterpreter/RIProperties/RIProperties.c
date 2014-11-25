@@ -55,11 +55,75 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
             deallocator(temp);
             break;
         }
-
     }
 
     // add name
     $(result, m(concatenate, RCString)), object->name);
     deallocator(space);
+    return result;
+}
+
+RayProperty* parseSourceRayProperty(RCString *code, RClassTable *delegate) {
+    rbool        isTypised = no;
+    size_t       iterator;
+    RArray *tokens = $(code, m(substringsSeparatedBySymCStr, RCString)), "  ;\r\n\t");
+
+    if(tokens != nil) {
+        $(tokens, p(RArray)));
+        RayProperty *property  = $(nil, c(RayProperty)));
+
+        forAll(iterator, tokens->count) {
+            RCString *token = $(tokens, m(elementAtIndex, RArray)), iterator);
+
+            if(RMemCmp(token->baseString, "readOnly", token->size) == 0) {
+                if(!isTypised) {
+                    property->type = PTReadOnly;
+                    isTypised = yes;
+                    continue;
+                } else {
+                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
+                }
+            }
+
+            if(RMemCmp(token->baseString, "readWrite", token->size) == 0) {
+                if (!isTypised) {
+                    property->type = PTReadWrite;
+                    isTypised = yes;
+                    continue;
+                } else {
+                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
+                }
+            }
+
+            if(RMemCmp(token->baseString, "inner", token->size) == 0) {
+                if (!isTypised) {
+                    property->type = PTInner;
+                    isTypised = yes;
+                    continue;
+                } else {
+                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
+                }
+            }
+        }
+
+        // must be type
+        RCString *type = $(tokens, m(elementAtIndex, RArray)), tokens->count - 2);
+        property->memSizeType = $(delegate, m(getIdentifierByClassName, RClassTable)), type->baseString);
+
+        if(property->memSizeType == 0) {
+            RErrStr "Unknown type. Token : %lu\n", tokens->count - 2);
+        }
+
+        // last must be name
+        property->name = copyRCString($(tokens, m(lastObject, RArray))));
+        return property;
+    }
+    return nil;
+}
+
+RayProperty* parseSourceCRayProperty(char *code, RClassTable *delegate) {
+    RCString *source = RS(code);
+    RayProperty *result = parseSourceRayProperty(source, delegate);
+    deallocator(source);
     return result;
 }
