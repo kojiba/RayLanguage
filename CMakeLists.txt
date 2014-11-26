@@ -18,8 +18,6 @@ set(RVM_SOURCES
 
 # RInterpreter --------------------------------------------------------------
 set(RINTERPRETER_HEADERS # Interpreter
-                        Classes/RInterpreter/BaseCLexems.h
-                        Classes/RInterpreter/RayLexemes.h
 
                         Classes/RInterpreter/RIProperties/RIProperties.h
                         Classes/RInterpreter/RIMethods/RIMethods.h
@@ -91,6 +89,7 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RayFoundation/RClassTable/RClassTable.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
+
                  # Tests
                  Classes/Tests.c
 

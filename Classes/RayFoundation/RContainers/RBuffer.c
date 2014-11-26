@@ -98,17 +98,9 @@ method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
 }
 
 method(RBuffer*, flush, RBuffer)) {
-    // kills
-    $(master(object, RByteArray), d(RByteArray)) );
-    deallocator(master(object, RByteArray));
-    deallocator(object->sizesArray);
-
-    // new
-    master(object, RByteArray) = makeRByteArray(startSizeOfRBufferDefault);
-    object->sizesArray = RAlloc(sizeof(size_t) * sizeOfObjectsOfRBufferDefault);
-    object->freePlaces  = startSizeOfRBufferDefault;
-    object->count       = 0;
-    object->totalPlaced = 0;
+    object->freePlaces  += object->count;
+    object->count        = 0;
+    object->totalPlaced  = 0;
     return object;
 }
 

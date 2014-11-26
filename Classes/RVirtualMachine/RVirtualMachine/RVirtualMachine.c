@@ -71,7 +71,7 @@ method(size_t, executeCode, RVirtualMachine)) {
         } break;
 // gets
         case r_get_char : {
-            *object->dataRegister = getchar();
+            *object->dataRegister = (byte) getchar();
             ++object->command;
         } break;
 

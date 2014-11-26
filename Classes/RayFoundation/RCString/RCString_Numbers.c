@@ -75,6 +75,7 @@ method(RCString *, toRCString, RNumberSystemBase)) {
             return RS(toString(RDecimal));
         }
     }
+    return nil;
 }
 
 #pragma mark RCString Additions
@@ -129,4 +130,5 @@ method(RNumberSystemBase, isNumber, RCString)) {
     } else {
         return RNotNumber;
     }
+    return RNotNumber;
 }

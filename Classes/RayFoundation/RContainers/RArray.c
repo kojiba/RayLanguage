@@ -151,29 +151,13 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 
 method(void, flush, RArray)) {
     register size_t iterator;
-
-    if (object != nil) {
-
-        if (object->array != nil) {
-            forAll(iterator, object->count) {
-                // call destructors for all of objects in array
-                destroyElementAtIndex(iterator); // or do nothing
-            }
-            // dealloc array pointer
-            deallocator(object->array);
-            object->array = RAlloc(object->startSize * sizeof(pointer));
-
-            if (object->array == nil) {
-                RError("RA. Flush allocation error", object);
-                return;
-            }
-
-            object->count = 0;
-            object->freePlaces = object->startSize;
+    if (object->array != nil) {
+        forAll(iterator, object->count) {
+            // call destructors for all of objects in array
+            destroyElementAtIndex(iterator); // or do nothing
         }
-
-    } else {
-        RWarning("RA. Flushing a nil, do nothing, please delete function call, or fix it.", object);
+        object->freePlaces += object->count;
+        object->count = 0;
     }
 
 #if RAY_SHORT_DEBUG == 1

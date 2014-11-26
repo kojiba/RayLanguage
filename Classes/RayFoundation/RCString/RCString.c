@@ -483,8 +483,8 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 
     if(string != nil) {
         result = makeRArray();
-        result->destructorDelegate = d(RCString);
-        result->printerDelegate    = p(RCString);
+        result->destructorDelegate = (void (*)(pointer)) d(RCString);
+        result->printerDelegate    = (void (*)(pointer)) p(RCString);
     }
 
     while(string != nil) {
@@ -529,8 +529,8 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
                     if(result == nil) {
                         result = makeRArray();
                         // set-up delegates
-                        result->printerDelegate    = p(RCString);
-                        result->destructorDelegate = d(RCString);
+                        result->printerDelegate    = (void (*)(pointer)) p(RCString);
+                        result->destructorDelegate = (void (*)(pointer)) d(RCString);
                     }
                 }
 
@@ -556,6 +556,9 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
             // add last and sizeToFit
             substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
             if(substring != nil) {
+                forAll(iterator, separatorsString->size) {
+                    $(substring, m(deleteAllCharacters, RCString)), separatorsString->baseString[iterator]);
+                }
                 addObjectToRA(result, substring);
             }
             $(result, m(sizeToFit, RArray)) );
@@ -610,7 +613,6 @@ method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
             }
         }
     }
-    return not_equals;
 }
 
 #pragma mark Concatenate

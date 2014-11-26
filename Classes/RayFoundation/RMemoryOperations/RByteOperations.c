@@ -107,8 +107,8 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
     if(subArray != nil) {
         resultArray = makeRArray();
         // init RArray
-        resultArray->destructorDelegate = d(RByteArray);
-        resultArray->printerDelegate    = p(RByteArray);
+        resultArray->destructorDelegate = (void (*)(pointer)) d(RByteArray);
+        resultArray->printerDelegate    = (void (*)(pointer)) p(RByteArray);
     }
 
     while(subArray != nil && size > 0) {

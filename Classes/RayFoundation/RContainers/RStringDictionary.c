@@ -26,10 +26,10 @@ constructor(RStringDictionary)) {
             object->classId = registerClassOnce(toString(RStringDictionary));
 
             // set-up comparator
-            master(master(object, RDictionary), RCompareDelegate)->virtualCompareMethod = m(compareWith, RCString);
+            master(master(object, RDictionary), RCompareDelegate)->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) m(compareWith, RCString);
 
             // set-up delegates destructors
-            master(object, RDictionary)->keys->destructorDelegate = d(RCString);
+            master(object, RDictionary)->keys->destructorDelegate = (void (*)(pointer)) d(RCString);
         }
     }
     return object;

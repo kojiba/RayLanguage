@@ -29,13 +29,13 @@ constructor(RClassTable)) {
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
             if(master(object, RCompareDelegate) != nil) {
                 // overload delegate function
-                master(object, RCompareDelegate)->virtualCompareMethod = m(compareWith, RClassNamePair);
+                master(object, RCompareDelegate)->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) m(compareWith, RClassNamePair);
             } else {
                 RPrintf("Warning. RCT. Bad allocation on delegate.");
             }
             // we store pairs, and set destructor for pair, and printer for pair
-            master(object, RArray)->destructorDelegate = d(RClassNamePair);
-            master(object, RArray)->printerDelegate    = p(RClassNamePair);
+            master(object, RArray)->destructorDelegate = (void (*)(pointer)) d(RClassNamePair);
+            master(object, RArray)->printerDelegate    = (void (*)(pointer)) p(RClassNamePair);
 
             // 4 it's for self
             object->classId = 3;
@@ -74,7 +74,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
                 if(master(object, RArray)->count > 20) {
                     object->cacheTable = makeRArray();
                     // do not set destructor
-                    object->cacheTable->printerDelegate = p(RClassNamePair);
+                    object->cacheTable->printerDelegate = (void (*)(pointer)) p(RClassNamePair);
                 }
 
                 // successfully register new class

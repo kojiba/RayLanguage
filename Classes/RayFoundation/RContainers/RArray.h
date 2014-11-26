@@ -66,7 +66,7 @@ printer     (RArray);
 
 // Allocation - Reallocation
 method(RArrayFlags,        addSize,                   RArray),    size_t newSize);                    // adds some size, store data
-method(void,               flush,                     RArray));                                       // destroys all old elements, creates new empty array
+method(void,               flush,                     RArray));                                       // destroys all old elements
 method(byte,               sizeToFit,                 RArray));
 
 // Add - Set - Delete
