@@ -4,6 +4,7 @@
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  */
 
+#include <time.h>
 #include "Tests.h"
 #include "RayFoundation/RayFoundation.h"
 #include "RInterpreter/RInterpreter.h"
@@ -14,16 +15,25 @@ int main(int argc, const char *argv[]) {
     initPointers();
     ComplexTest();
     initPointers();
-    RArray *hello = $(RS("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit "
-            "in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-            "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."), substringsSeparatedBySymCStrRCString), " ,.-+/=;:!?\n\t\r");
+    initRClock();
+    RCString *text = RCStringFromFile(argv[1]);
+
+    RPrintLn("Time for reading file :");
+    tickRClock();
+    RArray *hello = $(text, substringsSeparatedBySymCStrRCString), " ,.-+/=;:!?\n\t\r\'\"\0");
+
+    RPrintLn("Time for separating buffer:");
+    tickRClock();
+
     if(hello != nil) {
-        $(hello, p(RArray)));
-        $(hello, m(flush, RArray)));
-        $(hello, p(RArray)));
         deleter(hello, RArray);
     }
+
+    if(text != nil) {
+        deleter(text, RCString);
+    }
+    RPrintLn("Time for cleanup:");
+    tickRClock();
 
     return 0;
 }

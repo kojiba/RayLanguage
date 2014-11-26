@@ -99,7 +99,7 @@ method(RCString *,           toLowerCase,                 RCString));           
 
 // With file
 method(void,                appendToFile,                 RCString),    const char *filename);
-RCString* RCStringFromFile(const char *filename);
+RCString* RCStringFromFile(const char *filename); // may not be 0-terminated, use it like a buffer with file content
 
 //----------------------------------------------------------------------------------
 

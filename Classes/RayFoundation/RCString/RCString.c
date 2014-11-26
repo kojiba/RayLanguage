@@ -691,25 +691,41 @@ RCString* RCStringFromFile(const char *filename) {
     if(file != nil) {
         RFSeek(file, 0, SEEK_END);
         fileSize = RFTell(file);
-        RRewind(file);
-        buffer = RAlloc(fileSize * (sizeof(char)));
-        RFRead(buffer, sizeof(char), fileSize, file);
-        RFClose(file);
-        RCString *result = allocator(RCString);
-        $(result, m(setConstantString, RCString)), buffer);
-        return result;
+        if(fileSize > 0) {
+            RRewind(file);
+            buffer = RAlloc(fileSize * (sizeof(char)));
+            if(buffer != nil) {
+                RFRead(buffer, sizeof(char), fileSize, file);
+                RFClose(file);
+                RCString *result = $(nil, c(RCString)));
+                if(result != nil) {
+                    result->baseString = buffer;
+                    result->size = (size_t) fileSize;
+                    return result;
+                } else {
+                    RError("RCStringFromFile. Bad allocation of RCString.", nil);
+                }
+            } else {
+                RErrStr "RCStringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n", filename, fileSize);
+            }
+        } else {
+            RErrStr "RCStringFromFile. Error read file \"%s\".\n", filename);
+        }
     } else {
-        RError("RCS. Cannot open file.", filename);
-        return nil;
+        RErrStr "RCStringFromFile. Cannot open file \"%s\".\n", filename);
     }
+    return nil;
 }
 
 method(void, appendToFile, RCString), const char *filename) {
     FILE *file = fopen(filename, "ab");
     if (file != NULL) {
-        fputs(object->baseString, file);
+        ssize_t result = fputs(object->baseString, file);
+        if(result < 0) {
+            RError("RCS. Failed save string to file.", object);
+        }
         fclose(file);
     } else {
-        RError("RS. Failed save to file", object);
+        RError("RCS. Failed save string to file, cant open file.", object);
     }
 }
