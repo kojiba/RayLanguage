@@ -131,7 +131,7 @@ method(void, flush, RCString)) {
 #pragma mark Setters
 
 method(RCString *, setString, RCString), const char *string) {
-    if(string != nil) {
+    if(string != nil && object != nil) {
         register size_t stringSize = RStringLenght(string) + 1;
 
         // checking, if exist and size like copying
@@ -151,7 +151,7 @@ method(RCString *, setString, RCString), const char *string) {
         RMemMove(object->baseString, string, object->size);
         --object->size;
     } else {
-        RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
+        RWarning("RCS. Setted strings or container is empty, please delete function call, or fix it.", object);
     }
     return object;
 }

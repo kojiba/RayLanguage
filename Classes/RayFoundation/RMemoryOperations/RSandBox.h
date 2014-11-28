@@ -88,7 +88,7 @@ void switchFromSandBox(RSandBox *sandBox);
 
 //------------------------------------------------------------------------------------------------
 
-#define createSandBoxSingleton(name) \
+#define createSandBoxSingleton(name, memSize) \
 RSandBox* name();\
 pointer concatenate(SandBoxAllocator, name)(size_t size) {\
     return $(name(), m(malloc, RSandBox)), size);\
@@ -105,7 +105,7 @@ void concatenate(SandBoxFree, name)(pointer ptr) {\
 RSandBox* name() { \
 static RSandBox *instance = nil; \
 if(instance == nil) { \
-instance = $(nil, c(RSandBox)), 16348, 128); \
+instance = $(nil, c(RSandBox)), memSize, 32); \
 instance->selfMalloc = concatenate(SandBoxAllocator, name); \
 instance->selfRealloc = concatenate(SandBoxReallocator, name); \
 instance->selfCalloc = concatenate(SandBoxCallocator, name); \

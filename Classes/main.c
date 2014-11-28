@@ -11,20 +11,20 @@
 #include "RayFoundation/RSystem.h"
 #include "RInterpreter/RIProperties/RIProperties.h"
 
-createSandBoxSingleton(someSandBox)
+createSandBoxSingleton(someSandBox, 65535)
 
 int main(int argc, const char *argv[]) {
     initPointers();
     ComplexTest();
+    size_t iterator;
     initPointers();
-
     switchToSandBox(someSandBox());
-    RCString *some  = RSC("Some string");
-    RCString *hello  = RSC("hello");
-    RCString *mor = RSC("mor");
-//    deleter(some, RCString);
-    $(someSandBox(), p(RSandBox)));
+    forAll(iterator, 20) {
+        RCString *temp = randomRCString();
+    }
 
+    $(someSandBox(), p(RSandBox)));
     deleter(someSandBox(), RSandBox); // automaticaly disables
+
     return 0;
 }

@@ -1,81 +1,19 @@
 #include <time.h>
+#include "RayFoundation/RayBase.h"
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
-
-//pointer mySandBoxAlloc(size_t size);
-//
-//RSandBox* mySingleton(void) {
-//    static RSandBox *instance = nil;
-//    if(instance == nil) {
-//        instance = $(nil, c(RSandBox)), 4096, 128, RTrueMalloc, RTrueFree);
-//        instance->innerMallocPtr = mySandBoxAlloc;
-//        instance->allocationMode = RSandBoxAllocationModeStandart;
-//    }
-//    return instance;
-//}
-//
-//pointer mySandBoxAlloc(size_t size) {
-//    pointer ptr = $(mySingleton(), m(malloc, RSandBox)), size);
-////    RPrintf("RSandBox malloc in - %p, of pointer - %p\n", mySingleton(), ptr);
-//    return ptr;
-//}
-//
-//pointer emptyRealloc(pointer ptr, size_t size) {
-////    RPrintf("--- Realloc for %p, new size : %lu (bytes)\n", ptr, size);
-//    size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
-//    if(oldSize == 0) {
-//        RError("RSB. Bad pointer", mySingleton());
-//    }
-//    pointer newBuffer = mySandBoxAlloc(size);
-//    RMemMove(newBuffer, ptr, oldSize);
-//    return newBuffer;
-//}
-//
-//int SandBoxTest() {
-//    initPointers();
-//    RReallocPtr = emptyRealloc;
-//
-//    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
-//
-////    RPrintf("Sizeof pointer - %lu\n", sizeof(pointer));
-//    const size_t size = 10;
-//    size_t iterator;
-//
-//    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
-//    RArray *array = $(nil, c(RArray)), nil); // leaks
-//    forAll(iterator, size) {
-//        addObjectToRA(array, iterator);
-//    }
-//    if(mySingleton()->descriptorsInfo.start != 2) {
-//        disableSandBoxMalloc();
-//        RError("Bad sandbox size", mySingleton());
-//        return 1;
-//    }
-//    $(mySingleton(), m(XorCrypt, RSandBox)), key);
-//    $(mySingleton(), m(XorDecrypt, RSandBox)), key);
-//    if(mySingleton()->descriptorsInfo.start != 2) {
-//        disableSandBoxMalloc();
-//        RError("Bad sandbox decrypt", mySingleton());
-//        return 1;
-//    }
-//    disableSandBoxMalloc();         // disable sandbox
-//
-//    $(mySingleton(), d(RSandBox)) );
-//    deallocator(mySingleton());
-//    return 0;
-//}
 
 int RByteArrayTest() {
     size_t i;
     size_t j;
-    for(i = 0; i < 1024; ++i) {
+    for(i = 0; i < 32; ++i) {
         RByteArray *array = makeRByteArray(i);
-        if(i == 1023) {
-            for(j = 0; j < 1024; ++j) {
+        if(i == 31) {
+            for(j = 0; j < 31; ++j) {
                 array->array[j] = (byte) j;
             }
-            if(array->size != 1023) {
-                RError("Bad array size", array);
+            if(array->size != 31) {
+                RError("RByteArrayTest. Bad array size", array);
                 return 1;
             }
         }
@@ -179,12 +117,12 @@ int RClassTableTest(void){
     registerClassOnce("Han Solo");
     // try once more, but here is only one record
 
-    forAll(iterator, 1000) {
+    forAll(iterator, 100) {
         registerClassOnce("Leia");
         registerClassOnce("Dart");
         registerClassOnce("Luke");
     }
-    if(RCTSingleton->masterRArrayObject->count > 8) {
+    if(RCTSingleton->masterRArrayObject->count > 20) {
         RError("RCTSingleton->masterRArrayObject->size > 8", RCTSingleton);
         return 1;
     }
@@ -219,11 +157,13 @@ int RDynamicArrayTest(void){
     }
     dynamicArray->destructorDelegate = free;
 
-    for (i = 0; i < 1000; ++i) {
-        char *a = malloc(sizeof(char) * 8);
-        memmove(a, "Hello  ", sizeof("Hello  "));
-        a[6] = (char) (i % 10 + 48);
-        addObjectToRA(dynamicArray, a);
+    for (i = 0; i < 22; ++i) {
+        char *a = RAlloc(sizeof(char) * 8);
+        if(a != nil) {
+            RMemCpy(a, "Hello  ", sizeof("Hello  "));
+            a[6] = (char) (i % 10 + 48);
+            addObjectToRA(dynamicArray, a);
+        }
         if(dynamicArray->count != i + 1) {
             RError("RArray bad size", dynamicArray);
             return 1;
@@ -280,7 +220,6 @@ int RBufferTest() {
 }
 
 void ComplexTest() {
-    initPointers();
     srand((unsigned int) time(nil));
     RPrintCurrentSystem();
     if(
@@ -292,7 +231,6 @@ void ComplexTest() {
         && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
-//        && !SandBoxTest()
             ) {
         RPrintf("All tests passed successfully\n");
     } else {
