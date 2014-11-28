@@ -15,7 +15,7 @@ constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*i
     // switch to inner malloc
     RMallocPtr = innerMallocPtr;
 
-    object = RAlloc(sizeof(RSandBox));
+    object = allocator(RSandBox);
     if(object != nil) {
         object->classId               = registerClassOnce(toString(RSandBox));
         object->descriptorTable       = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
@@ -67,6 +67,7 @@ printer(RSandBox) {
 singleton(RSandBox) {
     static RSandBox *instance = nil;
     if(instance == nil) {
+        // 16 kB mem
         $(instance, c(RSandBox)), 16348, 128, RTrueMalloc, RTrueFree);
     }
     return instance;

@@ -27,12 +27,12 @@ static const size_t sizeOfObjectsOfRBufferDefault  = 128;  // 128 sizes stores
 class(RBuffer) // -------------------
     discipleOf(RByteArray)
 
-    // sizes array
+    // sizes array info
     size_t  freePlaces;
     size_t  count;
-    size_t *sizesArray;
+    RRange *sizesArray;
 
-    // total
+    // total placed bytes count
     size_t totalPlaced;
 endOf(RBuffer) // -------------------
 
@@ -41,13 +41,12 @@ destructor  (RBuffer);
 printer     (RBuffer);
 
 // Reallocation
-method(size_t *,     addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
+method(RRange *,     addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
 method(RByteArray *, addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RByteArray, store data, returns self, newsize in bytes
-method(RBuffer *,    flush,          RBuffer));                             // flushes buffer, returns self
+method(void,         flush,          RBuffer));                             // flushes buffer, returns self
 method(RBuffer *,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
 // Workers
-method(size_t,       shiftForPlace,       RBuffer),    size_t place);       // unsafe
 method(inline rbool, checkIndexWithError, RBuffer),    size_t index);
 
 // Data operations

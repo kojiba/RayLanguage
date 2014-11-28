@@ -25,7 +25,7 @@ constructor(RBuffer)) {
         if(master(object, RByteArray) != nil) {
 
             // allocation of sizes array
-            object->sizesArray = RAlloc(sizeof(size_t) * sizeOfObjectsOfRBufferDefault);
+            object->sizesArray = RAlloc(sizeof(RRange) * sizeOfObjectsOfRBufferDefault);
 
             if(object->sizesArray  != nil) {
                 object->classId     = registerClassOnce(toString(RBuffer));
@@ -54,16 +54,14 @@ destructor(RBuffer) {
 
 printer(RBuffer) {
     size_t iterator;
-    size_t shift = 0;
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
     RPrintf("\t Total   size : %lu (bytes)\n", master(object, RByteArray)->size);
     RPrintf("\t Placed  size : %lu (bytes)\n", object->totalPlaced);
     RPrintf("\t Free  places : %lu\n", object->freePlaces);
-    RPrintf("\t Count objcts : %lu\n", object->count);
+    RPrintf("\t Count objcts : %lu\n\n", object->count);
     forAll(iterator, object->count) {
-        RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator]);
-        printByteArrayInHex(master(object, RByteArray)->array + shift, object->sizesArray[iterator]);
-        shift += object->sizesArray[iterator];
+        RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator].count);
+        printByteArrayInHex(master(object, RByteArray)->array + object->sizesArray[iterator].from, object->sizesArray[iterator].count);
         RPrintf("\n");
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
@@ -71,9 +69,9 @@ printer(RBuffer) {
 
 #pragma mark Reallocation
 
-method(size_t*, addSizeToSizes, RBuffer), size_t newSize) {
+method(RRange*, addSizeToSizes, RBuffer), size_t newSize) {
     if(newSize > object->count) {
-        object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(size_t));
+        object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(RRange));
         if (object->sizesArray != nil) {
             // add free places
             object->freePlaces = newSize - object->count;
@@ -97,11 +95,10 @@ method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
     return master(object, RByteArray);
 }
 
-method(RBuffer*, flush, RBuffer)) {
+method(void, flush, RBuffer)) {
     object->freePlaces  += object->count;
     object->count        = 0;
     object->totalPlaced  = 0;
-    return object;
 }
 
 method(RBuffer*, sizeToFit, RBuffer)) {
@@ -112,15 +109,6 @@ method(RBuffer*, sizeToFit, RBuffer)) {
 }
 
 #pragma mark Workers
-
-method(size_t, shiftForPlace, RBuffer), size_t place) {
-    size_t iterator;
-    size_t shift = 0;
-    forAll(iterator, place) {
-        shift += object->sizesArray[iterator];
-    }
-    return shift;
-}
 
 method(rbool, checkIndexWithError, RBuffer), size_t index) {
     if(index < object->count) {
@@ -150,8 +138,9 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
             && object->sizesArray != nil) {
 
         // add object
-        RMemMove(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
-        object->sizesArray[object->count] = sizeInBytes;
+        RMemCpy(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
+        object->sizesArray[object->count].from  = object->totalPlaced;
+        object->sizesArray[object->count].count = sizeInBytes;
 
         object->totalPlaced += sizeInBytes;
         ++object->count;
@@ -161,7 +150,7 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
 
 method(pointer, getDataReference, RBuffer), size_t index) {
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
-        return (master(object, RByteArray)->array + $(object, m(shiftForPlace, RBuffer)), index));
+        return (master(object, RByteArray)->array + object->sizesArray[index].from);
     } else {
         return nil;
     }
@@ -171,9 +160,9 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
     pointer *ref = $(object, m(getDataReference, RBuffer)), index);
     if(ref != nil) {
-        result = RAlloc(object->sizesArray[index]);
+        result = RAlloc(object->sizesArray[index].count);
         if (result != nil) {
-            RMemMove(result, ref, object->sizesArray[index]);
+            RMemCpy(result, ref, object->sizesArray[index].count);
         } else {
             RError("RBuffer. Bad allocation on getDataCopy.", object);
         }
@@ -183,12 +172,10 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
 
 method(void, deleteDataAt, RBuffer), size_t index) {
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
-        size_t shift = $(object, m(shiftForPlace, RBuffer)), index);
-        size_t size = object->sizesArray[index];
 
-        RMemMove(master(object, RByteArray)->array + shift,
-                 master(object, RByteArray)->array + shift + size,
-                 object->totalPlaced - size);
+        RMemMove(master(object, RByteArray)->array + object->sizesArray[index].from,
+                 master(object, RByteArray)->array + object->sizesArray[index].from + object->sizesArray[index].count,
+                 object->totalPlaced - object->sizesArray[index].count);
 
         RMemMove(object->sizesArray + index,
                  object->sizesArray + index + 1,
@@ -196,7 +183,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 
         --object->count;
         ++object->freePlaces;
-        object->totalPlaced -= size;
+        object->totalPlaced -= object->sizesArray[index].count;
     }
 }
 
@@ -205,7 +192,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
     size_t iterator = 0;
 
-    // search end, compute length
+    // search end 0, compute length
     while(sizesArray[iterator] != 0) {
         ++iterator;
     }
@@ -216,13 +203,24 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
             master(result, RByteArray) = $(object, m(copy, RByteArray)));
             if(master(result, RByteArray) != nil) {
                 result->count = iterator;
-                result->freePlaces = 0;
-                result->classId = registerClassOnce(toString(RBuffer));
 
-                size_t *newSizesArray = RAlloc(sizeof(size_t) * result->count);
-                RMemCpy(newSizesArray, sizesArray, result->count * sizeof(size_t));
-                result->sizesArray = newSizesArray;
-                result->totalPlaced = object->size;
+                RRange *newSizesArray = RAlloc(sizeof(RRange) * result->count);
+                if(newSizesArray != nil) {
+                    size_t sum = 0;
+
+                    // process size array into RRange array
+                    forAll(iterator, result->count) {
+                        newSizesArray[iterator].from = sum;
+                        newSizesArray[iterator].count = sizesArray[iterator];
+                        sum += newSizesArray[iterator].count;
+                    }
+
+                    // final operations
+                    result->sizesArray = newSizesArray;
+                    result->totalPlaced = object->size;
+                    result->freePlaces = 0;
+                    result->classId = registerClassOnce(toString(RBuffer));
+                }
             }
         }
         return result;

@@ -32,7 +32,7 @@ typedef enum RSandBoxAllocationMode {
 void emptyFree(pointer ptr);
 
 typedef struct RControlDescriptor {
-    size_t identifier;
+//    size_t identifier;  //  reserved
     RRange memRange;
 } RControlDescriptor;
 
@@ -46,19 +46,16 @@ class(RSandBox)
     RSandBoxAllocationMode  allocationMode; // by default is RSandBoxAllocationModeRandom
 endOf(RSandBox)
 
-constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr));
+constructor (RSandBox),    size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t size), void (*innerFreePtr)(pointer ptr));
 destructor  (RSandBox);
 printer     (RSandBox);
 singleton   (RSandBox);
 
 // Workings
-method(rbool,   isRangeFree,    RSandBox), RRange range);
-method(size_t,  sizeForPointer, RSandBox), pointer ptr);
 method(size_t,  memoryPlaced,   RSandBox));
 
 // Main methods
-method(void,    addFilledRange, RSandBox), RRange range);
-method(pointer, malloc,         RSandBox), size_t sizeInBytes);
+method(pointer, malloc,         RSandBox),    size_t sizeInBytes);
 
 // Simple crypt
 method(void,    XorCrypt,         RSandBox),    RByteArray *key);

@@ -1,68 +1,69 @@
+#include <time.h>
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 
-pointer mySandBoxAlloc(size_t size);
-
-RSandBox* mySingleton(void) {
-    static RSandBox *instance = nil;
-    if(instance == nil) {
-        instance = $(nil, c(RSandBox)), 4096, 128, RTrueMalloc, RTrueFree);
-        instance->innerMallocPtr = mySandBoxAlloc;
-        instance->allocationMode = RSandBoxAllocationModeStandart;
-    }
-    return instance;
-}
-
-pointer mySandBoxAlloc(size_t size) {
-    pointer ptr = $(mySingleton(), m(malloc, RSandBox)), size);
-//    RPrintf("RSandBox malloc in - %p, of pointer - %p\n", mySingleton(), ptr);
-    return ptr;
-}
-
-pointer emptyRealloc(pointer ptr, size_t size) {
-//    RPrintf("--- Realloc for %p, new size : %lu (bytes)\n", ptr, size);
-    size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
-    if(oldSize == 0) {
-        RError("RSB. Bad pointer", mySingleton());
-    }
-    pointer newBuffer = mySandBoxAlloc(size);
-    RMemMove(newBuffer, ptr, oldSize);
-    return newBuffer;
-}
-
-int SandBoxTest() {
-    initPointers();
-    RReallocPtr = emptyRealloc;
-
-    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
-
-//    RPrintf("Sizeof pointer - %lu\n", sizeof(pointer));
-    const size_t size = 10;
-    size_t iterator;
-
-    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
-    RArray *array = $(nil, c(RArray)), nil); // leaks
-    forAll(iterator, size) {
-        addObjectToRA(array, iterator);
-    }
-    if(mySingleton()->descriptorsInfo.from != 2) {
-        disableSandBoxMalloc();
-        RError("Bad sandbox count", mySingleton());
-        return 1;
-    }
-    $(mySingleton(), m(XorCrypt, RSandBox)), key);
-    $(mySingleton(), m(XorDecrypt, RSandBox)), key);
-    if(mySingleton()->descriptorsInfo.from != 2) {
-        disableSandBoxMalloc();
-        RError("Bad sandbox decrypt", mySingleton());
-        return 1;
-    }
-    disableSandBoxMalloc();         // disable sandbox
-
-    $(mySingleton(), d(RSandBox)) );
-    deallocator(mySingleton());
-    return 0;
-}
+//pointer mySandBoxAlloc(size_t size);
+//
+//RSandBox* mySingleton(void) {
+//    static RSandBox *instance = nil;
+//    if(instance == nil) {
+//        instance = $(nil, c(RSandBox)), 4096, 128, RTrueMalloc, RTrueFree);
+//        instance->innerMallocPtr = mySandBoxAlloc;
+//        instance->allocationMode = RSandBoxAllocationModeStandart;
+//    }
+//    return instance;
+//}
+//
+//pointer mySandBoxAlloc(size_t size) {
+//    pointer ptr = $(mySingleton(), m(malloc, RSandBox)), size);
+////    RPrintf("RSandBox malloc in - %p, of pointer - %p\n", mySingleton(), ptr);
+//    return ptr;
+//}
+//
+//pointer emptyRealloc(pointer ptr, size_t size) {
+////    RPrintf("--- Realloc for %p, new size : %lu (bytes)\n", ptr, size);
+//    size_t oldSize = $(mySingleton(), m(sizeForPointer, RSandBox)), ptr);
+//    if(oldSize == 0) {
+//        RError("RSB. Bad pointer", mySingleton());
+//    }
+//    pointer newBuffer = mySandBoxAlloc(size);
+//    RMemMove(newBuffer, ptr, oldSize);
+//    return newBuffer;
+//}
+//
+//int SandBoxTest() {
+//    initPointers();
+//    RReallocPtr = emptyRealloc;
+//
+//    RByteArray *key = RBfromRCS(RS("Hello misha it's my new key ololo")); // key mustn't be not in sandbox
+//
+////    RPrintf("Sizeof pointer - %lu\n", sizeof(pointer));
+//    const size_t size = 10;
+//    size_t iterator;
+//
+//    enableSandBoxMalloc(mySandBoxAlloc);  // enable our sandbox
+//    RArray *array = $(nil, c(RArray)), nil); // leaks
+//    forAll(iterator, size) {
+//        addObjectToRA(array, iterator);
+//    }
+//    if(mySingleton()->descriptorsInfo.from != 2) {
+//        disableSandBoxMalloc();
+//        RError("Bad sandbox count", mySingleton());
+//        return 1;
+//    }
+//    $(mySingleton(), m(XorCrypt, RSandBox)), key);
+//    $(mySingleton(), m(XorDecrypt, RSandBox)), key);
+//    if(mySingleton()->descriptorsInfo.from != 2) {
+//        disableSandBoxMalloc();
+//        RError("Bad sandbox decrypt", mySingleton());
+//        return 1;
+//    }
+//    disableSandBoxMalloc();         // disable sandbox
+//
+//    $(mySingleton(), d(RSandBox)) );
+//    deallocator(mySingleton());
+//    return 0;
+//}
 
 int RByteArrayTest() {
     size_t i;
@@ -252,19 +253,49 @@ int RDynamicArrayTest(void){
     return 0;
 }
 
+int RBufferTest() {
+    size_t iterator;
+    size_t sum = 0;
+    size_t first_size = 0;
+    RBuffer *buffer = $(nil, c(RBuffer)));
+
+    forAll(iterator, 20) {
+        RCString *temp = randomRCString();
+        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size + 1);
+        sum += temp->size + 1;
+        if(iterator == 0) {
+            first_size = temp->size;
+        }
+        if((buffer->count != iterator + 1) || buffer->totalPlaced != sum) {
+            RError("RBuffer. Test error, bad count or size", buffer);
+            return -1;
+        }
+    }
+    char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
+    if(RStringLenght(temp) != first_size) {
+        RError("RBuffer. Bad getDataCopy", buffer);
+    }
+    deallocator(temp);
+    return 0;
+}
+
 void ComplexTest() {
     initPointers();
+    srand((unsigned int) time(nil));
     RPrintCurrentSystem();
-    if(!RDynamicArrayTest()
+    if(
+           !RDynamicArrayTest()
         && !RClassNamePairTest()
         && !RClassTableTest()
         && !RDictionaryTest()
         && !StringArrayTest()
         && !StringDictionaryTest()
         && !RByteArrayTest()
-        && !SandBoxTest()) {
+        && !RBufferTest()
+//        && !SandBoxTest()
+            ) {
         RPrintf("All tests passed successfully\n");
     } else {
-        RPrintf("TESTS ERROR!\n");
+        RError("TESTS ERROR!", nil);
     }
 }
