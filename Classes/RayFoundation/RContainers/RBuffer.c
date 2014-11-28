@@ -60,8 +60,8 @@ printer(RBuffer) {
     RPrintf("\t Free  places : %lu\n", object->freePlaces);
     RPrintf("\t Count objcts : %lu\n\n", object->count);
     forAll(iterator, object->count) {
-        RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator].count);
-        printByteArrayInHex(master(object, RByteArray)->array + object->sizesArray[iterator].from, object->sizesArray[iterator].count);
+        RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator].size);
+        printByteArrayInHex(master(object, RByteArray)->array + object->sizesArray[iterator].start, object->sizesArray[iterator].size);
         RPrintf("\n");
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
@@ -139,8 +139,8 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
 
         // add object
         RMemCpy(master(object, RByteArray)->array + object->totalPlaced, data, sizeInBytes);
-        object->sizesArray[object->count].from  = object->totalPlaced;
-        object->sizesArray[object->count].count = sizeInBytes;
+        object->sizesArray[object->count].start = object->totalPlaced;
+        object->sizesArray[object->count].size = sizeInBytes;
 
         object->totalPlaced += sizeInBytes;
         ++object->count;
@@ -150,7 +150,7 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
 
 method(pointer, getDataReference, RBuffer), size_t index) {
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
-        return (master(object, RByteArray)->array + object->sizesArray[index].from);
+        return (master(object, RByteArray)->array + object->sizesArray[index].start);
     } else {
         return nil;
     }
@@ -160,9 +160,9 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
     pointer *ref = $(object, m(getDataReference, RBuffer)), index);
     if(ref != nil) {
-        result = RAlloc(object->sizesArray[index].count);
+        result = RAlloc(object->sizesArray[index].size);
         if (result != nil) {
-            RMemCpy(result, ref, object->sizesArray[index].count);
+            RMemCpy(result, ref, object->sizesArray[index].size);
         } else {
             RError("RBuffer. Bad allocation on getDataCopy.", object);
         }
@@ -173,9 +173,9 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
 method(void, deleteDataAt, RBuffer), size_t index) {
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
 
-        RMemMove(master(object, RByteArray)->array + object->sizesArray[index].from,
-                 master(object, RByteArray)->array + object->sizesArray[index].from + object->sizesArray[index].count,
-                 object->totalPlaced - object->sizesArray[index].count);
+        RMemMove(master(object, RByteArray)->array + object->sizesArray[index].start,
+                 master(object, RByteArray)->array + object->sizesArray[index].start + object->sizesArray[index].size,
+                 object->totalPlaced - object->sizesArray[index].size);
 
         RMemMove(object->sizesArray + index,
                  object->sizesArray + index + 1,
@@ -183,7 +183,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 
         --object->count;
         ++object->freePlaces;
-        object->totalPlaced -= object->sizesArray[index].count;
+        object->totalPlaced -= object->sizesArray[index].size;
     }
 }
 
@@ -210,9 +210,9 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
 
                     // process size array into RRange array
                     forAll(iterator, result->count) {
-                        newSizesArray[iterator].from = sum;
-                        newSizesArray[iterator].count = sizesArray[iterator];
-                        sum += newSizesArray[iterator].count;
+                        newSizesArray[iterator].start = sum;
+                        newSizesArray[iterator].size = sizesArray[iterator];
+                        sum += newSizesArray[iterator].size;
                     }
 
                     // final operations

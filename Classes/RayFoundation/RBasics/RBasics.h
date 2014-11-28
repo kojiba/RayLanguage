@@ -28,8 +28,8 @@ typedef enum RCompareFlags{
 } RCompareFlags;
 
 typedef struct RRange {
-    size_t from;
-    size_t count;
+    size_t start;
+    size_t size;
 } RRange;
 
 inline RRange          makeRRange    (size_t from, size_t count);

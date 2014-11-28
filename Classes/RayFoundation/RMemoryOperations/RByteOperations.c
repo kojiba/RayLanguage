@@ -76,8 +76,8 @@ byte* getByteArrayCopy(const byte *array, size_t size) {
 }
 
 byte* getSubArray(const byte *array, RRange range) {
-    byte *subArray = RAlloc(range.count);
-    RMemMove(subArray, &array[range.from], range.count);
+    byte *subArray = RAlloc(range.size);
+    RMemMove(subArray, &array[range.start], range.size);
     return subArray;
 }
 
@@ -130,7 +130,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
 constructor(RByteArray), size_t size) {
     object = allocator(RByteArray);
     if(object != nil) {
-        object->array = RAlloc(size * sizeof(byte));
+        object->array = RAlloc(size);
         if(object->array != nil) {
             object->classId = registerClassOnce(toString(RByteArray));
             object->size    = size;

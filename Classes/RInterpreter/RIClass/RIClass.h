@@ -25,7 +25,7 @@ method(RCString*, methodSingletonName,         RayClass));
 // fully typedefs method singleton struct with all methods
 method(RCString*, methodSingletonFor,          RayClass),    RClassTable *table);
 
-// Try to deserialize from source
+// Try to deserialize start source
 method(RCString*, deserializeFromCode,         RayClass),    RCString *code);
 
 // typedefs class struct

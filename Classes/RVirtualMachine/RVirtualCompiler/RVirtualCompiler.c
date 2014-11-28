@@ -42,7 +42,7 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
             // get copy of substring
             RCString *name = $(object->code, m(substringInRange, RCString)), makeRRange(0, place));
 
-            // delete nameString from sourceCode and ':' symbol
+            // delete nameString start sourceCode and ':' symbol
             $(object->code, m(deleteInRange, RCString)), makeRRange(0, place + 1));
             return name;
         }
@@ -72,7 +72,7 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
         RPrintf("Warning. RVC (BrainFuck). Count of \'[\' and \']\' isn't equal!");
     }
 
-    // removing all '\n' from byte-code, +1 to r_end
+    // removing all '\n' start byte-code, +1 to r_end
     sizeOfByteCode = object->code->size - object->numberOfLines + 1 + 2 * (object->forwardRepetitions + object->backwardRepetitions);
 
     body = makeRByteArray(sizeOfByteCode);

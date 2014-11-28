@@ -25,7 +25,7 @@ class(RFloatingEnum)
     pointer (*nextElementForCode)(pointer code); // get - set delegate, to create random elements
 endOf(RFloatingEnum)
 
-constructor (RFloatingEnum), pointer (*)(pointer), RRange range); // range - is incrementing enum values from start value
+constructor (RFloatingEnum), pointer (*)(pointer), RRange range); // range - is incrementing enum values start start value
 destructor  (RFloatingEnum);
 printer     (RFloatingEnum);
 

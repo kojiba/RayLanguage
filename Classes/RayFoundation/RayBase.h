@@ -17,8 +17,8 @@
 #ifndef __RAY_BASE_H__
 #define __RAY_BASE_H__
 
-#define RAY_WARNINGS_ON 1 // 451
-#define RAY_ERRORS_ON   1 // 451
+#define RAY_WARNINGS_ON 1   // 451
+#define RAY_ERRORS_ON   1   // 451
 #define RAY_SHORT_DEBUG 451 //
 
 #include <stdlib.h>
@@ -29,25 +29,27 @@
 // Hooks for malloc, free ---------------------------------
 
 // constant pointers to stdlib (OS) functions
-static void*   (*const RTrueMalloc) (size_t size) = malloc;
-static void    (*const RTrueFree)   (void*  ptr) = free;
-static void*   (*const RTrueRealloc)(void*  ptr, size_t size) = realloc;
+static void* (*const RTrueMalloc) (size_t size) = malloc;
+static void* (*const RTrueRealloc)(void*  ptr, size_t size) = realloc;
+static void* (*const RTrueCalloc) (size_t size, size_t blockSize) = calloc;
+static void  (*const RTrueFree)   (void*  ptr) = free;
 
 // pointers to functions
-void*   (*RMallocPtr)(size_t size);
-void    (*RFreePtr)  (void*  ptr) ;
+void*   (*RMallocPtr) (size_t size);
+void*   (*RCallocPtr) (size_t size, size_t blockSize);
 void*   (*RReallocPtr)(void*  ptr,  size_t size);
-
-inline void* mallocFunc (size_t size);
-inline void  freeFunc   (void* ptr);
-inline void* reallocFunc(void *ptr, size_t size);
+void    (*RFreePtr)   (void*  ptr);
 
 // malloc entry point is pointer
-#define malloc                mallocFunc
-#define free                  freeFunc
-#define realloc               reallocFunc
+#define malloc                RMallocPtr
+#define realloc               RReallocPtr
+#define calloc                RCallocPtr
+#define free                  RFreePtr
 
-inline void initPointers();
+#define initPointers() RMallocPtr  = RTrueMalloc;\
+                       RFreePtr    = RTrueFree;\
+                       RCallocPtr  = RTrueCalloc;\
+                       RReallocPtr = RTrueRealloc
 //---------------------------------------------------------
 
 

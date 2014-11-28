@@ -46,14 +46,14 @@
 //    forAll(iterator, size) {
 //        addObjectToRA(array, iterator);
 //    }
-//    if(mySingleton()->descriptorsInfo.from != 2) {
+//    if(mySingleton()->descriptorsInfo.start != 2) {
 //        disableSandBoxMalloc();
-//        RError("Bad sandbox count", mySingleton());
+//        RError("Bad sandbox size", mySingleton());
 //        return 1;
 //    }
 //    $(mySingleton(), m(XorCrypt, RSandBox)), key);
 //    $(mySingleton(), m(XorDecrypt, RSandBox)), key);
-//    if(mySingleton()->descriptorsInfo.from != 2) {
+//    if(mySingleton()->descriptorsInfo.start != 2) {
 //        disableSandBoxMalloc();
 //        RError("Bad sandbox decrypt", mySingleton());
 //        return 1;
@@ -75,7 +75,7 @@ int RByteArrayTest() {
                 array->array[j] = (byte) j;
             }
             if(array->size != 1023) {
-                RError("Bad array count", array);
+                RError("Bad array size", array);
                 return 1;
             }
         }
@@ -100,7 +100,7 @@ int StringDictionaryTest() {
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
     if(dictionary->masterRDictionaryObject->keys->count != 3
             || dictionary->masterRDictionaryObject->values->count != 3) {
-        RError("To little count in dictionary", dictionary);
+        RError("To little size in dictionary", dictionary);
         return 1;
     }
 
@@ -137,7 +137,7 @@ int StringArrayTest() {
         addObjectToRA(stringArray, randomRCString());
     }
     if(stringArray->count != 10) {
-        RError("String array count is not 10", stringArray);
+        RError("String array size is not 10", stringArray);
         return 1;
     }
 
@@ -185,11 +185,11 @@ int RClassTableTest(void){
         registerClassOnce("Luke");
     }
     if(RCTSingleton->masterRArrayObject->count > 8) {
-        RError("RCTSingleton->masterRArrayObject->count > 8", RCTSingleton);
+        RError("RCTSingleton->masterRArrayObject->size > 8", RCTSingleton);
         return 1;
     }
     if(RCTSingleton->masterRArrayObject->count == 0) {
-        RError("RCTSingleton->masterRArrayObject->count == 0", RCTSingleton);
+        RError("RCTSingleton->masterRArrayObject->size == 0", RCTSingleton);
         return 1;
     }
     char *checkName = "Han Solo";
@@ -225,7 +225,7 @@ int RDynamicArrayTest(void){
         a[6] = (char) (i % 10 + 48);
         addObjectToRA(dynamicArray, a);
         if(dynamicArray->count != i + 1) {
-            RError("RArray bad count", dynamicArray);
+            RError("RArray bad size", dynamicArray);
             return 1;
         }
     }
@@ -238,7 +238,7 @@ int RDynamicArrayTest(void){
         return 1;
     }
     if(sub->count != 10) {
-        RError("Subarray bad count", sub);
+        RError("Subarray bad size", sub);
         return 1;
     }
 
@@ -267,7 +267,7 @@ int RBufferTest() {
             first_size = temp->size;
         }
         if((buffer->count != iterator + 1) || buffer->totalPlaced != sum) {
-            RError("RBuffer. Test error, bad count or size", buffer);
+            RError("RBuffer. Test error, bad size or size", buffer);
             return -1;
         }
     }

@@ -226,7 +226,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
         // if space is allocated
         } else {
             object->array[index] = newObject;
-            // mark: count is not incrementing, cause we don't know place
+            // mark: size is not incrementing, cause we don't know place
             // mark: addObject cause memory to leak, with objects added by setObject
             // mark: destructor not called
         }
@@ -267,9 +267,9 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 method(void, deleteObjects, RArray), RRange range){
     register size_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA deleteObjectsInRange of %p, from - %lu, count - %lu \n", object, range.from, range.count);
+    RPrintf(start, object, range.start, range.size);
 #endif
-    fromStartForAll(iterator, range.from, range.count) {
+    fromStartForAll(iterator, range.start, range.size) {
         destroyElementAtIndex(iterator);
     }
     $(object, m(shift, RArray)), shift_left, range);
@@ -328,7 +328,7 @@ method(RArray *, getSubarray, RArray), RRange range){
         result->destructorDelegate = object->destructorDelegate;
         result->printerDelegate    = object->printerDelegate;
 
-        fromStartForAll(iterator, range.from, range.count) {
+        fromStartForAll(iterator, range.start, range.size) {
             if(addObjectToRA(result, elementAtIndexRA(object, iterator)) == no_error) {
                 continue;
 
@@ -436,21 +436,21 @@ method(void, shift, RArray), byte side, RRange range) {
     } RPrintf("RA shift of %p on %s\n", object, sideName);
 #endif
     register size_t iterator;
-    if(range.count != 0) {
+    if(range.size != 0) {
         if (side == shift_left) {
             // do not call destructor
-            for(iterator = range.from; iterator < object->count - range.count; ++iterator) {
-                object->array[iterator] = object->array[iterator + range.count];
+            for(iterator = range.start; iterator < object->count - range.size; ++iterator) {
+                object->array[iterator] = object->array[iterator + range.size];
             }
         }
 //        fixme
 //        else {
-//            for(iterator = object->count - range->count; iterator < object->count; ++iterator) {
-//                object->array[iterator] = object->array[iterator - object->count + range->count];
+//            for(iterator = object->size - range->size; iterator < object->size; ++iterator) {
+//                object->array[iterator] = object->array[iterator - object->size + range->size];
 //            }
 //        }
-        object->count -= range.count;
-        object->freePlaces += range.count;
+        object->count -= range.size;
+        object->freePlaces += range.size;
     } else {
         RWarning("RA. Shifts of RArray do nothing, please delete function call, or fix it.", object);
     }

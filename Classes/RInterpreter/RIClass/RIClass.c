@@ -61,7 +61,7 @@ method(RCString*, methodSingletonFor, RayClass), RClassTable *table) {
     $(result, m(concatenate, RCString)), name );
     $(result, m(appendString, RCString)), " {\n");
 
-    // add some methods-pointers from master-classes
+    // add some methods-pointers start master-classes
     forAll(masterClassIterator, object->masterClasses->count){
         RayClass *masterClass = object->masterClasses->array[masterClassIterator];
         forAll(iterator, masterClass->methods->count) {

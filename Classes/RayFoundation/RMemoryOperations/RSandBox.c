@@ -1,41 +1,49 @@
+/**
+ * RSandBox.c
+ * Defines continue heap block,
+ * with random pointer allocation, deallocation,
+ * encryption and management table, etc.
+ * May be used like auto-release pool in obj-c.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 30.10.14 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #include "RSandBox.h"
 #include "../RClassTable/RClassTable.h"
 
-#define storeOldPtrs() pointer (*oldMalloc)(size_t) = RMallocPtr;  void (*oldFree)(void* pointer) = RFreePtr; RMallocPtr = object->innerMallocPtr; RFreePtr = object->innerFreePtr;
-#define revertPtrs()   RMallocPtr = oldMalloc; RFreePtr = oldFree;
-
-void emptyFree(pointer ptr) {
-    RPrintf("\tFree for %p\n", ptr);
-    return;
-}
-
-constructor(RSandBox), size_t sizeOfMemory, size_t descriptorsCount, pointer (*innerMallocPtr)(size_t), void (*innerFreePtr)(pointer)) {
-    // store old malloc
-    pointer (*oldMalloc)(size_t) = RMallocPtr;
-    // switch to inner malloc
-    RMallocPtr = innerMallocPtr;
-
+constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
-        object->classId               = registerClassOnce(toString(RSandBox));
-        object->descriptorTable       = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
-        object->memPart               = makeRByteArray(sizeOfMemory);
-        object->descriptorsInfo.count = descriptorsCount;
-        object->descriptorsInfo.from  = 0;
-        object->innerMallocPtr        = innerMallocPtr;
-        object->innerFreePtr          = innerFreePtr;
-        object->allocationMode        = RSandBoxAllocationModeRandom;
-        object->rangeGenerator        = nil;
-    }
+        object->descriptorTable = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
+        object->memPart         = makeRByteArray(sizeOfMemory);
 
-    // switch to old
-    RMallocPtr = oldMalloc;
+        if(object->memPart != nil && object->descriptorTable != nil) {
+            object->classId               = registerClassOnce(toString(RSandBox));
+            object->descriptorsInfo.size  = descriptorsCount;
+            object->descriptorsInfo.start = 0;
+
+            object->innerMalloc           = malloc;
+            object->innerRealloc          = realloc;
+            object->innerCalloc           = calloc;
+            object->innerFree             = free;
+
+            object->allocationMode        = RSandBoxAllocationModeStandart;
+            object->delegate              = nil;
+        }
+    }
     return object;
 }
 
 destructor(RSandBox) {
-    // higher lvl free
-    RFreePtr = object->innerFreePtr;
+    switchFromSandBox(object);
 
     $(object->memPart, d(RByteArray)) );
     deallocator(object->memPart);
@@ -44,7 +52,7 @@ destructor(RSandBox) {
 
 printer(RSandBox) {
     // store old malloc
-    storeOldPtrs();
+    switchToSandBox(object);
 
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
@@ -53,60 +61,70 @@ printer(RSandBox) {
             || object->allocationMode == RSandBoxAllocationModeRandom) {
         RPrintf("\t Mem placed - %lu (bytes)\n", $(object, m(memoryPlaced,RSandBox))));
     }
-    RPrintf("\t Descriptors count - %lu\n", object->descriptorsInfo.count);
-    RPrintf("\t Descriptors filled - %lu\n", object->descriptorsInfo.from);
-    forAll(iterator, object->descriptorsInfo.from) {
-        RPrintf("\t\t [%lu : %lu]\n", object->descriptorTable[iterator].memRange.from, object->descriptorTable[iterator].memRange.count);
+    RPrintf("\t Descriptors size - %lu\n", object->descriptorsInfo.size);
+    RPrintf("\t Descriptors filled - %lu\n", object->descriptorsInfo.start);
+    forAll(iterator, object->descriptorsInfo.start) {
+        RPrintf("\t\t [%lu : %lu]\n", object->descriptorTable[iterator].memRange.start, object->descriptorTable[iterator].memRange.size);
     }
     RPrintLn("}\n");
 
     // switch to old
-    revertPtrs();
-}
-
-singleton(RSandBox) {
-    static RSandBox *instance = nil;
-    if(instance == nil) {
-        // 16 kB mem
-        $(instance, c(RSandBox)), 16348, 128, RTrueMalloc, RTrueFree);
-    }
-    return instance;
+    switchFromSandBox(object);
 }
 
 #pragma mark Workings
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
     size_t iterator;
-    forAll(iterator, object->descriptorsInfo.from) {
-        if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
-            return no;
+    switch (object->allocationMode) {
+        case RSandBoxAllocationModeRandom : {
+            forAll(iterator, object->descriptorsInfo.start) {
+                if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
+                    return no;
+                }
+            }
+            return yes;
         }
+        case RSandBoxAllocationModeStandart : {
+            // if start smaller than last size + start
+            if(range.start > object->descriptorTable[object->descriptorsInfo.start - 1].memRange.size +
+                    object->descriptorTable[object->descriptorsInfo.start - 1].memRange.start) {
+                return yes;
+            } else {
+                return no;
+            }
+        }
+        case RSandBoxAllocationModeDelegated : {
+            return object->delegate->isRangeFree(object);
+        };
     }
+
     return yes;
 }
 
 method(void, addFilledRange, RSandBox), RRange range) {
-    if(object->descriptorsInfo.from != object->descriptorsInfo.count) {
-        object->descriptorTable[object->descriptorsInfo.from].memRange = range;
-        ++object->descriptorsInfo.from;
+    if(object->descriptorsInfo.start != object->descriptorsInfo.size) {
+        object->descriptorTable[object->descriptorsInfo.start].memRange = range;
+        ++object->descriptorsInfo.start;
     } else {
-        RError("RSB. Not enought descriptor places.", object);
+        RError("RSandBox. Not enought descriptor places.", object);
     }
 }
 
-method(size_t, sizeForPointer, RSandBox), pointer ptr) {
+method(size_t, rangeForPointer, RSandBox), pointer ptr) {
     ssize_t shift = ptr - (pointer)(object->memPart->array);
-    if(shift < 0) {
-        RError("Pointer wasn't allocated with sandBox.", object);
-        return 0;
+    if(shift < 0
+            || shift > object->memPart->size) {
+        RError("RSandBox. Pointer wasn't allocated with sandBox.", object);
+        return object->descriptorsInfo.start;
     } else {
         size_t iterator;
-        forAll(iterator, object->descriptorsInfo.from) {
-            if(object->descriptorTable[iterator].memRange.from == shift) {
-                return object->descriptorTable[iterator].memRange.count;
+        forAll(iterator, object->descriptorsInfo.start) {
+            if(object->descriptorTable[iterator].memRange.start == shift) {
+                return iterator;
             }
         }
-        return 0;
+        return object->descriptorsInfo.start;
     }
 }
 
@@ -115,78 +133,110 @@ method(size_t, memoryPlaced, RSandBox)) {
     switch(object->allocationMode) {
         case RSandBoxAllocationModeStandart : {
 
-            return object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
-                    + object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
+            return object->descriptorTable[object->descriptorsInfo.start - 1].memRange.start
+                    + object->descriptorTable[object->descriptorsInfo.start - 1].memRange.size;
         }
 
         case RSandBoxAllocationModeRandom : {
             size_t result = 0;
-            forAll(iterator, object->descriptorsInfo.from) {
-                result +=object->descriptorTable[iterator].memRange.count;
+            forAll(iterator, object->descriptorsInfo.start) {
+                result += object->descriptorTable[iterator].memRange.size;
             }
             return result;
         }
 
-        default:
-            RError("Bad case for memPlaced. Only ModeStandart and ModeRandom\n", object);
-            return 0;
+        case RSandBoxAllocationModeDelegated : {
+            return object->delegate->memoryPlaced(object);
+        }
     }
 }
 
 #pragma mark Main methods
 
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
-    if(object->descriptorsInfo.count != object->descriptorsInfo.from) {
+    if(object->descriptorsInfo.size != object->descriptorsInfo.start) {
         // store old malloc
-        storeOldPtrs();
+        switchFromSandBox(object);
 
         RRange placeToAlloc;
-        placeToAlloc.count = sizeInBytes;
+        placeToAlloc.size = sizeInBytes;
         switch (object->allocationMode) {
 
             case RSandBoxAllocationModeRandom : {
                 // based on std rand
-                placeToAlloc.from = rand() % (object->memPart->size - sizeInBytes);
-                while($(object, m(isRangeFree,RSandBox)), placeToAlloc) == no) {
-                    placeToAlloc.from = rand() % (object->memPart->size - sizeInBytes);
+                placeToAlloc.start = rand() % (object->memPart->size - sizeInBytes);
+                while($(object, m(isRangeFree, RSandBox)), placeToAlloc) == no) {
+                    placeToAlloc.start = rand() % (object->memPart->size - sizeInBytes);
                 }
             } break;
 
             case RSandBoxAllocationModeStandart : {
                 // if first
-                if(object->descriptorsInfo.from == 0) {
-                    placeToAlloc.from = 0;
+                if(object->descriptorsInfo.start == 0) {
+                    placeToAlloc.start = 0;
 
                 // will be next to last
                 } else {
-                placeToAlloc.from =
-                        object->descriptorTable[object->descriptorsInfo.from - 1].memRange.from
+                placeToAlloc.start =
+                        object->descriptorTable[object->descriptorsInfo.start - 1].memRange.start
                                 +
-                        object->descriptorTable[object->descriptorsInfo.from - 1].memRange.count;
+                        object->descriptorTable[object->descriptorsInfo.start - 1].memRange.size;
                 }
             } break;
 
             case RSandBoxAllocationModeDelegated : {
                 // based on delegate
-                placeToAlloc.from = object->rangeGenerator(object);
+                placeToAlloc.start = object->delegate->rangeGenerator(object);
             } break;
         }
 
         $(object, m(addFilledRange, RSandBox)), placeToAlloc);
 
         // switch to old
-        revertPtrs();
-        if(placeToAlloc.from + sizeInBytes > object->memPart->size) {
-            RError("RSB. Not enought memory", object);
+        switchToSandBox(object);
+        if(placeToAlloc.start + sizeInBytes > object->memPart->size) {
+            RError("RSandBox. Not enought memory", object);
             return nil;
         } else {
-            return object->memPart->array + placeToAlloc.from;
+            return object->memPart->array + placeToAlloc.start;
         }
     } else {
-        RError("RSB. Not enought descriptors", object);
+        RError("RSandBox. Not enought descriptors", object);
         return nil;
     }
 }
+
+method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
+    size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+    if(iterator != object->descriptorsInfo.start) {
+        pointer some = $(object, m(malloc, RSandBox)), newSize);
+        if(some != nil) {
+            RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
+            $(object, m(free, RSandBox)), ptr);
+            return some;
+        }
+    }
+    return nil;
+}
+
+method(pointer, calloc, RSandBox), size_t sizeInBytes, size_t blockSize) {
+    pointer some = $(object, m(malloc, RSandBox)), sizeInBytes * blockSize);
+    if(some != nil) {
+        flushAllToByte(some, sizeInBytes * blockSize, 0);
+    }
+    return some;
+}
+
+method(void, free, RSandBox), pointer ptr) {
+    size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+    if (rangeIterator != object->descriptorsInfo.start) {
+        RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, sizeof(RControlDescriptor));
+        --object->descriptorsInfo.start;
+    } else {
+        RErrStr "RSandBox. Bad ptr - %p, wasn't allocated with sandBox - &p\n", ptr, object);
+    }
+}
+
 
 #pragma mark Simple crypt
 
@@ -194,15 +244,31 @@ method(void, XorCrypt, RSandBox), RByteArray *key) {
     Xor(object->memPart->array,  key, object->memPart->size, key->size);         // crypt memory chunk
     Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // cryptr memory ptr
     Xor(object->descriptorTable, key,
-            object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // crypt descriptors table
+            object->descriptorsInfo.size * sizeof(RControlDescriptor), key->size); // crypt descriptors table
     Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
 }
 
 method(void, XorDecrypt, RSandBox), RByteArray *key) {
     Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
     Xor(object->descriptorTable, key,
-            object->descriptorsInfo.count * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
+            object->descriptorsInfo.size * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
     Xor(object->memPart, key, sizeof(RByteArray), key->size);                       // decrypt memory ptr
     Xor(object->memPart->array,  key, object->memPart->size, key->size);            // decrypt memory chunk
+}
+
+#pragma mark Switch
+
+void switchToSandBox(RSandBox *sandBox) {
+    RMallocPtr  = sandBox->selfMalloc;
+    RCallocPtr  = sandBox->selfCalloc;
+    RReallocPtr = sandBox->selfRealloc;
+    RFreePtr    = sandBox->selfFree;
+}
+
+void switchFromSandBox(RSandBox *sandBox) {
+    RMallocPtr  = sandBox->innerMalloc;
+    RCallocPtr  = sandBox->innerCalloc;
+    RReallocPtr = sandBox->innerRealloc;
+    RFreePtr    = sandBox->innerFree;
 }
 

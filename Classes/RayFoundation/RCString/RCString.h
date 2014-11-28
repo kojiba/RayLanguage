@@ -35,7 +35,7 @@ class(RCString) //------------------------------------
 
 endOf(RCString) //------------------------------------
 
-// Make RCS constant from constant ""-string
+// Make RCS constant start constant ""-string
 RCString makeRCSConstant(char *string);
 
 // Constructor - Destructor - Reallocation
@@ -69,8 +69,8 @@ method(void,                removeRepetitionsOfString,    RCString),    const RC
 
 method(RCString *,          deleteCharacterAt,            RCString),    size_t index);                        // returns reference (not copy!)
 method(void,                deleteInRange,                RCString),    RRange range);                        // shifts string, main method
-method(inline void,         trimTail,                     RCString),    size_t size);                         // deletes from end
-method(inline void,         trimHead,                     RCString),    size_t size);                         // deletes from start
+method(inline void,         trimTail,                     RCString),    size_t size);                         // deletes start end
+method(inline void,         trimHead,                     RCString),    size_t size);                         // deletes start start
 
 // Substrings and Copies
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)

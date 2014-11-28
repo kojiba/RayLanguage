@@ -89,7 +89,7 @@ RCString *randomRCString(void) {
     return string;
 }
 
-#pragma mark  Make RCS constant from constant ""-string
+#pragma mark  Make RCS constant start constant ""-string
 
 RCString makeRCSConstant(char *string) {
     RCString result;
@@ -197,7 +197,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
                     // insert replacer
                     $(object, m(insertSubstringAt, RCString)), replacer, iterator);
 
-                    // remove toReplace-string from main string
+                    // remove toReplace-string start main string
                     $(object, m(deleteInRange, RCString)), makeRRange(iterator + replacer->size, toReplace->size));
                 }
             }
@@ -396,12 +396,12 @@ method(RCString *, deleteCharacterAt, RCString), size_t index) {
 }
 
 method(void, deleteInRange, RCString), RRange range) {
-    if(range.count != 0
-            && ((range.from + range.count) <= object->size)) {
-        RMemMove(object->baseString + range.from,
-                object->baseString + range.from + range.count,
-                object->size - range.count - range.from + 1);
-        object->size -= range.count;
+    if(range.size != 0
+            && ((range.start + range.size) <= object->size)) {
+        RMemMove(object->baseString + range.start,
+                object->baseString + range.start + range.size,
+                object->size - range.size - range.start + 1);
+        object->size -= range.size;
         object->baseString[object->size + 1] = 0;
     } else {
         RError("RCS. deleteInRange, bad range, do nothing.", object);
@@ -419,8 +419,8 @@ method(void, trimHead, RCString), size_t size) {
 #pragma mark Substrings and Copies
 
 method(RCString *, setSubstringInRange, RCString), RRange range, const char *string) {
-    if(range.count != 0 && ((range.from + range.count - 1) < object->size)) {
-        RMemMove(object->baseString + range.from, string, range.count);
+    if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
+        RMemMove(object->baseString + range.start, string, range.size);
     } else {
         RError("RCS. BAD RANGE!\n", object);
     }
@@ -448,14 +448,14 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
 }
 
 method(RCString *, substringInRange, RCString), RRange range) {
-    if(range.count != 0
-            && ((range.from + range.count) <= object->size)) {
-        char *cstring = RAlloc((range.count + 1) * sizeof(char));
-        RMemMove(cstring, object->baseString + range.from, range.count);
-        cstring[range.count] = 0;
+    if(range.size != 0
+            && ((range.start + range.size) <= object->size)) {
+        char *cstring = RAlloc((range.size + 1) * sizeof(char));
+        RMemMove(cstring, object->baseString + range.start, range.size);
+        cstring[range.size] = 0;
 
         RCString *rcString   = $(nil, c(RCString)) );
-        rcString->size       = range.count;
+        rcString->size       = range.size;
         rcString->baseString = cstring;
 
         return rcString;
@@ -576,8 +576,8 @@ method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString
 
 method(RCString *, substringByBounds, RCString), RBounds bounds) {
     register RRange range;
-    range.from  = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
-    range.count = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.from;
+    range.start = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
+    range.size = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.start;
     return $(object, m(substringInRange, RCString)), range);
 }
 

@@ -77,13 +77,13 @@ destructor  (RayMethod);
 printer     (RayMethod);
 
 // Setters
-method(void, addArgument,  RayMethod), size_t type, RCString *name);      // name - is key, type is value, type - from typeTable of interpreter
+method(void, addArgument,  RayMethod), size_t type, RCString *name);      // name - is key, type is value, type - start typeTable of interpreter
 method(void, setArguments, RayMethod), RStringDictionary *args);          // not copies arg dict
 
 // Workers
 method(RCString*, CPrefix, RayMethod)); // creates prefix like extern, inline
 method(RCString*, CName,   RayMethod)); // serialize types to name
-method(RCString*, CArgs,   RayMethod),    RClassTable *delegate); // serialize arguments from size_t to strings, need classTable delegate with registered types
+method(RCString*, CArgs,   RayMethod),    RClassTable *delegate); // serialize arguments start size_t to strings, need classTable delegate with registered types
 
 // Main methods
 method(RCString*, serializetoCFunction, RayMethod),    RClassTable *delegate);

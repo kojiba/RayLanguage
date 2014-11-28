@@ -51,8 +51,8 @@ class(RArray) //----------------------------------------------------------------
                                                                                      //
     size_t    startSize;                     // start size of array in elements      //
     size_t    sizeMultiplier;                // size multiplier when auto-add-size   //
-    size_t    count;                         // count of elements in array           //
-    size_t    freePlaces;                    // count of free places for elements    //
+    size_t    count;                         // size of elements in array           //
+    size_t    freePlaces;                    // size of free places for elements    //
     void    (*destructorDelegate)(pointer);  // destructor of elements delegate      //
     void    (*printerDelegate)   (pointer);  // printer of elements delegate         //
     pointer  *array;                         // array                                //

@@ -27,7 +27,7 @@ constructor (RFloatingEnum), pointer (*nextElementForCode)(pointer), RRange rang
             object->nextElementForCode = nextElementForCode;
             object->isChangesAfterCall = 0;
 
-            fromStartForAll(iterator, range.from, range.count) {
+            fromStartForAll(iterator, range.start, range.size) {
                 $(master(object, RDictionary), m(setObjectForKey, RDictionary)), object->nextElementForCode(iterator), iterator);
             }
         }

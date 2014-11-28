@@ -19,29 +19,29 @@
 
 RRange makeRRange(size_t from, size_t count) {
     RRange range;
-    range.from = from;
-    range.count = count;
+    range.start = from;
+    range.size = count;
     return range;
 }
 
 RRange makeRRangeTo(size_t from, size_t to) {
     RRange range;
-    range.from = from;
-    range.count = to - from;
+    range.start = from;
+    range.size = to - from;
     return range;
 }
 
 RCompareFlags compareRRange(RRange first, RRange second) {
-    if(first.from == second.from) {
-        if(first.count > second.count) {
+    if(first.start == second.start) {
+        if(first.size > second.size) {
             return longer;
-        } else if(first.count < second.count) {
+        } else if(first.size < second.size) {
             return smaller;
         } else {
             return equals;
         }
     } else {
-        if(first.from > second.from) {
+        if(first.start > second.start) {
             return bigger;
         } else {
             return smaller;
@@ -50,7 +50,7 @@ RCompareFlags compareRRange(RRange first, RRange second) {
 }
 
 rbool isInRange(RRange range, size_t value) {
-    if(value >= range.from && value <= range.from + range.count) {
+    if(value >= range.start && value <= range.start + range.size) {
         return yes;
     } else {
         return no;
@@ -58,8 +58,8 @@ rbool isInRange(RRange range, size_t value) {
 }
 
 rbool isOverlapping(RRange first, RRange second) {
-    if((second.from > (first.from + first.count))
-            || ((second.from + second.count) < first.from)) {
+    if((second.start > (first.start + first.size))
+            || ((second.start + second.size) < first.start)) {
         return no;
     } else {
         return yes;
@@ -67,7 +67,7 @@ rbool isOverlapping(RRange first, RRange second) {
 }
 
 printer(RRange) {
-    RPrintf("[ %lu ; %lu ]", object->from, object->from + object->count);
+    RPrintf("[ %lu ; %lu ]", object->start, object->start + object->size);
 }
 
 

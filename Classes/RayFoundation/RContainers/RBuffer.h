@@ -32,7 +32,7 @@ class(RBuffer) // -------------------
     size_t  count;
     RRange *sizesArray;
 
-    // total placed bytes count
+    // total placed bytes size
     size_t totalPlaced;
 endOf(RBuffer) // -------------------
 
