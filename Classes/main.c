@@ -20,7 +20,9 @@ int main(int argc, const char *argv[]) {
 
     switchToSandBox(someSandBox());
     RCString *some  = RSC("Some string");
-    deleter(some, RCString);
+    RCString *hello  = RSC("hello");
+    RCString *mor = RSC("mor");
+//    deleter(some, RCString);
     $(someSandBox(), p(RSandBox)));
 
     deleter(someSandBox(), RSandBox); // automaticaly disables

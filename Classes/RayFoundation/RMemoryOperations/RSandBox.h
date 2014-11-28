@@ -91,16 +91,16 @@ void switchFromSandBox(RSandBox *sandBox);
 #define createSandBoxSingleton(name) \
 RSandBox* name();\
 pointer concatenate(SandBoxAllocator, name)(size_t size) {\
-    return $(name, m(malloc, RSandBox)), size);\
+    return $(name(), m(malloc, RSandBox)), size);\
 }\
 pointer concatenate(SandBoxReallocator, name)(pointer ptr, size_t size) {\
-    return $(name, m(realloc, RSandBox)), ptr, size);\
+    return $(name(), m(realloc, RSandBox)), ptr, size);\
 }\
 pointer concatenate(SandBoxCallocator, name)(size_t size, size_t blockSize) {\
-    return $(name, m(calloc, RSandBox)), size, blockSize);\
+    return $(name(), m(calloc, RSandBox)), size, blockSize);\
 }\
 void concatenate(SandBoxFree, name)(pointer ptr) {\
-    return $(name, m(free, RSandBox)), ptr);\
+    return $(name(), m(free, RSandBox)), ptr);\
 }\
 RSandBox* name() { \
 static RSandBox *instance = nil; \

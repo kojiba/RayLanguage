@@ -57,12 +57,21 @@ printer(RSandBox) {
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
     RPrintf("\t Mem total  - %lu (bytes)\n", object->memPart->size);
+    size_t placed = 0;
+
     if(object->allocationMode == RSandBoxAllocationModeStandart
             || object->allocationMode == RSandBoxAllocationModeRandom) {
-        RPrintf("\t Mem placed - %lu (bytes)\n", $(object, m(memoryPlaced,RSandBox))));
+        placed = $(object, m(memoryPlaced, RSandBox)));
     }
-    RPrintf("\t Descriptors size - %lu\n", object->descriptorsInfo.size);
-    RPrintf("\t Descriptors filled - %lu\n", object->descriptorsInfo.start);
+    if(object->allocationMode == RSandBoxAllocationModeDelegated) {
+        placed = object->delegate->memoryPlaced(object);
+    }
+
+    RPrintf("\t Mem placed - %lu (bytes)\n", placed);
+    RPrintf("\t Mem free   - %lu (bytes)\n", object->memPart->size - placed);
+
+    RPrintf("\t Descriptors total   - %lu\n", object->descriptorsInfo.size);
+    RPrintf("\t Descriptors in use  - %lu\n", object->descriptorsInfo.start);
     forAll(iterator, object->descriptorsInfo.start) {
         RPrintf("\t\t [%lu : %lu]\n", object->descriptorTable[iterator].memRange.start, object->descriptorTable[iterator].memRange.size);
     }
