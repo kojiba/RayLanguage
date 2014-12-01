@@ -10,22 +10,19 @@
 #include "RInterpreter/RInterpreter.h"
 #include "RayFoundation/RSystem.h"
 #include "RInterpreter/RIProperties/RIProperties.h"
+#include "RayFoundation/RMemoryOperations/RAutoPool.h"
 
-createSandBoxSingleton(someSandBox, 65535)
+autoPoolNamed(tempPool);
 
 int main(int argc, const char *argv[]) {
-    initPointers();
-    ComplexTest();
     size_t iterator;
     initPointers();
-
-    switchToSandBox(someSandBox());
+    enablePool(tempPool());
     forAll(iterator, 20) {
         RCString *temp = randomRCString();
     }
-
-    $(someSandBox(), p(RSandBox)));
-    deleter(someSandBox(), RSandBox); // automaticaly disables
+    $(tempPool(), p(RAutoPool)));
+    deleter(tempPool(), RAutoPool);
 
     return 0;
 }

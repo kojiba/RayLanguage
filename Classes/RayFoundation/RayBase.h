@@ -57,6 +57,7 @@ void    (*RFreePtr)   (void*  ptr);
 #define RAlloc            malloc
 #define RFree             free
 #define RReAlloc          realloc
+#define RClearAlloc       calloc
 
 // I/O
 #define RPrintf           printf

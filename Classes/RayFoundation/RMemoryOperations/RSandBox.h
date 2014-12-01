@@ -75,7 +75,7 @@ method(size_t,  memoryPlaced,   RSandBox));
 // Main methods
 method(pointer, malloc,         RSandBox),    size_t sizeInBytes);
 method(pointer, realloc,        RSandBox),    pointer ptr, size_t newSize);
-method(pointer, calloc,         RSandBox),    size_t sizeInBytes, size_t blockSize);
+method(pointer, calloc,         RSandBox),    size_t blockCount, size_t blockSize);
 method(void,    free,           RSandBox),    pointer ptr);
 
 // Simple crypt

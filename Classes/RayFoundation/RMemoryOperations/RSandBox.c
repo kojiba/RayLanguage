@@ -255,10 +255,10 @@ method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
     return nil;
 }
 
-method(pointer, calloc, RSandBox), size_t sizeInBytes, size_t blockSize) {
-    pointer some = $(object, m(malloc, RSandBox)), sizeInBytes * blockSize);
+method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
+    pointer some = $(object, m(malloc, RSandBox)), blockCount * blockSize);
     if(some != nil) {
-        flushAllToByte(some, sizeInBytes * blockSize, 0);
+        flushAllToByte(some, blockCount * blockSize, 0);
     }
     return some;
 }
@@ -280,7 +280,7 @@ method(void, free, RSandBox), pointer ptr) {
 
 method(void, XorCrypt, RSandBox), RByteArray *key) {
     Xor(object->memPart->array,  key, object->memPart->size, key->size);         // crypt memory chunk
-    Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // cryptr memory ptr
+    Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // crypt memory ptr
     Xor(object->descriptorTable, key,
             object->descriptorsInfo.size * sizeof(RControlDescriptor), key->size); // crypt descriptors table
     Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers

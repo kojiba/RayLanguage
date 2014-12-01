@@ -1,0 +1,82 @@
+/**
+ * RAutoPool.h
+ * Memory management instrument.
+ * Self-longs array, stores malloc-calloc-realloced pointers.
+ * Free it if needs.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 12/1/14 2014 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+ 
+#ifndef __R_AUTO_POOL_H__
+#define __R_AUTO_POOL_H__
+
+#include "../RSyntax.h"
+#include "../RContainers/RArray.h"
+
+class(RAutoPool)
+    RArray *pointersInWork;
+
+    // inner (high-lvl in hierarchy functions)
+    pointer               (*innerMalloc) (size_t size);
+    pointer               (*innerRealloc)(pointer ptr, size_t oldSize);
+    pointer               (*innerCalloc) (size_t size, size_t blockSize);
+    void                  (*innerFree)   (pointer ptr);
+
+    // self functions
+    pointer               (*selfMalloc) (size_t size);
+    pointer               (*selfRealloc)(pointer ptr, size_t oldSize);
+    pointer               (*selfCalloc) (size_t size, size_t blockSize);
+    void                  (*selfFree)   (pointer ptr);
+
+endOf(RAutoPool)
+
+constructor (RAutoPool));
+destructor  (RAutoPool);
+printer     (RAutoPool);
+
+method(pointer, malloc,         RAutoPool),    size_t sizeInBytes);
+method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
+method(pointer, calloc,         RAutoPool),    size_t blockCount, size_t blockSize);
+method(void,    free,           RAutoPool),    pointer ptr);
+
+method(void,    drain,          RAutoPool));
+
+void enablePool(RAutoPool *pool);
+void disablePool(RAutoPool *pool);
+
+#define autoPoolNamed(name) \
+RAutoPool* name();\
+pointer concatenate(PoolAllocator, name)(size_t size) {\
+    return $(name(), m(malloc, RAutoPool)), size);\
+}\
+pointer concatenate(PoolReallocator, name)(pointer ptr, size_t size) {\
+    return $(name(), m(realloc, RAutoPool)), ptr, size);\
+}\
+pointer concatenate(PoolCallocator, name)(size_t size, size_t blockSize) {\
+    return $(name(), m(calloc, RAutoPool)), size, blockSize);\
+}\
+void concatenate(PoolFree, name)(pointer ptr) {\
+    return $(name(), m(free, RAutoPool)), ptr);\
+}\
+RAutoPool* name() { \
+static RAutoPool *instance = nil; \
+if(instance == nil) { \
+instance = $(nil, c(RAutoPool))); \
+instance->selfMalloc = concatenate(PoolAllocator, name); \
+instance->selfRealloc = concatenate(PoolReallocator, name); \
+instance->selfCalloc = concatenate(PoolCallocator, name); \
+instance->selfFree = concatenate(PoolFree, name); \
+} \
+return instance; \
+}
+/*createSandBoxSingleton*/
+
+#endif /*__R_AUTO_POOL_H__*/
