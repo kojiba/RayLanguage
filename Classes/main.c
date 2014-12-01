@@ -18,6 +18,7 @@ int main(int argc, const char *argv[]) {
     ComplexTest();
     size_t iterator;
     initPointers();
+
     switchToSandBox(someSandBox());
     forAll(iterator, 20) {
         RCString *temp = randomRCString();

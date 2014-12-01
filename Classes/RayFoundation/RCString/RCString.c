@@ -84,7 +84,7 @@ RCString *randomRCString(void) {
         cstring[++iterator] = 0;
         $(string, m(setConstantString, RCString)), cstring);
     } else {
-        RError("RCS. Allocation error.", cstring);
+        RError("RCString. Allocation of temp cstring error.", cstring);
     }
     return string;
 }

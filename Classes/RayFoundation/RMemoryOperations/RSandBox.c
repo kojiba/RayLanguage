@@ -187,7 +187,7 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
     switchFromSandBox(object);
 
     if(object->descriptorsInfo.size == object->descriptorsInfo.start + 1) {
-        object->descriptorTable = RReAlloc(object->descriptorTable, object->descriptorsInfo.size * 2);
+        object->descriptorTable = RReAlloc(object->descriptorTable, object->descriptorsInfo.size * 2 * sizeof(RControlDescriptor));
         if(object->descriptorTable != nil) {
             object->descriptorsInfo.size *= 2;
         } else {
@@ -213,7 +213,6 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
             // if first
             if(object->descriptorsInfo.start == 0) {
                 placeToAlloc.start = 0;
-
             // will be next to last
             } else {
                 placeToAlloc.start =

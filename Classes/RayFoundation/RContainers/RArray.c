@@ -298,7 +298,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
             }
         }
     } else {
-        RError("RA. Delegate for searching is nil, please delete function call, or fix it.", object);
+        RWarning("RA. Delegate for searching is nil, please delete function call, or fix it.", object);
     }
     return result;
 }
@@ -310,7 +310,7 @@ method(pointer, elementAtIndex, RArray), size_t index) {
     if($(object, m(checkIfIndexIn,RArray)), index) == index_exists) {
         return object->array[index];
     } else {
-        RError("RA. Index not exist!", object);
+        RWarning("RArray. Index not exist!", object);
         return nil;
     }
 }
