@@ -141,9 +141,11 @@ int RClassTableTest(void){
 
 int RClassNamePairTest(void){
     RClassNamePair *pair = $(nil, c(RClassNamePair)) );
-    $(master(pair, RCString), m(setConstantString, RCString)), "RClassNamePairTest");
-    pair->idForClassName = 4;
-    deleter(pair, RClassNamePair);
+    if(pair != nil) {
+        $(master(pair, RCString), m(setConstantString, RCString)), "RClassNamePairTest");
+        pair->idForClassName = 4;
+        deleter(pair, RClassNamePair);
+    }
     return 0;
 }
 

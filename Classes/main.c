@@ -24,11 +24,19 @@
 #include "RInterpreter/RIProperties/RIProperties.h"
 #include "RayFoundation/RMemoryOperations/RAutoPool.h"
 
+createSandBoxSingleton(StandartSandbox, 65535)
 
 int main(int argc, const char *argv[]) {
     initPointers();
     enablePool(RPool);
-    ComplexTest();
+
+    StandartSandbox()->allocationMode = RSandBoxAllocationModeStandart;
+
+
+    RDynamicArrayTest();
+    $(StandartSandbox(), p(RSandBox)));
+    deleter(StandartSandbox(), RSandBox);
+
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

@@ -46,7 +46,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
             object->innerCalloc           = calloc;
             object->innerFree             = free;
 
-            object->allocationMode        = RSandBoxAllocationModeStandart;
+            object->allocationMode        = RSandBoxAllocationModeRandom;
             object->delegate              = nil;
         } else {
             RError("RSandBox. Can't allocate descriptors table or memory part.", object);
@@ -109,10 +109,13 @@ printer(RSandBox) {
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
     size_t iterator;
+    storePtrs();
+    switchFromSandBox(object);
     switch (object->allocationMode) {
         case RSandBoxAllocationModeRandom : {
             forAll(iterator, object->descriptorsInfo.start) {
                 if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
+                    backPtrs();
                     return no;
                 }
             }
@@ -122,16 +125,19 @@ method(rbool, isRangeFree, RSandBox), RRange range) {
             // if start smaller than last size + start
             if(range.start > object->descriptorTable[object->descriptorsInfo.start - 1].memRange.size +
                     object->descriptorTable[object->descriptorsInfo.start - 1].memRange.start) {
+                backPtrs();
                 return yes;
             } else {
+                backPtrs();
                 return no;
             }
         }
         case RSandBoxAllocationModeDelegated : {
+            backPtrs();
             return object->delegate->isRangeFree(object);
         };
     }
-
+    backPtrs();
     return yes;
 }
 
@@ -144,7 +150,7 @@ method(size_t, rangeForPointer, RSandBox), pointer ptr) {
     ssize_t shift = ptr - (pointer)(object->memPart->array);
     if(shift < 0
             || shift > object->memPart->size) {
-        RError("RSandBox. Pointer wasn't allocated with sandBox.", object);
+        RErrStr "ERROR. RSandBox. Pointer - %p wasn't allocated with sandBox - %p.\n", ptr, object);
         return object->descriptorsInfo.start;
     } else {
         size_t iterator;
@@ -229,9 +235,7 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
     }
 
     if(placeToAlloc.start + sizeInBytes > object->memPart->size) {
-        RError("RSandBox. Not enought memory", object);
-        backPtrs();
-        return nil;
+        RError("RSandBox. Not enought memory.", object);
     } else {
         $(object, m(addFilledRange, RSandBox)), placeToAlloc);
         backPtrs();
@@ -246,21 +250,26 @@ method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
     if(ptr == nil) {
         return $(object, m(malloc, RSandBox)),newSize);
     } else {
+//        storePtrs();
+//        switchFromSandBox(object);
         size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
         if(iterator != object->descriptorsInfo.start) {
             pointer some = $(object, m(malloc, RSandBox)), newSize);
             if(some != nil) {
                 RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
                 $(object, m(free, RSandBox)), ptr);
+//                backPtrs();
                 return some;
             }
         }
+//        backPtrs();
     }
     return nil;
 }
 
 method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
     storePtrs();
+    switchFromSandBox(object);
     pointer some = RClearAlloc(blockCount, blockSize);
     backPtrs();
     return some;
@@ -269,9 +278,10 @@ method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
 method(void, free, RSandBox), pointer ptr) {
     storePtrs();
     switchFromSandBox(object);
+
     size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
     if (rangeIterator != object->descriptorsInfo.start) {
-        RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - 1) * sizeof(RControlDescriptor));
+        RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
         --object->descriptorsInfo.start;
     } else {
         RErrStr "ERROR. RSandBox. Bad ptr - %p, wasn't allocated with sandBox - %p\n", ptr, object);

@@ -25,7 +25,7 @@
 
 typedef enum RSandBoxAllocationMode {
     RSandBoxAllocationModeStandart = 0,
-    RSandBoxAllocationModeRandom,    // use many memory for that mode, algorithm for allocation isn't optimised
+    RSandBoxAllocationModeRandom,    // ASLR, use many memory for that mode, algorithm for allocation isn't optimised
     RSandBoxAllocationModeDelegated
 } RSandBoxAllocationMode;
 
@@ -90,26 +90,27 @@ void switchFromSandBox(RSandBox *sandBox);
 
 #define createSandBoxSingleton(name, memSize) \
 RSandBox* name();\
-pointer concatenate(SandBoxAllocator, name)(size_t size) {\
+pointer concatenate(SandBoxAllocator_, name)(size_t size) {\
     return $(name(), m(malloc, RSandBox)), size);\
 }\
-pointer concatenate(SandBoxReallocator, name)(pointer ptr, size_t size) {\
+pointer concatenate(SandBoxReallocator_, name)(pointer ptr, size_t size) {\
     return $(name(), m(realloc, RSandBox)), ptr, size);\
 }\
-pointer concatenate(SandBoxCallocator, name)(size_t size, size_t blockSize) {\
+pointer concatenate(SandBoxCallocator_, name)(size_t size, size_t blockSize) {\
     return $(name(), m(calloc, RSandBox)), size, blockSize);\
 }\
-void concatenate(SandBoxFree, name)(pointer ptr) {\
+void concatenate(SandBoxFree_, name)(pointer ptr) {\
     return $(name(), m(free, RSandBox)), ptr);\
 }\
 RSandBox* name() { \
 static RSandBox *instance = nil; \
 if(instance == nil) { \
 instance = $(nil, c(RSandBox)), memSize, 32); \
-instance->selfMalloc = concatenate(SandBoxAllocator, name); \
-instance->selfRealloc = concatenate(SandBoxReallocator, name); \
-instance->selfCalloc = concatenate(SandBoxCallocator, name); \
-instance->selfFree = concatenate(SandBoxFree, name); \
+instance->selfMalloc = concatenate(SandBoxAllocator_, name); \
+instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
+instance->selfCalloc = concatenate(SandBoxCallocator_, name); \
+instance->selfFree = concatenate(SandBoxFree_, name); \
+switchToSandBox(instance);\
 } \
 return instance; \
 }
