@@ -25,9 +25,10 @@ Strings:
 9. etc...
 
 Memory operations:  
-1. Self-code easy sandboxing and testing with logging.  
-2. Work with byte buffers  
-3. Work with memory chunks  
+1. Self-code easy sandboxing and testing with logging. 
+2. Self-code management with RAutoPool. (Checking leaks) 
+3. Work with byte buffers  
+4. Work with memory chunks  
 
 Some test projects based on RayFoundation:  
 1. Simple VM with Brainfuck compiler  
@@ -163,6 +164,19 @@ int main(int argc, const char *argv[]) {
 
     // RVM singleton cleanup
     deleteRVM();
+    return 0;
+}
+```
+RAutoPool:  
+
+```C
+int main(int argc, const char *argv[]) {
+    initPointers();
+    enablePool(RPool); // enable pool sinleton
+    ComplexTest();     // do something 
+
+    $(RPool, p(RAutoPool)));   // check leaks
+    deleter(RPool, RAutoPool); // total cleanup 
     return 0;
 }
 ```
