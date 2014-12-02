@@ -30,7 +30,9 @@ int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
+
     ComplexTest();
+
     deleter(RPool, RAutoPool);
     return 0;
 }

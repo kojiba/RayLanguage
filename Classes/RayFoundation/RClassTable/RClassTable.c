@@ -78,6 +78,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 #endif
                     return pair->idForClassName;
                 } else {
+                    RError("RClassTable. RA add object error.", object);
                     return 0;
                 }
             } else {

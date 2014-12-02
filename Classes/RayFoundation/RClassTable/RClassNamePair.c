@@ -23,6 +23,7 @@ constructor(RClassNamePair)) {
         if(master(object, RCString) != nil) {
             // 2 - it's for RClassNamePair
             object->classId = 2;
+            object->idForClassName = 0;
         }
     }
     return object;

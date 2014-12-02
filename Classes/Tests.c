@@ -122,6 +122,7 @@ int RClassTableTest(void){
         registerClassOnce("Dart");
         registerClassOnce("Luke");
     }
+
     if(RCTSingleton->masterRArrayObject->count > 20) {
         RError("RCTSingleton->masterRArrayObject->size > 8", RCTSingleton);
         return 1;
@@ -130,10 +131,12 @@ int RClassTableTest(void){
         RError("RCTSingleton->masterRArrayObject->size == 0", RCTSingleton);
         return 1;
     }
-    char *checkName = "Han Solo";
+    char *checkName = "Leia";
 //    RPrintf("Identifier of %s is - %lu \n", checkName, registerClassOnce(checkName));
-    if(registerClassOnce(checkName) < 4) {
-        RError("RCT. REGISTER", RCTSingleton);
+    size_t id = $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), checkName);
+    if(id < 4) {
+        printRCTS;
+        RError("Test. RClassTable. Bad id for registered.", RCTSingleton);
         return 1;
     }
     return 0;
