@@ -234,7 +234,7 @@ void ComplexTest() {
         && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
-            ) {
+    ) {
         RPrintf("All tests passed successfully\n");
     } else {
         RError("TESTS ERROR!", nil);

@@ -25,7 +25,7 @@
 
 typedef enum RSandBoxAllocationMode {
     RSandBoxAllocationModeStandart = 0,
-    RSandBoxAllocationModeRandom,    // ASLR, use many memory for that mode, algorithm for allocation isn't optimised
+    RSandBoxAllocationModeRandom,    // ASLR, use many memory for that mode, algorithm for allocation isn't optimised (use 1,7-2x mem from real mem)
     RSandBoxAllocationModeDelegated
 } RSandBoxAllocationMode;
 
@@ -111,7 +111,7 @@ RSandBox* name() { \
             instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
             instance->selfCalloc  = concatenate(SandBoxCallocator_, name); \
             instance->selfFree    = concatenate(SandBoxFree_, name); \
-            switchToSandBox(instance);\
+            switchToSandBox(instance); \
         } \
     } \
     return instance; \

@@ -118,6 +118,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
 method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
     storePtrs();
     toPoolPtrs();
+    // high lvl calloc
     pointer temp = RClearAlloc(blockCount, blockSize);
     $(object->pointersInWork, m(addObject, RArray)), temp);
     backPtrs();

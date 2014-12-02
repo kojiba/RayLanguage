@@ -97,7 +97,10 @@ printer(RSandBox) {
     RPrintf("\t Descriptors total  - %lu\n", object->descriptorsInfo.size);
     RPrintf("\t Descriptors in use - %lu\n", object->descriptorsInfo.start);
     forAll(iterator, object->descriptorsInfo.start) {
-        RPrintf("\t\t [%lu : %lu]\n", object->descriptorTable[iterator].memRange.start, object->descriptorTable[iterator].memRange.size);
+        RPrintf("\t\t [%lu : %lu] (%p)\n",
+                object->descriptorTable[iterator].memRange.start,
+                object->descriptorTable[iterator].memRange.size,
+                (pointer) (object->memPart->array + object->descriptorTable[iterator].memRange.start));
     }
     RPrintLn("}\n");
 
@@ -250,19 +253,15 @@ method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
     if(ptr == nil) {
         return $(object, m(malloc, RSandBox)),newSize);
     } else {
-//        storePtrs();
-//        switchFromSandBox(object);
         size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
         if(iterator != object->descriptorsInfo.start) {
             pointer some = $(object, m(malloc, RSandBox)), newSize);
             if(some != nil) {
                 RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
                 $(object, m(free, RSandBox)), ptr);
-//                backPtrs();
                 return some;
             }
         }
-//        backPtrs();
     }
     return nil;
 }
@@ -293,8 +292,8 @@ method(void, free, RSandBox), pointer ptr) {
 #pragma mark Simple crypt
 
 method(void, XorCrypt, RSandBox), RByteArray *key) {
-    Xor(object->memPart->array,  key, object->memPart->size, key->size);         // crypt memory chunk
-    Xor(object->memPart, key, sizeof(RByteArray), key->size);                    // crypt memory ptr
+    Xor(object->memPart->array,  key, object->memPart->size, key->size);           // crypt memory chunk
+    Xor(object->memPart, key, sizeof(RByteArray), key->size);                      // crypt memory ptr
     Xor(object->descriptorTable, key,
             object->descriptorsInfo.size * sizeof(RControlDescriptor), key->size); // crypt descriptors table
     Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
@@ -304,8 +303,8 @@ method(void, XorDecrypt, RSandBox), RByteArray *key) {
     Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
     Xor(object->descriptorTable, key,
             object->descriptorsInfo.size * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
-    Xor(object->memPart, key, sizeof(RByteArray), key->size);                       // decrypt memory ptr
-    Xor(object->memPart->array,  key, object->memPart->size, key->size);            // decrypt memory chunk
+    Xor(object->memPart, key, sizeof(RByteArray), key->size);                      // decrypt memory ptr
+    Xor(object->memPart->array,  key, object->memPart->size, key->size);           // decrypt memory chunk
 }
 
 #pragma mark Switch

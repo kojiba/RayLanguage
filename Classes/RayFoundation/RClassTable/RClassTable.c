@@ -145,11 +145,13 @@ singleton(RClassTable) {
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
 #endif
         instance = $(nil, c(RClassTable)));
-        // register classes on that  RClassTable was built (only our singleton)
-        $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
-        $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
-        $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
-        $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
+        if(instance != nil) {
+            // register classes on that  RClassTable was built (only our singleton)
+            $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
+        }
 
 #if RAY_SHORT_DEBUG == 1
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n\n", instance);

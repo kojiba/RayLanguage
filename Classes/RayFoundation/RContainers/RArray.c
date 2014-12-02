@@ -267,7 +267,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 method(void, deleteObjects, RArray), RRange range){
     register size_t iterator;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf(start, object, range.start, range.size);
+    RPrintf("RArray %p delete objects in range [%lu:%lu]", object, range.start, range.size);
 #endif
     fromStartForAll(iterator, range.start, range.size) {
         destroyElementAtIndex(iterator);

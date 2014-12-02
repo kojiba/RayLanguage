@@ -29,16 +29,8 @@ createSandBoxSingleton(StandartSandbox, 65535)
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
-    StandartSandbox()->allocationMode = RSandBoxAllocationModeStandart;
-
-
-    RDynamicArrayTest();
-    $(StandartSandbox(), p(RSandBox)));
-    deleter(StandartSandbox(), RSandBox);
-
-
-    deleter(RCTSingleton, RClassTable);
-    $(RPool, p(RAutoPool)));
+    RCTSingleton;
+    ComplexTest();
     deleter(RPool, RAutoPool);
     return 0;
 }
