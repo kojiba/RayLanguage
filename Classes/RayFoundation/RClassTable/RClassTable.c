@@ -15,6 +15,10 @@
 
 #include "RClassTable.h"
 
+void pairPtrDeleter(pointer ptr) {
+    deleter(ptr, RClassNamePair);
+}
+
 constructor(RClassTable)) {
     // alloc RClassTable
     object = allocator(RClassTable);
@@ -30,16 +34,15 @@ constructor(RClassTable)) {
             if(master(object, RCompareDelegate) != nil) {
                 // overload delegate function
                 master(object, RCompareDelegate)->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) m(compareWith, RClassNamePair);
-            } else {
-                RPrintf("Warning. RCT. Bad allocation on delegate.");
-            }
-            // we store pairs, and set destructor for pair, and printer for pair
-            master(object, RArray)->destructorDelegate = (void (*)(pointer)) d(RClassNamePair);
-            master(object, RArray)->printerDelegate    = (void (*)(pointer)) p(RClassNamePair);
+                // we store pairs, and set destructor for pair, and printer for pair
+                master(object, RArray)->destructorDelegate = pairPtrDeleter;
+                master(object, RArray)->printerDelegate    = (void (*)(pointer)) p(RClassNamePair);
 
-            // 4 it's for self
-            object->classId = 3;
-            object->cacheTable = nil;
+                // 4 it's for self
+                object->classId = 3;
+            } else {
+                RError("RClassTable. Bad allocation on delegate.", object);
+            }
         }
     }
 #if RAY_SHORT_DEBUG == 1
@@ -52,11 +55,8 @@ destructor(RClassTable) {
 #if RAY_SHORT_DEBUG == 1
     RPrintf("RCT destructor of %p\n", object);
 #endif
-    if (object != nil) {
-        deleter(master(object, RArray), RArray);
-        deleter(object->cacheTable, RArray);
-        deallocator(master(object, RCompareDelegate));
-    }
+    deleter(master(object, RArray), RArray);
+    deallocator(master(object, RCompareDelegate));
 }
 
 method(size_t, registerClassWithName, RClassTable), char *name) {
@@ -71,20 +71,8 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
                 $(master(pair, RCString), m(setConstantString, RCString)), name);
                 pair->idForClassName = master(object, RArray)->count;
 
-                if(master(object, RArray)->count > 20) {
-                    object->cacheTable = makeRArray();
-                    // do not set destructor
-                    object->cacheTable->printerDelegate = (void (*)(pointer)) p(RClassNamePair);
-                }
-
                 // successfully register new class
                 if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
-                    if(object->cacheTable != nil) {
-                        if(object->cacheTable->count > 20) {
-                            $(object->cacheTable, m(deleteObjects, RArray)), makeRRange(0, 5));
-                        }
-                        $(object->cacheTable, m(addObject, RArray)), pair);
-                    }
 #if RAY_SHORT_DEBUG == 1
                         RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
 #endif
@@ -93,14 +81,14 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
                     return 0;
                 }
             } else {
-                RError("RCT. Allocation of pair error", object);
+                RError("RClassTable. Allocation of pair error", object);
                 return 0;
             }
         } else {
             return result;
         }
     } else {
-        RError("RCT. Register classname is nil, do nothig, please remove function call, or fix it.", object);
+        RError("RClassTable. Register classname is nil, do nothig, please remove function call, or fix it.", object);
         return 0;
     }
 }
@@ -118,29 +106,27 @@ printer(RClassTable) {
 
 method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     RClassNamePair *pair = $(nil, c(RClassNamePair)));
-    $(master(pair, RCString), m(setConstantString, RCString)), name);
-    master(object, RCompareDelegate)->etaloneObject = pair;
-    RFindResult foundedObject;
-    foundedObject.object = nil;
-    // search cache
-    if(object->cacheTable != nil) {
-        foundedObject = $(object->cacheTable, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-    }
-    // if not found in cache
-    if(foundedObject.object == nil) {
-        foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-        if(object->cacheTable != nil) {
-            if(object->cacheTable->count > 20) {
-                $(object->cacheTable, m(deleteObjects, RArray)), makeRRange(0, 5));
-            }
-            $(object->cacheTable, m(addObject, RArray)), foundedObject.object);
+    if(pair != nil) {
+        $(master(pair, RCString), m(setConstantString, RCString)), name);
+        master(object, RCompareDelegate)->etaloneObject = pair;
+        RFindResult foundedObject;
+        foundedObject.object = nil;
+
+        if(foundedObject.object == nil) {
+            foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
         }
-    }
-    if(foundedObject.object == nil){
-        return 0;
+        // delete temp
+        deleter(pair, RClassNamePair);
+
+        if(foundedObject.object == nil){
+            return 0;
+        } else {
+            return ((RClassNamePair*)foundedObject.object)->idForClassName;
+        }
     } else {
-        return ((RClassNamePair*)foundedObject.object)->idForClassName;
+        RError("RClassTable. Bad allocation of temp RClassNamePair.", object);
     }
+    return 0;
 }
 
 method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {

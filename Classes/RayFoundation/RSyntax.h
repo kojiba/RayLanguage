@@ -47,7 +47,7 @@
 #endif
 
 #if RAY_WARNINGS_ON == 1
-    #define RWarning(string, object)                      RPrintf(RYellow"Warning. %p - "string"\n"RNC, object)
+    #define RWarning(string, object)                      RPrintf(RYellow"Warning. %p - "string" Please delete function call, or fix it.\n"RNC, object)
 #else
     #define RWarning(string, object)
 #endif

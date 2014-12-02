@@ -1,9 +1,10 @@
 #include <time.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include "RayFoundation/RayBase.h"
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
 
-int RByteArrayTest() {
+int RByteArrayTest(void) {
     size_t i;
     size_t j;
     for(i = 0; i < 32; ++i) {
@@ -17,18 +18,22 @@ int RByteArrayTest() {
                 return 1;
             }
         }
-        $(array, d(RByteArray)) );
-        deallocator(array);
+        deleter(array, RByteArray);
     }
     return 0;
 }
+void stringDeleter(pointer ptr){
+    deleter(ptr, RCString);
+}
 
-int StringDictionaryTest() {
+int StringDictionaryTest(void) {
     // some key constant
     RCString *key = RS("Veider");
 
     // create dictionary
     RStringDictionary *dictionary = $(nil, c(RStringDictionary)) );
+    master(dictionary, RDictionary)->values->destructorDelegate = stringDeleter;
+    master(dictionary, RDictionary)->keys->destructorDelegate = stringDeleter;
 
     // fill dictionary with some object-keys,
     // use RSC, cause we need copies of constant,
@@ -36,40 +41,34 @@ int StringDictionaryTest() {
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
-    if(dictionary->masterRDictionaryObject->keys->count != 3
-            || dictionary->masterRDictionaryObject->values->count != 3) {
-        RError("To little size in dictionary", dictionary);
-        return 1;
-    }
 
-    // try once more, to check is it one-time-adding
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
     if(dictionary->masterRDictionaryObject->keys->count > 3
             || dictionary->masterRDictionaryObject->values->count > 3) {
-        RError("Duplication of setBy key", dictionary);
+        RError("StringDictionaryTest. Duplication of setBy key", dictionary);
         return 1;
     }
 
     // find some object for key
     RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
     if(object == nil) {
-        RError("Error find object for key", dictionary);
+        RError("StringDictionaryTest. Error find object for key", dictionary);
         return 1;
+    } else {
+        deallocator(key);
     }
 
     // destructs, and delete pointer
-    $(dictionary, d(RStringDictionary)) );
-    deallocator(dictionary);
+    deleter(dictionary, RStringDictionary);
     return 0;
 }
 
-int StringArrayTest() {
+
+
+int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
-    stringArray->printerDelegate = p(RCString);
-    stringArray->destructorDelegate = d(RCString);
+//    stringArray->printerDelegate = p(RCString);
+    stringArray->destructorDelegate = stringDeleter;
 
     for(i = 0; i < 10; ++i) {
         addObjectToRA(stringArray, randomRCString());
@@ -84,6 +83,7 @@ int StringArrayTest() {
         RError("String array delete objects error", stringArray);
         return 1;
     }
+    deleter(stringArray, RArray);
 
     return 0;
 }
@@ -96,16 +96,16 @@ int RDictionaryTest(void){
         size_t key = iterator;
         $(dictionary, m(setObjectForKey, RDictionary)), value, key);
         if(dictionary->keys->count != dictionary->values->count) {
-            RError("Count of keys and values is not equal", dictionary);
+            RError("Tests. RDictionaryCount of keys and values is not equal.", dictionary);
             return 1;
         }
         if(dictionary->keys->count == 0
                 || dictionary->keys->count == 0) {
-            RError("Count of keys or values 0", dictionary);
+            RError("Tests. RDictionaryCount of keys or values 0.", dictionary);
             return 1;
         }
     }
-    deleteRD(dictionary);
+    deleter(dictionary, RDictionary);
     return 0;
 }
 
@@ -141,10 +141,9 @@ int RClassTableTest(void){
 
 int RClassNamePairTest(void){
     RClassNamePair *pair = $(nil, c(RClassNamePair)) );
-    master(pair, RCString) = RS(toString(RClassNamePair));
+    $(master(pair, RCString), m(setConstantString, RCString)), "RClassNamePairTest");
     pair->idForClassName = 4;
-    $(pair, d(RClassNamePair)) );
-    deallocator(pair);
+    deleter(pair, RClassNamePair);
     return 0;
 }
 
@@ -172,28 +171,28 @@ int RDynamicArrayTest(void){
 
     sortRA(dynamicArray);
 
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(80, 10));
+    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(10, 10));
     if(sub == nil) {
-        RError("Subarray error", sub);
+        RError("Subarray error.", sub);
         return 1;
     }
+    sub->destructorDelegate = nil;
     if(sub->count != 10) {
-        RError("Subarray bad size", sub);
+        RError("Subarray bad size.", sub);
         return 1;
     }
-
     sizeToFitRA(sub);
     if(sub->freePlaces != 0) {
-        RError("Subarray bad sizeToFit", sub);
+        RError("Subarray bad sizeToFit.", sub);
         return 1;
     }
 
     deleter(dynamicArray, RArray);
-    deallocator(sub);
+    deleter(sub, RArray);
     return 0;
 }
 
-int RBufferTest() {
+int RBufferTest(void) {
     size_t iterator;
     size_t sum = 0;
     size_t first_size = 0;
@@ -210,11 +209,13 @@ int RBufferTest() {
             RError("RBuffer. Test error, bad size or size", buffer);
             return -1;
         }
+        deleter(temp, RCString);
     }
     char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
     if(RStringLenght(temp) != first_size) {
         RError("RBuffer. Bad getDataCopy", buffer);
     }
+    deleter(buffer, RBuffer);
     deallocator(temp);
     return 0;
 }

@@ -37,7 +37,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
         object->memPart         = makeRByteArray(sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
-            object->classId               = registerClassOnce(toString(RSandBox));
+//            object->classId               = registerClassOnce(toString(RSandBox));
             object->descriptorsInfo.size  = descriptorsCount;
             object->descriptorsInfo.start = 0;
 
@@ -243,27 +243,31 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 }
 
 method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
-    size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
-    if(iterator != object->descriptorsInfo.start) {
-        pointer some = $(object, m(malloc, RSandBox)), newSize);
-        if(some != nil) {
-            RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
-            $(object, m(free, RSandBox)), ptr);
-            return some;
+    if(ptr == nil) {
+        return $(object, m(malloc, RSandBox)),newSize);
+    } else {
+        size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+        if(iterator != object->descriptorsInfo.start) {
+            pointer some = $(object, m(malloc, RSandBox)), newSize);
+            if(some != nil) {
+                RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
+                $(object, m(free, RSandBox)), ptr);
+                return some;
+            }
         }
     }
     return nil;
 }
 
 method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
-    pointer some = $(object, m(malloc, RSandBox)), blockCount * blockSize);
-    if(some != nil) {
-        flushAllToByte(some, blockCount * blockSize, 0);
-    }
+    storePtrs();
+    pointer some = RClearAlloc(blockCount, blockSize);
+    backPtrs();
     return some;
 }
 
 method(void, free, RSandBox), pointer ptr) {
+    storePtrs();
     switchFromSandBox(object);
     size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
     if (rangeIterator != object->descriptorsInfo.start) {
@@ -272,7 +276,7 @@ method(void, free, RSandBox), pointer ptr) {
     } else {
         RErrStr "ERROR. RSandBox. Bad ptr - %p, wasn't allocated with sandBox - %p\n", ptr, object);
     }
-    switchToSandBox(object);
+    backPtrs();
 }
 
 

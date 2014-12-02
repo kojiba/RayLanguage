@@ -38,12 +38,12 @@ constructor(RArray), RArrayFlags *error) {
     object = malloc(sizeof(RArray));
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA constructor of %p\n", object);
+    RPrintf("RArray constructor of %p\n", object);
 #endif
 
     if (object == nil) {
         *error = allocation_error;
-        RError("RA. Bad allocation on constructor.", object);
+        RError("RArray. Bad allocation on constructor.", object);
         return nil;
 
     } else {
@@ -90,11 +90,11 @@ destructor(RArray) {
         object->destructorDelegate = nil;
         object->printerDelegate    = nil;
     } else {
-        RWarning("RA. Destructing a nil, do nothing, please delete function call, or fix it.", object);
+        RWarning("RArray. Destructing a nil, do nothing, please delete function call, or fix it.", object);
     }
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA destructor of %p\n", object);
+    RPrintf("RArray destructor of %p\n", object);
 #endif
 }
 
@@ -125,7 +125,7 @@ printer(RArray) {
 method(RArrayFlags, addSize, RArray), size_t newSize) {
 
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RA %p ADD_SIZE\n", object);
+        RPrintf("RArray %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
 #if RAY_SHORT_DEBUG == 1
@@ -144,7 +144,7 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
             return no_error;
         }
     } else {
-        RWarning("RA. Bad new size, do nothing, please delete function call, or fix it.", object);
+        RWarning("RArray. Bad new size, do nothing, please delete function call, or fix it.", object);
         return bad_size;
     }
 }
@@ -161,7 +161,7 @@ method(void, flush, RArray)) {
     }
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA FLUSH of %p\n", object);
+    RPrintf("RArray FLUSH of %p\n", object);
 #endif
 }
 
@@ -169,7 +169,7 @@ method(byte, sizeToFit, RArray)){
     object->array = RReAlloc(object->array, object->count * sizeof(pointer));
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA %p SIZE_TO_FIT\n", object);
+    RPrintf("RArray %p SIZE_TO_FIT\n", object);
 #endif
     if (object->array == nil) {
         return temp_allocation_error;
@@ -188,7 +188,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     // needs additional allocation of memory
     if (object->freePlaces == 0) {
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RA %p needs additional allocation\n", object);
+        RPrintf("RArray %p needs additional allocation\n", object);
 #endif
         errors = $(object, m(addSize, RArray)), object->count * object->sizeMultiplier);
     }
@@ -196,7 +196,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     // not need additional allocation
 #if RAY_SHORT_DEBUG == 1
     else {
-        RPrintf("RA %p addObject without additional allocation\n", object);
+        RPrintf("RArray %p addObject without additional allocation\n", object);
     }
 #endif
 
@@ -211,7 +211,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 #if RAY_SHORT_DEBUG == 1
-        RPrintf("RA %p setObject atIndex = %lu \n", object, index);
+        RPrintf("RArray %p setObject atIndex = %lu \n", object, index);
 #endif
     // if at that index exist some object
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
@@ -222,7 +222,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
         // if space at index is not allocated
         if(index > (object->freePlaces + object->count)) {
-            RWarning("RA. Setting to a not allocated space, do nothing, please delete function call, or fix it.", object);
+            RWarning("RArray. Setting to a not allocated space, do nothing, please delete function call, or fix it.", object);
         // if space is allocated
         } else {
             object->array[index] = newObject;
@@ -235,7 +235,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA deleteObjectAtIndex of %p\n", object);
+    RPrintf("RArray deleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
@@ -249,7 +249,7 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 
 method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA fastDeleteObjectAtIndex of %p\n", object);
+    RPrintf("RArray fastDeleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
@@ -287,7 +287,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
              RFindResult result;
     result.object = nil;
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA findObjectWithDelegate of %p\n", object);
+    RPrintf("RArray findObjectWithDelegate of %p\n", object);
 #endif
     if(delegate != nil) {
         forAll(iterator, object->count) {
@@ -298,14 +298,14 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
             }
         }
     } else {
-        RWarning("RA. Delegate for searching is nil, please delete function call, or fix it.", object);
+        RWarning("RArray. Delegate for searching is nil, please delete function call, or fix it.", object);
     }
     return result;
 }
 
 method(pointer, elementAtIndex, RArray), size_t index) {
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA elementAtIndex of %p\n", object);
+    RPrintf("RArray elementAtIndex of %p\n", object);
 #endif
     if($(object, m(checkIfIndexIn,RArray)), index) == index_exists) {
         return object->array[index];
@@ -320,7 +320,7 @@ method(RArray *, getSubarray, RArray), RRange range){
     size_t iterator = 0;
     RArray *result = makeRArray();
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA getSubarray of %p\n", object);
+    RPrintf("RArray getSubarray of %p\n", object);
 #endif
     if(result != nil) {
 
@@ -337,16 +337,14 @@ method(RArray *, getSubarray, RArray), RRange range){
 
                 // cleanup and alert
                 deleter(result, RArray);
-                RError("RA. Get subarray error.", object);
+                RError("RArray. Get subarray error.", object);
                 return nil;
             }
         }
     }
-#if RAY_SHORT_DEBUG == 1
     else {
-        RError("RA. GetSubarray allocation error.\n", object);
+        RError("RArray. GetSubarray allocation error.", object);
     }
-#endif
 
     return result;
 }
@@ -360,7 +358,7 @@ method(pointer, lastObject, RArray)) {
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
 
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA bubbleSortWithDelegate of %p\n", object);
+    RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
 #endif
 
     register size_t inner;
@@ -389,7 +387,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 
 #if RAY_SHORT_DEBUG == 1
     static size_t number = 0;
-    RPrintf("RA quickSortWithDelegate of %p recursive #%lu\n", object, number);
+    RPrintf("RArray quickSortWithDelegate of %p recursive #%lu\n", object, number);
     ++number;
 #endif
 
@@ -419,7 +417,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 
 method(void, sort, RArray)) {
 #if RAY_SHORT_DEBUG == 1
-    RPrintf("RA sort of %p\n", object);
+    RPrintf("RArray sort of %p\n", object);
 #endif
     $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComporator);
 }
@@ -433,7 +431,7 @@ method(void, shift, RArray), byte side, RRange range) {
          sideName = "left";
     } else {
          sideName = "right";
-    } RPrintf("RA shift of %p on %s\n", object, sideName);
+    } RPrintf("RArray shift of %p on %s\n", object, sideName);
 #endif
     register size_t iterator;
     if(range.size != 0) {
@@ -452,7 +450,7 @@ method(void, shift, RArray), byte side, RRange range) {
         object->count -= range.size;
         object->freePlaces += range.size;
     } else {
-        RWarning("RA. Shifts of RArray do nothing, please delete function call, or fix it.", object);
+        RWarning("RArray. Shifts of RArray do nothing, please delete function call, or fix it.", object);
     }
 }
 

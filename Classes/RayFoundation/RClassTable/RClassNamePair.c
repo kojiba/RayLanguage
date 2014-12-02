@@ -20,8 +20,10 @@ constructor(RClassNamePair)) {
 
     if (object != nil) {
         master(object, RCString) = makeRCString();
-        // 2 - it's for RClassNamePair
-        object->classId = 2;
+        if(master(object, RCString) != nil) {
+            // 2 - it's for RClassNamePair
+            object->classId = 2;
+        }
     }
     return object;
 }

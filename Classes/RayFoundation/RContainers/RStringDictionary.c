@@ -36,12 +36,7 @@ constructor(RStringDictionary)) {
 }
 
 destructor(RStringDictionary) {
-    if(object != nil) {
-        $(master(object, RDictionary), d(RDictionary)) );
-        deallocator(master(object, RDictionary));
-    } else {
-        RPrintf("Warning. RSD. Destructing a nil, do nothing, please delete function call, or fix it.\n");
-    }
+    deleter(master(object, RDictionary), RDictionary);
 }
 
 printer(RStringDictionary) {

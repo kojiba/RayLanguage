@@ -24,8 +24,6 @@ class(RClassTable) //-----------------------------------------------------------
     discipleOf(RArray)
     discipleOf(RCompareDelegate)
 
-    RArray *cacheTable;
-
 endOf(RClassTable) //-------------------------------------------------------
 
 constructor (RClassTable));
@@ -33,8 +31,8 @@ destructor  (RClassTable);
 printer     (RClassTable);
 singleton   (RClassTable);
 
-method(size_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant
-method(size_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant
+method(size_t,      registerClassWithName,    RClassTable),    char *name); // strings must be constant, or self-cleanup
+method(size_t,      getIdentifierByClassName, RClassTable),    char *name); // strings must be constant, or self-cleanup
 method(RCString*,   getClassNameByIdentifier, RClassTable),    size_t id);
 method(size_t,      getNumberOfClasses,       RClassTable));
 

@@ -41,7 +41,7 @@ endOf(RAutoPool)
 constructor (RAutoPool));
 destructor  (RAutoPool);
 printer     (RAutoPool);
-
+singleton   (RAutoPool);
 method(pointer, malloc,         RAutoPool),    size_t sizeInBytes);
 method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
 method(pointer, calloc,         RAutoPool),    size_t blockCount, size_t blockSize);
@@ -54,29 +54,31 @@ void disablePool(RAutoPool *pool);
 
 #define autoPoolNamed(name) \
 RAutoPool* name();\
-pointer concatenate(PoolAllocator, name)(size_t size) {\
+pointer concatenate(PoolAllocator_, name)(size_t size) {\
     return $(name(), m(malloc, RAutoPool)), size);\
 }\
-pointer concatenate(PoolReallocator, name)(pointer ptr, size_t size) {\
+pointer concatenate(PoolReallocator_, name)(pointer ptr, size_t size) {\
     return $(name(), m(realloc, RAutoPool)), ptr, size);\
 }\
-pointer concatenate(PoolCallocator, name)(size_t size, size_t blockSize) {\
+pointer concatenate(PoolCallocator_, name)(size_t size, size_t blockSize) {\
     return $(name(), m(calloc, RAutoPool)), size, blockSize);\
 }\
-void concatenate(PoolFree, name)(pointer ptr) {\
+void concatenate(PoolFree_, name)(pointer ptr) {\
     return $(name(), m(free, RAutoPool)), ptr);\
 }\
-RAutoPool* name() { \
+RAutoPool* name(void) { \
 static RAutoPool *instance = nil; \
 if(instance == nil) { \
 instance = $(nil, c(RAutoPool))); \
-instance->selfMalloc = concatenate(PoolAllocator, name); \
-instance->selfRealloc = concatenate(PoolReallocator, name); \
-instance->selfCalloc = concatenate(PoolCallocator, name); \
-instance->selfFree = concatenate(PoolFree, name); \
+instance->selfMalloc = concatenate(PoolAllocator_, name); \
+instance->selfRealloc = concatenate(PoolReallocator_, name); \
+instance->selfCalloc = concatenate(PoolCallocator_, name); \
+instance->selfFree = concatenate(PoolFree_, name); \
 } \
 return instance; \
 }
-/*createSandBoxSingleton*/
+/*autoPoolNamed*/
+
+#define RPool singletonCall(RAutoPool)
 
 #endif /*__R_AUTO_POOL_H__*/

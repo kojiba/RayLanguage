@@ -78,7 +78,7 @@ method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
 // Get - Find
-method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);
+method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(pointer,            elementAtIndex,            RArray),    size_t index);
 method(inline pointer,     lastObject,                RArray));

@@ -591,7 +591,7 @@ method(RCString *, copy, RCString)) {
 method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     static size_t iterator;
     if(checkString == nil || object == nil) {
-        RWarning("RCS. One of compare strings is empty, please delete function call, or fix it.", object);
+        RWarning("RCS. One of compare strings is empty.", object);
         return not_equals;
     } else {
         if (checkString == object) {

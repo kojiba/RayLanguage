@@ -1,8 +1,20 @@
 /**
- * main.c
- * Ray additions test.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
- */
+ * _____
+ * |  __ \
+ * | |__) | __ _  _   _
+ * |  _  / / _` || | | |
+ * | | \ \| (_| || |_| |
+ * |_|  \_\\__,_| \__, |
+ *                 __/ |
+ *                |___/
+ *  ______                        _         _    _
+ * |  ____|                      | |       | |  (_)
+ * | |__  ___   _   _  _ __    __| |  __ _ | |_  _   ___   _ __
+ * |  __|/ _ \ | | | || '_ \  / _` | / _` || __|| | / _ \ | '_ \
+ * | |  | (_) || |_| || | | || (_| || (_| || |_ | || (_) || | | |
+ * |_|   \___/  \__,_||_| |_| \__,_| \__,_| \__||_| \___/ |_| |_|
+ *
+ **/
 
 #include <time.h>
 #include "Tests.h"
@@ -12,17 +24,14 @@
 #include "RInterpreter/RIProperties/RIProperties.h"
 #include "RayFoundation/RMemoryOperations/RAutoPool.h"
 
-autoPoolNamed(tempPool);
 
 int main(int argc, const char *argv[]) {
-    size_t iterator;
     initPointers();
-    enablePool(tempPool());
-    forAll(iterator, 20) {
-        RCString *temp = randomRCString();
-    }
-    $(tempPool(), p(RAutoPool)));
-    deleter(tempPool(), RAutoPool);
+    enablePool(RPool);
+    ComplexTest();
 
+    deleter(RCTSingleton, RClassTable);
+    $(RPool, p(RAutoPool)));
+    deleter(RPool, RAutoPool);
     return 0;
 }

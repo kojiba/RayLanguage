@@ -15,9 +15,7 @@
  *         |__/
  **/
 
-#include <DiscRecording/DiscRecording.h>
 #include "RAutoPool.h"
-#include "../RClassTable/RClassTable.h"
 
 #define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
                     pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
@@ -40,7 +38,7 @@ constructor(RAutoPool)) {
     if(object != nil) {
         object->pointersInWork = makeRArray();
         if(object->pointersInWork != nil) {
-            object->classId      = registerClassOnce(toString(RAutoPool));
+//            object->classId      = registerClassOnce(toString(RAutoPool));
             object->innerMalloc  = malloc;
             object->innerRealloc = realloc;
             object->innerCalloc  = calloc;
@@ -52,6 +50,9 @@ constructor(RAutoPool)) {
     }
     return object;
 }
+
+// create implementation for standart singleton
+autoPoolNamed(singletonOfRAutoPool);
 
 destructor(RAutoPool) {
     disablePool(object);
@@ -72,34 +73,45 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
     storePtrs();
     toPoolPtrs();
     pointer temp = RAlloc(sizeInBytes);
-    $(object->pointersInWork, m(addObject, RArray)), temp);
+    if(temp != nil) {
+        $(object->pointersInWork, m(addObject, RArray)), temp);
+    }
     backPtrs();
     return temp;
 }
 
 method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
-    storePtrs();
-    toPoolPtrs();
-    RCompareDelegate *delegate = allocator(RCompareDelegate);
-    if(delegate != nil) {
-        delegate->etaloneObject = ptr;
-        delegate->virtualCompareMethod = nil;
-
-        // search if it not first realloc for ptr
-        RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
-        if(result.object != nil) {
-            $(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index);
-        }
-
-        pointer temp = RReAlloc(ptr, newSize);
-        // finally add
-        $(object->pointersInWork, m(addObject, RArray)), temp);
-        backPtrs();
-        return temp;
+    if(ptr == nil) {
+        return $(object, m(malloc, RAutoPool)), newSize);
     } else {
-        RError("RAutoPool. Bad RCompareDelegate allocation on realloc.", object);
+        storePtrs();
+        toPoolPtrs();
+        RCompareDelegate *delegate = allocator(RCompareDelegate);
+        if(delegate != nil) {
+            delegate->etaloneObject = ptr;
+            delegate->virtualCompareMethod = nil;
+            // search if it not first realloc for ptr, not destruct
+            RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
+            if(result.object != nil) {
+                object->pointersInWork->destructorDelegate = nil;
+                $(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index);
+                object->pointersInWork->destructorDelegate = object->innerFree;
+
+            }
+
+            pointer temp = RReAlloc(ptr, newSize);
+
+            // finally add new pointer
+            $(object->pointersInWork, m(addObject, RArray)), temp);
+
+            deallocator(delegate);
+            backPtrs();
+            return temp;
+        } else {
+            RError("RAutoPool. Bad RCompareDelegate allocation on realloc.", object);
+        }
+        backPtrs();
     }
-    backPtrs();
     return nil;
 }
 
