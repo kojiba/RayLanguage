@@ -86,7 +86,7 @@ method(void,    XorDecrypt,     RSandBox),    RByteArray *key);
 void switchToSandBox(RSandBox *sandBox);
 void switchFromSandBox(RSandBox *sandBox);
 
-//------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 
 #define createSandBoxSingleton(name, memSize) \
 RSandBox* name();\
@@ -103,18 +103,20 @@ void concatenate(SandBoxFree_, name)(pointer ptr) {\
     return $(name(), m(free, RSandBox)), ptr);\
 }\
 RSandBox* name() { \
-static RSandBox *instance = nil; \
-if(instance == nil) { \
-instance = $(nil, c(RSandBox)), memSize, 32); \
-instance->selfMalloc = concatenate(SandBoxAllocator_, name); \
-instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
-instance->selfCalloc = concatenate(SandBoxCallocator_, name); \
-instance->selfFree = concatenate(SandBoxFree_, name); \
-switchToSandBox(instance);\
-} \
-return instance; \
+    static RSandBox *instance = nil; \
+    if(instance == nil) { \
+        instance = $(nil, c(RSandBox)), memSize, 32); \
+        if(instance != nil) { \
+            instance->selfMalloc  = concatenate(SandBoxAllocator_, name); \
+            instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
+            instance->selfCalloc  = concatenate(SandBoxCallocator_, name); \
+            instance->selfFree    = concatenate(SandBoxFree_, name); \
+            switchToSandBox(instance);\
+        } \
+    } \
+    return instance; \
 }
-/*createSandBoxSingleton*/
+// createSandBoxSingleton ---------------------------------------------------------
 
 
 #endif /*__R_SAND_BOX_H__*/

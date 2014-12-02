@@ -52,6 +52,7 @@ method(void,    drain,          RAutoPool));
 void enablePool(RAutoPool *pool);
 void disablePool(RAutoPool *pool);
 
+//-------------------------------------------------------------------------------
 #define autoPoolNamed(name) \
 RAutoPool* name();\
 pointer concatenate(PoolAllocator_, name)(size_t size) {\
@@ -67,17 +68,20 @@ void concatenate(PoolFree_, name)(pointer ptr) {\
     return $(name(), m(free, RAutoPool)), ptr);\
 }\
 RAutoPool* name(void) { \
-static RAutoPool *instance = nil; \
-if(instance == nil) { \
-instance = $(nil, c(RAutoPool))); \
-instance->selfMalloc = concatenate(PoolAllocator_, name); \
-instance->selfRealloc = concatenate(PoolReallocator_, name); \
-instance->selfCalloc = concatenate(PoolCallocator_, name); \
-instance->selfFree = concatenate(PoolFree_, name); \
-} \
-return instance; \
+    static RAutoPool *instance = nil; \
+    if(instance == nil) { \
+        instance = $(nil, c(RAutoPool))); \
+        if(instance != nil) { \
+            instance->selfMalloc  = concatenate(PoolAllocator_, name); \
+            instance->selfRealloc = concatenate(PoolReallocator_, name); \
+            instance->selfCalloc  = concatenate(PoolCallocator_, name); \
+            instance->selfFree    = concatenate(PoolFree_, name); \
+            enablePool(instance); \
+        } \
+    } \
+    return instance; \
 }
-/*autoPoolNamed*/
+// autoPoolNamed ----------------------------------------------------------------
 
 #define RPool singletonCall(RAutoPool)
 

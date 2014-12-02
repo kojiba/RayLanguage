@@ -28,8 +28,7 @@ createSandBoxSingleton(StandartSandbox, 65535)
 
 int main(int argc, const char *argv[]) {
     initPointers();
-    enablePool(RPool);
-
+    RPool;
     StandartSandbox()->allocationMode = RSandBoxAllocationModeStandart;
 
 
