@@ -40,9 +40,15 @@
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", (double) diff / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
 #if RAY_ERRORS_ON == 1
-    #define RErrStr                                       RFPrintf(stderr,
-    #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object)
+    #if RAY_ASSERT_ON_ERRORS == 1
+        #define RErrStr                                       assert(nil); RFPrintf(stderr,
+        #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object); assert(nil);
+    #else
+        #define RErrStr                                       RFPrintf(stderr,
+        #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object)
+    #endif
 #else
+    #define RErrStr (
     #define RError(string, object)
 #endif
 

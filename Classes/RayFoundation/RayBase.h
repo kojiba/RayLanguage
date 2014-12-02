@@ -17,15 +17,19 @@
 #ifndef __RAY_BASE_H__
 #define __RAY_BASE_H__
 
-#define RAY_WARNINGS_ON 1   // 451
-#define RAY_ERRORS_ON   1   // 451
-#define RAY_SHORT_DEBUG 451 //
+#define RAY_WARNINGS_ON      1 // 451
+#define RAY_ERRORS_ON        1 // 451
+#define RAY_ASSERT_ON_ERRORS 1 //451, errors must be 1
+#define RAY_SHORT_DEBUG      451 //
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
+#if RAY_ASSERT_ON_ERRORS == 1
+    #include <assert.h>
+#endif
 // Hooks for malloc, free ---------------------------------
 
 // constant pointers to stdlib (OS) functions
