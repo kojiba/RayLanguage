@@ -16,11 +16,9 @@
 #ifndef __R_BASE_64_H__
 #define __R_BASE_64_H__
 
-#include "../RMemoryOperations/RByteOperations.h"
+#include "../RCString/RCString.h"
 
-static byte modsTable[] = {0, 2, 1};
-
-static const char encodingTable64[64] = {
+static const char encodingTableBase64[64] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
         'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
         'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
@@ -31,7 +29,7 @@ static const char encodingTable64[64] = {
         '4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-static char decodingTable64[256] = {
+static char decodingTableBase64[256] = {
         64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
         64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
         64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 62, 64, 64, 64, 63,
@@ -54,10 +52,11 @@ static char decodingTable64[256] = {
 inline size_t base64decodeLength (const char *base64Buffer);
 inline size_t base64encodeLength (size_t length);
 
-size_t  encodeBase64 (char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
-size_t  decodeBase64 (pointer destination, const pointer encodedData);            // destination will be 0-terminated
+size_t encodeBase64 (char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
+size_t decodeBase64 (pointer destination, const pointer encodedData);            // destination will be 0-terminated
 
 // Additions
+// RCString
 method(inline RCString*, encodeBase64, RCString));
 method(inline RCString*, decodeBase64, RCString));
 

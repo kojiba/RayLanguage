@@ -23,7 +23,7 @@ size_t base64decodeLength(const char *base64Buffer) {
     const byte *bufferPointer = (const byte *) base64Buffer;
 
     // increment pointer while <= 63
-    while (decodingTable64[*(bufferPointer++)] <= 63);
+    while (decodingTableBase64[*(bufferPointer++)] <= 63);
 
     numberOfBytes = (bufferPointer - (const byte *) base64Buffer) - 1;
     numberOfBytesDecoded = ((numberOfBytes + 3) / 4) * 3;
@@ -41,23 +41,23 @@ size_t encodeBase64(char **destination, const char *data, size_t sizeInBytes) {
         size_t i;
         char *p = *destination;
         for (i = 0; i < sizeInBytes - 2; i += 3) {
-            *p++ = encodingTable64[(data[i] >> 2) & 0x3F];
-            *p++ = encodingTable64[((data[i] & 0x3) << 4)
+            *p++ = encodingTableBase64[(data[i] >> 2) & 0x3F];
+            *p++ = encodingTableBase64[((data[i] & 0x3) << 4)
                     | ((size_t) (data[i + 1] & 0xF0) >> 4)];
-            *p++ = encodingTable64[((data[i + 1] & 0xF) << 2)
+            *p++ = encodingTableBase64[((data[i + 1] & 0xF) << 2)
                     | ((size_t) (data[i + 2] & 0xC0) >> 6)];
-            *p++ = encodingTable64[data[i + 2] & 0x3F];
+            *p++ = encodingTableBase64[data[i + 2] & 0x3F];
         }
         if (i < sizeInBytes) {
-            *p++ = encodingTable64[(data[i] >> 2) & 0x3F];
+            *p++ = encodingTableBase64[(data[i] >> 2) & 0x3F];
             if (i == (sizeInBytes - 1)) {
-                *p++ = encodingTable64[((data[i] & 0x3) << 4)];
+                *p++ = encodingTableBase64[((data[i] & 0x3) << 4)];
                 *p++ = '=';
             }
             else {
-                *p++ = encodingTable64[((data[i] & 0x3) << 4)
+                *p++ = encodingTableBase64[((data[i] & 0x3) << 4)
                         | ((size_t) (data[i + 1] & 0xF0) >> 4)];
-                *p++ = encodingTable64[((data[i + 1] & 0xF) << 2)];
+                *p++ = encodingTableBase64[((data[i + 1] & 0xF) << 2)];
             }
             *p++ = '=';
         }
@@ -72,12 +72,12 @@ size_t encodeBase64(char **destination, const char *data, size_t sizeInBytes) {
 
 size_t decodeBase64(pointer destination, const pointer encodedData) {
     size_t numberOfBytesDecoded;
-    register const byte *bufferIn;
-    register       byte *bufferOut;
+    register const byte  *bufferIn;
+    register       byte  *bufferOut;
     register       size_t numberOfBytes;
 
     bufferIn = (const byte *) encodedData;
-    while (decodingTable64[*(bufferIn++)] <= 63);
+    while (decodingTableBase64[*(bufferIn++)] <= 63);
 
     numberOfBytes        = (bufferIn - (const byte *) encodedData) - 1;
     numberOfBytesDecoded = ((numberOfBytes + 3) / 4) * 3;
@@ -87,26 +87,26 @@ size_t decodeBase64(pointer destination, const pointer encodedData) {
 
     while (numberOfBytes > 4) {
         *(bufferOut++) =
-                (byte) (decodingTable64[*bufferIn] << 2 | decodingTable64[bufferIn[1]] >> 4);
+                (byte) (decodingTableBase64[*bufferIn] << 2 | decodingTableBase64[bufferIn[1]] >> 4);
         *(bufferOut++) =
-                (byte) (decodingTable64[bufferIn[1]] << 4 | decodingTable64[bufferIn[2]] >> 2);
+                (byte) (decodingTableBase64[bufferIn[1]] << 4 | decodingTableBase64[bufferIn[2]] >> 2);
         *(bufferOut++) =
-                (byte) (decodingTable64[bufferIn[2]] << 6 | decodingTable64[bufferIn[3]]);
+                (byte) (decodingTableBase64[bufferIn[2]] << 6 | decodingTableBase64[bufferIn[3]]);
         bufferIn += 4;
         numberOfBytes -= 4;
     }
 
     if (numberOfBytes > 1) {
         *(bufferOut++) =
-                (byte) (decodingTable64[*bufferIn] << 2 | decodingTable64[bufferIn[1]] >> 4);
+                (byte) (decodingTableBase64[*bufferIn] << 2 | decodingTableBase64[bufferIn[1]] >> 4);
     }
     if (numberOfBytes > 2) {
         *(bufferOut++) =
-                (byte) (decodingTable64[bufferIn[1]] << 4 | decodingTable64[bufferIn[2]] >> 2);
+                (byte) (decodingTableBase64[bufferIn[1]] << 4 | decodingTableBase64[bufferIn[2]] >> 2);
     }
     if (numberOfBytes > 3) {
         *(bufferOut++) =
-                (byte) (decodingTable64[bufferIn[2]] << 6 | decodingTable64[bufferIn[3]]);
+                (byte) (decodingTableBase64[bufferIn[2]] << 6 | decodingTableBase64[bufferIn[3]]);
     }
 
     *(bufferOut++) = '\0';

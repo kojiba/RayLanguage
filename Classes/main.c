@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]) {
     RPool;
     RCTSingleton;
 
-    RCString *test = $(RSC("Misha"), m(encodeBase64, RCString)));
+    RCString *test = $(RSC("Hello once more!"), m(encodeBase64, RCString)));
     $(test, p(RCString)));
     RCString *test2 = $(test, m(decodeBase64, RCString)));
     $(test2, p(RCString)));
