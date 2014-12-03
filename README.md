@@ -22,7 +22,8 @@ Strings:
 6. Compares  
 7. Read from file/ apend to file  
 8. Tokenization into containeer Array  
-9. etc...
+9. Base64 encoding/decoding  
+10. etc...  
 
 Memory operations:  
 1. Self-code easy sandboxing and testing with logging. 
