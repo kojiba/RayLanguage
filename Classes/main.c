@@ -26,9 +26,14 @@ int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
-    ComplexTest();
 
+    RCString *test = $(RSC("Misha"), m(encodeBase64, RCString)));
+    $(test, p(RCString)));
+    RCString *test2 = $(test, m(decodeBase64, RCString)));
+    $(test2, p(RCString)));
 
+    deleter(RCTSingleton, RClassTable);
+    $(RPool, p(RAutoPool)));
     deleter(RPool, RAutoPool);
     return 0;
 }

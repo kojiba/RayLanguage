@@ -87,7 +87,7 @@ RCString *randomRCString(void) {
             RError("RCString. Allocation of temp cstring error.", (pointer) cstring);
         }
     } else {
-        RError("RCString. randomRCString. Bad allocation of result.", <#object#>)
+        RError("RCString. randomRCString. Bad allocation of result.", nil);
     }
     return string;
 }

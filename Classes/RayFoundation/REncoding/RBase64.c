@@ -13,7 +13,6 @@
  *         |__/
  **/
 
-#include <Foundation/Foundation.h>
 #include "RBase64.h"
 
 #pragma mark Base
@@ -32,39 +31,46 @@ size_t base64decodeLength(const char *base64Buffer) {
     return numberOfBytesDecoded + 1;
 }
 
-size_t base64encodeLength(size_t len) {
-    return ((len + 2) / 3 * 4) + 1;
+size_t base64encodeLength(size_t length) {
+    return ((length + 2) / 3 * 4) + 1;
 }
 
-pointer encodeBase64(pointer data, size_t sizeInBytes, size_t *outputSize) {
-    // set output size
-    *outputSize = 4 * ((sizeInBytes + 2) / 3);
-    char *encodedData = RAlloc(*outputSize);
-    if (encodedData != nil) {
-        // encode if allocation successful
-        for (size_t i = 0, j = 0; i < sizeInBytes;) {
-            byte     octet_a = i < sizeInBytes ? ((byte *) data)[++i] : (byte)0x0;
-            byte     octet_b = i < sizeInBytes ? ((byte *) data)[++i] : (byte)0x0;
-            byte     octet_c = i < sizeInBytes ? ((byte *) data)[++i] : (byte)0x0;
-            uint32_t triple  = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
-
-            encodedData[++j] = encodingTable64[(triple >> 3 * 6) & 0x3F];
-            encodedData[++j] = encodingTable64[(triple >> 2 * 6) & 0x3F];
-            encodedData[++j] = encodingTable64[(triple >> 1 * 6) & 0x3F];
-            encodedData[++j] = encodingTable64[(triple >> 0 * 6) & 0x3F];
+size_t encodeBase64(char **destination, const char *data, size_t sizeInBytes) {
+    *destination = RAlloc(base64encodeLength(sizeInBytes));
+    if (*destination != nil) {
+        size_t i;
+        char *p = *destination;
+        for (i = 0; i < sizeInBytes - 2; i += 3) {
+            *p++ = encodingTable64[(data[i] >> 2) & 0x3F];
+            *p++ = encodingTable64[((data[i] & 0x3) << 4)
+                    | ((size_t) (data[i + 1] & 0xF0) >> 4)];
+            *p++ = encodingTable64[((data[i + 1] & 0xF) << 2)
+                    | ((size_t) (data[i + 2] & 0xC0) >> 6)];
+            *p++ = encodingTable64[data[i + 2] & 0x3F];
+        }
+        if (i < sizeInBytes) {
+            *p++ = encodingTable64[(data[i] >> 2) & 0x3F];
+            if (i == (sizeInBytes - 1)) {
+                *p++ = encodingTable64[((data[i] & 0x3) << 4)];
+                *p++ = '=';
+            }
+            else {
+                *p++ = encodingTable64[((data[i] & 0x3) << 4)
+                        | ((size_t) (data[i + 1] & 0xF0) >> 4)];
+                *p++ = encodingTable64[((data[i + 1] & 0xF) << 2)];
+            }
+            *p++ = '=';
         }
 
-        for (int i = 0; i < modsTable[sizeInBytes % 3]; ++i) {
-            encodedData[*outputSize - 1 - i] = '=';
-        }
-        return encodedData;
+        *p++ = '\0';
+        return p - *destination;
     } else {
-        RError("Base64. encoding buffer allocation error.", (pointer) encodedData);
+        RError("Base64. encoding buffer allocation error.", nil);
     }
-    return nil;
+    return 0;
 }
 
-size_t decodeBase64(pointer destination, pointer encodedData) {
+size_t decodeBase64(pointer destination, const pointer encodedData) {
     size_t numberOfBytesDecoded;
     register const byte *bufferIn;
     register       byte *bufferOut;
@@ -110,13 +116,13 @@ size_t decodeBase64(pointer destination, pointer encodedData) {
 
 #pragma mark Additions
 
-method(inline RCString*, encodeBase64, RCString)) {
+method(RCString*, encodeBase64, RCString)) {
     RCString *result = makeRCString();
     if(result != nil) {
-        size_t length;
-        char  *string = encodeBase64(object->baseString, object->size, &length);
+        char  *string = nil;
+        size_t length = encodeBase64(&string, object->baseString, object->size);
         if(string != nil) {
-            result->size       = length;
+            result->size       = length - 1;
             result->baseString = string;
             return result;
         }
@@ -126,13 +132,13 @@ method(inline RCString*, encodeBase64, RCString)) {
     return nil;
 }
 
-method(inline RCString*, decodeBase64, RCString)) {
+method(RCString*, decodeBase64, RCString)) {
     RCString *result = makeRCString();
     if(result != nil) {
         size_t length = base64decodeLength(object->baseString);
         char  *string = RAlloc(length);
         if(string != nil) {
-            decodeBase64(string, object->baseString);
+            length = decodeBase64(string, object->baseString);
             result->size       = length;
             result->baseString = string;
             return result;

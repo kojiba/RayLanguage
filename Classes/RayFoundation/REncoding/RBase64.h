@@ -51,11 +51,11 @@ static char decodingTable64[256] = {
 };
 
 // base
-inline size_t base64decodeLength(const char *base64Buffer);
-inline size_t base64encodeLength(size_t len);
+inline size_t base64decodeLength (const char *base64Buffer);
+inline size_t base64encodeLength (size_t length);
 
-pointer encodeBase64(pointer data,        size_t sizeInBytes,  size_t *outputSize);
-size_t  decodeBase64(pointer destination, pointer encodedData);                     // destination will be 0-terminated
+size_t  encodeBase64 (char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
+size_t  decodeBase64 (pointer destination, const pointer encodedData);            // destination will be 0-terminated
 
 // Additions
 method(inline RCString*, encodeBase64, RCString));
