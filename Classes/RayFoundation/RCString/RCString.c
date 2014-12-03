@@ -45,10 +45,10 @@ char* copyOfString(const char *string) {
     if(length > 0) {
         char *result = RAlloc(length * sizeof(char));
         if(result != nil) {
-            RMemMove(result, string, length);
+            RMemCpy(result, string, length);
             return result;
         } else {
-            RError("CString. Bad allocation", result);
+            RError("CString. Bad allocation", (pointer) result);
             return nil;
         }
     } else {
@@ -72,19 +72,22 @@ RCString *randomRCString(void) {
     register size_t  size   = ((size_t)rand()) % 50;
     char     *cstring;
 
-    while(size == 0) {
-        size = ((size_t)rand()) % 50;
-    }
-
-    cstring = RAlloc(size * sizeof(char));
-    if(cstring != nil) {
-        forAll(iterator, size - 1){
-            cstring[iterator] = randomCharacter();
+    if(string!= nil) {
+        while(size == 0) {
+            size = ((size_t)rand()) % 50;
         }
-        cstring[++iterator] = 0;
-        $(string, m(setConstantString, RCString)), cstring);
+        cstring = RAlloc(size * sizeof(char));
+        if(cstring != nil) {
+            forAll(iterator, size - 1){
+                cstring[iterator] = randomCharacter();
+            }
+            cstring[++iterator] = 0;
+            $(string, m(setConstantString, RCString)), cstring);
+        } else {
+            RError("RCString. Allocation of temp cstring error.", (pointer) cstring);
+        }
     } else {
-        RError("RCString. Allocation of temp cstring error.", cstring);
+        RError("RCString. randomRCString. Bad allocation of result.", <#object#>)
     }
     return string;
 }

@@ -58,6 +58,9 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RMemoryOperations/RSandBox.h
                  Classes/RayFoundation/RMemoryOperations/RAutoPool.h
 
+                 # Encoding
+                 Classes/RayFoundation/REncoding/RBase64.h
+
                  # Others
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
                  Classes/RayFoundation/RClassTable/RClassTable.h
@@ -85,6 +88,9 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.c
                  Classes/RayFoundation/RMemoryOperations/RSandBox.c
                  Classes/RayFoundation/RMemoryOperations/RAutoPool.c
+
+                 # Encoding
+                 Classes/RayFoundation/REncoding/RBase64.c
 
                  # Others
                  Classes/RayFoundation/RClassTable/RClassTable.c

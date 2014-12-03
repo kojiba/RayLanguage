@@ -30,6 +30,7 @@
 #if RAY_ASSERT_ON_ERRORS == 1
     #include <assert.h>
 #endif
+
 // Hooks for malloc, free ---------------------------------
 
 // constant pointers to stdlib (OS) functions

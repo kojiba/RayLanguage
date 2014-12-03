@@ -27,6 +27,8 @@ typedef enum RCompareFlags{
     smaller
 } RCompareFlags;
 
+// -----------------------------------------------------------------------
+
 typedef struct RRange {
     size_t start;
     size_t size;
@@ -39,6 +41,8 @@ inline rbool           isInRange     (RRange range, size_t value);
 inline rbool           isOverlapping (RRange first, RRange second);
 printer(RRange);
 
+// -----------------------------------------------------------------------
+
 typedef struct RBounds {
     char startSymbol;
     char endSymbol;
@@ -48,10 +52,14 @@ inline RBounds makeRBounds     (char startSymbol, char endSymbol);
 inline rbool   isValueInBounds (RBounds bounds, char value);
 inline rbool   compareRBounds  (RBounds first, RBounds second);
 
+// -----------------------------------------------------------------------
+
 typedef struct RFindResult {
     pointer object;
     size_t  index;
 } RFindResult;
+
+// -----------------------------------------------------------------------
 
 protocol(RCompareDelegate) //--------------------------------------------
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);

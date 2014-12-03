@@ -1,5 +1,5 @@
 /**
- * _____
+ *  _____
  * |  __ \
  * | |__) | __ _  _   _
  * |  _  / / _` || | | |
@@ -16,13 +16,9 @@
  *
  **/
 
-#include <time.h>
 #include "Tests.h"
 #include "RayFoundation/RayFoundation.h"
-#include "RInterpreter/RInterpreter.h"
-#include "RayFoundation/RSystem.h"
-#include "RInterpreter/RIProperties/RIProperties.h"
-#include "RayFoundation/RMemoryOperations/RAutoPool.h"
+#include "RayFoundation/REncoding/RBase64.h"
 
 createSandBoxSingleton(StandartSandbox, 65535)
 
@@ -31,6 +27,7 @@ int main(int argc, const char *argv[]) {
     RPool;
     RCTSingleton;
     ComplexTest();
+
 
     deleter(RPool, RAutoPool);
     return 0;
