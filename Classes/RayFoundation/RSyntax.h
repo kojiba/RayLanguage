@@ -58,7 +58,7 @@
     #define RWarning(string, object)
 #endif
 
-#define RPrintLn(string)                                  RPrintf(string"\n")
+#define RPrintLn(string)                                  RPrintf("%s\n", string)
 
 // typedefs
 typedef void*   pointer;

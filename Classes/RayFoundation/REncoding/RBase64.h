@@ -17,6 +17,7 @@
 #define __R_BASE_64_H__
 
 #include "../RCString/RCString.h"
+#include "../RMemoryOperations/RByteOperations.h"
 
 static const char encodingTableBase64[64] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -57,7 +58,11 @@ size_t decodeBase64 (pointer destination, const pointer encodedData);           
 
 // Additions
 // RCString
-method(inline RCString*, encodeBase64, RCString));
-method(inline RCString*, decodeBase64, RCString));
+method(inline RCString*,   encodeBase64,        RCString));
+method(inline RCString*,   decodeBase64,        RCString));
+method(inline RByteArray*, decodeBase64ToBytes, RCString));
+
+// RByteArray
+method(inline RCString*, encodeBase64, RByteArray));
 
 #endif /*__R_BASE_64_H__*/

@@ -116,6 +116,8 @@ size_t decodeBase64(pointer destination, const pointer encodedData) {
 
 #pragma mark Additions
 
+#pragma mark RCString
+
 method(RCString*, encodeBase64, RCString)) {
     RCString *result = makeRCString();
     if(result != nil) {
@@ -149,4 +151,38 @@ method(RCString*, decodeBase64, RCString)) {
     return nil;
 }
 
+method(RByteArray*, decodeBase64ToBytes, RCString)) {
+    size_t length = base64decodeLength(object->baseString);
+    RByteArray *result = makeRByteArray(length);
+    if(result != nil) {
+        char  *string = RAlloc(length);
+        if(string != nil) {
+            length = decodeBase64(string, object->baseString);
+            result->size  = length;
+            result->array = (byte *) string;
+            return result;
+        }
+    } else {
+        RError("RCString. Base64 decode. Bad allocation of result RByteArray struct.", result);
+    }
+    return nil;
+}
+
+#pragma mark RByteArray
+
+method(RCString*, encodeBase64, RByteArray)) {
+    RCString *result = makeRCString();
+    if(result != nil) {
+        char  *string = nil;
+        size_t length = encodeBase64(&string, (char const *) object->array, object->size);
+        if(string != nil) {
+            result->size       = length - 1;
+            result->baseString = string;
+            return result;
+        }
+    } else {
+        RError("RByteArray. Base64 encode. Bad allocation of result RCString struct.", result);
+    }
+    return nil;
+}
 

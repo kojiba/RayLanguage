@@ -29,8 +29,9 @@ int main(int argc, const char *argv[]) {
 
     RCString *test = $(RSC("Hello once more!"), m(encodeBase64, RCString)));
     $(test, p(RCString)));
-    RCString *test2 = $(test, m(decodeBase64, RCString)));
-    $(test2, p(RCString)));
+    RByteArray *test2 = $(test, m(decodeBase64ToBytes, RCString)));
+    $(test2, p(RByteArray)));
+    RPrintLn(test2->array);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
