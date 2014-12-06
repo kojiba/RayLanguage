@@ -1,5 +1,4 @@
 #include <time.h>
-#include <CoreFoundation/CoreFoundation.h>
 #include "RayFoundation/RayBase.h"
 #include "RayFoundation/RayFoundation.h"
 #include "RayFoundation/RSystem.h"
