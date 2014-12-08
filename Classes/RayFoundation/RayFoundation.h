@@ -42,6 +42,9 @@ extern "C" {
 #include "RMemoryOperations/RSandBox.h"
 #include "RMemoryOperations/RAutoPool.h"
 
+// Encoding
+#include "REncoding/RBase64.h"
+
 // Others
 #include "RClassTable/RClassTable.h"
 #include "RFloatingEnum/RFloatingEnum.h"

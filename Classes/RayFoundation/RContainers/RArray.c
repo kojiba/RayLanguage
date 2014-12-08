@@ -37,7 +37,7 @@ constructor(RArray), RArrayFlags *error) {
 
     object = malloc(sizeof(RArray));
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray constructor of %p\n", object);
 #endif
 
@@ -93,14 +93,14 @@ destructor(RArray) {
         RWarning("RArray. Destructing a nil, do nothing, please delete function call, or fix it.", object);
     }
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray destructor of %p\n", object);
 #endif
 }
 
 printer(RArray) {
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
       RPrintf("%s printer of %p \n", toString(RArray), object);
 #else
     register size_t iterator;
@@ -124,17 +124,17 @@ printer(RArray) {
 
 method(RArrayFlags, addSize, RArray), size_t newSize) {
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("RArray %p ADD_SIZE\n", object);
 #endif
     if(newSize > object->count) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("\t Old array - %p", object->array);
 #endif
 
         object->array = RReAlloc(object->array, newSize * sizeof(pointer));
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf(", new - %p\n", object->array);
 #endif
         if (object->array == nil) {
@@ -160,7 +160,7 @@ method(void, flush, RArray)) {
         object->count = 0;
     }
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray FLUSH of %p\n", object);
 #endif
 }
@@ -168,7 +168,7 @@ method(void, flush, RArray)) {
 method(byte, sizeToFit, RArray)){
     object->array = RReAlloc(object->array, object->count * sizeof(pointer));
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p SIZE_TO_FIT\n", object);
 #endif
     if (object->array == nil) {
@@ -187,14 +187,14 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 
     // needs additional allocation of memory
     if (object->freePlaces == 0) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("RArray %p needs additional allocation\n", object);
 #endif
         errors = $(object, m(addSize, RArray)), object->count * object->sizeMultiplier);
     }
 
     // not need additional allocation
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     else {
         RPrintf("RArray %p addObject without additional allocation\n", object);
     }
@@ -210,7 +210,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 }
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("RArray %p setObject atIndex = %lu \n", object, index);
 #endif
     // if at that index exist some object
@@ -234,7 +234,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 }
 
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray deleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
@@ -248,7 +248,7 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 }
 
 method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray fastDeleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
@@ -266,7 +266,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 
 method(void, deleteObjects, RArray), RRange range){
     register size_t iterator;
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p delete objects in range [%lu:%lu]", object, range.start, range.size);
 #endif
     fromStartForAll(iterator, range.start, range.size) {
@@ -286,7 +286,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     register size_t      iterator;
              RFindResult result;
     result.object = nil;
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray findObjectWithDelegate of %p\n", object);
 #endif
     if(delegate != nil) {
@@ -304,7 +304,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
 }
 
 method(pointer, elementAtIndex, RArray), size_t index) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray elementAtIndex of %p\n", object);
 #endif
     if($(object, m(checkIfIndexIn,RArray)), index) == index_exists) {
@@ -319,7 +319,7 @@ method(RArray *, getSubarray, RArray), RRange range){
 
     size_t iterator = 0;
     RArray *result = makeRArray();
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray getSubarray of %p\n", object);
 #endif
     if(result != nil) {
@@ -357,7 +357,7 @@ method(pointer, lastObject, RArray)) {
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
 #endif
 
@@ -385,7 +385,7 @@ byte RArrayStandartComporator(pointer first, pointer second) {
 
 method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*comparator)(pointer, pointer)) {
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     static size_t number = 0;
     RPrintf("RArray quickSortWithDelegate of %p recursive #%lu\n", object, number);
     ++number;
@@ -416,7 +416,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 }
 
 method(void, sort, RArray)) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RArray sort of %p\n", object);
 #endif
     $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComporator);
@@ -425,7 +425,7 @@ method(void, sort, RArray)) {
 #pragma mark Work
 
 method(void, shift, RArray), byte side, RRange range) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     char *sideName;
     if(side == shift_left) {
          sideName = "left";

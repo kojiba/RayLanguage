@@ -44,7 +44,6 @@ destructor  (RCString);
 printer     (RCString);
 
 method(void,                flush,                        RCString));                                         // deletes old string
-
 // Setters
 method(RCString *,          setString,                    RCString),    const char *string);                  // copy characters
 method(RCString *,          setConstantString,            RCString),    char const *string);                  // copy pointer

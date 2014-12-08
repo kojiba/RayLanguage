@@ -18,7 +18,7 @@
 
 #pragma mark Memory Operations
 
-void Xor(const pointer data,
+void Xor(      pointer data,
          const pointer key,
                size_t  sizeOfData,
                size_t  sizeOfKey) {
@@ -28,7 +28,7 @@ void Xor(const pointer data,
     }
 }
 
-void Add(const pointer data,
+void Add(      pointer data,
          const pointer key,
                size_t  sizeOfData,
                size_t  sizeOfKey) {
@@ -38,7 +38,7 @@ void Add(const pointer data,
     }
 }
 
-void Sub(const pointer data,
+void Sub(      pointer data,
          const pointer key,
                size_t  sizeOfData,
                size_t  sizeOfKey) {

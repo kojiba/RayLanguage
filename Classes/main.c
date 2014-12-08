@@ -16,22 +16,14 @@
  *
  **/
 
-#include "Tests.h"
 #include "RayFoundation/RayFoundation.h"
-#include "RayFoundation/REncoding/RBase64.h"
 
-createSandBoxSingleton(StandartSandbox, 65535)
 
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
 
-    RCString *test = $(RSC("Hello once more!"), m(encodeBase64, RCString)));
-    $(test, p(RCString)));
-    RByteArray *test2 = $(test, m(decodeBase64ToBytes, RCString)));
-    $(test2, p(RByteArray)));
-    RPrintLn(test2->array);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

@@ -25,17 +25,17 @@ class(RByteArray)
 endOf(RByteArray)
 
 // Memory operations
-void           Xor (const pointer data,       // ATTENTION! for all operations:
-                    const pointer key,        // returns dynamically allocated buffer
-                          size_t  sizeOfData, // or nil if allocation fails
-                          size_t  sizeOfKey); // all sizes are in bytes
-
-void           Add (const pointer data,
+void           Xor (      pointer data,
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);
 
-void           Sub (const pointer data,
+void           Add (      pointer data,
+                    const pointer key,
+                          size_t  sizeOfData,
+                          size_t  sizeOfKey);
+
+void           Sub (      pointer data,
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);

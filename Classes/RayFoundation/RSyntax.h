@@ -39,20 +39,20 @@
                                                           start = clock(); \
                                                           RPrintf("Time taken %d seconds %d milliseconds\n", (double) diff / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
 
-#if RAY_ERRORS_ON == 1
-    #if RAY_ASSERT_ON_ERRORS == 1
-        #define RErrStr                                       assert(nil); RFPrintf(stderr,
-        #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object); assert(nil);
+#ifdef RAY_ERRORS_ON
+    #ifdef RAY_ASSERT_ON_ERRORS
+        #define RErrStr                                   assert(nil); RFPrintf(stderr,
+        #define RError(string, object)                    RFPrintf(stderr, "%p ERROR. "string"\n", object); assert(nil);
     #else
-        #define RErrStr                                       RFPrintf(stderr,
-        #define RError(string, object)                        RFPrintf(stderr, "%p ERROR. "string"\n", object)
+        #define RErrStr                                   RFPrintf(stderr,
+        #define RError(string, object)                    RFPrintf(stderr, "%p ERROR. "string"\n", object)
     #endif
 #else
     #define RErrStr (
     #define RError(string, object)
 #endif
 
-#if RAY_WARNINGS_ON == 1
+#ifdef RAY_WARNINGS_ON
     #define RWarning(string, object)                      RPrintf(RYellow"Warning. %p - "string" Please delete function call, or fix it.\n"RNC, object)
 #else
     #define RWarning(string, object)
