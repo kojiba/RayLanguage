@@ -225,13 +225,14 @@ RBuffer* RBufferFromFile(const char *filename) {
 
                 if(sizesArray != nil) {
                     // find terminating '\0' size
+                    sumBytes += sizesArray[0];
                     while (sizesArray[iterator] != 0) {
                         ++iterator;
                         sumBytes += sizesArray[iterator];
                     }
                     RByteArray *array = allocator(RByteArray);
                     if (array != nil) {
-                        array->size  = sumBytes + 1;
+                        array->size  = sumBytes;
                         array->array = buffer + 1 + (buffer[0] * (iterator + 1));
 
                         // processing
@@ -283,8 +284,9 @@ method(void, saveToFile, RBuffer), const char* filename) {
             if (result !=  object->count) {
                 RError("RBuffer. Failed save size array to file.", object);
             }
-            result = 0;
+
             // dump last size like 0
+            result = 0;
             result = RFWrite(&result, sizeof(size_t), 1, file);
             if (result != 1) {
                 RError("RBuffer. Failed save last sizes '\\0' to file.", object);

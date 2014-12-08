@@ -19,27 +19,21 @@
 #include "RayFoundation/RayFoundation.h"
 #include "Tests.h"
 
-
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
     ComplexTest();
+    size_t iterator;
+    RBuffer *buffer = $(nil, c(RBuffer)));
 
-    RByteArray *temp = makeRByteArray(9);
-    temp->array[0] = 0x2;
-    temp->array[1] = 0x1;
-    temp->array[2] = 0x2;
-    temp->array[3] = 0x3;
-    temp->array[4] = 0x4;
-    temp->array[5] = 0x5;
-    temp->array[6] = 0x6;
-    temp->array[7] = 0x7;
-    temp->array[8] = 0x8;
+    forAll(iterator, 5) {
+        RCString *temp = randomRCString();
+        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size);
+        deleter(temp, RCString);
+    }
 
-    size_t array[] = {1, temp->array[0], temp->array[0] + 1, temp->array[0] + 1, 0};
 
-    RBuffer *buffer = $(temp, m(serializeToBuffer, RByteArray)), array );
     $(buffer, p(RBuffer)));
     $(buffer, m(saveToFile, RBuffer)), "Buffer.test.txt");
     deleter(buffer, RBuffer);
@@ -47,7 +41,6 @@ int main(int argc, const char *argv[]) {
     RBuffer *buffer2 = RBufferFromFile("Buffer.test.txt");
     $(buffer2, p(RBuffer)));
     deleter(buffer2, RBuffer);
-    deleter(temp, RByteArray);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
