@@ -74,6 +74,7 @@ void    (*RFreePtr)   (void*  ptr);
 #define RFPrintf          fprintf
 #define RFClose           fclose
 #define RFRead            fread
+#define RFWrite           fwrite
 #define RFSeek            fseek
 #define RFTell            ftell
 #define RRewind           rewind

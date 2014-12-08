@@ -187,6 +187,107 @@ method(void, deleteDataAt, RBuffer), size_t index) {
     }
 }
 
+#pragma mark File I/O
+
+RBuffer* RBufferFromFile(const char *filename) {
+    FILE *file = RFOpen(filename, "rb");
+    byte *buffer;
+    ssize_t fileSize;
+
+    if(file != nil) {
+        RFSeek(file, 0, SEEK_END);
+        fileSize = RFTell(file);
+        if(fileSize > 0) {
+            RRewind(file);
+            buffer = RAlloc(fileSize * (sizeof(byte)));
+            if(buffer != nil) {
+                // create variables
+                uint64_t *sizesArray = nil;
+                uint64_t  iterator   = 0;
+
+                // read all
+                RFRead(buffer, sizeof(byte), (size_t) fileSize, file);
+                RFClose(file);
+
+                // begin parse raw bytes
+                if(buffer[0] == 4) {
+                    uint32_t *tempRef = (uint32_t *) (buffer + 1);
+                    sizesArray = (uint64_t *) tempRef;
+                } else if(buffer[0] == 8
+                        && sizeof(size_t) == 8) {
+                    sizesArray = (uint64_t *) (buffer + 1);
+                } else {
+                    RErrStr "ERROR. RBufferFromFile. Bad size_t size - %u for current size_t - %lu", buffer[0], sizeof(size_t));
+                }
+                if(sizesArray != nil) {
+                    // find terminating '\0' size
+                    while (sizesArray[iterator] != 0) {
+                        ++iterator;
+                    }
+                    RByteArray *array = allocator(RByteArray);
+                    if (array != nil) {
+                        array->size  = iterator;
+                        array->array = buffer + 1 + (buffer[0] * iterator);
+                        return $(array, m(serializeToBuffer, RByteArray)), sizesArray);
+                    }
+                }
+            } else {
+                RErrStr "ERROR. RBufferFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n", filename, fileSize);
+            }
+        } else {
+            RErrStr "ERROR. RBufferFromFile. Error read file \"%s\".\n", filename);
+        }
+    } else {
+        RErrStr "ERROR. RBufferFromFile. Cannot open file \"%s\".\n", filename);
+    }
+    return nil;
+}
+
+method(void, saveToFile, RBuffer), const char* filename) {
+    FILE *file = fopen(filename, "wb+");
+    if (file != nil) {
+        size_t iterator;
+        // dump fist byte sizeof(size_t)
+        size_t result = sizeof(size_t);
+        result = fwrite(&result, 1, 1, file);
+        if(result != 1) {
+            RError("RBuffer. Failed save init data to file. Breaking process.", object);
+        }
+
+        // create sizes array
+        size_t *tempSizes = RAlloc(object->count * sizeof(size_t));
+        if(tempSizes == nil) {
+            RError("RBuffer. Allocation of temp sizes array failed.", object);
+        } else {
+            // custom copy
+            forAll(iterator, object->count) {
+                tempSizes[iterator] = object->sizesArray->size;
+            }
+
+            // dump sizes array
+            result = RFWrite(tempSizes, sizeof(size_t), object->count, file);
+            if (result !=  object->count) {
+                RError("RBuffer. Failed save size array to file.", object);
+            }
+            result = 0;
+            // dump last size like 0
+            result = RFWrite(&result, 1, 1, file);
+            if (result != 1) {
+                RError("RBuffer. Failed save last sizes '\\0' to file.", object);
+            }
+
+            // dump body
+            result = RFWrite(master(object, RByteArray)->array, object->totalPlaced, 1, file);
+            if (result != 1) {
+                RError("RBuffer. Failed save RBuffer body to file.", object);
+            }
+            fclose(file);
+        }
+    } else {
+        RError("RBuffer. Failed save string to file, cant open file.", object);
+    }
+}
+
 #pragma mark Addition to RByteArray
 
 method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {

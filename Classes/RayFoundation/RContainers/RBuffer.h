@@ -60,6 +60,8 @@ method(pointer, getDataCopy,      RBuffer),    size_t index);                   
 // deleters
 method(void,    deleteDataAt,     RBuffer),    size_t index);
 
+// file i/o
+method(void,    saveToFile,       RBuffer),    const char* filename);
 
 // Additions to RByteArray
 method(RBuffer *, serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0

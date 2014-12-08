@@ -722,13 +722,13 @@ RCString* RCStringFromFile(const char *filename) {
 
 method(void, appendToFile, RCString), const char *filename) {
     FILE *file = fopen(filename, "ab");
-    if (file != NULL) {
+    if (file != nil) {
         ssize_t result = fputs(object->baseString, file);
         if(result < 0) {
-            RError("RCS. Failed save string to file.", object);
+            RError("RCString. Failed save string to file.", object);
         }
         fclose(file);
     } else {
-        RError("RCS. Failed save string to file, cant open file.", object);
+        RError("RCString. Failed save string to file, cant open file.", object);
     }
 }
