@@ -38,7 +38,7 @@ constructor(RAutoPool)) {
     if(object != nil) {
         object->pointersInWork = makeRArray();
         if(object->pointersInWork != nil) {
-//            object->classId      = registerClassOnce(toString(RAutoPool));
+            object->classId      = 5;
             object->innerMalloc  = malloc;
             object->innerRealloc = realloc;
             object->innerCalloc  = calloc;

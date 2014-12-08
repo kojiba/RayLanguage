@@ -152,6 +152,8 @@ singleton(RClassTable) {
             $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RSandBox));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
         }
 
 #if RAY_SHORT_DEBUG == 1

@@ -37,7 +37,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
         object->memPart         = makeRByteArray(sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
-//            object->classId               = registerClassOnce(toString(RSandBox));
+            object->classId               = 4;
             object->descriptorsInfo.size  = descriptorsCount;
             object->descriptorsInfo.start = 0;
 
