@@ -257,8 +257,10 @@ RBuffer* RBufferFromFile(const char *filename) {
 
 method(void, saveToFile, RBuffer), const char* filename) {
     FILE *file = fopen(filename, "wb+");
+
     if (file != nil) {
         size_t iterator;
+
         // dump fist byte sizeof(size_t)
         size_t result = sizeof(size_t);
         result = fwrite(&result, 1, 1, file);
