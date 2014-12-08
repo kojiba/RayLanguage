@@ -190,9 +190,10 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 #pragma mark File I/O
 
 RBuffer* RBufferFromFile(const char *filename) {
-    FILE *file = RFOpen(filename, "rb");
-    byte *buffer;
-    ssize_t fileSize;
+    ssize_t  fileSize;
+    byte    *buffer;
+    FILE    *file   = RFOpen(filename, "rb");
+    RBuffer *result = nil;
 
     if(file != nil) {
         RFSeek(file, 0, SEEK_END);
@@ -204,31 +205,42 @@ RBuffer* RBufferFromFile(const char *filename) {
                 // create variables
                 uint64_t *sizesArray = nil;
                 uint64_t  iterator   = 0;
-
+                uint64_t  sumBytes  = 0;
                 // read all
                 RFRead(buffer, sizeof(byte), (size_t) fileSize, file);
                 RFClose(file);
 
                 // begin parse raw bytes
                 if(buffer[0] == 4) {
+                    //fixme custom 32-to-64
                     uint32_t *tempRef = (uint32_t *) (buffer + 1);
                     sizesArray = (uint64_t *) tempRef;
+
                 } else if(buffer[0] == 8
                         && sizeof(size_t) == 8) {
                     sizesArray = (uint64_t *) (buffer + 1);
                 } else {
                     RErrStr "ERROR. RBufferFromFile. Bad size_t size - %u for current size_t - %lu", buffer[0], sizeof(size_t));
                 }
+
                 if(sizesArray != nil) {
                     // find terminating '\0' size
                     while (sizesArray[iterator] != 0) {
                         ++iterator;
+                        sumBytes += sizesArray[iterator];
                     }
                     RByteArray *array = allocator(RByteArray);
                     if (array != nil) {
-                        array->size  = iterator;
-                        array->array = buffer + 1 + (buffer[0] * iterator);
-                        return $(array, m(serializeToBuffer, RByteArray)), sizesArray);
+                        array->size  = sumBytes + 1;
+                        array->array = buffer + 1 + (buffer[0] * (iterator + 1));
+
+                        // processing
+                        result = $(array, m(serializeToBuffer, RByteArray)), sizesArray);
+
+                        // cleanup
+                        deallocator(array);
+                        deallocator(buffer);
+
                     }
                 }
             } else {
@@ -240,7 +252,7 @@ RBuffer* RBufferFromFile(const char *filename) {
     } else {
         RErrStr "ERROR. RBufferFromFile. Cannot open file \"%s\".\n", filename);
     }
-    return nil;
+    return result;
 }
 
 method(void, saveToFile, RBuffer), const char* filename) {
@@ -261,7 +273,7 @@ method(void, saveToFile, RBuffer), const char* filename) {
         } else {
             // custom copy
             forAll(iterator, object->count) {
-                tempSizes[iterator] = object->sizesArray->size;
+                tempSizes[iterator] = object->sizesArray[iterator].size;
             }
 
             // dump sizes array
@@ -271,7 +283,7 @@ method(void, saveToFile, RBuffer), const char* filename) {
             }
             result = 0;
             // dump last size like 0
-            result = RFWrite(&result, 1, 1, file);
+            result = RFWrite(&result, sizeof(size_t), 1, file);
             if (result != 1) {
                 RError("RBuffer. Failed save last sizes '\\0' to file.", object);
             }
@@ -281,6 +293,9 @@ method(void, saveToFile, RBuffer), const char* filename) {
             if (result != 1) {
                 RError("RBuffer. Failed save RBuffer body to file.", object);
             }
+
+            // cleanup
+            deallocator(tempSizes);
             fclose(file);
         }
     } else {
@@ -317,9 +332,9 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
                     }
 
                     // final operations
-                    result->sizesArray = newSizesArray;
+                    result->sizesArray  = newSizesArray;
                     result->totalPlaced = object->size;
-                    result->freePlaces = 0;
+                    result->freePlaces  = 0;
                     result->classId = registerClassOnce(toString(RBuffer));
                 }
             }

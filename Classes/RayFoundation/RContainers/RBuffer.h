@@ -61,6 +61,7 @@ method(pointer, getDataCopy,      RBuffer),    size_t index);                   
 method(void,    deleteDataAt,     RBuffer),    size_t index);
 
 // file i/o
+RBuffer* RBufferFromFile (const char *filename);
 method(void,    saveToFile,       RBuffer),    const char* filename);
 
 // Additions to RByteArray
