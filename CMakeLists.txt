@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(RayLanguage)
 
-set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
+set (EXECUTABLE_OUTPUT_PATH      ${RayLanguage_SOURCE_DIR}/bin)
 file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+
+set(LIBRARY_NAME    Ray)
+set(EXECUTABLE_NAME RayLanguage)
 
 # RVM -----------------------------------------------------------------------
 set(RVM_HEADERS
@@ -65,6 +68,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
+                 Classes/RayFoundation/RCustomIO/RCustomIO.h
 
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
@@ -72,7 +76,8 @@ set(HEADER_FILES # Worker headers
                  # Tests
                  Classes/Tests.h)
 
-set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
+set(SOURCE_FILES Classes/RayFoundation/RayBase.c
+                 Classes/RayFoundation/RBasics/RBasics.c
 
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.c
@@ -96,17 +101,39 @@ set(SOURCE_FILES Classes/RayFoundation/RBasics/RBasics.c
                  Classes/RayFoundation/RClassTable/RClassTable.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
+                 Classes/RayFoundation/RCustomIO/RCustomIO.c
 
                  # Tests
-                 Classes/Tests.c
+                 Classes/Tests.c)
 
-                 Classes/main.c)
+add_library(
+    ${LIBRARY_NAME}
+    SHARED
+    ${HEADER_FILES}
+    ${SOURCE_FILES}
+)
 
-add_executable(RayLanguage ${HEADER_FILES} ${RINTERPRETER_HEADERS} ${RVM_HEADERS} ${SOURCE_FILES} ${RINTERPRETER_SOURCES} ${RVM_SOURCES})
+add_executable(${EXECUTABLE_NAME} Classes/main.c
+    #${RINTERPRETER_HEADERS} ${RVM_HEADERS}
+    #${RINTERPRETER_SOURCES} ${RVM_SOURCES}
+)
+
+target_link_libraries(
+    ${EXECUTABLE_NAME}
+    ${LIBRARY_NAME}
+)
 
 #add_executable(RayInterpreter ${RINTERPRETER_HEADERS} ${RINTERPRETER_SOURCES})
+#target_link_libraries(
+#    RayInterpreter
+#    ${LIBRARY_NAME}
+#)
 
 #add_executable(RVM ${RVM_HEADERS} ${RVM_SOURCES})
+#target_link_libraries(
+#    RVM
+#    ${LIBRARY_NAME}
+#)
 
 
 

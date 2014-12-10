@@ -1,6 +1,10 @@
 #ifndef __TESTS_H__
 #define __TESTS_H__
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 void ComplexTest();
 
 int RDynamicArrayTest(void);
@@ -11,5 +15,9 @@ int StringArrayTest(void);
 int StringDictionaryTest(void);
 int RByteArrayTest(void);
 int RBufferTest(void);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif /*__TESTS_H__*/

@@ -70,7 +70,6 @@ printer(RRange) {
     RPrintf("[ %lu ; %lu ]", object->start, object->start + object->size);
 }
 
-
 #pragma mark RBounds
 
 RBounds makeRBounds(char startSymbol, char endSymbol) {

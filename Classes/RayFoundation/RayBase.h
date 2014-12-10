@@ -40,10 +40,10 @@ static void* (*const RTrueCalloc) (size_t size, size_t blockSize) = calloc;
 static void  (*const RTrueFree)   (void*  ptr) = free;
 
 // pointers to functions
-void*   (*RMallocPtr) (size_t size);
-void*   (*RCallocPtr) (size_t size, size_t blockSize);
-void*   (*RReallocPtr)(void*  ptr,  size_t size);
-void    (*RFreePtr)   (void*  ptr);
+extern void*   (*RMallocPtr) (size_t size);
+extern void*   (*RCallocPtr) (size_t size, size_t blockSize);
+extern void*   (*RReallocPtr)(void*  ptr,  size_t size);
+extern void    (*RFreePtr)   (void*  ptr);
 
 // malloc entry point is pointer
 #define malloc                RMallocPtr

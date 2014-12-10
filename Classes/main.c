@@ -17,30 +17,18 @@
  **/
 
 #include "RayFoundation/RayFoundation.h"
-#include "Tests.h"
+#include "RayFoundation/RCustomIO/RCustomIO.h"
 
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
-    ComplexTest();
-    size_t iterator;
-    RBuffer *buffer = $(nil, c(RBuffer)));
+    printf("Enter a password:\n");
 
-    forAll(iterator, 5) {
-        RCString *temp = randomRCString();
-        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size);
-        deleter(temp, RCString);
-    }
+    RCString *password = readConsolePasswordUnixStyle();
+    $(password, p(RCString)));
+    deleter(password, RCString);
 
-
-    $(buffer, p(RBuffer)));
-    $(buffer, m(saveToFile, RBuffer)), "Buffer.test.txt");
-    deleter(buffer, RBuffer);
-
-    RBuffer *buffer2 = RBufferFromFile("Buffer.test.txt");
-    $(buffer2, p(RBuffer)));
-    deleter(buffer2, RBuffer);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

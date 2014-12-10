@@ -280,6 +280,11 @@ method(void, free, RSandBox), pointer ptr) {
 
     size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
     if (rangeIterator != object->descriptorsInfo.start) {
+        if(object->allocationMode == RSandBoxAllocationModeRandom
+                || object->allocationMode == RSandBoxAllocationModeDelegated) {
+            // totally fresh all to 0
+            flushAllToByte(object->memPart->array + object->descriptorTable[rangeIterator].memRange.start, object->descriptorTable[rangeIterator].memRange.size, 0);
+        }
         RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
         --object->descriptorsInfo.start;
     } else {
