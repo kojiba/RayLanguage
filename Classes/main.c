@@ -17,19 +17,14 @@
  **/
 
 #include "RayFoundation/RayFoundation.h"
-#include "RayFoundation/RCustomIO/RCustomIO.h"
+#include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
-    printf("Enter a password:\n");
-
-    RCString *password = readConsolePasswordUnixStyle();
-    $(password, p(RCString)));
-    deleter(password, RCString);
-
-
+    ComplexTest();
+    // plase your code here
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
     deleter(RPool, RAutoPool);
