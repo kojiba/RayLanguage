@@ -48,6 +48,8 @@ extern "C" {
 // Others
 #include <RClassTable.h>
 #include <RFloatingEnum.h>
+#include <RThread.h>
+#include <RSystem.h>
 
 #ifdef  __cplusplus
 }

@@ -20,6 +20,7 @@ include_directories(Classes/RayFoundation/RCustomIO)
 include_directories(Classes/RayFoundation/REncoding)
 include_directories(Classes/RayFoundation/RFloatingEnum)
 include_directories(Classes/RayFoundation/RMemoryOperations)
+include_directories(Classes/RayFoundation/RThread)
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
@@ -52,6 +53,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
                  Classes/RayFoundation/RCustomIO/RCustomIO.h
+                 Classes/RayFoundation/RThread/RThread.h
 
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
@@ -85,6 +87,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
                  Classes/RayFoundation/RCustomIO/RCustomIO.c
+                 Classes/RayFoundation/RThread/RThread.c
 
                  # Tests
                  Classes/Tests.c)
