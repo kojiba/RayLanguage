@@ -16,8 +16,8 @@
 #ifndef __R_BASE_64_H__
 #define __R_BASE_64_H__
 
-#include "../RCString/RCString.h"
-#include "../RMemoryOperations/RByteOperations.h"
+#include <RCString.h>
+#include <RByteOperations.h>
 
 static const char encodingTableBase64[64] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',

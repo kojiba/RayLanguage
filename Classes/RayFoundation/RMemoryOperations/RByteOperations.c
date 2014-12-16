@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include "RByteOperations.h"
-#include "../RClassTable/RClassTable.h"
+#include <RByteOperations.h>
+#include <RClassTable.h>
 
 #pragma mark Memory Operations
 

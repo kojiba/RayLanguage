@@ -15,7 +15,7 @@
  *         |__/
  **/
 
-#include "RAutoPool.h"
+#include <RAutoPool.h>
 
 #define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
                     pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\

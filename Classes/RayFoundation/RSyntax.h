@@ -19,9 +19,9 @@
 #ifndef __R_SYNTAX_H__
 #define __R_SYNTAX_H__
 
-#include "RayCheckFoundation.h"
-#include "RColors.h"
-#include "RayBase.h"
+#include <RayCheckFoundation.h>
+#include <RColors.h>
+#include <RayBase.h>
 
 // working defines
 #define _TOSTRING(x)                                      #x

@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include "RDictionary.h"
-#include "../RClassTable/RClassTable.h"
+#include <RDictionary.h>
+#include <RClassTable.h>
 
 constructor(RDictionary)) {
     object = allocator(RDictionary);

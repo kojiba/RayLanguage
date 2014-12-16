@@ -1,11 +1,25 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(RayLanguage)
 
-set (EXECUTABLE_OUTPUT_PATH      ${RayLanguage_SOURCE_DIR}/bin)
-file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+# Configure project
+set (EXECUTABLE_OUTPUT_PATH     ${RayLanguage_SOURCE_DIR}/bin)
+set(BUILD_SHARED_LIBS ON)
+
+#Display Build path
+set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 set(LIBRARY_NAME    Ray)
 set(EXECUTABLE_NAME RayLanguage)
+
+include_directories(Classes/RayFoundation)
+include_directories(Classes/RayFoundation/RBasics)
+include_directories(Classes/RayFoundation/RClassTable)
+include_directories(Classes/RayFoundation/RContainers)
+include_directories(Classes/RayFoundation/RCString)
+include_directories(Classes/RayFoundation/RCustomIO)
+include_directories(Classes/RayFoundation/REncoding)
+include_directories(Classes/RayFoundation/RFloatingEnum)
+include_directories(Classes/RayFoundation/RMemoryOperations)
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
@@ -82,6 +96,9 @@ add_library(
     ${SOURCE_FILES}
 )
 
+#file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
+
 add_executable(${EXECUTABLE_NAME} Classes/main.c
 )
 
@@ -89,6 +106,12 @@ target_link_libraries(
     ${EXECUTABLE_NAME}
     ${LIBRARY_NAME}
 )
+
+set_target_properties(RayLanguage PROPERTIES PREFIX "")
+install( TARGETS RayLanguage
+         RUNTIME DESTINATION bin COMPONENT libraries
+         LIBRARY DESTINATION lib COMPONENT libraries
+         ARCHIVE DESTINATION lib/static COMPONENT libraries)
 
 # RVM -----------------------------------------------------------------------
 #set(RVM_HEADERS

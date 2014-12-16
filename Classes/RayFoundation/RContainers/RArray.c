@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include "RArray.h"
+#include <RArray.h>
 
 #define destroyElementAtIndex(index) if (object->destructorDelegate != nil) \
                                         object->destructorDelegate(object->array[index])

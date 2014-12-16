@@ -16,9 +16,9 @@
 #ifndef __CLASS_TABLE_H__
 #define __CLASS_TABLE_H__
 
-#include "../RSyntax.h"
-#include "RClassNamePair.h"
-#include "../RContainers/RArray.h"
+#include <RSyntax.h>
+#include <RClassNamePair.h>
+#include <RArray.h>
 
 class(RClassTable) //------------------------------------------------------------
     discipleOf(RArray)

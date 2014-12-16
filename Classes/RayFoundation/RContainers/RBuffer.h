@@ -17,8 +17,8 @@
 #ifndef __R_BUFFER_H__
 #define __R_BUFFER_H__
 
-#include "../RSyntax.h"
-#include "../RMemoryOperations/RByteOperations.h"
+#include <RSyntax.h>
+#include <RByteOperations.h>
 
 static const size_t startSizeOfRBufferDefault      = 1024; // 1kb of place
 static const size_t sizeMultiplierOfRBufferDefault = 2;

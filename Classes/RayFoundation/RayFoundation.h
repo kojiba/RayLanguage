@@ -23,31 +23,31 @@ extern "C" {
 #endif
 
 // Workers
-#include "RSyntax.h"
-#include "RColors.h"
-#include "RBasics/RBasics.h"
+#include <RSyntax.h>
+#include <RColors.h>
+#include <RBasics.h>
 
 // Containers
-#include "RContainers/RArray.h"
-#include "RContainers/RBuffer.h"
-#include "RContainers/RDictionary.h"
-#include "RContainers/RStringDictionary.h"
+#include <RArray.h>
+#include <RBuffer.h>
+#include <RDictionary.h>
+#include <RStringDictionary.h>
 
 // Strings
-#include "RCString/RCString.h"
-#include "RCString/RCString_Numbers.h"
+#include <RCString.h>
+#include <RCString_Numbers.h>
 
 // Memory operations
-#include "RMemoryOperations/RByteOperations.h"
-#include "RMemoryOperations/RSandBox.h"
-#include "RMemoryOperations/RAutoPool.h"
+#include <RByteOperations.h>
+#include <RSandBox.h>
+#include <RAutoPool.h>
 
 // Encoding
-#include "REncoding/RBase64.h"
+#include <RBase64.h>
 
 // Others
-#include "RClassTable/RClassTable.h"
-#include "RFloatingEnum/RFloatingEnum.h"
+#include <RClassTable.h>
+#include <RFloatingEnum.h>
 
 #ifdef  __cplusplus
 }

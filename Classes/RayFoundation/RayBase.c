@@ -14,7 +14,7 @@
  *         |__/
  **/
  
-#include "RayBase.h"
+#include <RayBase.h>
 
 void*   (*RMallocPtr) (size_t size);
 void*   (*RCallocPtr) (size_t size, size_t blockSize);

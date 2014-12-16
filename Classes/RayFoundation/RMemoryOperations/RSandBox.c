@@ -16,8 +16,8 @@
  *         |__/
  **/
 
-#include "RSandBox.h"
-#include "../RClassTable/RClassTable.h"
+#include <RSandBox.h>
+#include <RClassTable.h>
 
 #define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
                     pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\

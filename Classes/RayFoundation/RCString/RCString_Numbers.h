@@ -16,7 +16,7 @@
 #ifndef __R_C_STRING_NUMBERS_H__
 #define __R_C_STRING_NUMBERS_H__
 
-#include "RCString.h"
+#include <RCString.h>
 
 // Basics
 static inline rbool isDecimalDigit (char character);

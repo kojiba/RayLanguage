@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include "RClassTable.h"
+#include <RClassTable.h>
 
 void pairPtrDeleter(pointer ptr) {
     deleter(ptr, RClassNamePair);

@@ -16,7 +16,7 @@
 #ifndef __R_DICTIONARY_H__
 #define __R_DICTIONARY_H__
 
-#include "RArray.h"
+#include <RArray.h>
 
 class(RDictionary) //---------------------------------------------------------------------
     discipleOf(RCompareDelegate)

@@ -16,7 +16,7 @@
 #ifndef __R_FLOATING_ENUM_H__
 #define __R_FLOATING_ENUM_H__
 
-#include "../RContainers/RDictionary.h"
+#include <RDictionary.h>
 
 class(RFloatingEnum)
     discipleOf(RDictionary)

@@ -20,8 +20,8 @@
 #ifndef __R_SAND_BOX_H__
 #define __R_SAND_BOX_H__
 
-#include "../RBasics/RBasics.h"
-#include "RByteOperations.h"
+#include <RBasics.h>
+#include <RByteOperations.h>
 
 typedef enum RSandBoxAllocationMode {
     RSandBoxAllocationModeStandart = 0,

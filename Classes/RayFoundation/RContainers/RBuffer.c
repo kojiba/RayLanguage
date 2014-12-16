@@ -14,8 +14,8 @@
  *         |__/
  **/
 
-#include "RBuffer.h"
-#include "../RClassTable/RClassTable.h"
+#include <RBuffer.h>
+#include <RClassTable.h>
 
 constructor(RBuffer)) {
     object = allocator(RBuffer);

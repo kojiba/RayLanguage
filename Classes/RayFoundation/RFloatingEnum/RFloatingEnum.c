@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include "RFloatingEnum.h"
-#include "../RClassTable/RClassTable.h"
+#include <RFloatingEnum.h>
+#include <RClassTable.h>
 
 constructor (RFloatingEnum), pointer (*nextElementForCode)(pointer), RRange range) {
     pointer iterator;

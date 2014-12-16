@@ -16,7 +16,7 @@
 #ifndef __R_ARRAY_H__
 #define __R_ARRAY_H__
 
-#include "../RBasics/RBasics.h"
+#include <RBasics.h>
 
 typedef enum RArrayFlags {
 

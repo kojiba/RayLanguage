@@ -18,8 +18,8 @@
 #ifndef __R_AUTO_POOL_H__
 #define __R_AUTO_POOL_H__
 
-#include "../RSyntax.h"
-#include "../RContainers/RArray.h"
+#include <RSyntax.h>
+#include <RArray.h>
 
 class(RAutoPool)
     RArray *pointersInWork;

@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include "RStringDictionary.h"
-#include "../RClassTable/RClassTable.h"
+#include <RStringDictionary.h>
+#include <RClassTable.h>
 
 constructor(RStringDictionary)) {
     object = allocator(RStringDictionary);

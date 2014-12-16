@@ -22,7 +22,7 @@
 //    #include <curses.h>
 #endif
 
-#include "../RCString/RCString.h"
+#include <RCString.h>
 
 #if !defined(getch)
     int getch();
