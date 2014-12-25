@@ -21,6 +21,7 @@ include_directories(Classes/RayFoundation/REncoding)
 include_directories(Classes/RayFoundation/RFloatingEnum)
 include_directories(Classes/RayFoundation/RMemoryOperations)
 include_directories(Classes/RayFoundation/RThread)
+include_directories(Classes/RayFoundation/RNetwork)
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayBase.h
@@ -55,6 +56,11 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RCustomIO/RCustomIO.h
                  Classes/RayFoundation/RThread/RThread.h
 
+                 # Networking
+                 Classes/RayFoundation/RNetwork/RSocket.h
+                 Classes/RayFoundation/RNetwork/RReceiver.h
+                 Classes/RayFoundation/RNetwork/RSender.h
+
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
 
@@ -88,6 +94,10 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
                  Classes/RayFoundation/RCustomIO/RCustomIO.c
                  Classes/RayFoundation/RThread/RThread.c
+
+                 # Networking
+                 Classes/RayFoundation/RNetwork/RReceiver.c
+                 Classes/RayFoundation/RNetwork/RSender.c
 
                  # Tests
                  Classes/Tests.c)
