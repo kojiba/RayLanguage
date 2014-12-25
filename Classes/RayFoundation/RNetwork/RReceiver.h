@@ -40,6 +40,6 @@ method(rbool, rebindPort,         RReceiver),    uint16_t port);
 method(rbool, joinMulticastGroup, RReceiver),    char *address);
 
 // Main method
-method(void,  receive,            RReceiver),    RByteArray *buffer); // buffer must be pre allocated at least 1500 bytes
+method(byte,  receive,            RReceiver),    RByteArray *buffer); // buffer must be pre allocated at least 1500 bytes
 
 #endif /*__R_RECEIVER_H__*/

@@ -104,7 +104,7 @@ method(rbool, joinMulticastGroup, RReceiver), char *address) {
 
 #pragma mark Main Method
 
-method(void, receive, RReceiver), RByteArray *buffer) {
+method(byte, receive, RReceiver), RByteArray *buffer) {
     ssize_t messageLength = recvfrom(object->socket,
             buffer->array,
             buffer->size,
@@ -113,11 +113,12 @@ method(void, receive, RReceiver), RByteArray *buffer) {
             (socklen_t *)    &object->addressLength);
 
     if (messageLength < 0) {
-        RError("RReceiver. ReceiveFrom function error.", object);
+        return 255;
     } else if(messageLength != 0) {
         buffer->array[messageLength] = 0;
         ++object->packetCounter;
+        return 1;
     } else {
-        buffer->array[0] = 0;
+        return 0;
     }
 }

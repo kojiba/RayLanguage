@@ -83,7 +83,7 @@ method(void, setReceiverAddress, RSender), char *address) {
 
 #pragma mark Main Method
 
-method(void, send, RSender), RByteArray *buffer) {
+method(byte, send, RSender), RByteArray *buffer) {
     ssize_t messageLength = sendto(object->socket,
             buffer->array,
             buffer->size,
@@ -92,10 +92,11 @@ method(void, send, RSender), RByteArray *buffer) {
             (socklen_t) object->addressLength);
 
     if (messageLength < 0) {
-        RError("RSender. SendTo function error.", object);
+        return 255;
     } else if(messageLength != 0) {
         ++object->packetCounter;
+        return 1;
     } else {
-        buffer->array[0] = 0;
+        return 0;
     }
 }
