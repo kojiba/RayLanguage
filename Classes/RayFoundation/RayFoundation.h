@@ -45,6 +45,11 @@ extern "C" {
 // Encoding
 #include <RBase64.h>
 
+// Networking
+#include <RSocket.h>
+#include <RSender.h>
+#include <RReceiver.h>
+
 // Others
 #include <RClassTable.h>
 #include <RFloatingEnum.h>

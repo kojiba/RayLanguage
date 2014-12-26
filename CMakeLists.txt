@@ -120,8 +120,8 @@ target_link_libraries(
     ${LIBRARY_NAME}
 )
 
-set_target_properties(RayLanguage PROPERTIES PREFIX "")
-install( TARGETS RayLanguage
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
+install( TARGETS ${EXECUTABLE_NAME}
          RUNTIME DESTINATION bin COMPONENT libraries
          LIBRARY DESTINATION lib COMPONENT libraries
          ARCHIVE DESTINATION lib/static COMPONENT libraries)
