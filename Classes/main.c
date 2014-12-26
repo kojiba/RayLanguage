@@ -25,7 +25,15 @@ int main(int argc, const char *argv[]) {
     RPool;
     RCTSingleton;
     ComplexTest();
-    // plase your code here
+    // place your code here
+    byte *data = makeFlushedBytes(10, 1);
+
+    byte *key = makeFlushedBytes(10, 2);
+
+
+    Xor(data,key, 10, 10);
+    printByteArrayInHex(data, 10);
+
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
     deleter(RPool, RAutoPool);

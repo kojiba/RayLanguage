@@ -25,20 +25,20 @@ class(RByteArray)
 endOf(RByteArray)
 
 // Memory operations
-void           Xor (      pointer data,
+void           Xor (      pointer data,          // buffered xor, operands not bytes, but size_t (architects speed-up)
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);
 
-void           Add (      pointer data,
-                    const pointer key,
-                          size_t  sizeOfData,
-                          size_t  sizeOfKey);
+void           Add_8 (       pointer data,       // addition by module 8
+                       const pointer key,
+                             size_t  sizeOfData,
+                             size_t  sizeOfKey);
 
-void           Sub (      pointer data,
-                    const pointer key,
-                          size_t  sizeOfData,
-                          size_t  sizeOfKey);
+void           Sub_8 (       pointer data,       // subtraction by module 8
+                       const pointer key,
+                             size_t  sizeOfData,
+                             size_t  sizeOfKey);
 
 // Basics
 byte*          flushAllToByte             (byte *array,       size_t size, byte symbol); // not copy
