@@ -44,7 +44,7 @@ constructor (RThread),
 destructor  (RThread);
 printer     (RThread);
 
-method(void, cancell, RThread));
+method(void, cancel, RThread));
 method(void, join,    RThread));
 
 #endif /*__R__THREAD_H__*/

@@ -49,7 +49,7 @@ printer(RThread) {
     RPrintf("%s object - %p, RThreadDescriptor - %p\n", toString(RThread), object, object->descriptor);
 }
 
-method(void, cancell, RThread)) {
+method(void, cancel, RThread)) {
 #ifndef __WIN32
     pthread_cancel(*object->descriptor);
 #else
