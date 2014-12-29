@@ -41,12 +41,12 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
                              size_t  sizeOfKey);
 
 // Basics
-byte*          flushAllToByte             (byte *array,       size_t size, byte symbol); // not copy
-void           printByteArrayInHex        (const byte *array, size_t size);
-byte*          getByteArrayCopy           (const byte *array, size_t size);
-byte*          getSubArray                (const byte *array, RRange range );            // sub-array copy
-RByteArray*    getSubArrayToFirstSymbol   (const byte *array, size_t size, byte symbol); // sub-array copy, or nil
-RArray*        getArraysSeparatedBySymbol (const byte *array, size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nil
+byte*          flushAllToByte             (      pointer array, size_t size, byte symbol); // returns reference
+void           printByteArrayInHex        (const byte *array,   size_t size);
+byte*          getByteArrayCopy           (const byte *array,   size_t size);
+byte*          getSubArray                (const byte *array,   RRange range );            // sub-array copy
+RByteArray*    getSubArrayToFirstSymbol   (const byte *array,   size_t size, byte symbol); // sub-array copy, or nil
+RArray*        getArraysSeparatedBySymbol (const byte *array,   size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nil
 
 // RByteArray
 constructor (RByteArray), size_t size);

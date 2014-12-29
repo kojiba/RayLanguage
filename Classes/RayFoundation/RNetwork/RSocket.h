@@ -1,5 +1,6 @@
 /**
  * RSocket.h
+ * Sockets simple wrapper.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 12/19/14 2014 Ukraine Kharkiv
  *  _         _ _ _

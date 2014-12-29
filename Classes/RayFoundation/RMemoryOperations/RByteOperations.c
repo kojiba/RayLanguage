@@ -15,6 +15,7 @@
 
 #include <RByteOperations.h>
 #include <RClassTable.h>
+#include <SceneKit/SceneKit.h>
 
 #pragma mark Memory Operations
 
@@ -53,10 +54,13 @@ void Sub_8(      pointer data,
 
 #pragma mark Basics
 
-byte* flushAllToByte(byte *array, size_t size, byte symbol) {
+byte* flushAllToByte(pointer array, size_t size, byte symbol) {
     size_t iterator;
-    forAll(iterator, size) {
-        array[iterator] = symbol;
+    forAll(iterator, size / sizeof(size_t)) {
+        ((size_t*) array)[iterator] = symbol;
+    }
+    for(iterator *= sizeof(size_t); iterator < size; ++iterator){
+        ((byte*) array)[iterator] = symbol;
     }
     return array;
 }
