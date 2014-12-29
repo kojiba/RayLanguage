@@ -17,7 +17,7 @@
  **/
 
 
-#include "RayFoundation/RayFoundation.h"
+#include <RayFoundation.h>
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
@@ -26,13 +26,8 @@ int main(int argc, const char *argv[]) {
     RCTSingleton;
     ComplexTest();
     // place your code here
-    byte *data = makeFlushedBytes(10, 1);
-
-    byte *key = makeFlushedBytes(10, 2);
 
 
-    Xor(data,key, 10, 10);
-    printByteArrayInHex(data, 10);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

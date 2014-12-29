@@ -72,7 +72,7 @@ method(rbool, rebindPort, RSender), uint16_t port) {
     return yes;
 }
 
-method(void, setReceiverAddress, RSender), char *address) {
+method(void, setReceiverAddress, RSender), const char * const address) {
     flushAllToByte((byte *)&object->receiverAddress, sizeof(object->receiverAddress), 0);
     object->receiverAddress.sin_family = AF_INET;
     object->receiverAddress.sin_addr.s_addr = htonl(INADDR_ANY);

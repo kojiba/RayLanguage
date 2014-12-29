@@ -86,7 +86,7 @@ method(rbool, rebindPort, RReceiver), uint16_t port) {
     return yes;
 }
 
-method(rbool, joinMulticastGroup, RReceiver), char *address) {
+method(rbool, joinMulticastGroup, RReceiver), const char * const address) {
     struct ip_mreq multicastAddress;
     multicastAddress.imr_multiaddr.s_addr = inet_addr(address);
     multicastAddress.imr_interface.s_addr = htonl(INADDR_ANY);

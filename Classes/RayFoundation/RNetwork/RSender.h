@@ -36,7 +36,7 @@ printer     (RSender);
 
 // Setters
 method(rbool, rebindPort,         RSender),    uint16_t port);
-method(void,  setReceiverAddress, RSender),    char *address);
+method(void,  setReceiverAddress, RSender),    const char * const address);
 
 // Main method
 method(byte,  send,               RSender),    RByteArray *buffer); // buffer must be pre allocated at least 1500 bytes
