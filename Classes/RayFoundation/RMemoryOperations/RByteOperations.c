@@ -15,7 +15,6 @@
 
 #include <RByteOperations.h>
 #include <RClassTable.h>
-#include <SceneKit/SceneKit.h>
 
 #pragma mark Memory Operations
 
