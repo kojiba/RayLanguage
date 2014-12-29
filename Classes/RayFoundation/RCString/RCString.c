@@ -618,6 +618,46 @@ method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     }
 }
 
+method(RCompareFlags, compareWithStr, RCString), const char *const checkString) {
+    RCString *temp = RS(checkString);
+    RCompareFlags result = $(object, m(compareWith, RCString)), temp);
+    deallocator(temp);
+    return result;
+}
+
+method(rbool, startsOnStr, RCString), const char *const checkString) {
+    size_t iterator = 0;
+    while(checkString[iterator]) {
+        if(object->baseString[iterator] != checkString[iterator]) {
+            return no;
+        }
+        ++iterator;
+    }
+    return yes;
+}
+
+method(rbool, startsOn, RCString), const RCString *const checkString) {
+    return $(object, m(startsOnStr, RCString)), checkString->baseString);
+}
+
+method(rbool, endsOnStr, RCString), const char *const checkString) {
+    RCString *temp = RS(checkString);
+    rbool result = $(object, m(endsOn, RCString)), temp);
+    deallocator(temp);
+    return result;
+}
+
+method(rbool, endsOn, RCString), const RCString *const checkString) {
+    ssize_t iterator = 0;
+    while(iterator < checkString->size) {
+        if(object->baseString[object->size - iterator] != checkString->baseString[checkString->size - iterator]) {
+            return no;
+        }
+        ++iterator;
+    }
+    return yes;
+}
+
 #pragma mark Concatenate
 
 method(void, concatenate, RCString), const RCString *string) {

@@ -27,6 +27,13 @@ int main(int argc, const char *argv[]) {
     ComplexTest();
     // place your code here
 
+    RCString *temp = RSC("Here i'm start myself!");
+    if($(temp, m(startsOnStr, RCString)), "Here i'm")) {
+        RPrintLn("Starts!");
+    }
+    if($(temp, m(endsOnStr, RCString)), "start myself!")) {
+        RPrintLn("Ends!");
+    }
 
 
     deleter(RCTSingleton, RClassTable);

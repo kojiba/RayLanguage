@@ -86,6 +86,11 @@ method(RCString *,          copy,                         RCString));
 
 // Comparator
 method(RCompareFlags,       compareWith,                  RCString),    const RCString *checkString);
+method(RCompareFlags,       compareWithStr,               RCString),    const char *const checkString);
+method(rbool,               startsOnStr,                  RCString),    const char *const checkString);
+method(rbool,               startsOn,                     RCString),    const RCString *const checkString);
+method(rbool,               endsOnStr,                    RCString),    const char *const checkString);
+method(rbool,               endsOn,                       RCString),    const RCString *const checkString);
 
 // Concatenate
 method(void,                concatenate,                  RCString),    const RCString *string);
