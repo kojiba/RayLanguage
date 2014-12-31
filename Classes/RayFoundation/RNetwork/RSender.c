@@ -58,7 +58,7 @@ printer(RSender) {
 
 method(rbool, rebindPort, RSender), uint16_t port) {
     SocketAddressIn address;
-    bzero((char *)&address, sizeof(address));
+    flushAllToByte((byte *)&address, sizeof(address), 0);
     address.sin_family      = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port        = htons(port);
