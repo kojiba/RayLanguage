@@ -12,7 +12,7 @@ Containers:
 3.  Buffer (self-longs, sore full copy of objects)  
 4.  StringDictionary (Dictionary with keys like strings)  
 5.  ClassTable (for store pairs of number and string once)  
-
+  
 Strings:  
 1. Wide range of c-string processing operations (RCString)  
 2. Replacings  
@@ -24,12 +24,12 @@ Strings:
 8. Tokenization into containeer Array  
 9. Base64 encoding/decoding  
 10. etc...  
-
+  
 Memory operations:  
-1. Self-code easy sandboxing and testing with logging. 
-2. Self-code management with RAutoPool. (Checking leaks) 
-3. Work with byte buffers  
-4. Work with memory chunks  
+1. Self-code easy sandboxing and testing with logging.   
+2. Self-code management with RAutoPool. (Checking leaks)   
+3. Work with byte buffers    
+4. Work with memory chunks    
 
 Some test projects based on RayFoundation:  
 1. Simple VM with Brainfuck compiler  
