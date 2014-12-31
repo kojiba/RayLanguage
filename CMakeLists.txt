@@ -119,6 +119,7 @@ target_link_libraries(
     ${EXECUTABLE_NAME}
     ${LIBRARY_NAME}
 )
+#Ws2_32.lib
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
 install( TARGETS ${EXECUTABLE_NAME}

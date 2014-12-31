@@ -26,10 +26,11 @@
     typedef pthread_mutex_t RThreadMutex;
 #else
     #include <windows.h>
+
     typedef HANDLE RThreadDescriptor;
     // fixme windows
-    typedef pthread_attr_t  RThreadAttributes;
-    typedef pthread_mutex_t RThreadMutex;
+    typedef LPVOID  RThreadAttributes;
+    typedef HANDLE RThreadMutex;
 #endif
 
 class(RThread)
