@@ -39,7 +39,7 @@ method(rbool, rebindPort,         RSender),    uint16_t port);
 method(void,  setReceiverAddress, RSender),    const char * const address);
 
 // Main method
-method(byte,  send,               RSender),    RByteArray *buffer); // buffer must be pre allocated at least 1500 bytes
+method(byte,  send,               RSender),    RCString *string); // sends to receiver size bytes
 
 
 #endif /*__R_SENDER_H__*/

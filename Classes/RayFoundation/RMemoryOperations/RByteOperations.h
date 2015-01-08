@@ -55,7 +55,7 @@ printer     (RByteArray);
 
 method(RByteArray*, flushAllToByte, RByteArray),    byte symbol);
 method(RByteArray*, copy,           RByteArray));
-method(RByteArray*, fromRCString,   RByteArray),    RCString *string);
+method(RByteArray*, fromRCString,   RByteArray),    RCString *string); // not sets size, only copy bytes, returns self
 
 
 #define makeRByteArray(size)           $(nil, c(RByteArray)), size)

@@ -32,9 +32,9 @@ void Xor(      pointer data,
 }
 
 void Add_8(      pointer data,
-         const pointer key,
-               size_t  sizeOfData,
-               size_t  sizeOfKey) {
+           const pointer key,
+                 size_t  sizeOfData,
+                 size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
@@ -42,9 +42,9 @@ void Add_8(      pointer data,
 }
 
 void Sub_8(      pointer data,
-         const pointer key,
-               size_t  sizeOfData,
-               size_t  sizeOfKey) {
+           const pointer key,
+                 size_t  sizeOfData,
+                 size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
@@ -83,7 +83,7 @@ byte* getByteArrayCopy(const byte *array, size_t size) {
 
 byte* getSubArray(const byte *array, RRange range) {
     byte *subArray = RAlloc(range.size);
-    RMemMove(subArray, &array[range.start], range.size);
+    RMemMove(subArray, array + range.start, range.size);
     return subArray;
 }
 
@@ -173,7 +173,7 @@ method(RByteArray*, copy, RByteArray)) {
 
 method(RByteArray*, fromRCString, RByteArray), RCString *string) {
     if(object->size <= string->size && object->size != 0) {
-        RMemMove(object->array, string->baseString, string->size);
+        RMemCpy(object->array, string->baseString, string->size);
         return object;
     }
     return nil;

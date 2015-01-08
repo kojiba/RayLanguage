@@ -26,15 +26,9 @@ int main(int argc, const char *argv[]) {
     RCTSingleton;
     ComplexTest();
     // place your code here
-
-    RCString *temp = RSC("Here i'm start myself!");
-    if($(temp, m(startsOnStr, RCString)), "Here i'm")) {
-        RPrintLn("Starts!");
-    }
-    if($(temp, m(endsOnStr, RCString)), "start myself!")) {
-        RPrintLn("Ends!");
-    }
-
+    RSender *sender = $(nil, c(RSender)), 7777);
+    $(sender, m(setReceiverAddress, RSender)), "8.8.8.8");
+    $(sender, m(send, RSender)), RSC("Hello"));
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

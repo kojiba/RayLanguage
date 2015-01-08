@@ -74,19 +74,18 @@ method(rbool, rebindPort, RSender), uint16_t port) {
 
 method(void, setReceiverAddress, RSender), const char * const address) {
     flushAllToByte((byte *)&object->receiverAddress, sizeof(object->receiverAddress), 0);
-    object->receiverAddress.sin_family = AF_INET;
-    object->receiverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    object->receiverAddress.sin_port = htons(object->port);
-    object->addressLength = sizeof(object->receiverAddress);
+    object->receiverAddress.sin_family      = AF_INET;
     object->receiverAddress.sin_addr.s_addr = inet_addr(address);
+    object->receiverAddress.sin_port        = htons(object->port);
+    object->addressLength                   = sizeof(object->receiverAddress);
 }
 
 #pragma mark Main Method
 
-method(byte, send, RSender), RByteArray *buffer) {
+method(byte, send, RSender), RCString *string) {
     ssize_t messageLength = sendto(object->socket,
-            buffer->array,
-            buffer->size,
+            string->baseString,
+            string->size,
             0,
             (SocketAddress*) &object->receiverAddress,
             (socklen_t) object->addressLength);
