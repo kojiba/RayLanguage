@@ -120,6 +120,10 @@ target_link_libraries(
     ${LIBRARY_NAME}
 )
 
+if(WIN32)
+  target_link_libraries(${LIBRARY_NAME} wsock32 ws2_32)
+endif()
+
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
 install( TARGETS ${EXECUTABLE_NAME}
          RUNTIME DESTINATION bin COMPONENT libraries
