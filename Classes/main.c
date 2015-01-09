@@ -27,8 +27,8 @@ int main(int argc, const char *argv[]) {
     ComplexTest();
     // place your code here
     RSender *sender = $(nil, c(RSender)), 7777);
-    $(sender, m(setReceiverAddress, RSender)), "8.8.8.8");
-    $(sender, m(send, RSender)), RSC("Hello"));
+    $(sender, m(setReceiverAddress, RSender)), "224.0.13.13");
+    $(sender, m(send, RSender)), RS("Hello"));
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
