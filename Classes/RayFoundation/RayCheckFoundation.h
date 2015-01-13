@@ -30,4 +30,10 @@
             #error "Some of core-function-call defines of RayFoundation are already defined!"
     #endif
 
+    #if __STDC_VERSION__ >= 199901L
+        /* "inline" is a keyword */
+    #else
+        #define inline /* nothing */
+    #endif
+
 #endif /*__RAY_CHECK_FOUNDATION_H__*/

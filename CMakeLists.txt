@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 2.8.4)
 project(RayLanguage)
 
 # Configure project
-set (EXECUTABLE_OUTPUT_PATH     ${RayLanguage_SOURCE_DIR}/bin)
-set(BUILD_SHARED_LIBS ON)
+set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
+set(BUILD_SHARED_LIBS      ON)
 
-#Display Build path
+# Display Build path
 set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 set(LIBRARY_NAME    Ray)
