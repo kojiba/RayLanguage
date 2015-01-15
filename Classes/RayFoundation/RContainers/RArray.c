@@ -468,7 +468,7 @@ method(static inline byte, checkIfIndexIn, RArray), size_t index) {
 
 RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal) {
     size_t  iterator = 0;
-    size_t totalSize = countTotal * stepToNextPtr;
+    size_t  totalSize = countTotal * stepToNextPtr;
     RArray *result   = makeRArray();
 
     if(result != nil) {
@@ -479,5 +479,21 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
     }
     return result;
 }
+
+RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray) {
+    size_t  iterator   = 0;
+    size_t  totalShift = 0;
+    RArray *result     = makeRArray();
+
+    if(result != nil) {
+        while(sizesArray[iterator] != 0) {
+            $(result, m(addObject, RArray)), pointerToArray + totalShift);
+            totalShift += sizesArray[iterator];
+            ++iterator;
+        }
+    }
+    return result;
+}
+
 
 

@@ -115,6 +115,25 @@ byte RArrayStandartComporator(pointer first, pointer second);
 */
 RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal); // if size step is fixed
 
+/*
+ * Example
+ *
+ * void printInt(pointer obj) {
+ *    printf("%d\n", *(int*) obj);
+ *}
+ *
+ * void PrintExample() {
+ *    int array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+ *    size_t sizes[] = {sizeof(int), sizeof(int), sizeof(int), sizeof(int),
+ *                      sizeof(int), sizeof(int), sizeof(int), sizeof(int),
+ *                      sizeof(int), sizeof(int), 0};
+ *    RArray *dynamic = initFromArray(array, sizeof(int), 10);
+ *    dynamic->printerDelegate = printInt;
+ *    $(dynamic, p(RArray)));
+ * }
+*/
+RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray);             // if size not fixed, last in sizeArray must be 0
+
 //----------------------------------------------------------------------------------
 
 #define makeRArray()                          $(nil, c(RArray)), nil)
