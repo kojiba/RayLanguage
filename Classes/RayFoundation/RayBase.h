@@ -19,8 +19,9 @@
 
 #define RAY_WARNINGS_ON
 #define RAY_ERRORS_ON
-#define RAY_ASSERT_ON_ERRORS
-//#define RAY_SHORT_DEBUG
+//#define RAY_ASSERT_ON_ERRORS
+#define RAY_SHORT_DEBUG
+#define RAY_ARRAY_THREADSAFE
 
 #include <stdlib.h>
 #include <stdio.h>

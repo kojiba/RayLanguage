@@ -19,20 +19,32 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-void printInt(pointer obj) {
-    printf("%d\n", *(int*) obj);
+autoPoolNamed(ThreadPool);
+
+pointer func1(pointer arg) {
+    RArray * array = makeRArray();
+    RByteArray * byteArray = makeRByteArray(10);
+    deleter(array, RArray);
+    deleter(byteArray, RArray);
+    return 0;
 }
 
 int main(int argc, const char *argv[]) {
     initPointers();
-    RPool;
+//    RPool;
     RCTSingleton;
     ComplexTest();
     // place your code here
+//    RThread *thread1 = $(nil, c(RThread)), nil, func1, nil);
+//    RThread *thread2 = $(nil, c(RThread)), nil, func1, nil);
+//
+//    $(thread1, m(join, RThread)));
+//    $(thread2, m(join, RThread)));
 
 
     deleter(RCTSingleton, RClassTable);
-    $(RPool, p(RAutoPool)));
-    deleter(RPool, RAutoPool);
+//    $(RPool, p(RAutoPool)));
+//    deleter(RPool, RAutoPool);
+
     return 0;
 }

@@ -14,6 +14,30 @@
  **/
 
 #include <RArray.h>
+#ifdef RAY_ARRAY_THREADSAFE
+    #include <RThread.h>
+    RThreadMutex* arrayMutex() {
+        static RThreadMutex* arrayMutex = nil;
+        static RThreadMutexAttributes* attributes = nil;
+        if(arrayMutex == nil) {
+            arrayMutex = allocator(RThreadMutex);
+            attributes = allocator(RThreadMutexAttributes);
+            pthread_mutexattr_settype(attributes, PTHREAD_MUTEX_RECURSIVE);
+
+            if (RMutexInit(arrayMutex, nil) != 0) {
+                RError("RArray. Mutex error create.", arrayMutex);
+            }
+            RMutexInit(arrayMutex, nil);
+        }
+        return arrayMutex;
+    }
+    #define arrayMutex arrayMutex()
+    #define RMutexLockArray RMutexLock
+#else
+    // sets empty
+    #define arrayMutex
+    #define RMutexLockArray
+#endif
 
 #define destroyElementAtIndex(index) if (object->destructorDelegate != nil) \
                                         object->destructorDelegate(object->array[index])
@@ -116,7 +140,7 @@ printer(RArray) {
 #pragma mark Allocation - Reallocation
 
 method(RArrayFlags, addSize, RArray), size_t newSize) {
-
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
         RPrintf("RArray %p ADD_SIZE\n", object);
 #endif
@@ -124,26 +148,28 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 #ifdef RAY_SHORT_DEBUG
         RPrintf("\t Old array - %p", object->array);
 #endif
-
         object->array = RReAlloc(object->array, newSize * sizeof(pointer));
-
 #ifdef RAY_SHORT_DEBUG
         RPrintf(", new - %p\n", object->array);
 #endif
         if (object->array == nil) {
+            RMutexUnlock(arrayMutex);
             return reallocation_error;
         } else {
             object->freePlaces = newSize - object->count; // add some free
+            RMutexUnlock(arrayMutex);
             return no_error;
         }
     } else {
         RWarning("RArray. Bad new size, do nothing, please delete function call, or fix it.", object);
+        RMutexUnlock(arrayMutex);
         return bad_size;
     }
 }
 
 method(void, flush, RArray)) {
     size_t iterator;
+    RMutexLockArray(arrayMutex);
     if (object->array != nil) {
         // call destructors for all of objects in array or do nothing
         if(object->destructorDelegate != nil) {
@@ -158,18 +184,21 @@ method(void, flush, RArray)) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray FLUSH of %p\n", object);
 #endif
+    RMutexUnlock(arrayMutex);
 }
 
 method(byte, sizeToFit, RArray)){
+    RMutexLockArray(arrayMutex);
     object->array = RReAlloc(object->array, object->count * sizeof(pointer));
-
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p SIZE_TO_FIT\n", object);
 #endif
     if (object->array == nil) {
+        RMutexUnlock(arrayMutex);
         return temp_allocation_error;
     } else {
         object->freePlaces = 0;
+        RMutexUnlock(arrayMutex);
         return no_error;
     }
 }
@@ -178,6 +207,7 @@ method(byte, sizeToFit, RArray)){
 
 method(RArrayFlags, addObject, RArray), pointer src) {
     RArrayFlags errors;
+    RMutexLockArray(arrayMutex);
     errors = no_error;
 
     // needs additional allocation of memory
@@ -200,11 +230,12 @@ method(RArrayFlags, addObject, RArray), pointer src) {
         object->array[object->count] = src;
         incrementCount();
     }
-
+    RMutexUnlock(arrayMutex);
     return errors;
 }
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
         RPrintf("RArray %p setObject atIndex = %lu \n", object, index);
 #endif
@@ -226,23 +257,28 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
             // mark: destructor not called
         }
     }
+    RMutexUnlock(arrayMutex);
 }
 
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray deleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
         $(object, m(shift, RArray)), shift_left, makeRRange(index, 1));
+        RMutexUnlock(arrayMutex);
         return no_error;
 
     } else {
+        RMutexUnlock(arrayMutex);
         return index_does_not_exist;
     }
 }
 
 method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray fastDeleteObjectAtIndex of %p\n", object);
 #endif
@@ -252,15 +288,18 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
             object->array[index] = object->array[object->count - 1];
         }
         incrementFreePlaces();
+        RMutexUnlock(arrayMutex);
         return no_error;
 
     } else {
+        RMutexUnlock(arrayMutex);
         return index_does_not_exist;
     }
 }
 
 method(void, deleteObjects, RArray), RRange range){
     size_t iterator;
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p delete objects in range [%lu:%lu]", object, range.start, range.size);
 #endif
@@ -270,11 +309,14 @@ method(void, deleteObjects, RArray), RRange range){
         }
     }
     $(object, m(shift, RArray)), shift_left, range);
+    RMutexUnlock(arrayMutex);
 }
 
 method(void, deleteLast, RArray)){
+    RMutexLockArray(arrayMutex);
     destroyElementAtIndex(object->count - 1);
     incrementFreePlaces();
+    RMutexUnlock(arrayMutex);
 }
 
 #pragma mark Get - Find
@@ -304,7 +346,7 @@ method(pointer, elementAtIndex, RArray), size_t index) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray elementAtIndex of %p\n", object);
 #endif
-    if($(object, m(checkIfIndexIn,RArray)), index) == index_exists) {
+    if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         return object->array[index];
     } else {
         RWarning("RArray. Index not exist!", object);
@@ -352,6 +394,7 @@ method(pointer, lastObject, RArray)) {
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
 #endif
@@ -367,6 +410,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
             }
         }
     }
+    RMutexUnlock(arrayMutex);
 }
 
 byte RArrayStandartComporator(pointer first, pointer second) {
@@ -379,6 +423,7 @@ byte RArrayStandartComporator(pointer first, pointer second) {
 }
 
 method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*comparator)(pointer, pointer)) {
+    RMutexLockArray(arrayMutex); // may be locked many times
 #ifdef RAY_SHORT_DEBUG
     static size_t number = 0;
     RPrintf("RArray quickSortWithDelegate of %p recursive #%lu\n", object, number);
@@ -407,6 +452,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
         $(object, m(quickSortWithDelegate, RArray)), first, left, comparator);
         $(object, m(quickSortWithDelegate, RArray)), right, last, comparator);
     }
+    RMutexUnlock(arrayMutex);
 }
 
 method(void, sort, RArray)) {
@@ -419,6 +465,8 @@ method(void, sort, RArray)) {
 #pragma mark Work
 
 method(void, shift, RArray), byte side, RRange range) {
+    size_t iterator;
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     char *sideName;
     if(side == shift_left) {
@@ -427,7 +475,6 @@ method(void, shift, RArray), byte side, RRange range) {
          sideName = "right";
     } RPrintf("RArray shift of %p on %s\n", object, sideName);
 #endif
-    register size_t iterator;
     if(range.size != 0) {
         if (side == shift_left) {
             // do not call destructor
@@ -446,6 +493,7 @@ method(void, shift, RArray), byte side, RRange range) {
     } else {
         RWarning("RArray. Shifts of RArray do nothing, please delete function call, or fix it.", object);
     }
+    RMutexUnlock(arrayMutex);
 }
 
 #pragma mark Info

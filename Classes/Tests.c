@@ -222,32 +222,32 @@ int RBufferTest(void) {
     return 0;
 }
 
-size_t threadCounter;
-
-pointer threadFunction(pointer pVoid) {
-    ++threadCounter;
-    ++threadCounter;
-    ++threadCounter;
-    ++threadCounter;
-    ++threadCounter;
-    return nil;
-}
-
-int RThreadTest(void) {
-    RThread *thread = $(nil, c(RThread)), nil, threadFunction, nil);
-    ++threadCounter;
-    $(thread, m(join, RThread)));
-    if(threadCounter != 6) {
-        RError("RThread. Test error, bad counter.", thread);
-        return -1;
-    }
-    deleter(thread, RThread);
-    return 0;
-}
+//size_t threadCounter;
+//
+//pointer threadFunction(pointer pVoid) {
+//    ++threadCounter;
+//    ++threadCounter;
+//    ++threadCounter;
+//    ++threadCounter;
+//    ++threadCounter;
+//    return nil;
+//}
+//
+//int RThreadTest(void) {
+//    RThread *thread = $(nil, c(RThread)), nil, threadFunction, nil);
+//    ++threadCounter;
+//    $(thread, m(join, RThread)));
+//    if(threadCounter != 6) {
+//        RError("RThread. Test error, bad counter.", thread);
+//        return -1;
+//    }
+//    deleter(thread, RThread);
+//    return 0;
+//}
 
 void ComplexTest() {
     srand((unsigned int) time(nil));
-    threadCounter = 0;
+//    threadCounter = 0;
     RPrintCurrentSystem();
     if(
            !RDynamicArrayTest()
@@ -258,7 +258,8 @@ void ComplexTest() {
         && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
-        && !RThreadTest()
+
+//        && !RThreadTest()
     ) {
         RPrintf("All tests passed successfully\n");
     } else {

@@ -22,7 +22,7 @@ void pairPtrDeleter(pointer ptr) {
 constructor(RClassTable)) {
     // alloc RClassTable
     object = allocator(RClassTable);
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("----- RCT constructor START of %p\n", object);
 #endif
     if (object != nil) {
@@ -45,14 +45,14 @@ constructor(RClassTable)) {
             }
         }
     }
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("----- RCT constructor END of %p\n", object);
 #endif
     return object;
 }
 
 destructor(RClassTable) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("RCT destructor of %p\n", object);
 #endif
     deleter(master(object, RArray), RArray);
@@ -60,7 +60,7 @@ destructor(RClassTable) {
 }
 
 method(size_t, registerClassWithName, RClassTable), char *name) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
     if(name != nil) {
@@ -73,7 +73,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 
                 // successfully register new class
                 if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
                         RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
 #endif
                     return pair->idForClassName;
@@ -142,7 +142,7 @@ method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
 singleton(RClassTable) {
     static RClassTable *instance;
     if (instance == nil) {
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
 #endif
         instance = $(nil, c(RClassTable)));
@@ -156,7 +156,7 @@ singleton(RClassTable) {
             $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
         }
 
-#if RAY_SHORT_DEBUG == 1
+#ifdef RAY_SHORT_DEBUG
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n\n", instance);
 #endif
     }

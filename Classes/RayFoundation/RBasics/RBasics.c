@@ -104,7 +104,7 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
     } else if(object->etaloneObject == objectToCheck) {
         return equals;
     }
-    #if RAY_SHORT_DEBUG == 1
+    #ifdef RAY_SHORT_DEBUG
             else {
                 static pointer lastObject = nil;
                 if(lastObject != object) {
