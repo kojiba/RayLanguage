@@ -29,14 +29,7 @@ int main(int argc, const char *argv[]) {
     RCTSingleton;
     ComplexTest();
     // place your code here
-    int array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
-    size_t sizes[] = {sizeof(int), sizeof(int), sizeof(int), sizeof(int),
-                      sizeof(int), sizeof(int), sizeof(int), sizeof(int), sizeof(int),
-                      sizeof(int), 0};
 
-    RArray *dynamic = initFromArrayWithSizes(array, sizes);
-    dynamic->printerDelegate = printInt;
-    $(dynamic, p(RArray)));
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

@@ -72,26 +72,19 @@ constructor(RArray), RArrayFlags *error) {
 
 destructor(RArray) {
 
-    register size_t iterator;
-
-    if (object != nil) {
-
-        if (object->array != nil) {
-            forAll(iterator, object->count) {
-                // call destructors for all of objects in array
-                destroyElementAtIndex(iterator);
-            }
-            // dealloc array pointer
-            deallocator(object->array);
+    size_t iterator;
+    // call destructors for all of objects in array or do nothing
+    if(object->destructorDelegate != nil) {
+        forAll(iterator, object->count) {
+            object->destructorDelegate(object->array[iterator]);
         }
-
-        object->count              = 0;
-        object->freePlaces         = 0;
-        object->destructorDelegate = nil;
-        object->printerDelegate    = nil;
-    } else {
-        RWarning("RArray. Destructing a nil, do nothing, please delete function call, or fix it.", object);
     }
+    // dealloc array pointer
+    deallocator(object->array);
+    object->count              = 0;
+    object->freePlaces         = 0;
+    object->destructorDelegate = nil;
+    object->printerDelegate    = nil;
 
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray destructor of %p\n", object);
@@ -150,11 +143,13 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 }
 
 method(void, flush, RArray)) {
-    register size_t iterator;
+    size_t iterator;
     if (object->array != nil) {
-        forAll(iterator, object->count) {
-            // call destructors for all of objects in array
-            destroyElementAtIndex(iterator); // or do nothing
+        // call destructors for all of objects in array or do nothing
+        if(object->destructorDelegate != nil) {
+            forAll(iterator, object->count) {
+                object->destructorDelegate(object->array[iterator]);
+            }
         }
         object->freePlaces += object->count;
         object->count = 0;
@@ -182,7 +177,7 @@ method(byte, sizeToFit, RArray)){
 #pragma mark Add - Set - Delete
 
 method(RArrayFlags, addObject, RArray), pointer src) {
-    register RArrayFlags errors;
+    RArrayFlags errors;
     errors = no_error;
 
     // needs additional allocation of memory
@@ -265,12 +260,14 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 }
 
 method(void, deleteObjects, RArray), RRange range){
-    register size_t iterator;
+    size_t iterator;
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p delete objects in range [%lu:%lu]", object, range.start, range.size);
 #endif
-    fromStartForAll(iterator, range.start, range.size) {
-        destroyElementAtIndex(iterator);
+    if(object->destructorDelegate != nil) {
+        fromStartForAll(iterator, range.start, range.size) {
+            object->destructorDelegate(object->array[iterator]);
+        }
     }
     $(object, m(shift, RArray)), shift_left, range);
 }
@@ -283,8 +280,8 @@ method(void, deleteLast, RArray)){
 #pragma mark Get - Find
 
 method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
-    register size_t      iterator;
-             RFindResult result;
+    size_t      iterator;
+    RFindResult result;
     result.object = nil;
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray findObjectWithDelegate of %p\n", object);
@@ -316,7 +313,6 @@ method(pointer, elementAtIndex, RArray), size_t index) {
 }
 
 method(RArray *, getSubarray, RArray), RRange range){
-
     size_t iterator = 0;
     RArray *result = makeRArray();
 #ifdef RAY_SHORT_DEBUG
@@ -356,7 +352,6 @@ method(pointer, lastObject, RArray)) {
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
-
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
 #endif
@@ -384,7 +379,6 @@ byte RArrayStandartComporator(pointer first, pointer second) {
 }
 
 method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*comparator)(pointer, pointer)) {
-
 #ifdef RAY_SHORT_DEBUG
     static size_t number = 0;
     RPrintf("RArray quickSortWithDelegate of %p recursive #%lu\n", object, number);

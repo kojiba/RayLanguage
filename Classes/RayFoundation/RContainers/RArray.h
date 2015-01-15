@@ -80,7 +80,7 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 // Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference
 method(RArray *,           getSubarray,               RArray),    RRange range);
-method(pointer,            elementAtIndex,            RArray),    size_t index);
+method(inline pointer,     elementAtIndex,            RArray),    size_t index);
 method(inline pointer,     lastObject,                RArray));
 
 // Sorts
