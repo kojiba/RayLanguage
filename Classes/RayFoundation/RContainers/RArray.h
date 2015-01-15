@@ -47,17 +47,17 @@ typedef enum RArrayFlags {
 static const size_t startSizeOfRArrayDefault      = 20;
 static const size_t sizeMultiplierOfRArrayDefault = 2;
 
-class(RArray) //---------------------------------------------------------------------\
-                                                                                     //
-    size_t    startSize;                     // start size of array in elements      //
-    size_t    sizeMultiplier;                // size multiplier when auto-add-size   //
-    size_t    count;                         // size of elements in array           //
-    size_t    freePlaces;                    // size of free places for elements    //
-    void    (*destructorDelegate)(pointer);  // destructor of elements delegate      //
-    void    (*printerDelegate)   (pointer);  // printer of elements delegate         //
-    pointer  *array;                         // array                                //
-                                                                                     //
-endOf(RArray) //---------------------------------------------------------------------/
+class(RArray) //---------------------------------------------------------------------
+
+    size_t    startSize;                     // start size of array in elements
+    size_t    sizeMultiplier;                // size multiplier when auto-add-size
+    size_t    count;                         // size of elements in array
+    size_t    freePlaces;                    // size of free places for elements
+    void    (*destructorDelegate)(pointer);  // destructor of elements delegate
+    void    (*printerDelegate)   (pointer);  // printer of elements delegate
+    pointer  *array;                         // array
+
+endOf(RArray) //--------------------------------------------------------------------
 
 // Constructor - Destructor - Printer
 constructor (RArray), RArrayFlags *error);
@@ -127,7 +127,7 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
  *    size_t sizes[] = {sizeof(int), sizeof(int), sizeof(int), sizeof(int),
  *                      sizeof(int), sizeof(int), sizeof(int), sizeof(int),
  *                      sizeof(int), sizeof(int), 0};
- *    RArray *dynamic = initFromArray(array, sizeof(int), 10);
+ *    RArray *dynamic = initFromArrayWithSizes(array, sizes);
  *    dynamic->printerDelegate = printInt;
  *    $(dynamic, p(RArray)));
  * }
