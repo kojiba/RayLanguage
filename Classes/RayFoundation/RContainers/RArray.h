@@ -113,7 +113,7 @@ byte RArrayStandartComporator(pointer first, pointer second);
  *    $(dynamic, p(RArray)));
  * }
 */
-RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal); // if size step is fixed
+RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal); // if size step is fixed, printer and destructor must be set manually
 
 /*
  * Example
@@ -132,7 +132,7 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
  *    $(dynamic, p(RArray)));
  * }
 */
-RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray);             // if size not fixed, last in sizeArray must be 0
+RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray);             // if size not fixed, last in sizeArray must be 0, printer and destructor must be set manually
 
 //----------------------------------------------------------------------------------
 
