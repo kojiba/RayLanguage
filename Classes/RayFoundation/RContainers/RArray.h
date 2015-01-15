@@ -97,6 +97,24 @@ method(static inline byte, checkIfIndexIn,            RArray),    size_t index);
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);
 
+// Init from scratch
+
+/*
+ * Example
+ *
+ * void printInt(pointer obj) {
+ *    printf("%d\n", *(int*) obj);
+ *}
+ *
+ * void PrintExample() {
+ *    int array[10] = {1,2,3,4,5,6,7,8,9,0};
+ *    RArray *dynamic = initFromArray(array, sizeof(int), 10);
+ *    dynamic->printerDelegate = printInt;
+ *    $(dynamic, p(RArray)));
+ * }
+*/
+RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal); // if size step is fixed
+
 //----------------------------------------------------------------------------------
 
 #define makeRArray()                          $(nil, c(RArray)), nil)

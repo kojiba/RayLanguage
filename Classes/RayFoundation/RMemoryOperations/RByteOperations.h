@@ -30,12 +30,12 @@ void           Xor (      pointer data,          // buffered xor, operands not b
                           size_t  sizeOfData,
                           size_t  sizeOfKey);
 
-void           Add_8 (       pointer data,       // buffered addition by module 8
+void           Add_8 (       pointer data,       // addition by module 8
                        const pointer key,
                              size_t  sizeOfData,
                              size_t  sizeOfKey);
 
-void           Sub_8 (       pointer data,       // buffered subtraction by module 8
+void           Sub_8 (       pointer data,       // subtraction by module 8
                        const pointer key,
                              size_t  sizeOfData,
                              size_t  sizeOfKey);

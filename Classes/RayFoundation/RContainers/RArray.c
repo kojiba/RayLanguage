@@ -464,4 +464,20 @@ method(static inline byte, checkIfIndexIn, RArray), size_t index) {
     }
 }
 
+#pragma mark Init from scratch
+
+RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t countTotal) {
+    size_t  iterator = 0;
+    size_t totalSize = countTotal * stepToNextPtr;
+    RArray *result   = makeRArray();
+
+    if(result != nil) {
+        while(iterator != totalSize) {
+            $(result, m(addObject, RArray)), pointerToArray + iterator);
+            iterator += stepToNextPtr;
+        }
+    }
+    return result;
+}
+
 

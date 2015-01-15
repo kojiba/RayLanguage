@@ -19,15 +19,20 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
+void printInt(pointer obj) {
+    printf("%d\n", *(int*) obj);
+}
+
 int main(int argc, const char *argv[]) {
     initPointers();
     RPool;
     RCTSingleton;
     ComplexTest();
     // place your code here
-    RSender *sender = $(nil, c(RSender)), 7777);
-    $(sender, m(setReceiverAddress, RSender)), "224.0.13.13");
-    $(sender, m(send, RSender)), RS("Hello"));
+    int array[10] = {1,2,3,4,5,6,7,8,9,0};
+    RArray *dynamic = initFromArray(array, sizeof(int), 10);
+    dynamic->printerDelegate = printInt;
+    $(dynamic, p(RArray)));
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
