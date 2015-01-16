@@ -21,16 +21,16 @@
 
 #ifndef __WIN32
     #include <pthread.h>
-    typedef pthread_t           RThreadDescriptor;
-    typedef pthread_attr_t      RThreadAttributes;
-    typedef pthread_mutex_t     RThreadMutex;
-    typedef pthread_mutexattr_t RThreadMutexAttributes;
-    #define RMutexInit          pthread_mutex_init
-    #define RMutexLock          pthread_mutex_lock
-    #define RMutexUnlock        pthread_mutex_unlock
+    typedef pthread_t                        RThreadDescriptor;
+    typedef pthread_attr_t                   RThreadAttributes;
+    typedef pthread_mutex_t                  RThreadMutex;
+    typedef pthread_mutexattr_t              RThreadMutexAttributes;
+
+    #define RMutexInit                       pthread_mutex_init
+    #define RMutexLock                       pthread_mutex_lock
+    #define RMutexUnlock                     pthread_mutex_unlock
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 
-//    #define exitThread pthread_exit(0);
 #else
     #include <windows.h>
 

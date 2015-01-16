@@ -222,32 +222,40 @@ int RBufferTest(void) {
     return 0;
 }
 
-//size_t threadCounter;
-//
-//pointer threadFunction(pointer pVoid) {
-//    ++threadCounter;
-//    ++threadCounter;
-//    ++threadCounter;
-//    ++threadCounter;
-//    ++threadCounter;
-//    return nil;
-//}
-//
-//int RThreadTest(void) {
-//    RThread *thread = $(nil, c(RThread)), nil, threadFunction, nil);
-//    ++threadCounter;
-//    $(thread, m(join, RThread)));
-//    if(threadCounter != 6) {
-//        RError("RThread. Test error, bad counter.", thread);
-//        return -1;
-//    }
-//    deleter(thread, RThread);
-//    return 0;
-//}
+static RArray *array;
+
+pointer func1(pointer arg) {
+    enablePool(RPool);
+    for(int i = 0; i < 10; ++i) {
+        addObjectRArray(array, RS((char*)arg));
+    }
+    return 0;
+}
+
+int RThreadTest(void) {
+    array = makeRArray();
+    array->printerDelegate = (void (*)(pointer)) p(RCString);
+    array->destructorDelegate = free;
+
+    RThread *thread1 = $(nil, c(RThread)), nil, func1, "Thread-safe test 1");
+    RThread *thread2 = $(nil, c(RThread)), nil, func1, "Thread-safe test 2");
+    RThread *thread3 = $(nil, c(RThread)), nil, func1, "Thread-safe test 3");
+
+
+    $(thread1, m(join, RThread)));
+    $(thread2, m(join, RThread)));
+    $(thread3, m(join, RThread)));
+
+    if(array->count != 30) {
+        RError("RThread. Test error, bad counter.", nil);
+        return -1;
+    }
+    deleter(array, RArray);
+    return 0;
+}
 
 void ComplexTest() {
     srand((unsigned int) time(nil));
-//    threadCounter = 0;
     RPrintCurrentSystem();
     if(
            !RDynamicArrayTest()
@@ -258,7 +266,6 @@ void ComplexTest() {
         && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
-
 //        && !RThreadTest()
     ) {
         RPrintf("All tests passed successfully\n");
