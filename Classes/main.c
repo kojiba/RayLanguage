@@ -17,13 +17,32 @@
  **/
 
 #include <RayFoundation.h>
+#include <unistd.h>
 #include "Tests.h"
 
 static RArray *array;
 
 pointer func1(pointer arg) {
-    for(int i = 0; i < 5; ++i)
-        addObjectRArray(array, randomRCString());
+    for(int i = 0; i < 10; ++i) {
+        addObjectRArray(array, RS("Thread 1"));
+        sleep(1);
+    }
+    return 0;
+}
+
+pointer func2(pointer arg) {
+    for(int i = 0; i < 10; ++i) {
+        addObjectRArray(array, RS("Thread 2"));
+        sleep(2);
+    }
+    return 0;
+}
+
+pointer func3(pointer arg) {
+    for(int i = 0; i < 10; ++i) {
+        addObjectRArray(array, RS("Thread 3"));
+        sleep(3);
+    }
     return 0;
 }
 
@@ -36,10 +55,13 @@ int main(int argc, const char *argv[]) {
     array = makeRArray();
     array->printerDelegate = (void (*)(pointer)) p(RCString);
     RThread *thread1 = $(nil, c(RThread)), nil, func1, nil);
-    RThread *thread2 = $(nil, c(RThread)), nil, func1, nil);
+    RThread *thread2 = $(nil, c(RThread)), nil, func2, nil);
+    RThread *thread3 = $(nil, c(RThread)), nil, func3, nil);
+
 
     $(thread1, m(join, RThread)));
     $(thread2, m(join, RThread)));
+    $(thread3, m(join, RThread)));
 
     $(array, p(RArray)));
 
