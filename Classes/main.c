@@ -19,13 +19,11 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-autoPoolNamed(ThreadPool);
+static RArray *array;
 
 pointer func1(pointer arg) {
-    RArray * array = makeRArray();
-    RByteArray * byteArray = makeRByteArray(10);
-    deleter(array, RArray);
-    deleter(byteArray, RArray);
+    for(int i = 0; i < 5; ++i)
+        addObjectRArray(array, randomRCString());
     return 0;
 }
 
@@ -35,11 +33,15 @@ int main(int argc, const char *argv[]) {
     RCTSingleton;
     ComplexTest();
     // place your code here
-//    RThread *thread1 = $(nil, c(RThread)), nil, func1, nil);
-//    RThread *thread2 = $(nil, c(RThread)), nil, func1, nil);
+    array = makeRArray();
+    array->printerDelegate = (void (*)(pointer)) p(RCString);
+    RThread *thread1 = $(nil, c(RThread)), nil, func1, nil);
+    RThread *thread2 = $(nil, c(RThread)), nil, func1, nil);
 
-//    $(thread1, m(join, RThread)));
-//    $(thread2, m(join, RThread)));
+    $(thread1, m(join, RThread)));
+    $(thread2, m(join, RThread)));
+
+    $(array, p(RArray)));
 
 
     deleter(RCTSingleton, RClassTable);
