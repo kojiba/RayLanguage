@@ -54,6 +54,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
                  Classes/RayFoundation/RCustomIO/RCustomIO.h
+                 Classes/RayFoundation/RThread/RThreadNative.h
                  Classes/RayFoundation/RThread/RThread.h
 
                  # Networking

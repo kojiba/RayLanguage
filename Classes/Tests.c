@@ -256,7 +256,7 @@ int RThreadTest(void) {
 
 void ComplexTest() {
     srand((unsigned int) time(nil));
-    RPrintCurrentSystem();
+    enablePool(RPool);
     if(
            !RDynamicArrayTest()
         && !RClassNamePairTest()

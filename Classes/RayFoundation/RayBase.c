@@ -16,7 +16,17 @@
  
 #include <RayBase.h>
 
-void*   (*RMallocPtr) (size_t size);
-void*   (*RCallocPtr) (size_t size, size_t blockSize);
-void*   (*RReallocPtr)(void*  ptr,  size_t size);
-void    (*RFreePtr)   (void*  ptr);
+#undef malloc
+#undef realloc
+#undef calloc
+#undef free
+
+void*   (*RMallocPtr) (size_t size) = malloc;
+void*   (*RCallocPtr) (size_t size, size_t blockSize) = calloc;
+void*   (*RReallocPtr)(void*  ptr,  size_t size) = realloc;
+void    (*RFreePtr)   (void*  ptr) = free;
+
+#define malloc  RMallocPtr
+#define realloc RReallocPtr
+#define calloc  RCallocPtr
+#define free    RFreePtr

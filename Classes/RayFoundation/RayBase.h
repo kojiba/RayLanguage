@@ -21,7 +21,9 @@
 #define RAY_ERRORS_ON
 //#define RAY_ASSERT_ON_ERRORS
 //#define RAY_SHORT_DEBUG
-#define RAY_ARRAY_THREADSAFE
+#define RAY_ARRAY_THREAD_SAFE
+#define RAY_CLASS_TABLE_THREAD_SAFE
+#define RAY_POOL_THREAD_SAFE
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,16 +48,28 @@ extern void*   (*RCallocPtr) (size_t size, size_t blockSize);
 extern void*   (*RReallocPtr)(void*  ptr,  size_t size);
 extern void    (*RFreePtr)   (void*  ptr);
 
-// malloc entry point is pointer
-#define malloc                RMallocPtr
-#define realloc               RReallocPtr
-#define calloc                RCallocPtr
-#define free                  RFreePtr
+// all entry points is pointers
+#define malloc  RMallocPtr
+#define realloc RReallocPtr
+#define calloc  RCallocPtr
+#define free    RFreePtr
 
 #define initPointers() RMallocPtr  = RTrueMalloc;\
                        RFreePtr    = RTrueFree;\
                        RCallocPtr  = RTrueCalloc;\
                        RReallocPtr = RTrueRealloc
+
+
+#define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
+                    pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
+                    pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
+                    void    (*oldFree)   (pointer ptr) = RFreePtr
+
+#define backPtrs()  RMallocPtr = oldMalloc;\
+                    RReallocPtr = oldRealloc;\
+                    RCallocPtr = oldCalloc;\
+                    RFreePtr = oldFree
+
 //---------------------------------------------------------
 
 

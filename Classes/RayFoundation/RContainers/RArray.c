@@ -15,8 +15,8 @@
 
 #include <RArray.h>
 
-#ifdef RAY_ARRAY_THREADSAFE
-    #include <RThread.h>
+#ifdef RAY_ARRAY_THREAD_SAFE
+    #include <RThreadNative.h>
     static RThreadMutex mutex = RStackRecursiveMutexInitializer;
     #define arrayMutex &mutex
     #define RMutexLockArray RMutexLock
@@ -109,8 +109,8 @@ printer(RArray) {
 #ifdef RAY_SHORT_DEBUG
       RPrintf("%s printer of %p \n", toString(RArray), object);
 #else
-    register size_t iterator;
-
+    size_t iterator;
+    RMutexLockArray(arrayMutex);
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
     RPrintf(" Count : %lu \n", object->count);
     RPrintf(" Free  : %lu \n", object->freePlaces);
@@ -122,6 +122,7 @@ printer(RArray) {
         }
     }
     RPrintf("} end of %s object %p \n\n", toString(RArray), object);
+    RMutexUnlockArray(arrayMutex);
 #endif
 
 }
@@ -314,6 +315,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     size_t      iterator;
     RFindResult result;
     result.object = nil;
+    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray findObjectWithDelegate of %p\n", object);
 #endif
@@ -328,6 +330,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     } else {
         RWarning("RArray. Delegate for searching is nil, please delete function call, or fix it.", object);
     }
+    RMutexUnlockArray(arrayMutex);
     return result;
 }
 

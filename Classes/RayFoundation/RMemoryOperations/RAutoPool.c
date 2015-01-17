@@ -17,21 +17,29 @@
 
 #include <RAutoPool.h>
 
-#define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
-                    pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
-                    pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
-                    void    (*oldFree)   (pointer ptr) = RFreePtr
+// sets empty
+#define poolMutex
+#define RMutexLockPool()
+#define RMutexUnlockPool()
 
-#define backPtrs()  RMallocPtr = oldMalloc;\
-                    RReallocPtr = oldRealloc;\
-                    RCallocPtr = oldCalloc;\
-                    RFreePtr = oldFree
+#ifdef RAY_POOL_THREAD_SAFE
+    #ifndef RAY_ARRAY_THREAD_SAFE
+        #undef poolMutex
+        #undef RMutexLockPool()
+        #undef RMutexUnlockPool()
+
+        #include <RThreadNative.h>
+        static RThreadMutex mutex = RStackRecursiveMutexInitializer;
+        #define poolMutex &mutex
+        #define RMutexLockPool() RMutexLock(poolMutex)
+        #define RMutexUnlockPool() RMutexUnlock(poolMutex)
+    #endif
+#endif
 
 #define toPoolPtrs() RMallocPtr = object->innerMalloc;\
                      RReallocPtr = object->innerRealloc;\
                      RCallocPtr = object->innerCalloc;\
                      RFreePtr = object->innerFree
-
 
 constructor(RAutoPool)) {
     object = allocator(RAutoPool);
@@ -62,20 +70,24 @@ destructor(RAutoPool) {
 printer(RAutoPool) {
     storePtrs();
     toPoolPtrs();
+    RMutexLockPool();
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
     RPrintf("---------------------- %p\n", object);
+    RMutexUnlockPool();
     backPtrs();
 }
 
 method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
     storePtrs();
     toPoolPtrs();
+    RMutexLockPool();
     pointer temp = RAlloc(sizeInBytes);
     if(temp != nil) {
         $(object->pointersInWork, m(addObject, RArray)), temp);
     }
+    RMutexUnlockPool();
     backPtrs();
     return temp;
 }
@@ -86,6 +98,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
     } else {
         storePtrs();
         toPoolPtrs();
+        RMutexLockPool();
         RCompareDelegate *delegate = allocator(RCompareDelegate);
         if(delegate != nil) {
             delegate->etaloneObject = ptr;
@@ -105,11 +118,13 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             $(object->pointersInWork, m(addObject, RArray)), temp);
 
             deallocator(delegate);
+            RMutexUnlockPool();
             backPtrs();
             return temp;
         } else {
             RError("RAutoPool. Bad RCompareDelegate allocation on realloc.", object);
         }
+        RMutexUnlockPool();
         backPtrs();
     }
     return nil;
@@ -119,8 +134,10 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
     storePtrs();
     toPoolPtrs();
     // high lvl calloc
+    RMutexLockPool();
     pointer temp = RClearAlloc(blockCount, blockSize);
     $(object->pointersInWork, m(addObject, RArray)), temp);
+    RMutexUnlockPool();
     backPtrs();
     return temp;
 }
@@ -128,6 +145,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 method(void, free, RAutoPool), pointer ptr) {
     storePtrs();
     toPoolPtrs();
+    RMutexLockPool();
     RCompareDelegate *delegate = allocator(RCompareDelegate);
     if(delegate != nil) {
         delegate->etaloneObject = ptr;
@@ -137,16 +155,19 @@ method(void, free, RAutoPool), pointer ptr) {
         if(result.object != nil) {
             $(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index);
         } else {
-            RErrStr "RAutoPool. Pointer - %p wasn't allocated on RAutoPool - %p\n", ptr, object);
+            RErrStr "ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool - %p\n", ptr, object);
         }
     } else {
         RError("RAutoPool. Bad RCompareDelegate allocation on free.", object);
     }
+    RMutexUnlockPool();
     backPtrs();
 }
 
 method(void, drain, RAutoPool)) {
+    RMutexLockPool();
     $(object->pointersInWork, m(flush, RArray)));
+    RMutexUnlockPool();
 }
 
 void enablePool(RAutoPool *pool) {

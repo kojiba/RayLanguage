@@ -15,6 +15,19 @@
 
 #include <RClassTable.h>
 
+#ifdef RAY_CLASS_TABLE_THREAD_SAFE
+    #include <RThreadNative.h>
+    static RThreadMutex mutex = RStackRecursiveMutexInitializer;
+    #define tableMutex &mutex
+    #define RMutexLockTable() RMutexLock(tableMutex)
+    #define RMutexUnlockTable() RMutexUnlock(tableMutex)
+#else
+    // sets empty
+    #define tableMutex
+    #define RMutexLockTable()
+    #define RMutexUnlockTable()
+#endif
+
 void pairPtrDeleter(pointer ptr) {
     deleter(ptr, RClassNamePair);
 }
@@ -63,6 +76,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
+    RMutexLockTable();
     if(name != nil) {
         register size_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
         if(result == 0) {
@@ -76,20 +90,25 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 #ifdef RAY_SHORT_DEBUG
                         RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
 #endif
+                    RMutexUnlockTable();
                     return pair->idForClassName;
                 } else {
                     RError("RClassTable. RA add object error.", object);
+                    RMutexUnlockTable();
                     return 0;
                 }
             } else {
                 RError("RClassTable. Allocation of pair error", object);
+                RMutexUnlockTable();
                 return 0;
             }
         } else {
+            RMutexUnlockTable();
             return result;
         }
     } else {
         RError("RClassTable. Register classname is nil, do nothig, please remove function call, or fix it.", object);
+        RMutexUnlockTable();
         return 0;
     }
 }
@@ -106,6 +125,7 @@ printer(RClassTable) {
 }
 
 method(size_t, getIdentifierByClassName, RClassTable), char *name) {
+    RMutexLockTable();
     RClassNamePair *pair = $(nil, c(RClassNamePair)));
     if(pair != nil) {
         $(master(pair, RCString), m(setConstantString, RCString)), name);
@@ -120,21 +140,27 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
         deleter(pair, RClassNamePair);
 
         if(foundedObject.object == nil){
+            RMutexUnlockTable();
             return 0;
         } else {
+            RMutexUnlockTable();
             return ((RClassNamePair*)foundedObject.object)->idForClassName;
         }
     } else {
         RError("RClassTable. Bad allocation of temp RClassNamePair.", object);
     }
+    RMutexUnlockTable();
     return 0;
 }
 
 method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
+    RMutexLockTable();
     if(id <= master(object, RArray)->count) {
         RClassNamePair *temp = master(object, RArray)->array[id];
+        RMutexUnlockTable();
         return master(temp, RCString);
     } else {
+        RMutexUnlockTable();
         return nil;
     }
 }
