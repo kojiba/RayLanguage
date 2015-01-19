@@ -24,9 +24,10 @@
     #define RMutexLock                       pthread_mutex_lock
     #define RMutexUnlock                     pthread_mutex_unlock
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
-    #define RMutexAttributeInit        pthread_mutexattr_init
-    #define RMutexAttributeSetType     pthread_mutexattr_settype
+    #define RMutexAttributeInit              pthread_mutexattr_init
+    #define RMutexAttributeSetType           pthread_mutexattr_settype
 
+    #define RMutexRecursive                  PTHREAD_MUTEX_RECURSIVE
 #else
     #include <windows.h>
     typedef HANDLE RThreadDescriptor;

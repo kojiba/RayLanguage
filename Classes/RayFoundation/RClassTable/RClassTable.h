@@ -20,10 +20,17 @@
 #include <RClassNamePair.h>
 #include <RArray.h>
 
+#ifdef RAY_CLASS_TABLE_THREAD_SAFE
+    #include <RThreadNative.h>
+#endif
+
 class(RClassTable) //------------------------------------------------------------
     discipleOf(RArray)
     discipleOf(RCompareDelegate)
 
+#if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+    RMutexDescriptor mutex;
+#endif
 endOf(RClassTable) //-------------------------------------------------------
 
 constructor (RClassTable));

@@ -53,7 +53,9 @@ constructor(RArray), RArrayFlags *error) {
 #endif
 
     if (object == nil) {
-        *error = allocation_error;
+        if(error != nil) {
+            *error = allocation_error;
+        }
         RError("RArray. Bad allocation on constructor.", object);
         return nil;
 
@@ -64,7 +66,9 @@ constructor(RArray), RArrayFlags *error) {
         object->array          = RAlloc(object->startSize * sizeof(pointer));
 
         if (object->array == nil) {
-            *error = allocation_error;
+            if(error != nil) {
+                *error = allocation_error;
+            }
             return nil;
         } else {
 
@@ -79,9 +83,8 @@ constructor(RArray), RArrayFlags *error) {
 #ifdef RAY_ARRAY_THREAD_SAFE
             RMutexAttributes Attr;
             RMutexAttributeInit(&Attr);
-            RMutexAttributeSetType(&Attr, PTHREAD_MUTEX_RECURSIVE);
-
-            if(RMutexInit(&object->mutex,  &Attr) != 0) {
+            RMutexAttributeSetType(&Attr, RMutexRecursive);
+            if(RMutexInit(arrayMutex,  &Attr) != 0) {
                 RError("RArray. Error creating mutex on threadsafe array.", object);
             }
 #endif
@@ -281,6 +284,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
+        // if not last
         if(index != object->count - 1) {
             object->array[index] = object->array[object->count - 1];
         }

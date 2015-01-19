@@ -103,7 +103,7 @@ extern void    (*RFreePtr)   (void*  ptr);
 
 // Basics for strings
 #define RSPrintf          sprintf
-#define RStringLenght     strlen
+#define RStringLength     strlen
 #define RStringToUnsigned strtoul
 #define RStringToInt      atoi
 #define RStringToDouble   atof

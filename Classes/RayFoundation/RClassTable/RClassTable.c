@@ -15,11 +15,9 @@
 
 #include <RClassTable.h>
 
-#ifdef RAY_CLASS_TABLE_THREAD_SAFE
-    #include <RThreadNative.h>
-    static RMutexDescriptor mutex = RStackRecursiveMutexInitializer;
-    #define tableMutex &mutex
-    #define RMutexLockTable() RMutexLock(tableMutex)
+#if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+    #define tableMutex          &object->mutex
+    #define RMutexLockTable()   RMutexLock(tableMutex)
     #define RMutexUnlockTable() RMutexUnlock(tableMutex)
 #else
     // sets empty
@@ -53,6 +51,15 @@ constructor(RClassTable)) {
 
                 // 4 it's for self
                 object->classId = 3;
+
+#if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+                RMutexAttributes Attr;
+                RMutexAttributeInit(&Attr);
+                RMutexAttributeSetType(&Attr, RMutexRecursive);
+                if(RMutexInit(tableMutex, &Attr) != 0) {
+                    RError("RClassTable. Error creating mutex on threadsafe table.", object);
+                }
+#endif
             } else {
                 RError("RClassTable. Bad allocation on delegate.", object);
             }

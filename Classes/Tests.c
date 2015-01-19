@@ -214,7 +214,7 @@ int RBufferTest(void) {
         deleter(temp, RCString);
     }
     char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
-    if(RStringLenght(temp) != first_size) {
+    if(RStringLength(temp) != first_size) {
         RError("RBuffer. Bad getDataCopy", buffer);
     }
     deleter(buffer, RBuffer);
@@ -222,41 +222,43 @@ int RBufferTest(void) {
     return 0;
 }
 
-static RArray *array;
+#define TEST_COUNT 10
+
+RArray *arrayTest;
 
 pointer func1(pointer arg) {
     enablePool(RPool);
-    for(int i = 0; i < 10; ++i) {
-        addObjectRArray(array, RS((char*)arg));
+    int i;
+    forAll(i, TEST_COUNT) {
+        $(arrayTest, m(addObject, RArray)), RS((char*)arg));
     }
     return 0;
 }
 
 int RThreadTest(void) {
-    array = makeRArray();
-    array->printerDelegate = (void (*)(pointer)) p(RCString);
-    array->destructorDelegate = free;
+    arrayTest = makeRArray();
+    int i;
+    arrayTest->destructorDelegate = free;
+    RThread *thread1 = $(nil, c(RThread)), nil, func1, "1 thread");
 
-    RThread *thread1 = $(nil, c(RThread)), nil, func1, "Thread-safe test 1");
-    RThread *thread2 = $(nil, c(RThread)), nil, func1, "Thread-safe test 2");
-    RThread *thread3 = $(nil, c(RThread)), nil, func1, "Thread-safe test 3");
-
+    forAll(i, TEST_COUNT) {
+        $(arrayTest, m(addObject, RArray)), RS("main"));
+    }
 
     $(thread1, m(join, RThread)));
-    $(thread2, m(join, RThread)));
-    $(thread3, m(join, RThread)));
+    deleter(thread1, RThread);
 
-    if(array->count != 30) {
-        RError("RThread. Test error, bad counter.", nil);
-        return -1;
+    if(arrayTest->count != 2 * TEST_COUNT) {
+        RError("RThread test error", nil);
     }
-    deleter(array, RArray);
+    deleter(arrayTest, RArray);
+
     return 0;
 }
 
 void ComplexTest() {
-    srand((unsigned int) time(nil));
     enablePool(RPool);
+    srand((unsigned int) time(nil));
     if(
            !RDynamicArrayTest()
         && !RClassNamePairTest()
@@ -266,7 +268,7 @@ void ComplexTest() {
         && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
-//        && !RThreadTest()
+        && !RThreadTest()
     ) {
         RPrintf("All tests passed successfully\n");
     } else {

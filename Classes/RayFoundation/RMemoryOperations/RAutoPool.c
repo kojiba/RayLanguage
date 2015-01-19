@@ -22,19 +22,17 @@
 #define RMutexLockPool()
 #define RMutexUnlockPool()
 
-#ifdef RAY_POOL_THREAD_SAFE
-    #ifndef RAY_ARRAY_THREAD_SAFE
-        #undef poolMutex
-        #undef RMutexLockPool()
-        #undef RMutexUnlockPool()
+#if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+    #undef poolMutex
+    #undef RMutexLockPool()
+    #undef RMutexUnlockPool()
 
-        #include <RThreadNative.h>
-        static RThreadMutex mutex = RStackRecursiveMutexInitializer;
-        #define poolMutex &mutex
-        #define RMutexLockPool() RMutexLock(poolMutex)
-        #define RMutexUnlockPool() RMutexUnlock(poolMutex)
-    #endif
+    #include <RThreadNative.h>
+    #define poolMutex &object->mutex
+    #define RMutexLockPool() RMutexLock(poolMutex)
+    #define RMutexUnlockPool() RMutexUnlock(poolMutex)
 #endif
+
 
 #define toPoolPtrs() RMallocPtr = object->innerMalloc;\
                      RReallocPtr = object->innerRealloc;\
@@ -52,6 +50,15 @@ constructor(RAutoPool)) {
             object->innerCalloc  = calloc;
             object->innerFree    = free;
             object->pointersInWork->destructorDelegate = object->innerFree;
+
+#if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+            RMutexAttributes Attr;
+            RMutexAttributeInit(&Attr);
+            RMutexAttributeSetType(&Attr, RMutexRecursive);
+            if(RMutexInit(poolMutex,  &Attr) != 0) {
+                RError("RAutoPool. Error creating mutex on thread-safe pool.", object);
+            }
+#endif
         } else {
             RError("RAutoPool. Bad workers RArray allocation.", object);
         }
@@ -107,7 +114,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
             if(result.object != nil) {
                 object->pointersInWork->destructorDelegate = nil;
-                if($(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index) != no_error) {
+                if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
                     RError("Bad pointers array index.", object);
                 }
                 object->pointersInWork->destructorDelegate = object->innerFree;
@@ -155,7 +162,9 @@ method(void, free, RAutoPool), pointer ptr) {
         // search ptr
         RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
         if(result.object != nil) {
-            $(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index);
+            if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
+                RError("RAutoPool. Bad pointers array index.", object);
+            }
         } else {
             RErrStr "ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool - %p\n", ptr, object);
         }

@@ -19,44 +19,14 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-#define TEST_COUNT 50
-
-RArray *arrayTest;
-
-pointer func1(pointer arg) {
-//    enablePool(RPool);
-    initPointers();
-    for(int i = 0; i < TEST_COUNT; ++i) {
-        $(arrayTest, m(addObject, RArray)), randomRCString());
-    }
-    return 0;
-}
-
-int RThreadTest(void) {
-    arrayTest = makeRArray();
-    RThread *thread1 = $(nil, c(RThread)), nil, func1, "1");
-
-    for(int i = 0; i < TEST_COUNT; ++i) {
-        $(arrayTest, m(addObject, RArray)), randomRCString());
-    }
-
-    $(arrayTest, p(RArray)));
-
-    $(thread1, m(join, RThread)));
-    deleter(thread1, RThread);
-    return 0;
-}
-
 int main(int argc, const char *argv[]) {
-//    enablePool(RPool);
+    enablePool(RPool);
     RCTSingleton;
-//    ComplexTest();
+    ComplexTest();
     // place your code here
-    RThreadTest();
 
     deleter(RCTSingleton, RClassTable);
-//    $(RPool, p(RAutoPool)));
-//    deleter(RPool, RAutoPool);
-
+    $(RPool, p(RAutoPool)));
+    deleter(RPool, RAutoPool);
     return 0;
 }

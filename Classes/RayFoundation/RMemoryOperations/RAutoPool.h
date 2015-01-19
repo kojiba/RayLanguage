@@ -36,6 +36,9 @@ class(RAutoPool)
     pointer               (*selfCalloc) (size_t size, size_t blockSize);
     void                  (*selfFree)   (pointer ptr);
 
+#if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+    RMutexDescriptor mutex;
+#endif
 endOf(RAutoPool)
 
 constructor (RAutoPool));

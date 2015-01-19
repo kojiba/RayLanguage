@@ -41,7 +41,7 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
     return last;
 }
 char* copyOfString(const char *string) {
-    size_t length = RStringLenght(string);
+    size_t length = RStringLength(string);
     if(length > 0) {
         char *result = RAlloc(length * sizeof(char));
         if(result != nil) {
@@ -135,7 +135,7 @@ method(void, flush, RCString)) {
 
 method(RCString *, setString, RCString), const char *string) {
     if(string != nil && object != nil) {
-        register size_t stringSize = RStringLenght(string) + 1;
+        register size_t stringSize = RStringLength(string) + 1;
 
         // checking, if exist and size like copying
         if(object->baseString == nil) {
@@ -163,7 +163,7 @@ method(RCString *, setConstantString, RCString), char const *string) {
     if(string != nil) {
         // copy pointer, and compute length
         object->baseString = string;
-        object->size       = RStringLenght(string);
+        object->size       = RStringLength(string);
     } else {
         RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
     }
@@ -677,7 +677,7 @@ method(void, concatenate, RCString), const RCString *string) {
 
 method(void, appendString, RCString), const char *string) {
     if(string != nil) {
-        size_t stringSize = RStringLenght(string);
+        size_t stringSize = RStringLength(string);
         object->baseString = RReAlloc(object->baseString, stringSize + object->size + 1);
         if(object->baseString == nil) {
             RError("RCS. Concatenate realloc error.", object);
