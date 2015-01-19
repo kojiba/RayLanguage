@@ -18,6 +18,15 @@
 
 #include <RBasics.h>
 
+#ifdef RAY_ARRAY_THREAD_SAFE
+    #include <RThreadNative.h>
+#else
+    // sets empty
+    #define arrayMutex
+    #define RMutexLockArray(some)
+    #define RMutexUnlockArray(some)
+#endif
+
 typedef enum RArrayFlags {
 
     // basic errors
@@ -56,6 +65,11 @@ class(RArray) //----------------------------------------------------------------
     void    (*destructorDelegate)(pointer);  // destructor of elements delegate
     void    (*printerDelegate)   (pointer);  // printer of elements delegate
     pointer  *array;                         // array
+
+#ifdef RAY_ARRAY_THREAD_SAFE
+    RMutexDescriptor mutex;
+#else
+#endif
 
 endOf(RArray) //--------------------------------------------------------------------
 

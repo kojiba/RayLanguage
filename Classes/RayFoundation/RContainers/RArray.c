@@ -16,9 +16,7 @@
 #include <RArray.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    #include <RThreadNative.h>
-    static RThreadMutex mutex = RStackRecursiveMutexInitializer;
-    #define arrayMutex &mutex
+    #define arrayMutex &object->mutex
     #define RMutexLockArray RMutexLock
     #define RMutexUnlockArray RMutexUnlock
 #else
@@ -78,6 +76,15 @@ constructor(RArray), RArrayFlags *error) {
             // set up delegates
             object->destructorDelegate = nil;
             object->printerDelegate    = nil;
+#ifdef RAY_ARRAY_THREAD_SAFE
+            RMutexAttributes Attr;
+            RMutexAttributeInit(&Attr);
+            RMutexAttributeSetType(&Attr, PTHREAD_MUTEX_RECURSIVE);
+
+            if(RMutexInit(&object->mutex,  &Attr) != 0) {
+                RError("RArray. Error creating mutex on threadsafe array.", object);
+            }
+#endif
             return object;
         }
     }

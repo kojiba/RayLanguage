@@ -19,59 +19,44 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-RArray* arrayTest() {
-    static RArray *array = nil;
-    if(array == nil) {
-        array = makeRArray();
-//        array->printerDelegate = (void (*)(pointer)) p(RCString);
-        array->destructorDelegate = free;
-    }
-    return array;
-}
+#define TEST_COUNT 50
+
+RArray *arrayTest;
 
 pointer func1(pointer arg) {
-    enablePool(RPool);
-    for(int i = 0; i < 7; ++i) {
-        RCString *temp = RS((char*)arg);
-        addObjectRArray(arrayTest(), temp);
+//    enablePool(RPool);
+    initPointers();
+    for(int i = 0; i < TEST_COUNT; ++i) {
+        $(arrayTest, m(addObject, RArray)), randomRCString());
     }
     return 0;
 }
 
 int RThreadTest(void) {
-    arrayTest();
+    arrayTest = makeRArray();
     RThread *thread1 = $(nil, c(RThread)), nil, func1, "1");
-    RThread *thread2 = $(nil, c(RThread)), nil, func1, "2");
-    RThread *thread3 = $(nil, c(RThread)), nil, func1, "3");
+
+    for(int i = 0; i < TEST_COUNT; ++i) {
+        $(arrayTest, m(addObject, RArray)), randomRCString());
+    }
+
+    $(arrayTest, p(RArray)));
 
     $(thread1, m(join, RThread)));
-    $(thread2, m(join, RThread)));
-    $(thread3, m(join, RThread)));
-
     deleter(thread1, RThread);
-    deleter(thread2, RThread);
-    deleter(thread3, RThread);
-
-    $(arrayTest(), p(RArray)));
-
-    if(arrayTest()->count != 21) {
-        RError("RThread. Test error, bad counter.", nil);
-        return -1;
-    }
-    deleter(arrayTest(), RArray);
     return 0;
 }
 
 int main(int argc, const char *argv[]) {
-    enablePool(RPool);
+//    enablePool(RPool);
     RCTSingleton;
 //    ComplexTest();
     // place your code here
     RThreadTest();
 
     deleter(RCTSingleton, RClassTable);
-    $(RPool, p(RAutoPool)));
-    deleter(RPool, RAutoPool);
+//    $(RPool, p(RAutoPool)));
+//    deleter(RPool, RAutoPool);
 
     return 0;
 }

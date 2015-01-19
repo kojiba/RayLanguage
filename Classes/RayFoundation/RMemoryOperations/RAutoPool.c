@@ -107,7 +107,9 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
             if(result.object != nil) {
                 object->pointersInWork->destructorDelegate = nil;
-                $(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index);
+                if($(object->pointersInWork, m(deleteObjectAtIndex, RArray)), result.index) != no_error) {
+                    RError("Bad pointers array index.", object);
+                }
                 object->pointersInWork->destructorDelegate = object->innerFree;
 
             }

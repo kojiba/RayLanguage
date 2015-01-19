@@ -17,7 +17,7 @@
 
 #ifdef RAY_CLASS_TABLE_THREAD_SAFE
     #include <RThreadNative.h>
-    static RThreadMutex mutex = RStackRecursiveMutexInitializer;
+    static RMutexDescriptor mutex = RStackRecursiveMutexInitializer;
     #define tableMutex &mutex
     #define RMutexLockTable() RMutexLock(tableMutex)
     #define RMutexUnlockTable() RMutexUnlock(tableMutex)
