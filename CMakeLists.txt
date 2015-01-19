@@ -24,6 +24,7 @@ include_directories(Classes/RayFoundation/RThread)
 include_directories(Classes/RayFoundation/RNetwork)
 
 set(HEADER_FILES # Worker headers
+                 Classes/RayFoundation/RayConfig.h
                  Classes/RayFoundation/RayBase.h
                  Classes/RayFoundation/RSystem.h
                  Classes/RayFoundation/RayCheckFoundation.h

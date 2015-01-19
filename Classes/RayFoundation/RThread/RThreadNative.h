@@ -13,6 +13,9 @@
  *         |__/
  **/
 
+#ifndef __R_THREAD_NATIVE__
+#define __R_THREAD_NATIVE__
+
 #ifndef __WIN32
     #include <pthread.h>
     typedef pthread_t                        RThreadDescriptor;
@@ -36,3 +39,5 @@
     typedef HANDLE RThreadMutex;
 //    #define exitThread FIXME
 #endif
+
+#endif /*__R_THREAD_NATIVE__*/

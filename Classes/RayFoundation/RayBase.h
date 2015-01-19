@@ -17,24 +17,13 @@
 #ifndef __RAY_BASE_H__
 #define __RAY_BASE_H__
 
-#define RAY_WARNINGS_ON
-#define RAY_ERRORS_ON
-//#define RAY_ASSERT_ON_ERRORS
-//#define RAY_SHORT_DEBUG
-#define RAY_ARRAY_THREAD_SAFE
-#define RAY_CLASS_TABLE_THREAD_SAFE
-#define RAY_POOL_THREAD_SAFE
-
+#include <RayConfig.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
-#ifdef RAY_ASSERT_ON_ERRORS
-    #include <assert.h>
-#endif
-
-// Hooks for malloc, free ---------------------------------
+// Hooks for self-code malloc, calloc, realloc, free ----------
 
 // constant pointers to stdlib (OS) functions
 static void* (*const RTrueMalloc) (size_t size) = malloc;
@@ -59,7 +48,6 @@ extern void    (*RFreePtr)   (void*  ptr);
                        RCallocPtr  = RTrueCalloc;\
                        RReallocPtr = RTrueRealloc
 
-
 #define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
                     pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
                     pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
@@ -71,7 +59,6 @@ extern void    (*RFreePtr)   (void*  ptr);
                     RFreePtr = oldFree
 
 //---------------------------------------------------------
-
 
 // Memory management
 #define RAlloc            malloc
