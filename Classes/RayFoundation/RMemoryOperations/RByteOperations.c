@@ -106,7 +106,7 @@ RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol
 RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) {
     RByteArray         *subArray    = nil;
     RArray             *resultArray = nil;
-    byte               *tempArray   = array;
+    byte               *tempArray   = (byte *) array;
 
     subArray = getSubArrayToFirstSymbol(array, size, symbol);
 

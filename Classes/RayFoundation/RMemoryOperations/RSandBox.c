@@ -226,6 +226,7 @@ method(size_t, memoryPlaced, RSandBox)) {
             return object->delegate->memoryPlaced(object);
         }
     }
+    return 0;
 }
 
 #pragma mark Main methods

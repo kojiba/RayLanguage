@@ -1,5 +1,3 @@
-
-
 /**
  * RayBase.c
  * Author Kucheruavyu Ilya (kojiba@ro.ru)

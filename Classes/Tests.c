@@ -91,13 +91,13 @@ int RDictionaryTest(void){
     fromStartForAll(iterator, 1, 20){
         size_t value = iterator;
         size_t key = iterator;
-        $(dictionary, m(setObjectForKey, RDictionary)), value, key);
+        $(dictionary, m(setObjectForKey, RDictionary)), (pointer) value, (pointer) key);
         if(dictionary->keys->count != dictionary->values->count) {
             RError("Tests. RDictionaryCount of keys and values is not equal.", dictionary);
             return 1;
         }
         if(dictionary->keys->count == 0
-                || dictionary->keys->count == 0) {
+                || dictionary->values->count == 0) {
             RError("Tests. RDictionaryCount of keys or values 0.", dictionary);
             return 1;
         }

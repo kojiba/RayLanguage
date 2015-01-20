@@ -24,7 +24,6 @@ int main(int argc, const char *argv[]) {
     RCTSingleton;
     ComplexTest();
     // place your code here
-
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
     deleter(RPool, RAutoPool);

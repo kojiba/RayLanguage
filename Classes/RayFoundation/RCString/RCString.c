@@ -162,7 +162,7 @@ method(RCString *, setString, RCString), const char *string) {
 method(RCString *, setConstantString, RCString), char const *string) {
     if(string != nil) {
         // copy pointer, and compute length
-        object->baseString = string;
+        object->baseString = (char *) string;
         object->size       = RStringLength(string);
     } else {
         RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
@@ -350,7 +350,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
 
 method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
     // if they are not equals, and size is greater than 2 substrings
-    if($(object->baseString, m(compareWith, RCString)), substring) != equals
+    if($(object, m(compareWith, RCString)), substring) != equals
             && object->size >= substring->size * 2) {
 
         register size_t iterator;
@@ -738,7 +738,7 @@ RCString* RCStringFromFile(const char *filename) {
             RRewind(file);
             buffer = RAlloc(fileSize * (sizeof(char)));
             if(buffer != nil) {
-                RFRead(buffer, sizeof(char), fileSize, file);
+                RFRead(buffer, sizeof(char), (size_t) fileSize, file);
                 RFClose(file);
                 RCString *result = $(nil, c(RCString)));
                 if(result != nil) {

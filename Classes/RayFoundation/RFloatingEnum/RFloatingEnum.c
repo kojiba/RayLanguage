@@ -50,8 +50,8 @@ printer(RFloatingEnum) {
     RPrintf(" Free  : %lu \n", master(object, RDictionary)->keys->freePlaces);
     forAll(iterator, master(object, RDictionary)->keys->count) {
         RPrintf("\t %lu - {", iterator);
-        RPrintf(" %lu : %lu } \n", $(master(object, RDictionary)->keys, m(elementAtIndex, RArray)), iterator),
-                $(master(object, RDictionary)->values, m(elementAtIndex, RArray)), iterator) );
+        RPrintf(" %lu : %lu } \n", (unsigned long) $(master(object, RDictionary)->keys, m(elementAtIndex, RArray)), iterator),
+                (unsigned long) $(master(object, RDictionary)->values, m(elementAtIndex, RArray)), iterator));
     }
     RPrintf("} end of %s object %p \n\n", toString(RFloatingEnum), object);
 }
