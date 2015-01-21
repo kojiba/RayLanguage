@@ -19,6 +19,10 @@
 #include <RSyntax.h>
 #include <RThreadNative.h>
 
+// base
+RMutexDescriptor mutexWithType(unsigned short mutexType);
+
+// wrapper
 class(RThread)
     RThreadDescriptor *descriptor;
 endOf(RThread)

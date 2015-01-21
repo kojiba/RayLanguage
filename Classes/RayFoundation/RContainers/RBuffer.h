@@ -20,6 +20,10 @@
 #include <RSyntax.h>
 #include <RByteOperations.h>
 
+#ifdef RAY_BUFFER_THREAD_SAFE
+    #include <RThread.h>
+#endif
+
 static const size_t startSizeOfRBufferDefault      = 1024; // 1kb of place
 static const size_t sizeMultiplierOfRBufferDefault = 2;
 static const size_t sizeOfObjectsOfRBufferDefault  = 128;  // 128 sizes stores
@@ -34,6 +38,10 @@ class(RBuffer) // -------------------
 
     // total placed bytes size
     size_t totalPlaced;
+
+#ifdef RAY_BUFFER_THREAD_SAFE
+    RMutexDescriptor mutex;
+#endif
 endOf(RBuffer) // -------------------
 
 constructor (RBuffer));

@@ -21,6 +21,10 @@
 #include <RSyntax.h>
 #include <RArray.h>
 
+#if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+    #include <RThread.h>
+#endif
+
 class(RAutoPool)
     RArray *pointersInWork;
 
@@ -45,6 +49,7 @@ constructor (RAutoPool));
 destructor  (RAutoPool);
 printer     (RAutoPool);
 singleton   (RAutoPool);
+
 method(pointer, malloc,         RAutoPool),    size_t sizeInBytes);
 method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
 method(pointer, calloc,         RAutoPool),    size_t blockCount, size_t blockSize);

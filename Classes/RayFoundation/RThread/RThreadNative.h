@@ -31,6 +31,8 @@
     #define RMutexAttributeSetType           pthread_mutexattr_settype
 
     #define RMutexRecursive                  PTHREAD_MUTEX_RECURSIVE
+    #define RMutexNormal                     PTHREAD_MUTEX_NORMAL
+    #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
 #else
     #include <windows.h>
     typedef HANDLE RThreadDescriptor;

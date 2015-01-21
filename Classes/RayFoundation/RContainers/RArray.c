@@ -81,12 +81,7 @@ constructor(RArray), RArrayFlags *error) {
             object->destructorDelegate = nil;
             object->printerDelegate    = nil;
 #ifdef RAY_ARRAY_THREAD_SAFE
-            RMutexAttributes Attr;
-            RMutexAttributeInit(&Attr);
-            RMutexAttributeSetType(&Attr, RMutexRecursive);
-            if(RMutexInit(arrayMutex,  &Attr) != 0) {
-                RError("RArray. Error creating mutex on threadsafe array.", object);
-            }
+            object->mutex = mutexWithType(RMutexRecursive);
 #endif
             return object;
         }

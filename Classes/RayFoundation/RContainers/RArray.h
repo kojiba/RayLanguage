@@ -19,12 +19,7 @@
 #include <RBasics.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    #include <RThreadNative.h>
-#else
-    // sets empty
-    #define arrayMutex
-    #define RMutexLockArray(some)
-    #define RMutexUnlockArray(some)
+    #include <RThread.h>
 #endif
 
 typedef enum RArrayFlags {
@@ -68,7 +63,6 @@ class(RArray) //----------------------------------------------------------------
 
 #ifdef RAY_ARRAY_THREAD_SAFE
     RMutexDescriptor mutex;
-#else
 #endif
 
 endOf(RArray) //--------------------------------------------------------------------

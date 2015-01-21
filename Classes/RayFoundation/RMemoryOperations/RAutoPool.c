@@ -17,20 +17,14 @@
 
 #include <RAutoPool.h>
 
-// sets empty
-#define poolMutex
-#define RMutexLockPool()
-#define RMutexUnlockPool()
-
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-    #undef poolMutex
-    #undef RMutexLockPool()
-    #undef RMutexUnlockPool()
-
-    #include <RThreadNative.h>
     #define poolMutex &object->mutex
     #define RMutexLockPool() RMutexLock(poolMutex)
     #define RMutexUnlockPool() RMutexUnlock(poolMutex)
+#else
+    #define poolMutex
+    #define RMutexLockPool()
+    #define RMutexUnlockPool()
 #endif
 
 
@@ -52,12 +46,7 @@ constructor(RAutoPool)) {
             object->pointersInWork->destructorDelegate = object->innerFree;
 
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-            RMutexAttributes Attr;
-            RMutexAttributeInit(&Attr);
-            RMutexAttributeSetType(&Attr, RMutexRecursive);
-            if(RMutexInit(poolMutex,  &Attr) != 0) {
-                RError("RAutoPool. Error creating mutex on thread-safe pool.", object);
-            }
+            object->mutex = mutexWithType(RMutexRecursive);
 #endif
         } else {
             RError("RAutoPool. Bad workers RArray allocation.", object);

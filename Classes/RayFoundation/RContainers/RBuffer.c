@@ -17,6 +17,17 @@
 #include <RBuffer.h>
 #include <RClassTable.h>
 
+#ifdef RAY_BUFFER_THREAD_SAFE
+    #define bufferMutex &object->mutex
+    #define RMutexLockBuffer() RMutexLock(bufferMutex)
+    #define RMutexUnlockBuffer() RMutexUnlock(bufferMutex)
+#else
+    // sets empty
+    #define bufferMutex
+    #define RMutexLockBuffer(some)
+    #define RMutexUnlockBuffer(some)
+#endif
+
 constructor(RBuffer)) {
     object = allocator(RBuffer);
     if(object != nil) {
@@ -32,6 +43,9 @@ constructor(RBuffer)) {
                 object->freePlaces  = sizeOfObjectsOfRBufferDefault;
                 object->count       = 0;
                 object->totalPlaced = 0;
+#ifdef RAY_BUFFER_THREAD_SAFE
+                object->mutex = mutexWithType(RMutexRecursive);
+#endif
             } else {
                 RError("RBuffer. Allocation of sizes array failed.", object);
 
@@ -46,14 +60,17 @@ constructor(RBuffer)) {
 }
 
 destructor(RBuffer) {
+    RMutexLockBuffer();
     // kills buffer
     deleter(master(object, RByteArray), RByteArray);
     // kills sizes
     deallocator(object->sizesArray);
+    RMutexUnlockBuffer();
 }
 
 printer(RBuffer) {
     size_t iterator;
+    RMutexLockBuffer();
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
     RPrintf("\t Total   size : %lu (bytes)\n", master(object, RByteArray)->size);
     RPrintf("\t Placed  size : %lu (bytes)\n", object->totalPlaced);
@@ -65,11 +82,13 @@ printer(RBuffer) {
         RPrintf("\n");
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
+    RMutexUnlockBuffer();
 }
 
 #pragma mark Reallocation
 
 method(RRange*, addSizeToSizes, RBuffer), size_t newSize) {
+    RMutexLockBuffer();
     if(newSize > object->count) {
         object->sizesArray = RReAlloc(object->sizesArray, newSize * sizeof(RRange));
         if (object->sizesArray != nil) {
@@ -79,10 +98,12 @@ method(RRange*, addSizeToSizes, RBuffer), size_t newSize) {
     } else {
         RError("RBuffer. Bad new size for Sizes", object);
     }
+    RMutexUnlockBuffer();
     return object->sizesArray;
 }
 
 method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
+    RMutexLockBuffer();
     if(newSize > (object->totalPlaced)) {
         master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, newSize);
         if (master(object, RByteArray)->array != nil) {
@@ -92,29 +113,37 @@ method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
     } else {
         RError("RBuffer. Bad new size for memory", object);
     }
+    RMutexUnlockBuffer();
     return master(object, RByteArray);
 }
 
 method(void, flush, RBuffer)) {
+    RMutexLockBuffer();
     object->freePlaces  += object->count;
     object->count        = 0;
     object->totalPlaced  = 0;
+    RMutexUnlockBuffer();
 }
 
 method(RBuffer*, sizeToFit, RBuffer)) {
+    RMutexLockBuffer();
     master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, object->totalPlaced);
     object->sizesArray = RReAlloc(object->sizesArray, object->count * sizeof(size_t));
     object->freePlaces = 0;
+    RMutexUnlockBuffer();
     return object;
 }
 
 #pragma mark Workers
 
 method(rbool, checkIndexWithError, RBuffer), size_t index) {
+    RMutexLockBuffer();
     if(index < object->count) {
+        RMutexUnlockBuffer();
         return yes;
     } else {
         RError("RBuffer. Bad index.", object);
+        RMutexUnlockBuffer();
         return no;
     }
 }
@@ -122,7 +151,7 @@ method(rbool, checkIndexWithError, RBuffer), size_t index) {
 #pragma mark Data operations
 
 method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
-
+    RMutexLockBuffer();
     while(object->freePlaces == 0) {
         // add free to sizes
         $(object, m(addSizeToSizes, RBuffer)), object->count * sizeMultiplierOfRBufferDefault);
@@ -146,18 +175,23 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
         ++object->count;
         --object->freePlaces;
     }
+    RMutexUnlockBuffer();
 }
 
 method(pointer, getDataReference, RBuffer), size_t index) {
+    RMutexLockBuffer();
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
+        RMutexUnlockBuffer();
         return (master(object, RByteArray)->array + object->sizesArray[index].start);
     } else {
+        RMutexUnlockBuffer();
         return nil;
     }
 }
 
 method(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
+    RMutexLockBuffer();
     pointer *ref = $(object, m(getDataReference, RBuffer)), index);
     if(ref != nil) {
         result = RAlloc(object->sizesArray[index].size);
@@ -167,10 +201,12 @@ method(pointer, getDataCopy, RBuffer), size_t index) {
             RError("RBuffer. Bad allocation on getDataCopy.", object);
         }
     }
+    RMutexUnlockBuffer();
     return result;
 }
 
 method(void, deleteDataAt, RBuffer), size_t index) {
+    RMutexLockBuffer();
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
 
         RMemMove(master(object, RByteArray)->array + object->sizesArray[index].start,
@@ -185,6 +221,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
         ++object->freePlaces;
         object->totalPlaced -= object->sizesArray[index].size;
     }
+    RMutexUnlockBuffer();
 }
 
 #pragma mark File I/O

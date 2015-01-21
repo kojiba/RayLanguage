@@ -15,6 +15,21 @@
 #include <RClassTable.h>
 #include <RThread.h>
 
+#pragma mark Base
+
+RMutexDescriptor mutexWithType(unsigned short mutexType) {
+    RMutexDescriptor mutex;
+    RMutexAttributes Attr;
+    RMutexAttributeInit(&Attr);
+    RMutexAttributeSetType(&Attr, mutexType);
+    if(RMutexInit(&mutex,  &Attr) != 0) {
+        RError("RMutexWithType. Error creating mutex.", &mutex);
+    }
+    return mutex;
+}
+
+#pragma mark Wrapper
+
 constructor(RThread),
         RThreadAttributes *attributes,
         pointer (*threadFunction)(pointer),

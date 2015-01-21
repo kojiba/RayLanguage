@@ -53,12 +53,7 @@ constructor(RClassTable)) {
                 object->classId = 3;
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-                RMutexAttributes Attr;
-                RMutexAttributeInit(&Attr);
-                RMutexAttributeSetType(&Attr, RMutexRecursive);
-                if(RMutexInit(tableMutex, &Attr) != 0) {
-                    RError("RClassTable. Error creating mutex on threadsafe table.", object);
-                }
+                object->mutex = mutexWithType(RMutexRecursive);
 #endif
             } else {
                 RError("RClassTable. Bad allocation on delegate.", object);

@@ -21,7 +21,7 @@
 #include <RArray.h>
 
 #ifdef RAY_CLASS_TABLE_THREAD_SAFE
-    #include <RThreadNative.h>
+    #include <RThread.h>
 #endif
 
 class(RClassTable) //------------------------------------------------------------
