@@ -192,7 +192,7 @@ method(pointer, getDataReference, RBuffer), size_t index) {
 method(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
     RMutexLockBuffer();
-    pointer *ref = $(object, m(getDataReference, RBuffer)), index);
+    pointer ref = $(object, m(getDataReference, RBuffer)), index);
     if(ref != nil) {
         result = RAlloc(object->sizesArray[index].size);
         if (result != nil) {
@@ -226,14 +226,33 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 
 #pragma mark Casts
 
-method(RArray*, toRArray, RBuffer)) {
+method(RArray*, toReferencesRArray, RBuffer)) {
     size_t iterator;
     RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
+
     if(result != nil) {
+        RMutexLockBuffer();
         forAll(iterator, object->count) {
             $(result, m(addObjectUnsafe, RArray)),
                     $(object, m(getDataReference, RBuffer)), iterator));
         }
+        RMutexUnlockBuffer();
+    }
+    return result;
+}
+
+method(RArray *, toRArray, RBuffer)) {
+    size_t iterator;
+    RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
+
+    if(result != nil) {
+        RMutexLockBuffer();
+        forAll(iterator, object->count) {
+            $(result, m(addObjectUnsafe, RArray)),
+                    $(object, m(getDataCopy, RBuffer)), iterator));
+        }
+        RMutexUnlockBuffer();
+        result->destructorDelegate = free;
     }
     return result;
 }

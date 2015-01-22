@@ -46,11 +46,10 @@ int main(int argc, const char *argv[]) {
 
     RArray *newArray = $(newBuffer, m(toRArray, RBuffer)));
     newArray->printerDelegate = (void (*)(pointer)) printf;
-
     $(newArray, p(RArray)));
 
     deleter(newBuffer, RBuffer);
-    deallocator(newArray);
+    deleter(newArray, RArray);
 
     $(std(), p(RSandBox)));
     deleter(std(), RSandBox);
