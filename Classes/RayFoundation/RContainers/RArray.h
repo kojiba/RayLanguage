@@ -67,8 +67,11 @@ class(RArray) //----------------------------------------------------------------
 
 endOf(RArray) //--------------------------------------------------------------------
 
+// more flexible constructor
+RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error);
+
 // Constructor - Destructor - Printer
-constructor (RArray), RArrayFlags *error);
+inline constructor (RArray), RArrayFlags *error);
 destructor  (RArray);
 printer     (RArray);
 
@@ -79,6 +82,7 @@ method(byte,               sizeToFit,                 RArray));
 
 // Add - Set - Delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
+method(inline void,        addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 method(void,               deleteLast,                RArray));                                       // pop_back analog
 method(void,               deleteObjects,             RArray),    RRange range);                      // delete with shift

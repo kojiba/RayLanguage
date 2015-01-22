@@ -42,27 +42,25 @@
 #define incrementFreePlaces() --object->count; \
                               ++object->freePlaces
 
-#pragma mark Constructor - Destructor - Printer
-
-constructor(RArray), RArrayFlags *error) {
-
-    object = malloc(sizeof(RArray));
+#pragma mark More Flexible
+RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error) {
+    RArray *object = malloc(sizeof(RArray));
 
 #ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray constructor of %p\n", object);
+    RPrintf("RArray constructor of %p with size %lu, multiplier %lu \n", object, startSize, multiplier);
 #endif
 
     if (object == nil) {
         if(error != nil) {
             *error = allocation_error;
         }
-        RError("RArray. Bad allocation on constructor.", object);
+        RError("RArray. Bad allocation on make.", object);
         return nil;
 
     } else {
         // default start size in elements
-        object->startSize      = startSizeOfRArrayDefault;
-        object->sizeMultiplier = sizeMultiplierOfRArrayDefault;
+        object->startSize      = startSize;
+        object->sizeMultiplier = multiplier;
         object->array          = RAlloc(object->startSize * sizeof(pointer));
 
         if (object->array == nil) {
@@ -86,6 +84,12 @@ constructor(RArray), RArrayFlags *error) {
             return object;
         }
     }
+}
+
+#pragma mark Constructor - Destructor - Printer
+
+constructor(RArray), RArrayFlags *error) {
+    return makeRArrayOptions(startSizeOfRArrayDefault, sizeMultiplierOfRArrayDefault, error);
 }
 
 destructor(RArray) {
@@ -222,11 +226,17 @@ method(RArrayFlags, addObject, RArray), pointer src) {
 
     // if no error on additional allocation
     if (errors == no_error) {
-        object->array[object->count] = src;
-        incrementCount();
+        $(object, m(addObjectUnsafe, RArray)), src);
     }
     RMutexUnlockArray(arrayMutex);
     return errors;
+}
+
+method(void, addObjectUnsafe, RArray), pointer src) {
+    RMutexLockArray(arrayMutex);
+    object->array[object->count] = src;
+    incrementCount();
+    RMutexUnlockArray(arrayMutex);
 }
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
@@ -247,9 +257,9 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
         // if space is allocated
         } else {
             object->array[index] = newObject;
-            // mark: size is not incrementing, cause we don't know place
-            // mark: addObject cause memory to leak, with objects added by setObject
-            // mark: destructor not called
+            // note: size is not incrementing, cause we don't know place
+            // addObject cause memory to leak, with objects added by setObject
+            // destructor not called
         }
     }
     RMutexUnlockArray(arrayMutex);
@@ -429,9 +439,9 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 #endif
 
     if (last > first) {
-        register pointer pivot = object->array[first];
-        register size_t left = first;
-        register size_t right = last;
+        pointer pivot = object->array[first];
+        size_t left = first;
+        size_t right = last;
         while (left < right) {
             if (comparator(object->array[left], pivot) != swap_objects) {
                 left += 1;
