@@ -68,6 +68,9 @@ method(pointer, getDataCopy,      RBuffer),    size_t index);                   
 // deleters
 method(void,    deleteDataAt,     RBuffer),    size_t index);
 
+// casts
+method(RArray*, toRArray,         RBuffer)); // using data reference from RBuffer, delegates not set, size to fit
+
 // file i/o
 RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit
 method(void,    saveToFile,       RBuffer),    const char* filename);

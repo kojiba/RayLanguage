@@ -43,6 +43,7 @@
                               ++object->freePlaces
 
 #pragma mark More Flexible
+
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error) {
     RArray *object = malloc(sizeof(RArray));
 

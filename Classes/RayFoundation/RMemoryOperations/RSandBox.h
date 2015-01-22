@@ -122,6 +122,7 @@ RSandBox* name() { \
     } \
     return instance; \
 }
+
 // sandBoxNamed ---------------------------------------------------------
 
 

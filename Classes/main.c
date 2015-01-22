@@ -33,10 +33,24 @@ int main(int argc, const char *argv[]) {
     forAll(iterator, 25) {
         $(array, m(addObject, RArray)), "hello");
     }
+    $(array, p(RArray)));
 
-    RBuffer *buffer = $(array, m(serializeToBuffer, RArray)), 5);
+    RBuffer *buffer = $(array, m(serializeToBuffer, RArray)), 6);
+    deleter(array, RArray);
+
     $(buffer, p(RBuffer)));
     $(buffer, m(saveToFile, RBuffer)), "array-buffer-test.bin");
+    deleter(buffer, RBuffer);
+
+    RBuffer *newBuffer = RBufferFromFile("array-buffer-test.bin");
+
+    RArray *newArray = $(newBuffer, m(toRArray, RBuffer)));
+    newArray->printerDelegate = (void (*)(pointer)) printf;
+
+    $(newArray, p(RArray)));
+
+    deleter(newBuffer, RBuffer);
+    deallocator(newArray);
 
     $(std(), p(RSandBox)));
     deleter(std(), RSandBox);

@@ -48,8 +48,8 @@ typedef enum RArrayFlags {
 
 } RArrayFlags;
 
-static const size_t startSizeOfRArrayDefault      = 20;
-static const size_t sizeMultiplierOfRArrayDefault = 2;
+#define startSizeOfRArrayDefault      20
+#define sizeMultiplierOfRArrayDefault 2
 
 class(RArray) //---------------------------------------------------------------------
 

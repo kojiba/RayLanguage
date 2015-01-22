@@ -61,6 +61,7 @@ void enablePool(RAutoPool *pool);
 void disablePool(RAutoPool *pool);
 
 //-------------------------------------------------------------------------------
+
 #define autoPoolNamed(name) \
 RAutoPool* name();\
 pointer concatenate(PoolAllocator_, name)(size_t size) {\
@@ -89,6 +90,7 @@ RAutoPool* name(void) { \
     } \
     return instance; \
 }
+
 // autoPoolNamed ----------------------------------------------------------------
 
 #define RPool singletonCall(RAutoPool)

@@ -224,6 +224,20 @@ method(void, deleteDataAt, RBuffer), size_t index) {
     RMutexUnlockBuffer();
 }
 
+#pragma mark Casts
+
+method(RArray*, toRArray, RBuffer)) {
+    size_t iterator;
+    RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
+    if(result != nil) {
+        forAll(iterator, object->count) {
+            $(result, m(addObjectUnsafe, RArray)),
+                    $(object, m(getDataReference, RBuffer)), iterator));
+        }
+    }
+    return result;
+}
+
 #pragma mark File I/O
 
 RBuffer* RBufferFromFile(const char *filename) {
