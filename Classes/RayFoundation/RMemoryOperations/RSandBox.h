@@ -22,6 +22,9 @@
 
 #include <RBasics.h>
 #include <RByteOperations.h>
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    #include <RThread.h>
+#endif
 
 typedef enum RSandBoxAllocationMode {
     RSandBoxAllocationModeStandart = 0,
@@ -61,6 +64,9 @@ class(RSandBox)
     RSandBoxDelegate *delegate;
 
     RSandBoxAllocationMode  allocationMode; // by default is RSandBoxAllocationModeRandom
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    RMutexDescriptor mutex;
+#endif
 endOf(RSandBox)
 
 constructor (RSandBox),    size_t sizeOfMemory,
@@ -83,12 +89,12 @@ method(void,    XorCrypt,       RSandBox),    RByteArray *key);
 method(void,    XorDecrypt,     RSandBox),    RByteArray *key);
 
 // change malloc, realloc, calloc, free pointers to sandBox
-void switchToSandBox(RSandBox *sandBox);
-void switchFromSandBox(RSandBox *sandBox);
+void enableSandBox(RSandBox *sandBox);
+void disableSandBox(RSandBox *sandBox);
 
 //---------------------------------------------------------------------------------
 
-#define createSandBoxSingleton(name, memSize) \
+#define sandBoxNamed(name, memSize) \
 RSandBox* name();\
 pointer concatenate(SandBoxAllocator_, name)(size_t size) {\
     return $(name(), m(malloc, RSandBox)), size);\
@@ -111,12 +117,12 @@ RSandBox* name() { \
             instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
             instance->selfCalloc  = concatenate(SandBoxCallocator_, name); \
             instance->selfFree    = concatenate(SandBoxFree_, name); \
-            switchToSandBox(instance); \
+            enableSandBox(instance); \
         } \
     } \
     return instance; \
 }
-// createSandBoxSingleton ---------------------------------------------------------
+// sandBoxNamed ---------------------------------------------------------
 
 
 #endif /*__R_SAND_BOX_H__*/

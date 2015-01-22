@@ -17,25 +17,15 @@
  **/
 
 #include <RSandBox.h>
-#include <RClassTable.h>
 
-// sets empty
-#define sandboxMutex
-#define RMutexLockSandbox()
-#define RMutexUnlockSandbox()
-
-//#define RAY_SANDBOX_THREAD_SAFE // not tested, does not working
-
-#ifdef RAY_SANDBOX_THREAD_SAFE
-    #undef sandboxMutex
-    #undef RMutexLockSandbox()
-    #undef RMutexUnlockSandbox()
-
-    #include <RThreadNative.h>
-    static  RThreadMutex mutex = RStackRecursiveMutexInitializer;
-    #define sandboxMutex &mutex
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    #define sandboxMutex &object->mutex
     #define RMutexLockSandbox() RMutexLock(sandboxMutex)
     #define RMutexUnlockSandbox() RMutexUnlock(sandboxMutex)
+#else
+    #define sandboxMutex
+    #define RMutexLockSandbox()
+    #define RMutexUnlockSandbox()
 #endif
 
 #define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
@@ -67,6 +57,10 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
 
             object->allocationMode        = RSandBoxAllocationModeRandom;
             object->delegate              = nil;
+
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+            object->mutex = mutexWithType(RMutexRecursive);
+#endif
         } else {
             RError("RSandBox. Can't allocate descriptors table or memory part.", object);
         }
@@ -75,7 +69,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
 }
 
 destructor(RSandBox) {
-    switchFromSandBox(object);
+    disableSandBox(object);
     if(object->allocationMode == RSandBoxAllocationModeRandom
             || object->allocationMode == RSandBoxAllocationModeDelegated) {
             // totally fresh all to 0
@@ -96,7 +90,7 @@ printer(RSandBox) {
     // store old malloc
     storePtrs();
     RMutexLockSandbox();
-    switchFromSandBox(object);
+    disableSandBox(object);
 
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
@@ -135,7 +129,7 @@ method(rbool, isRangeFree, RSandBox), RRange range) {
     size_t iterator;
     RMutexLockSandbox();
     storePtrs();
-    switchFromSandBox(object);
+    disableSandBox(object);
     switch (object->allocationMode) {
         case RSandBoxAllocationModeRandom : {
             forAll(iterator, object->descriptorsInfo.start) {
@@ -234,7 +228,7 @@ method(size_t, memoryPlaced, RSandBox)) {
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
     RMutexLockSandbox();
     storePtrs();
-    switchFromSandBox(object);
+    disableSandBox(object);
 
     if(object->descriptorsInfo.size == object->descriptorsInfo.start + 1) {
         object->descriptorTable = RReAlloc(object->descriptorTable, object->descriptorsInfo.size * 2 * sizeof(RControlDescriptor));
@@ -319,7 +313,7 @@ method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
 method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
     RMutexLockSandbox();
     storePtrs();
-    switchFromSandBox(object);
+    disableSandBox(object);
     pointer some = RClearAlloc(blockCount, blockSize);
     backPtrs();
     RMutexUnlockSandbox();
@@ -329,7 +323,7 @@ method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
 method(void, free, RSandBox), pointer ptr) {
     RMutexLockSandbox();
     storePtrs();
-    switchFromSandBox(object);
+    disableSandBox(object);
 
     size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
     if (rangeIterator != object->descriptorsInfo.start) {
@@ -368,14 +362,14 @@ method(void, XorDecrypt, RSandBox), RByteArray *key) {
 
 #pragma mark Switch
 
-void switchToSandBox(RSandBox *sandBox) {
+void enableSandBox(RSandBox *sandBox) {
     RMallocPtr  = sandBox->selfMalloc;
     RCallocPtr  = sandBox->selfCalloc;
     RReallocPtr = sandBox->selfRealloc;
     RFreePtr    = sandBox->selfFree;
 }
 
-void switchFromSandBox(RSandBox *sandBox) {
+void disableSandBox(RSandBox *sandBox) {
     RMallocPtr  = sandBox->innerMalloc;
     RCallocPtr  = sandBox->innerCalloc;
     RReallocPtr = sandBox->innerRealloc;

@@ -19,11 +19,24 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
+sandBoxNamed(std, 65535);
+
 int main(int argc, const char *argv[]) {
+    size_t iterator;
     enablePool(RPool);
     RCTSingleton;
     ComplexTest();
     // place your code here
+
+    std()->allocationMode = RSandBoxAllocationModeStandart;
+
+    forAll(iterator, 20) {
+        RCString *temp = randomRCString();
+    }
+
+    $(std(), p(RSandBox)));
+    deleter(std(), RSandBox);
+
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
     deleter(RPool, RAutoPool);

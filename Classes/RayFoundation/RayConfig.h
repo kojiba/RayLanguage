@@ -25,9 +25,12 @@
 
 // thread-safety flags
 #define RAY_ARRAY_THREAD_SAFE
+//#define RAY_BUFFER_THREAD_SAFE
+
 #define RAY_CLASS_TABLE_THREAD_SAFE
+
 #define RAY_POOL_THREAD_SAFE
-#define RAY_BUFFER_THREAD_SAFE
+#define RAY_SAND_BOX_THREAD_SAFE
 
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 #ifdef RAY_ASSERT_ON_ERRORS
