@@ -69,10 +69,14 @@ method(pointer, getDataCopy,      RBuffer),    size_t index);                   
 method(void,    deleteDataAt,     RBuffer),    size_t index);
 
 // file i/o
-RBuffer* RBufferFromFile (const char *filename);                        // will be size-to-fit
+RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit
 method(void,    saveToFile,       RBuffer),    const char* filename);
 
 // Additions to RByteArray
 method(RBuffer *, serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
+
+// Additions to RArray
+method(RBuffer *, serializeToBuffer,      RArray),    size_t size);
+method(RBuffer *, serializeToBufferSizes, RArray),    size_t *sizesArray);       // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

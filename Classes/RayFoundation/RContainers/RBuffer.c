@@ -384,3 +384,30 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
     }
     return nil;
 }
+
+#pragma mark Additions to RArray
+
+method(RBuffer *, serializeToBuffer, RArray), size_t size) {
+    size_t iterator;
+    RBuffer *result = $(nil, c(RBuffer)));
+    if(result != nil) {
+        forAll(iterator, object->count) {
+            $(result, m(addData, RBuffer)),
+                    $(object, m(elementAtIndex, RArray)), iterator), size);
+        }
+    }
+    return result;
+}
+
+method(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
+    size_t iterator = 0;
+    RBuffer *result = $(nil, c(RBuffer)));
+    if(result != nil) {
+        // while size not 0
+        for(;sizesArray[iterator] != 0; ++iterator) {
+            $(result, m(addData, RBuffer)),
+                    $(object, m(elementAtIndex, RArray)), iterator), sizesArray[iterator]);
+        }
+    }
+    return result;
+}

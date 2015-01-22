@@ -29,10 +29,14 @@ int main(int argc, const char *argv[]) {
     // place your code here
 
     std()->allocationMode = RSandBoxAllocationModeStandart;
-
-    forAll(iterator, 20) {
-        RCString *temp = randomRCString();
+    RArray *array = makeRArray();
+    forAll(iterator, 25) {
+        $(array, m(addObject, RArray)), "hello");
     }
+
+    RBuffer *buffer = $(array, m(serializeToBuffer, RArray)), 5);
+    $(buffer, p(RBuffer)));
+    $(buffer, m(saveToFile, RBuffer)), "array-buffer-test.bin");
 
     $(std(), p(RSandBox)));
     deleter(std(), RSandBox);
