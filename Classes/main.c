@@ -17,9 +17,8 @@
  **/
 
 #include <RayFoundation.h>
+#include <assert.h>
 #include "Tests.h"
-
-sandBoxNamed(std, 65535);
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
@@ -28,31 +27,22 @@ int main(int argc, const char *argv[]) {
     ComplexTest();
     // place your code here
 
-    std()->allocationMode = RSandBoxAllocationModeStandart;
-    RArray *array = makeRArray();
-    forAll(iterator, 25) {
-        $(array, m(addObject, RArray)), "hello");
+    RBuffer *buffer = $(nil, c(RBuffer)));
+    forAll(iterator, 1024) {
+        RCString *temp = randomRCString();
+        if(temp->size == 0) {
+            RError("Size is 0", temp);
+        }
+        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size);
+        deleter(temp, RCString);
     }
-    $(array, p(RArray)));
-
-    RBuffer *buffer = $(array, m(serializeToBuffer, RArray)), 6);
-    deleter(array, RArray);
-
     $(buffer, p(RBuffer)));
     $(buffer, m(saveToFile, RBuffer)), "array-buffer-test.bin");
     deleter(buffer, RBuffer);
 
     RBuffer *newBuffer = RBufferFromFile("array-buffer-test.bin");
-
-    RArray *newArray = $(newBuffer, m(toRArray, RBuffer)));
-    newArray->printerDelegate = (void (*)(pointer)) printf;
-    $(newArray, p(RArray)));
-
+    $(newBuffer, p(RBuffer)));
     deleter(newBuffer, RBuffer);
-    deleter(newArray, RArray);
-
-    $(std(), p(RSandBox)));
-    deleter(std(), RSandBox);
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));

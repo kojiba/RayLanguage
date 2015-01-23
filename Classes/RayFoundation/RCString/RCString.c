@@ -59,8 +59,8 @@ char* copyOfString(const char *string) {
 
 char randomCharacter(void) {
     register char character = ((char)rand());
-    while(character < 34 ||
-            character > 126) {
+    while(!(character > 34 &&
+            character < 126)) {
         character = ((char)rand());
     }
     return character;
@@ -73,7 +73,7 @@ RCString *randomRCString(void) {
     char     *cstring;
 
     if(string!= nil) {
-        while(size == 0) {
+        while(size < 10) {
             size = ((size_t)rand()) % 50;
         }
         cstring = RAlloc(size * sizeof(char));

@@ -327,9 +327,15 @@ RBuffer* RBufferFromFile(const char *filename) {
 }
 
 method(void, saveToFile, RBuffer), const char* filename) {
-    FILE *file = fopen(filename, "wb+");
-
+    FILE *file = fopen(filename, "r");
     if (file != nil) {
+        if (remove(filename) != 0) {
+            RError("RBuffer. Can't delete existing file with buffer", object);
+        }
+    }
+
+    file = fopen(filename, "wb+");
+    if(file != nil) {
         size_t iterator;
 
         // dump fist byte sizeof(size_t)
