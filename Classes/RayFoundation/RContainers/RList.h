@@ -1,6 +1,7 @@
 /**
  * RList.h
- * Realization of C dynamic list, in Ray additions.
+ * Realization of C dynamic
+ * double-linked list, in Ray additions.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 1/23/15 Ukraine Kharkiv
  *  _         _ _ _
@@ -16,7 +17,7 @@
 #ifndef __R_LIST_H__
 #define __R_LIST_H__
 
-#include <RSyntax.h>
+#include <RBasics.h>
 
 typedef struct RNode {
     struct RNode   *next;
@@ -24,19 +25,30 @@ typedef struct RNode {
            pointer  data;
 } RNode;
 
-class(RList)
+class(RList) //------------------------------------------------------------------
     RNode  *head;
     RNode  *tail;
-    size_t  count;
+
+    size_t  count; // readonly, signaling about successful add, delete elements
+
     void  (*destructorDelegate)(pointer);
     void  (*printerDelegate)   (pointer);
-endOf(RList)
+
+endOf(RList) //------------------------------------------------------------------
 
 constructor (RList));
 destructor  (RList);
 printer     (RList);
 
-method(void, addHead, RList),    pointer src);
-method(void, addTail, RList),    pointer src);
+// add
+method(void,    addHead,       RList),    pointer src);
+method(void,    addTail,       RList),    pointer src);
+
+// get
+method(pointer, objectAtIndex, RList),    size_t index);
+
+// delete
+method(void,    deleteObjects, RList),    RRange range);
+method(void,    deleteObject,  RList),    size_t index);
 
 #endif /*__R_LIST_H__*/

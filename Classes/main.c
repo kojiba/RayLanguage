@@ -19,6 +19,10 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
+void printfInt(pointer ptr) {
+    printf("%qu\n", (unsigned long long int) ptr);
+}
+
 int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
@@ -27,13 +31,15 @@ int main(int argc, const char *argv[]) {
     // place your code here
 
     RList *list = constructorOfRList(nil);
-    list->printerDelegate = (void (*)(pointer)) p(RCString);
-    list->destructorDelegate = free;
+    list->printerDelegate = printfInt;
 
     forAll(iterator, 10) {
-        $(list, m(addHead, RList)), RS("add Head"));
-        $(list, m(addTail, RList)), RS("add Tail"));
+        $(list, m(addHead, RList)), (pointer) iterator);
+        $(list, m(addTail, RList)), (pointer) iterator);
     }
+    $(list, p(RList)));
+
+    $(list, m(deleteObjects, RList)), makeRRange(5, 4));
 
     $(list, p(RList)));
     deleter(list, RList);

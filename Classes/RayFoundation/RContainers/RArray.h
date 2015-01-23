@@ -84,6 +84,7 @@ method(byte,               sizeToFit,                 RArray));
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 method(inline void,        addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
+
 method(void,               deleteLast,                RArray));                                       // pop_back analog
 method(void,               deleteObjects,             RArray),    RRange range);                      // delete with shift
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift

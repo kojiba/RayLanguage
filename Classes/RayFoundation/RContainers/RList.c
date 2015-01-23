@@ -1,6 +1,7 @@
 /**
  * RList.h
- * Realization of C dynamic list, in Ray additions.
+ * Realization of C dynamic
+ * double-linked list, in Ray additions.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 1/23/15 Ukraine Kharkiv
  *  _         _ _ _
@@ -58,8 +59,10 @@ printer(RList) {
             RPrintf("%p \n", iterator->data);
         }
     }
-    RPrintf("} end of %s object %p \n", toString(RList), object);
+    RPrintf("} end of %s object %p \n\n", toString(RList), object);
 }
+
+#pragma mark Add
 
 method(void, addHead, RList), pointer src) {
     RNode *temp = allocator(RNode);
@@ -96,3 +99,123 @@ method(void, addTail, RList), pointer src) {
         ++object->count;
     }
 }
+
+#pragma mark Private Node At Index
+
+method(RNode *, nodeAtIndex, RList), size_t index) {
+    size_t  delta   = object->count - 1 - index;
+    RNode *iterator = nil;
+    if(delta < object->count) {
+        // go from head
+        if(delta < object->count / 2) {
+            iterator = object->head;
+            for (; delta != 0; --delta) {
+                iterator = iterator->previous;
+            }
+
+        // go from tail
+        } else {
+            iterator = object->tail;
+            for (; index != 0; --index) {
+                iterator = iterator->next;
+            }
+        }
+    } else {
+        RWarning("RList. Bad index for node.", object);
+    }
+    return iterator;
+}
+
+#pragma mark Get
+
+method(pointer, objectAtIndex, RList), size_t index) {
+    RNode *node = $(object, m(nodeAtIndex, RList)), index);
+    if(node != nil) {
+        return node->data;
+    }
+    return nil;
+}
+
+#pragma mark Delete
+
+method(void, deleteObjects, RList), RRange range) {
+    if(range.size + range.start <= object->count) {
+        RNode *iterator = nil,
+              *storedHead = nil,
+              *storedTail = nil;
+
+        rbool toLeftDirection = yes;
+        if(range.start > object->count / 2) {
+            iterator = $(object, m(nodeAtIndex, RList)), range.start);
+        } else {
+            iterator = $(object, m(nodeAtIndex, RList)), range.start + range.size);
+            toLeftDirection = no;
+        }
+
+        object->count -= range.size;
+
+        // if moves to head ---->
+        if(toLeftDirection) {
+            storedTail = iterator->previous;
+
+            if(object->destructorDelegate != nil) {
+                for(; range.size != 0; --range.size) {
+                    object->destructorDelegate(iterator->data);
+                    storedHead = iterator->next;
+                    deallocator(iterator);
+                    iterator = storedHead;
+                }
+            } else {
+                for(; range.size != 0; --range.size) {
+                    storedHead = iterator->next;
+                    deallocator(iterator);
+                    iterator = storedHead;
+                }
+            }
+
+
+        // if moves to tail <----
+        } else {
+            storedHead = iterator->next;
+
+            if(object->destructorDelegate != nil) {
+                for(; range.size != 0; --range.size) {
+                    object->destructorDelegate(iterator->data);
+                    storedTail = iterator->previous;
+                    deallocator(iterator);
+                    iterator = storedTail;
+                }
+            } else {
+                for(; range.size != 0; --range.size) {
+                    storedTail = iterator->previous;
+                    deallocator(iterator);
+                    iterator = storedTail;
+                }
+            }
+        }
+
+        // finally connect
+        if(storedTail != nil) {
+            storedTail->next = storedHead;
+        }
+        if(storedHead != nil) {
+            storedHead->previous = storedTail;
+        }
+    } else {
+        RWarning("RList. Bad range to delete.", object);
+    }
+}
+
+method(void, deleteObject,  RList), size_t index) {
+    RNode *node = $(object, m(nodeAtIndex, RList)), index);
+    if(node != nil) {
+        if(object->destructorDelegate != nil) {
+            object->destructorDelegate(node->data);
+        }
+        node->next->previous = node->previous;
+        node->previous->next = node->next;
+        deallocator(node);
+        --object->count;
+    }
+}
+

@@ -161,7 +161,7 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
             return no_error;
         }
     } else {
-        RWarning("RArray. Bad new size, do nothing, please delete function call, or fix it.", object);
+        RWarning("RArray. Bad new size, do nothing." , object);
         RMutexUnlockArray(arrayMutex);
         return bad_size;
     }
@@ -254,7 +254,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
         // if space at index is not allocated
         if(index > (object->freePlaces + object->count)) {
-            RWarning("RArray. Setting to a not allocated space, do nothing, please delete function call, or fix it.", object);
+            RWarning("RArray. Setting to a not allocated space, do nothing." , object);
         // if space is allocated
         } else {
             object->array[index] = newObject;
@@ -345,7 +345,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
             }
         }
     } else {
-        RWarning("RArray. Delegate for searching is nil, please delete function call, or fix it.", object);
+        RWarning("RArray. Delegate for searching is nil." , object);
     }
     RMutexUnlockArray(arrayMutex);
     return result;
@@ -365,6 +365,7 @@ method(pointer, elementAtIndex, RArray), size_t index) {
 
 method(RArray *, getSubarray, RArray), RRange range){
     size_t iterator = 0;
+    // fixme speedup!!!
     RArray *result = makeRArray();
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray getSubarray of %p\n", object);
@@ -500,7 +501,7 @@ method(void, shift, RArray), byte side, RRange range) {
         object->count -= range.size;
         object->freePlaces += range.size;
     } else {
-        RWarning("RArray. Shifts of RArray do nothing, please delete function call, or fix it.", object);
+        RWarning("RArray. Shifts of RArray do nothing." , object);
     }
     RMutexUnlockArray(arrayMutex);
 }
