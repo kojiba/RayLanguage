@@ -34,6 +34,7 @@ set(HEADER_FILES # Worker headers
 
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.h
+                 Classes/RayFoundation/RContainers/Rlist.h
                  Classes/RayFoundation/RContainers/RDictionary.h
                  Classes/RayFoundation/RContainers/RStringDictionary.h
                  Classes/RayFoundation/RContainers/RBuffer.h
@@ -74,6 +75,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
 
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.c
+                 Classes/RayFoundation/RContainers/RList.c
                  Classes/RayFoundation/RContainers/RDictionary.c
                  Classes/RayFoundation/RContainers/RStringDictionary.c
                  Classes/RayFoundation/RContainers/RBuffer.c

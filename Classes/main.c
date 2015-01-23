@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation.h>
-#include <assert.h>
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
@@ -27,22 +26,19 @@ int main(int argc, const char *argv[]) {
     ComplexTest();
     // place your code here
 
-    RBuffer *buffer = $(nil, c(RBuffer)));
-    forAll(iterator, 1024) {
-        RCString *temp = randomRCString();
-        if(temp->size == 0) {
-            RError("Size is 0", temp);
-        }
-        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size);
-        deleter(temp, RCString);
-    }
-    $(buffer, p(RBuffer)));
-    $(buffer, m(saveToFile, RBuffer)), "array-buffer-test.bin");
-    deleter(buffer, RBuffer);
+    RList *list = constructorOfRList(nil);
+    list->printerDelegate = (void (*)(pointer)) p(RCString);
+    list->destructorDelegate = free;
 
-    RBuffer *newBuffer = RBufferFromFile("array-buffer-test.bin");
-    $(newBuffer, p(RBuffer)));
-    deleter(newBuffer, RBuffer);
+    forAll(iterator, 10) {
+        $(list, m(addHead, RList)), RS("add Head"));
+        $(list, m(addTail, RList)), RS("add Tail"));
+    }
+
+    $(list, p(RList)));
+    deleter(list, RList);
+
+
 
     deleter(RCTSingleton, RClassTable);
     $(RPool, p(RAutoPool)));
