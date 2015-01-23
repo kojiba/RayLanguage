@@ -17,22 +17,37 @@
 #include <RList.h>
 #include <RClassTable.h>
 
+#ifdef RAY_LIST_THREAD_SAFE
+    #define listMutex &object->mutex
+    #define RMutexLockList() RMutexLock(listMutex)
+    #define RMutexUnlockList() RMutexUnlock(listMutex)
+#else
+    // sets empty
+    #define listMutex
+    #define RMutexLockList()
+    #define RMutexUnlockList()
+#endif
+
 constructor(RList)) {
     object = allocator(RList);
     if(object != nil) {
-            object->head = nil;
-            object->tail = object->head;
+        object->head = nil;
+        object->tail = object->head;
 
-            object->count = 0;
-            object->destructorDelegate = nil;
-            object->printerDelegate = nil;
-            object->classId = registerClassOnce(toString(RList));
+        object->count = 0;
+        object->destructorDelegate = nil;
+        object->printerDelegate = nil;
+        object->classId = registerClassOnce(toString(RList));
+#ifdef RAY_LIST_THREAD_SAFE
+        object->mutex = mutexWithType(RMutexNormal); // note: be aware with normal mute
+#endif
     }
     return object;
 }
 
 destructor(RList) {
     RNode *iterator = object->tail;
+    RMutexLockList();
     if(iterator != nil) {
         if (object->destructorDelegate != nil) {
             for (; iterator != nil; iterator = iterator->next) {
@@ -45,10 +60,12 @@ destructor(RList) {
             }
         }
     }
+    RMutexUnlockList();
 }
 
 printer(RList) {
     RNode *iterator = object->tail;
+    RMutexLockList();
     RPrintf("\n%s object %p: { \n", toString(RList), object);
     RPrintf(" Count : %lu \n", object->count);
     for(; iterator != nil; iterator = iterator->next) {
@@ -60,12 +77,14 @@ printer(RList) {
         }
     }
     RPrintf("} end of %s object %p \n\n", toString(RList), object);
+    RMutexUnlockList();
 }
 
 #pragma mark Add
 
 method(void, addHead, RList), pointer src) {
     RNode *temp = allocator(RNode);
+    RMutexLockList();
     if(temp != nil) {
         temp->data = src;
         temp->next = nil;
@@ -80,10 +99,12 @@ method(void, addHead, RList), pointer src) {
         }
         ++object->count;
     }
+    RMutexUnlockList();
 }
 
 method(void, addTail, RList), pointer src) {
     RNode *temp = allocator(RNode);
+    RMutexLockList();
     if(temp != nil) {
         temp->data = src;
         temp->previous = nil;
@@ -98,6 +119,7 @@ method(void, addTail, RList), pointer src) {
         }
         ++object->count;
     }
+    RMutexUnlockList();
 }
 
 #pragma mark Private Node At Index
@@ -105,6 +127,7 @@ method(void, addTail, RList), pointer src) {
 method(RNode *, nodeAtIndex, RList), size_t index) {
     size_t  delta   = object->count - 1 - index;
     RNode *iterator = nil;
+    RMutexLockList();
     if(delta < object->count) {
         // go from head
         if(delta < object->count / 2) {
@@ -123,6 +146,7 @@ method(RNode *, nodeAtIndex, RList), size_t index) {
     } else {
         RWarning("RList. Bad index for node.", object);
     }
+    RMutexUnlockList();
     return iterator;
 }
 
@@ -145,13 +169,14 @@ method(void, deleteObjects, RList), RRange range) {
               *storedTail = nil;
 
         rbool toLeftDirection = yes;
+
         if(range.start > object->count / 2) {
             iterator = $(object, m(nodeAtIndex, RList)), range.start);
         } else {
             iterator = $(object, m(nodeAtIndex, RList)), range.start + range.size);
             toLeftDirection = no;
         }
-
+        RMutexLockList();
         object->count -= range.size;
 
         // if moves to head ---->
@@ -201,6 +226,7 @@ method(void, deleteObjects, RList), RRange range) {
         if(storedHead != nil) {
             storedHead->previous = storedTail;
         }
+        RMutexUnlockList();
     } else {
         RWarning("RList. Bad range to delete.", object);
     }
@@ -209,6 +235,7 @@ method(void, deleteObjects, RList), RRange range) {
 method(void, deleteObject,  RList), size_t index) {
     RNode *node = $(object, m(nodeAtIndex, RList)), index);
     if(node != nil) {
+        RMutexLockList();
         if(object->destructorDelegate != nil) {
             object->destructorDelegate(node->data);
         }
@@ -216,6 +243,7 @@ method(void, deleteObject,  RList), size_t index) {
         node->previous->next = node->next;
         deallocator(node);
         --object->count;
+        RMutexUnlockList();
     }
 }
 

@@ -39,7 +39,7 @@ int main(int argc, const char *argv[]) {
     }
     $(list, p(RList)));
 
-    $(list, m(deleteObjects, RList)), makeRRange(5, 4));
+    $(list, m(deleteObjects, RList)), makeRRange(5, 10));
 
     $(list, p(RList)));
     deleter(list, RList);

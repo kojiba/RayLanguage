@@ -18,6 +18,9 @@
 #define __R_LIST_H__
 
 #include <RBasics.h>
+#ifdef RAY_LIST_THREAD_SAFE
+    #include <RThread.h>
+#endif
 
 typedef struct RNode {
     struct RNode   *next;
@@ -34,6 +37,9 @@ class(RList) //-----------------------------------------------------------------
     void  (*destructorDelegate)(pointer);
     void  (*printerDelegate)   (pointer);
 
+#ifdef RAY_LIST_THREAD_SAFE
+    RMutexDescriptor mutex;
+#endif
 endOf(RList) //------------------------------------------------------------------
 
 constructor (RList));

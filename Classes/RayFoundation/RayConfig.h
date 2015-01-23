@@ -25,6 +25,7 @@
 
 // thread-safety flags
 #define RAY_ARRAY_THREAD_SAFE
+//#define RAY_LIST_THREAD_SAFE // note: mutex type normal
 //#define RAY_BUFFER_THREAD_SAFE
 
 #define RAY_CLASS_TABLE_THREAD_SAFE
