@@ -29,7 +29,7 @@ endOf(RThread)
 
 constructor (RThread),
         RThreadAttributes *attributes,
-        pointer (*threadFunction)(pointer),
+        RThreadFunction function,
         pointer argument);
 
 destructor  (RThread);

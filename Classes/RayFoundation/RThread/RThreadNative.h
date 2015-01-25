@@ -22,6 +22,7 @@
     typedef pthread_attr_t                   RThreadAttributes;
     typedef pthread_mutex_t                  RMutexDescriptor;
     typedef pthread_mutexattr_t              RMutexAttributes;
+    typedef pointer (*RThreadFunction)(pointer);
 
     #define RMutexInit                       pthread_mutex_init
     #define RMutexLock                       pthread_mutex_lock
@@ -35,11 +36,25 @@
     #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
 #else
     #include <windows.h>
-    typedef HANDLE RThreadDescriptor;
-    // fixme windows
-    typedef LPVOID  RThreadAttributes;
-    typedef HANDLE RThreadMutex;
-//    #define exitThread FIXME
+    typedef HANDLE                           RThreadDescriptor;
+    typedef LPVOID                           RThreadAttributes;
+    typedef HANDLE                           RMutexDescriptor;
+    typedef LPSECURITY_ATTRIBUTES            RMutexAttributes;
+    typedef DWORD (*RThreadFunction)(pointer);
+
+    #define RMutexInit                       CreateMutex
+    #define RMutexLock(mutex)                WaitForSingleObject(mutex, INFINITE);
+    #define RMutexUnlock                     ReleaseMutex
+
+    #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+    #define RMutexAttributeInit              pthread_mutexattr_init
+    #define RMutexAttributeSetType           pthread_mutexattr_settype
+
+    #define RMutexRecursive                  1
+    #define RMutexNormal                     2
+    #define RMutexErrorCheck                 3// fixme
+
+    // fixme in progress
 #endif
 
 #endif /*__R_THREAD_NATIVE__*/

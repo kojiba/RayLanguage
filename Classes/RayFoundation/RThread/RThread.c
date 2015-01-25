@@ -19,12 +19,18 @@
 
 RMutexDescriptor mutexWithType(unsigned short mutexType) {
     RMutexDescriptor mutex;
-    RMutexAttributes Attr;
-    RMutexAttributeInit(&Attr);
-    RMutexAttributeSetType(&Attr, mutexType);
-    if(RMutexInit(&mutex,  &Attr) != 0) {
-        RError("RMutexWithType. Error creating mutex.", &mutex);
-    }
+
+    #ifndef _WIN32
+        RMutexAttributes Attr;
+        RMutexAttributeInit(&Attr);
+        RMutexAttributeSetType(&Attr, mutexType);
+        if(RMutexInit(&mutex,  &Attr) != 0) {
+            RError("RMutexWithType. Error creating mutex.", &mutex);
+        }
+    #else
+        mutex = RMutexInit(nil, no, nil);
+    #endif
+
     return mutex;
 }
 
@@ -32,7 +38,7 @@ RMutexDescriptor mutexWithType(unsigned short mutexType) {
 
 constructor(RThread),
         RThreadAttributes *attributes,
-        pointer (*threadFunction)(pointer),
+        RThreadFunction function,
         pointer argument ) {
 
     object = allocator(RThread);
@@ -45,7 +51,7 @@ constructor(RThread),
                         return nil;
                     }
             #else
-                object->descriptor = CreateThread(NULL, 0, threadFunction, argument, 0, NULL);
+                object->descriptor = CreateThread(NULL, 0, function, argument, 0, NULL);
                 if(object->descriptor != nil) {
             #endif
                     object->classId = registerClassOnce(toString(RThread));
