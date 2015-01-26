@@ -55,7 +55,7 @@ destructor(RList) {
                 deallocator(iterator);
             }
         } else {
-            for (; iterator->next != nil; iterator = iterator->next) {
+            for (; iterator != nil; iterator = iterator->next) {
                 deallocator(iterator);
             }
         }
@@ -66,7 +66,7 @@ destructor(RList) {
 printer(RList) {
     RNode *iterator = object->tail;
     RMutexLockList();
-    RPrintf("\n%s object %p: { \n", toString(RList), object);
+    RPrintf("%s object %p: { \n", toString(RList), object);
     RPrintf(" Count : %lu \n", object->count);
     for(; iterator != nil; iterator = iterator->next) {
         RPrintf("\t");
@@ -125,10 +125,10 @@ method(void, addTail, RList), pointer src) {
 #pragma mark Private Node At Index
 
 method(RNode *, nodeAtIndex, RList), size_t index) {
-    size_t  delta   = object->count - 1 - index;
+    size_t  delta   = object->count - index;
     RNode *iterator = nil;
     RMutexLockList();
-    if(delta < object->count) {
+    if(delta <= object->count) {
         // go from head
         if(delta < object->count / 2) {
             iterator = object->head;
@@ -170,7 +170,7 @@ method(void, deleteObjects, RList), RRange range) {
 
         rbool toLeftDirection = yes;
 
-        if(range.start > object->count / 2) {
+        if(range.start < object->count / 2) {
             iterator = $(object, m(nodeAtIndex, RList)), range.start);
         } else {
             iterator = $(object, m(nodeAtIndex, RList)), range.start + range.size);
@@ -222,9 +222,14 @@ method(void, deleteObjects, RList), RRange range) {
         // finally connect
         if(storedTail != nil) {
             storedTail->next = storedHead;
+        } else {
+            object->tail = iterator;
         }
+
         if(storedHead != nil) {
             storedHead->previous = storedTail;
+        } else {
+            object->head = iterator;
         }
         RMutexUnlockList();
     } else {

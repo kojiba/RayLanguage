@@ -71,7 +71,8 @@ endOf(RArray) //----------------------------------------------------------------
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error);
 
 // Constructor - Destructor - Printer
-inline constructor (RArray), RArrayFlags *error);
+extern inline
+constructor (RArray), RArrayFlags *error);
 destructor  (RArray);
 printer     (RArray);
 
@@ -82,7 +83,9 @@ method(byte,               sizeToFit,                 RArray));
 
 // Add - Set - Delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
-method(inline void,        addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
+
+extern inline
+method(void,               addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 
 method(void,               deleteLast,                RArray));                                       // pop_back analog
@@ -93,8 +96,11 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 // Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference
 method(RArray *,           getSubarray,               RArray),    RRange range);
-method(inline pointer,     elementAtIndex,            RArray),    size_t index);
-method(inline pointer,     lastObject,                RArray));
+
+extern inline
+method(pointer,            elementAtIndex,            RArray),    size_t index);
+extern inline
+method(pointer,            lastObject,                RArray));
 
 // Sorts
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));

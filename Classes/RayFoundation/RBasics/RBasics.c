@@ -17,21 +17,21 @@
 
 #pragma mark RRange
 
-RRange makeRRange(size_t from, size_t count) {
+inline RRange makeRRange(size_t from, size_t count) {
     RRange range;
     range.start = from;
     range.size = count;
     return range;
 }
 
-RRange makeRRangeTo(size_t from, size_t to) {
+inline RRange makeRRangeTo(size_t from, size_t to) {
     RRange range;
     range.start = from;
     range.size = to - from;
     return range;
 }
 
-RCompareFlags compareRRange(RRange first, RRange second) {
+inline RCompareFlags compareRRange(RRange first, RRange second) {
     if(first.start == second.start) {
         if(first.size > second.size) {
             return longer;
@@ -49,7 +49,7 @@ RCompareFlags compareRRange(RRange first, RRange second) {
     }
 }
 
-rbool isInRange(RRange range, size_t value) {
+inline rbool isInRange(RRange range, size_t value) {
     if(value >= range.start && value <= range.start + range.size) {
         return yes;
     } else {
@@ -57,7 +57,7 @@ rbool isInRange(RRange range, size_t value) {
     }
 }
 
-rbool isOverlapping(RRange first, RRange second) {
+inline rbool isOverlapping(RRange first, RRange second) {
     if((second.start > (first.start + first.size))
             || ((second.start + second.size) < first.start)) {
         return no;
@@ -72,14 +72,14 @@ printer(RRange) {
 
 #pragma mark RBounds
 
-RBounds makeRBounds(char startSymbol, char endSymbol) {
+inline RBounds makeRBounds(char startSymbol, char endSymbol) {
     RBounds bounds;
     bounds.startSymbol = startSymbol;
     bounds.endSymbol = endSymbol;
     return bounds;
 }
 
-rbool isValueInBounds(RBounds bounds, char value) {
+inline rbool isValueInBounds(RBounds bounds, char value) {
     if(value >= bounds.startSymbol && value <= bounds.endSymbol) {
         return yes;
     } else {
@@ -87,7 +87,7 @@ rbool isValueInBounds(RBounds bounds, char value) {
     }
 }
 
-rbool compareRBounds(RBounds first, RBounds second) {
+inline rbool compareRBounds(RBounds first, RBounds second) {
     if(first.startSymbol == second.startSymbol
             && first.endSymbol == second.endSymbol) {
         return yes;

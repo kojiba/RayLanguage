@@ -89,7 +89,7 @@ RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *erro
 
 #pragma mark Constructor - Destructor - Printer
 
-constructor(RArray), RArrayFlags *error) {
+inline constructor(RArray), RArrayFlags *error) {
     return makeRArrayOptions(startSizeOfRArrayDefault, sizeMultiplierOfRArrayDefault, error);
 }
 
@@ -351,7 +351,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     return result;
 }
 
-method(pointer, elementAtIndex, RArray), size_t index) {
+inline method(pointer, elementAtIndex, RArray), size_t index) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray elementAtIndex of %p\n", object);
 #endif
@@ -397,7 +397,7 @@ method(RArray *, getSubarray, RArray), RRange range){
     return result;
 }
 
-method(pointer, lastObject, RArray)) {
+inline method(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 

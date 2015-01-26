@@ -46,7 +46,7 @@ constructor(RThread),
             #ifndef __WIN32
                 object->descriptor = allocator(RThreadDescriptor);
                 if(object->descriptor != nil) {
-                    if(pthread_create(object->descriptor, attributes, threadFunction, argument) != 0) {
+                    if(pthread_create(object->descriptor, attributes, function, argument) != 0) {
                         RError("RThread. Bad pthread_create.", object);
                         return nil;
                     }

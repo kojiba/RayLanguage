@@ -34,11 +34,11 @@ typedef struct RRange {
     size_t size;
 } RRange;
 
-inline RRange          makeRRange    (size_t from, size_t count);
-inline RRange          makeRRangeTo  (size_t from, size_t to);
-inline RCompareFlags   compareRRange (RRange first, RRange second);
-inline rbool           isInRange     (RRange range, size_t value);
-inline rbool           isOverlapping (RRange first, RRange second);
+extern inline RRange          makeRRange    (size_t start, size_t size);
+extern inline RRange          makeRRangeTo  (size_t from,  size_t to);
+extern inline RCompareFlags   compareRRange (RRange first, RRange second);
+extern inline rbool           isInRange     (RRange range, size_t value);
+extern inline rbool           isOverlapping (RRange first, RRange second);
 printer(RRange);
 
 // -----------------------------------------------------------------------
@@ -48,9 +48,9 @@ typedef struct RBounds {
     char endSymbol;
 } RBounds;
 
-inline RBounds makeRBounds     (char startSymbol, char endSymbol);
-inline rbool   isValueInBounds (RBounds bounds, char value);
-inline rbool   compareRBounds  (RBounds first, RBounds second);
+extern inline RBounds makeRBounds     (char startSymbol, char endSymbol);
+extern inline rbool   isValueInBounds (RBounds bounds, char value);
+extern inline rbool   compareRBounds  (RBounds first, RBounds second);
 
 // -----------------------------------------------------------------------
 
