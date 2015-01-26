@@ -24,6 +24,8 @@
     #include <RThread.h>
 #endif
 
+struct RList;
+
 typedef struct RNode {
     struct RNode   *next;
     struct RNode   *previous;
@@ -64,6 +66,6 @@ method(void,        deleteObjects, RList),    RRange range);
 method(void,        deleteObject,  RList),    size_t index);
 
 // casts
-method(RArray*,     toRArray,      RList));
+method(struct RArray *,    toRArray,      RList));
 
 #endif /*__R_LIST_H__*/

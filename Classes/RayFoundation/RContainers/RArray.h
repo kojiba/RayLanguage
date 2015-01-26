@@ -17,10 +17,13 @@
 #define __R_ARRAY_H__
 
 #include <RBasics.h>
+#include <RList.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
     #include <RThread.h>
 #endif
+
+struct RArray;
 
 typedef enum RArrayFlags {
 
@@ -114,8 +117,11 @@ method(void,               shift,                     RArray),    byte side, RRa
 static inline
 method(byte,               checkIfIndexIn,            RArray),    size_t index);
 
+// Casts
+method(struct RList *,     toRList,      RArray));
+
 // standart comparator
-byte RArrayStandartComporator(pointer first, pointer second);
+byte RArrayStandartComparator(pointer first, pointer second);
 
 // Init from scratch
 

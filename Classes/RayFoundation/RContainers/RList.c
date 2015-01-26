@@ -14,6 +14,9 @@
  *         |__/
  **/
 
+#define copyDelegatesToResult() result->destructorDelegate = object->destructorDelegate; \
+                                result->printerDelegate    = object->printerDelegate
+
 #include <RList.h>
 #include <RClassTable.h>
 
@@ -166,8 +169,7 @@ method(RList *, subList, RList), RRange range) {
             RNode *iterator = nil;
 
             // set up delegates
-            result->destructorDelegate = object->destructorDelegate;
-            result->printerDelegate    = object->printerDelegate;
+            copyDelegatesToResult();
 
             if(range.start < object->count / 2) {
                 iterator = $(object, m(nodeAtIndex, RList)), range.start);
@@ -314,8 +316,7 @@ method(void, deleteObject,  RList), size_t index) {
 method(RArray*, toRArray, RList)) {
     RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
     if(result != nil) {
-        result->printerDelegate = object->printerDelegate;
-        result->destructorDelegate = object->destructorDelegate;
+        copyDelegatesToResult();
 
         RMutexLockList();
         RNode *iterator = object->tail;

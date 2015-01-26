@@ -423,7 +423,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     RMutexUnlockArray(arrayMutex);
 }
 
-byte RArrayStandartComporator(pointer first, pointer second) {
+byte RArrayStandartComparator(pointer first, pointer second) {
     // whats-inside-higher, sort
     if (first > second) {
         return swap_objects;
@@ -469,7 +469,7 @@ method(void, sort, RArray)) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray sort of %p\n", object);
 #endif
-    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComporator);
+    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComparator);
 }
 
 #pragma mark Work
@@ -514,6 +514,23 @@ method(static inline byte, checkIfIndexIn, RArray), size_t index) {
     } else {
         return index_does_not_exist;
     }
+}
+
+#pragma mark Casts
+
+method(RList *, toRList, RArray)) {
+    RList *result = $(nil, c(RList)));
+    if(result != nil) {
+        size_t iterator;
+        result->destructorDelegate = object->destructorDelegate;
+        result->printerDelegate = object->printerDelegate;
+        RMutexLockArray(arrayMutex);
+        forAll(iterator, object->count) {
+            $(result, m(addHead, RList)), object->array[iterator]);
+        }
+        RMutexUnlockArray(arrayMutex);
+    }
+    return result;
 }
 
 #pragma mark Init from scratch
