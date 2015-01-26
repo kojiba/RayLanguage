@@ -42,6 +42,7 @@ RCString makeRCSConstant(char *string);
 constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
+void        stringDeleter(RCString *string);
 
 method(void,                flush,                        RCString));                                         // deletes old string
 // Setters
@@ -57,7 +58,8 @@ method(size_t,              numberOfCharacters,           RCString),    char cha
 method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
 method(static inline rbool, isContains,                   RCString),    char character);
 method(static inline rbool, isContainsSubsting,           RCString),    RCString *string);
-method(inline size_t,       numberOfLines,                RCString));
+extern inline
+method(size_t,              numberOfLines,                RCString));
 
 // Deletions
 method(RCString *,          deleteAllCharacters,          RCString),    char character);                      // returns reference (not copy!)
@@ -68,8 +70,10 @@ method(void,                removeRepetitionsOfString,    RCString),    const RC
 
 method(RCString *,          deleteCharacterAt,            RCString),    size_t index);                        // returns reference (not copy!)
 method(void,                deleteInRange,                RCString),    RRange range);                        // shifts string, main method
-method(inline void,         trimTail,                     RCString),    size_t size);                         // deletes start end
-method(inline void,         trimHead,                     RCString),    size_t size);                         // deletes start start
+extern inline
+method(void,                trimTail,                     RCString),    size_t size);                         // deletes start end
+extern inline
+method(void,                trimHead,                     RCString),    size_t size);                         // deletes start start
 
 // Substrings and Copies
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
@@ -80,7 +84,8 @@ method(RCString *,          substringInRange,             RCString),    RRange r
 method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting (search first and last)
 method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nil, RArray is sizeToFit, subs are copies
 method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
-method(inline RArray *,     substringsSeparatedBySymCStr, RCString),    char *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
+extern inline
+method(RArray *,            substringsSeparatedBySymCStr, RCString),    char *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
 
 method(RCString *,          copy,                         RCString));
 
@@ -111,6 +116,6 @@ RCString* RCStringFromFile(const char *filename); // may not be 0-terminated, us
 #define printRString(string)       $(string, p(RCString)) );
 #define RS(CString)                $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant, ATTENTION need to be deallocated, but not destructed
 #define RSC(CString)               $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
-#define makeStringArrayFrom(array) array->destructorDelegate = d(RCString); array->printerDelegate = p(RCString);
+#define makeStringArrayFrom(array) array->destructorDelegate = stringDeleter; array->printerDelegate = p(RCString);
 
 #endif /*__R_C_STRING_H__*/

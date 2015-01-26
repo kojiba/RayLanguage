@@ -131,6 +131,10 @@ method(void, flush, RCString)) {
     }
 }
 
+void stringDeleter(RCString *string) {
+    deleter(string, RCString);
+}
+
 #pragma mark Setters
 
 method(RCString *, setString, RCString), const char *string) {
@@ -270,7 +274,7 @@ method(static inline rbool, isContainsSubsting, RCString), RCString *string) {
     }
 }
 
-method(size_t, numberOfLines, RCString)) {
+inline method(size_t, numberOfLines, RCString)) {
     return $(object, m(numberOfCharacters, RCString)), '\n');
 }
 
@@ -410,12 +414,10 @@ method(void, deleteInRange, RCString), RRange range) {
         RError("RCS. deleteInRange, bad range, do nothing.", object);
     }
 }
-
-method(void, trimTail, RCString), size_t size) {
+inline  method(void, trimTail, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(object->size - size, size));
 }
-
-method(void, trimHead, RCString), size_t size) {
+inline  method(void, trimHead, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(0, size));
 }
 
@@ -486,7 +488,7 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 
     if(string != nil) {
         result = makeRArray();
-        result->destructorDelegate = (void (*)(pointer)) d(RCString);
+        result->destructorDelegate = (void (*)(pointer)) stringDeleter;
         result->printerDelegate    = (void (*)(pointer)) p(RCString);
     }
 
@@ -533,7 +535,7 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
                         result = makeRArray();
                         // set-up delegates
                         result->printerDelegate    = (void (*)(pointer)) p(RCString);
-                        result->destructorDelegate = (void (*)(pointer)) d(RCString);
+                        result->destructorDelegate = (void (*)(pointer)) stringDeleter;
                     }
                 }
 
@@ -570,7 +572,7 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
     return result;
 }
 
-method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
+inline method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
     RCString *temp = RS(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);

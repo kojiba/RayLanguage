@@ -16,9 +16,6 @@ int RByteArrayTest(void) {
     }
     return 0;
 }
-void stringDeleter(pointer ptr){
-    deleter(ptr, RCString);
-}
 
 int StringDictionaryTest(void) {
     // some key constant
@@ -26,8 +23,8 @@ int StringDictionaryTest(void) {
 
     // create dictionary
     RStringDictionary *dictionary = $(nil, c(RStringDictionary)) );
-    master(dictionary, RDictionary)->values->destructorDelegate = stringDeleter;
-    master(dictionary, RDictionary)->keys->destructorDelegate = stringDeleter;
+    master(dictionary, RDictionary)->values->destructorDelegate = (void (*)(pointer)) stringDeleter;
+    master(dictionary, RDictionary)->keys->destructorDelegate = (void (*)(pointer)) stringDeleter;
 
     // fill dictionary with some object-keys,
     // use RSC, cause we need copies of constant,
@@ -58,7 +55,7 @@ int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
 //    stringArray->printerDelegate = p(RCString);
-    stringArray->destructorDelegate = stringDeleter;
+    stringArray->destructorDelegate = (void (*)(pointer)) stringDeleter;
 
     for(i = 0; i < 10; ++i) {
         addObjectToRA(stringArray, randomRCString());
