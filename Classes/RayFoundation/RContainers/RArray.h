@@ -111,7 +111,8 @@ method(void,               sort,                      RArray));
 method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
 
 // Info
-method(static inline byte, checkIfIndexIn,            RArray),    size_t index);
+static inline
+method(byte,               checkIfIndexIn,            RArray),    size_t index);
 
 // standart comparator
 byte RArrayStandartComporator(pointer first, pointer second);

@@ -28,11 +28,11 @@ typedef struct RNode {
            pointer  data;
 } RNode;
 
-class(RList) //------------------------------------------------------------------
+class(RList) //--------------------------------------------------------------------------
     RNode  *head;
     RNode  *tail;
 
-    size_t  count; // readonly, signaling about successful add, delete elements
+    size_t  count; // readonly, signaling about successful addition, deletion of elements
 
     void  (*destructorDelegate)(pointer);
     void  (*printerDelegate)   (pointer);
@@ -40,21 +40,25 @@ class(RList) //-----------------------------------------------------------------
 #ifdef RAY_LIST_THREAD_SAFE
     RMutexDescriptor mutex;
 #endif
-endOf(RList) //------------------------------------------------------------------
+endOf(RList) //--------------------------------------------------------------------------
 
 constructor (RList));
 destructor  (RList);
 printer     (RList);
 
 // add
-method(void,    addHead,       RList),    pointer src);
-method(void,    addTail,       RList),    pointer src);
+method(void,        addHead,       RList),    pointer src);
+method(void,        addTail,       RList),    pointer src);
 
 // get
-method(pointer, objectAtIndex, RList),    size_t index);
+method(pointer,     objectAtIndex, RList),    size_t index);
+method(RList *,     subList,       RList),    RRange range); // copy of sub-part, with set-upd delegates
+
+// enumerate
+method(RFindResult, enumerate,     RList),    REnumerateDelegate *delegate);
 
 // delete
-method(void,    deleteObjects, RList),    RRange range);
-method(void,    deleteObject,  RList),    size_t index);
+method(void,        deleteObjects, RList),    RRange range);
+method(void,        deleteObject,  RList),    size_t index);
 
 #endif /*__R_LIST_H__*/

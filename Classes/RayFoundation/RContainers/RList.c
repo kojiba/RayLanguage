@@ -160,6 +160,63 @@ method(pointer, objectAtIndex, RList), size_t index) {
     return nil;
 }
 
+method(RList *, subList, RList), RRange range) {
+    if(range.size + range.start <= object->count) {
+        RList *result = $(nil, c(RList)));
+        if(result != nil) {
+            rbool toLeftDirection = yes;
+            RNode *iterator = nil;
+
+            // set up delegates
+            result->destructorDelegate = object->destructorDelegate;
+            result->printerDelegate    = object->printerDelegate;
+
+            if(range.start < object->count / 2) {
+                iterator = $(object, m(nodeAtIndex, RList)), range.start);
+            } else {
+                iterator = $(object, m(nodeAtIndex, RList)), range.start + range.size);
+                toLeftDirection = no;
+            }
+
+            if(toLeftDirection) {
+                for(; range.size != 0; --range.size) {
+                    $(result, m(addHead, RList)), iterator->data);
+                    iterator = iterator->next;
+                }
+
+            } else {
+                for(; range.size != 0; --range.size) {
+                    $(result, m(addTail, RList)), iterator->data);
+                    iterator = iterator->previous;
+                }
+            }
+
+            return result;
+        }
+    } else {
+        RWarning("RList. Bad range to get sub list.", object);
+    }
+    return nil;
+}
+
+#pragma mark Enumerate
+
+method(RFindResult, enumerate, RList), REnumerateDelegate *delegate) {
+    RNode *iterator = object->tail;
+    size_t numericIterator = 0;
+    RFindResult result;
+    result.index  = object->count;
+    result.object = nil;
+    for (; iterator != nil; iterator = iterator->next, ++numericIterator) {
+        if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
+            result.index = numericIterator;
+            result.object = iterator->data;
+            break;
+        }
+    }
+    return result;
+}
+
 #pragma mark Delete
 
 method(void, deleteObjects, RList), RRange range) {

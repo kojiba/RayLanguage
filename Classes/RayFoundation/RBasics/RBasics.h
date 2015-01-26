@@ -68,4 +68,13 @@ endOf(RCompareDelegate) //-----------------------------------------------
 
 method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);
 
+// -----------------------------------------------------------------------
+
+protocol(REnumerateDelegate) //--------------------------------------------
+    virtualMethod(rbool, m(checkObject, RCompareDelegate))(struct REnumerateDelegate *object, pointer data, size_t index);
+
+endOf(REnumerateDelegate)
+
+method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index); // if return yes - continue enumerating, else stops it
+
 #endif

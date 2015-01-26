@@ -104,14 +104,15 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
     } else if(object->etaloneObject == objectToCheck) {
         return equals;
     }
-    #ifdef RAY_SHORT_DEBUG
-            else {
-                static pointer lastObject = nil;
-                if(lastObject != object) {
-                    lastObject = object;
-                    RPrintf("Warning. RFD - %p virtual method is not implemented.\n", object);
-                }
-            }
-    #endif
     return not_equals;
+}
+
+#pragma mark REnumerateDelegate
+
+method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index) {
+    if(object->m(checkObject, RCompareDelegate) != nil) {
+        return $(object, object->m(checkObject, RCompareDelegate)), data, index);
+    } else {
+        return yes;
+    }
 }
