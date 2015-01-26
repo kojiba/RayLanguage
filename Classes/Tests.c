@@ -10,10 +10,7 @@ int RByteArrayTest(void) {
             for(j = 0; j < 31; ++j) {
                 array->array[j] = (byte) j;
             }
-            if(array->size != 31) {
-                RError("RByteArrayTest. Bad array size", array);
-                return 1;
-            }
+            RAY_TEST(array->size != 31, "RByteArrayTest. Bad array size", -1);
         }
         deleter(array, RByteArray);
     }
@@ -39,18 +36,14 @@ int StringDictionaryTest(void) {
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
     $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
 
-    if(dictionary->masterRDictionaryObject->keys->count > 3
-            || dictionary->masterRDictionaryObject->values->count > 3) {
-        RError("StringDictionaryTest. Duplication of setBy key", dictionary);
-        return 1;
-    }
+    RAY_TEST(dictionary->masterRDictionaryObject->keys->count > 3
+            || dictionary->masterRDictionaryObject->values->count > 3,
+            "StringDictionaryTest. Duplication of setBy key", -1);
 
     // find some object for key
     RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
-    if(object == nil) {
-        RError("StringDictionaryTest. Error find object for key", dictionary);
-        return 1;
-    } else {
+    RAY_TEST(object == nil, "StringDictionaryTest. Error find object for key", -2)
+    else {
         deallocator(key);
     }
 
@@ -70,16 +63,10 @@ int StringArrayTest(void) {
     for(i = 0; i < 10; ++i) {
         addObjectToRA(stringArray, randomRCString());
     }
-    if(stringArray->count != 10) {
-        RError("String array size is not 10", stringArray);
-        return 1;
-    }
+    RAY_TEST(stringArray->count != 10, "String array size is not 10", -1);
 
     $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
-    if(stringArray->count != 6) {
-        RError("String array delete objects error", stringArray);
-        return 1;
-    }
+    RAY_TEST(stringArray->count != 6, "String array delete objects error", -2);
     deleter(stringArray, RArray);
 
     return 0;
@@ -92,15 +79,8 @@ int RDictionaryTest(void){
         size_t value = iterator;
         size_t key = iterator;
         $(dictionary, m(setObjectForKey, RDictionary)), (pointer) value, (pointer) key);
-        if(dictionary->keys->count != dictionary->values->count) {
-            RError("Tests. RDictionaryCount of keys and values is not equal.", dictionary);
-            return 1;
-        }
-        if(dictionary->keys->count == 0
-                || dictionary->values->count == 0) {
-            RError("Tests. RDictionaryCount of keys or values 0.", dictionary);
-            return 1;
-        }
+        RAY_TEST(dictionary->keys->count != dictionary->values->count, "Tests. RDictionaryCount of keys and values is not equal.", -1);
+        RAY_TEST(dictionary->keys->count == 0 || dictionary->values->count == 0, "Tests. RDictionaryCount of keys or values 0.", -2);
     }
     deleter(dictionary, RDictionary);
     return 0;
@@ -120,22 +100,12 @@ int RClassTableTest(void){
         registerClassOnce("Luke");
     }
 
-    if(RCTSingleton->masterRArrayObject->count > 20) {
-        RError("RCTSingleton->masterRArrayObject->size > 8", RCTSingleton);
-        return 1;
-    }
-    if(RCTSingleton->masterRArrayObject->count == 0) {
-        RError("RCTSingleton->masterRArrayObject->size == 0", RCTSingleton);
-        return 1;
-    }
+    RAY_TEST(RCTSingleton->masterRArrayObject->count > 20, "RCTSingleton->masterRArrayObject->size > 20", -1);
+    RAY_TEST(RCTSingleton->masterRArrayObject->count == 0, "RCTSingleton->masterRArrayObject->size == 0", -2);
     char *checkName = "Leia";
 //    RPrintf("Identifier of %s is - %lu \n", checkName, registerClassOnce(checkName));
     size_t id = $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), checkName);
-    if(id < 4) {
-        printRCTS;
-        RError("Test. RClassTable. Bad id for registered.", RCTSingleton);
-        return 1;
-    }
+    RAY_TEST(id < 4, "RClassTable. Bad id for registered.", -3);
     return 0;
 }
 
@@ -152,10 +122,7 @@ int RClassNamePairTest(void){
 int RDynamicArrayTest(void){
     int i;
     RArray *dynamicArray = makeRArray();
-    if(dynamicArray == nil) {
-        RError("Make RArray error", dynamicArray);
-        return 1;
-    }
+    RAY_TEST(dynamicArray == nil, "Make RArray error", -1);
     dynamicArray->destructorDelegate = free;
 
     for (i = 0; i < 22; ++i) {
@@ -165,29 +132,17 @@ int RDynamicArrayTest(void){
             a[6] = (char) (i % 10 + 48);
             addObjectToRA(dynamicArray, a);
         }
-        if(dynamicArray->count != i + 1) {
-            RError("RArray bad size", dynamicArray);
-            return 1;
-        }
+        RAY_TEST(dynamicArray->count != i + 1, "RArray bad size", -2);
     }
 
     sortRA(dynamicArray);
 
     RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(10, 10));
-    if(sub == nil) {
-        RError("Subarray error.", sub);
-        return 1;
-    }
+    RAY_TEST(sub == nil, "Subarray error.", -3);
     sub->destructorDelegate = nil;
-    if(sub->count != 10) {
-        RError("Subarray bad size.", sub);
-        return 1;
-    }
+    RAY_TEST(sub->count != 10, "Subarray bad size.", -4);
     sizeToFitRA(sub);
-    if(sub->freePlaces != 0) {
-        RError("Subarray bad sizeToFit.", sub);
-        return 1;
-    }
+    RAY_TEST(sub->freePlaces != 0, "Subarray bad sizeToFit.", -5);
 
     deleter(dynamicArray, RArray);
     deleter(sub, RArray);
@@ -207,18 +162,64 @@ int RBufferTest(void) {
         if(iterator == 0) {
             first_size = temp->size;
         }
-        if((buffer->count != iterator + 1) || buffer->totalPlaced != sum) {
-            RError("RBuffer. Test error, bad size or size", buffer);
-            return -1;
-        }
+        RAY_TEST(((buffer->count != iterator + 1) || buffer->totalPlaced != sum),
+                "RBuffer. Test error, bad size or size", -1);
+
         deleter(temp, RCString);
     }
     char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
-    if(RStringLength(temp) != first_size) {
-        RError("RBuffer. Bad getDataCopy", buffer);
-    }
+
+    RAY_TEST(RStringLength(temp) != first_size, "RBuffer. Bad getDataCopy", -2);
+
     deleter(buffer, RBuffer);
     deallocator(temp);
+    return 0;
+}
+
+class(RListFinder)
+    REnumerateDelegate master;
+
+endOf(RListFinder)
+
+method(rbool, checkObject, RListFinder), pointer data, size_t index) {
+    if(index == 2) {
+        return no;
+    }
+    return yes;
+}
+
+void printfInt(pointer ptr) {
+    printf("%qu\n", (unsigned long long int) ptr);
+}
+
+int RListTest(void) {
+    size_t iterator;
+    RListFinder finder;
+    // link virtual
+    finder.master.checkObjectRCompareDelegate = (rbool (*)(REnumerateDelegate *, pointer, size_t)) m(checkObject, RListFinder);
+
+    RList *list = constructorOfRList(nil);
+    list->printerDelegate = printfInt;
+
+    forAll(iterator, 20) {
+        $(list, m(addHead, RList)), (pointer) iterator);
+    }
+    RAY_TEST(list->count != 20, "RList. Bad add head.", -1);
+
+    RList * result = $(list, m(subList, RList)), makeRRange(5, 5));
+    RAY_TEST(result, "RList. Bad sublist.", -2);
+
+    $(result, p(RList)));
+    RFindResult founded = $(result, m(enumerate, RList)), &finder.master);
+
+    RAY_TEST(founded.object, "RList. Bad finded object.", -3);
+    RAY_TEST(founded.index == list->count, "RList. Bad finded index.", -4);
+
+    deleter(result, RList);
+
+    $(list, m(deleteObjects, RList)), makeRRange(10, 10));
+    RAY_TEST(list->count != 10, "RList. Bad count on delete.", -5);
+    deleter(list, RList);
     return 0;
 }
 
@@ -248,9 +249,7 @@ int RThreadTest(void) {
     $(thread1, m(join, RThread)));
     deleter(thread1, RThread);
 
-    if(arrayTest->count != 2 * TEST_COUNT) {
-        RError("RThread test error", nil);
-    }
+    RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);
 
     return 0;

@@ -59,6 +59,11 @@
     #define RWarning(string, object)
 #endif
 
+#define RAY_TEST(conditionZero, message, errorCode)       if(conditionZero) { \
+                                                              RFPrintf(stderr, "ERROR. TESTS. " message "\n", nil); \
+                                                              return errorCode;\
+                                                          }
+
 #define RPrintLn(string)                                  RPrintf("%s\n", string)
 
 // typedefs
