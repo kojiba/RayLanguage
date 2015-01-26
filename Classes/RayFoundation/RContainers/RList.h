@@ -18,6 +18,8 @@
 #define __R_LIST_H__
 
 #include <RBasics.h>
+#include <RArray.h>
+
 #ifdef RAY_LIST_THREAD_SAFE
     #include <RThread.h>
 #endif
@@ -60,5 +62,8 @@ method(RFindResult, enumerate,     RList),    REnumerateDelegate *delegate);
 // delete
 method(void,        deleteObjects, RList),    RRange range);
 method(void,        deleteObject,  RList),    size_t index);
+
+// casts
+method(RArray*,     toRArray,      RList));
 
 #endif /*__R_LIST_H__*/

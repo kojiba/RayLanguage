@@ -206,19 +206,23 @@ int RListTest(void) {
     }
     RAY_TEST(list->count != 20, "RList. Bad add head.", -1);
 
-    RList * result = $(list, m(subList, RList)), makeRRange(5, 5));
-    RAY_TEST(result, "RList. Bad sublist.", -2);
+    RList* result = $(list, m(subList, RList)), makeRRange(5, 5));
+    RAY_TEST(!result, "RList. Bad sublist.", -2);
 
-    $(result, p(RList)));
     RFindResult founded = $(result, m(enumerate, RList)), &finder.master);
 
-    RAY_TEST(founded.object, "RList. Bad finded object.", -3);
+    RAY_TEST(!founded.object, "RList. Bad finded object.", -3);
     RAY_TEST(founded.index == list->count, "RList. Bad finded index.", -4);
 
     deleter(result, RList);
 
     $(list, m(deleteObjects, RList)), makeRRange(10, 10));
     RAY_TEST(list->count != 10, "RList. Bad count on delete.", -5);
+
+    RArray *array = $(list, m(toRArray, RList)));
+    RAY_TEST(!array, "RList. Bad array from list", -6);
+    RAY_TEST(list->count != array->count, "RList. Bad count of array from list.", -7);
+    deleter(array, RArray);
     deleter(list, RList);
     return 0;
 }
@@ -260,6 +264,7 @@ void ComplexTest() {
     srand((unsigned int) time(nil));
     if(
            !RDynamicArrayTest()
+        && !RListTest()
         && !RClassNamePairTest()
         && !RClassTableTest()
         && !RDictionaryTest()

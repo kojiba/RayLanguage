@@ -48,16 +48,14 @@ constructor(RList)) {
 destructor(RList) {
     RNode *iterator = object->tail;
     RMutexLockList();
-    if(iterator != nil) {
-        if (object->destructorDelegate != nil) {
-            for (; iterator != nil; iterator = iterator->next) {
-                object->destructorDelegate(iterator->data);
-                deallocator(iterator);
-            }
-        } else {
-            for (; iterator != nil; iterator = iterator->next) {
-                deallocator(iterator);
-            }
+    if (object->destructorDelegate != nil) {
+        for (; iterator != nil; iterator = iterator->next) {
+            object->destructorDelegate(iterator->data);
+            deallocator(iterator);
+        }
+    } else {
+        for (; iterator != nil; iterator = iterator->next) {
+            deallocator(iterator);
         }
     }
     RMutexUnlockList();
@@ -177,7 +175,7 @@ method(RList *, subList, RList), RRange range) {
                 iterator = $(object, m(nodeAtIndex, RList)), range.start + range.size);
                 toLeftDirection = no;
             }
-
+            RMutexLockList();
             if(toLeftDirection) {
                 for(; range.size != 0; --range.size) {
                     $(result, m(addHead, RList)), iterator->data);
@@ -190,7 +188,7 @@ method(RList *, subList, RList), RRange range) {
                     iterator = iterator->previous;
                 }
             }
-
+            RMutexUnlockList();
             return result;
         }
     } else {
@@ -207,6 +205,7 @@ method(RFindResult, enumerate, RList), REnumerateDelegate *delegate) {
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
+    RMutexLockList();
     for (; iterator != nil; iterator = iterator->next, ++numericIterator) {
         if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
             result.index = numericIterator;
@@ -214,6 +213,7 @@ method(RFindResult, enumerate, RList), REnumerateDelegate *delegate) {
             break;
         }
     }
+    RMutexUnlockList();
     return result;
 }
 
@@ -307,5 +307,23 @@ method(void, deleteObject,  RList), size_t index) {
         --object->count;
         RMutexUnlockList();
     }
+}
+
+#pragma mark Casts
+
+method(RArray*, toRArray, RList)) {
+    RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
+    if(result != nil) {
+        result->printerDelegate = object->printerDelegate;
+        result->destructorDelegate = object->destructorDelegate;
+
+        RMutexLockList();
+        RNode *iterator = object->tail;
+        for (; iterator != nil; iterator = iterator->next) {
+            $(result, m(addObjectUnsafe, RArray)), iterator->data);
+        }
+        RMutexUnlockList();
+    }
+    return result;
 }
 
