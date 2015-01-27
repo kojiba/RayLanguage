@@ -21,7 +21,7 @@
 #include <RThread.h>
 #include <RCString.h>
 #include <RByteOperations.h>
-#include "RSocket.h"
+#include <RSocket.h>
 
 class(RReceiver)
        size_t           packetCounter;

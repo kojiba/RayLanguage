@@ -100,7 +100,6 @@ int RClassTableTest(void){
     RAY_TEST(RCTSingleton->masterRArrayObject->count > 20, "RCTSingleton->masterRArrayObject->size > 20", -1);
     RAY_TEST(RCTSingleton->masterRArrayObject->count == 0, "RCTSingleton->masterRArrayObject->size == 0", -2);
     char *checkName = "Leia";
-//    RPrintf("Identifier of %s is - %lu \n", checkName, registerClassOnce(checkName));
     size_t id = $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), checkName);
     RAY_TEST(id < 4, "RClassTable. Bad id for registered.", -3);
     return 0;

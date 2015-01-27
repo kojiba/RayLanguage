@@ -23,6 +23,10 @@ include_directories(Classes/RayFoundation/RMemoryOperations)
 include_directories(Classes/RayFoundation/RThread)
 include_directories(Classes/RayFoundation/RNetwork)
 
+if(CMAKE_CXX_COMPILER)
+    include_directories(Classes/RayFoundation++)
+endif()
+
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayConfig.h
                  Classes/RayFoundation/RayBase.h

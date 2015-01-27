@@ -45,8 +45,9 @@ constructor(RReceiver), uint16_t port) {
             object->addressLength = sizeof(address);
 
             if (bind(object->socket, (SocketAddress*) &address, sizeof(address)) < 0) {
-                perror("bind");
-                exit(1);
+                RError("RReceiver. Bind port failed.", object);
+                deallocator(object);
+                return nil;
             }
 
             object->port          = port;

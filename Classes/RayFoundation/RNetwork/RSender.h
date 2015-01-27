@@ -19,7 +19,7 @@
 #include <RSyntax.h>
 #include <RCString.h>
 #include <RByteOperations.h>
-#include "RSocket.h"
+#include <RSocket.h>
 
 class(RSender)
     SocketDescriptor socket;
