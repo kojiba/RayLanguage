@@ -24,9 +24,9 @@
     #include <RThread.h>
 #endif
 
-static const size_t startSizeOfRBufferDefault      = 1024; // 1kb of place
-static const size_t sizeMultiplierOfRBufferDefault = 2;
-static const size_t sizeOfObjectsOfRBufferDefault  = 128;  // 128 sizes stores
+#define startSizeOfRBufferDefault      1024 // 1kb of place
+#define sizeMultiplierOfRBufferDefault 2
+#define sizeOfObjectsOfRBufferDefault  128  // 128 sizes stores
 
 class(RBuffer) // -------------------
     discipleOf(RByteArray)
@@ -43,6 +43,9 @@ class(RBuffer) // -------------------
     RMutexDescriptor mutex;
 #endif
 endOf(RBuffer) // -------------------
+
+extern inline
+RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount);
 
 constructor (RBuffer));
 destructor  (RBuffer);

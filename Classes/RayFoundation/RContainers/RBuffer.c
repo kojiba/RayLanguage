@@ -28,35 +28,39 @@
     #define RMutexUnlockBuffer(some)
 #endif
 
-constructor(RBuffer)) {
-    object = allocator(RBuffer);
+RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
+    RBuffer *object = allocator(RBuffer);
     if(object != nil) {
         // allocation of buffer
-        master(object, RByteArray) = makeRByteArray(startSizeOfRBufferDefault);
+        master(object, RByteArray) = makeRByteArray(startSize);
         if(master(object, RByteArray) != nil) {
 
             // allocation of sizes array
-            object->sizesArray = RAlloc(sizeof(RRange) * sizeOfObjectsOfRBufferDefault);
+            object->sizesArray = RAlloc(sizeof(RRange) * objectCount);
 
             if(object->sizesArray  != nil) {
                 object->classId     = registerClassOnce(toString(RBuffer));
-                object->freePlaces  = sizeOfObjectsOfRBufferDefault;
+                object->freePlaces  = objectCount;
                 object->count       = 0;
                 object->totalPlaced = 0;
 #ifdef RAY_BUFFER_THREAD_SAFE
                 object->mutex = mutexWithType(RMutexRecursive);
 #endif
             } else {
-                RError("RBuffer. Allocation of sizes array failed.", object);
-
-                // cleanup
+//                RError("RBuffer. Allocation of sizes array failed.", object);
                 deleter(master(object, RByteArray), RByteArray);
             }
         } else {
-            RError("RBuffer. Allocation of master RByteArray failed.", object);
+//            RError("RBuffer. Allocation of master RByteArray failed.", object);
+            deallocator(object);
+            object = nil;
         }
     }
     return object;
+}
+
+inline constructor(RBuffer)) {
+    return makeRBufferOptions(startSizeOfRBufferDefault, sizeOfObjectsOfRBufferDefault);
 }
 
 destructor(RBuffer) {

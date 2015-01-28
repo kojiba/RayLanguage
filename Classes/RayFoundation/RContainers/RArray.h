@@ -40,10 +40,6 @@ typedef enum RArrayFlags {
              index_exists,
      index_does_not_exist,
 
-    // flag for shift
-               shift_left,
-              shift_right,
-
     // flag, determines bad newSize
     // (smaller that exist)
     // in addSize function
@@ -111,7 +107,7 @@ method(void,               quickSortWithDelegate,     RArray),    size_t first, 
 method(void,               sort,                      RArray));
 
 // Work
-method(void,               shift,                     RArray),    byte side, RRange range);           // do not call destructor
+method(void,               shift,                     RArray),    rbool isToLeft, RRange range);           // do not call destructor
 
 // Info
 static inline

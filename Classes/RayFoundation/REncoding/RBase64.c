@@ -31,7 +31,7 @@ size_t base64decodeLength(const char *base64Buffer) {
     return numberOfBytesDecoded + 1;
 }
 
-size_t base64encodeLength(size_t length) {
+inline size_t base64encodeLength(size_t length) {
     return ((length + 2) / 3 * 4) + 1;
 }
 

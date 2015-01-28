@@ -42,7 +42,7 @@ RCString makeRCSConstant(char *string);
 constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
-void        stringDeleter(RCString *string);
+void        stringDeleter(RCString *string); // destructs and deallocates ptr
 
 method(void,                flush,                        RCString));                                         // deletes old string
 // Setters
@@ -56,8 +56,10 @@ method(void,                replaceSubstrings,            RCString),    RCString
 // Info
 method(size_t,              numberOfCharacters,           RCString),    char character);
 method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
-method(static inline rbool, isContains,                   RCString),    char character);
-method(static inline rbool, isContainsSubsting,           RCString),    RCString *string);
+static inline
+method(rbool,               isContains,                   RCString),    char character);
+static inline
+method(rbool,               isContainsSubsting,           RCString),    RCString *string);
 extern inline
 method(size_t,              numberOfLines,                RCString));
 

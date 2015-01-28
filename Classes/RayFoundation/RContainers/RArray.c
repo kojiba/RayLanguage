@@ -273,7 +273,7 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
-        $(object, m(shift, RArray)), shift_left, makeRRange(index, 1));
+        $(object, m(shift, RArray)), yes, makeRRange(index, 1));
         RMutexUnlockArray(arrayMutex);
         return no_error;
 
@@ -316,7 +316,7 @@ method(void, deleteObjects, RArray), RRange range){
         }
     }
     RMutexUnlockArray(arrayMutex);
-    $(object, m(shift, RArray)), shift_left, range);
+    $(object, m(shift, RArray)), yes, range);
 }
 
 method(void, deleteLast, RArray)){
@@ -463,7 +463,7 @@ method(void, sort, RArray)) {
 
 #pragma mark Work
 
-method(void, shift, RArray), byte side, RRange range) {
+method(void, shift, RArray), rbool isToLeft, RRange range) {
     size_t iterator;
 #ifdef RAY_SHORT_DEBUG
     char *sideName;
@@ -473,26 +473,24 @@ method(void, shift, RArray), byte side, RRange range) {
          sideName = "right";
     } RPrintf("RArray shift of %p on %s\n", object, sideName);
 #endif
-    RMutexLockArray(arrayMutex);
     if(range.size != 0) {
-        if (side == shift_left) {
+        RMutexLockArray(arrayMutex);
+        if (isToLeft) {
             // do not call destructor
             for(iterator = range.start; iterator < object->count - range.size; ++iterator) {
                 object->array[iterator] = object->array[iterator + range.size];
             }
+        } else {
+            for(iterator = range.size + range.start; iterator != 0; --iterator) {
+                object->array[iterator] = object->array[iterator - range.size];
+            }
         }
-//        fixme
-//        else {
-//            for(iterator = object->size - range->size; iterator < object->size; ++iterator) {
-//                object->array[iterator] = object->array[iterator - object->size + range->size];
-//            }
-//        }
         object->count -= range.size;
         object->freePlaces += range.size;
+        RMutexUnlockArray(arrayMutex);
     } else {
         RWarning("RArray. Shifts of RArray do nothing." , object);
     }
-    RMutexUnlockArray(arrayMutex);
 }
 
 #pragma mark Info

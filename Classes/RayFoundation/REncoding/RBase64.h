@@ -50,19 +50,20 @@ static char decodingTableBase64[256] = {
 };
 
 // base
-inline size_t base64decodeLength (const char *base64Buffer);
-inline size_t base64encodeLength (size_t length);
+size_t base64decodeLength (const char *base64Buffer);
+extern inline
+size_t base64encodeLength (size_t length);
 
 size_t encodeBase64 (char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
 size_t decodeBase64 (pointer destination, const pointer encodedData);             // destination will be 0-terminated
 
 // Additions
 // RCString
-method(inline RCString*,   encodeBase64,        RCString));
-method(inline RCString*,   decodeBase64,        RCString));
-method(inline RByteArray*, decodeBase64ToBytes, RCString));
+method(RCString*,   encodeBase64,        RCString));
+method(RCString*,   decodeBase64,        RCString));
+method(RByteArray*, decodeBase64ToBytes, RCString));
 
 // RByteArray
-method(inline RCString*, encodeBase64, RByteArray));
+method(RCString*, encodeBase64, RByteArray));
 
 #endif /*__R_BASE_64_H__*/
