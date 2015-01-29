@@ -51,7 +51,7 @@ constructor(RThread),
                         return nil;
                     }
             #else
-                object->descriptor = CreateThread(NULL, 0, function, argument, 0, NULL);
+                object->descriptor = CreateThread(nil, 0, function, argument, 0, nil);
                 if(object->descriptor != nil) {
             #endif
                     object->classId = registerClassOnce(toString(RThread));
@@ -64,6 +64,10 @@ constructor(RThread),
 
 destructor(RThread) {
     deallocator(object->descriptor);
+}
+
+void RThreadDeleter(pointer rthread) {
+    deleter(rthread, RThread);
 }
 
 printer(RThread) {

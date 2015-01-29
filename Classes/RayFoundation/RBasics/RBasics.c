@@ -110,8 +110,8 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
 #pragma mark REnumerateDelegate
 
 method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index) {
-    if(object->m(checkObject, RCompareDelegate) != nil) {
-        return $(object, object->m(checkObject, RCompareDelegate)), data, index);
+    if(object->checkObject != nil) {
+        return object->checkObject(data, index);
     } else {
         return yes;
     }

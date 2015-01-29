@@ -95,6 +95,7 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 // Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference
 method(RArray *,           getSubarray,               RArray),    RRange range);
+method(void,               enumerate,                 RArray),    REnumerateDelegate *delegate);
 
 extern inline
 method(pointer,            elementAtIndex,            RArray),    size_t index);

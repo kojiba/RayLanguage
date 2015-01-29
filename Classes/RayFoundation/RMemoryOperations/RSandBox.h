@@ -37,6 +37,8 @@ typedef struct RControlDescriptor {
     RRange memRange;
 } RControlDescriptor;
 
+struct RSandBox;
+
 class(RSandBoxDelegate)
     size_t (*rangeGenerator)(struct RSandBox *currentSandbox);
     size_t (*memoryPlaced)  (struct RSandBox *currentSandbox);

@@ -33,6 +33,7 @@ constructor (RThread),
         pointer argument);
 
 destructor  (RThread);
+void RThreadDeleter(pointer rthread);
 printer     (RThread);
 
 method(void, cancel,  RThread));

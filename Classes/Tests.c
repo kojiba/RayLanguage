@@ -177,7 +177,7 @@ class(RListFinder)
 
 endOf(RListFinder)
 
-method(rbool, checkObject, RListFinder), pointer data, size_t index) {
+rbool checkObjectRListFinder(pointer data, size_t index) {
     if(index == 2) {
         return no;
     }
@@ -192,7 +192,7 @@ int RListTest(void) {
     size_t iterator;
     RListFinder finder;
     // link virtual
-    finder.master.checkObjectRCompareDelegate = (rbool (*)(REnumerateDelegate *, pointer, size_t)) m(checkObject, RListFinder);
+    finder.master.checkObject = checkObjectRListFinder;
 
     RList *list = constructorOfRList(nil);
     list->printerDelegate = printfInt;

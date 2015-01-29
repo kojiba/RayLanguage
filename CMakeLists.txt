@@ -60,8 +60,10 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
                  Classes/RayFoundation/RCustomIO/RCustomIO.h
+
                  Classes/RayFoundation/RThread/RThreadNative.h
                  Classes/RayFoundation/RThread/RThread.h
+                 Classes/RayFoundation/RThread/RThreadPool.h
 
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.h
@@ -101,7 +103,9 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
                  Classes/RayFoundation/RCustomIO/RCustomIO.c
+
                  Classes/RayFoundation/RThread/RThread.c
+                 Classes/RayFoundation/RThread/RThreadPool.c
 
                  # Networking
                  Classes/RayFoundation/RNetwork/RReceiver.c

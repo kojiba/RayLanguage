@@ -390,6 +390,13 @@ inline method(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
+method(void, enumerate, RArray), REnumerateDelegate *delegate) {
+    size_t iterator;
+    forAll(iterator, object->count) {
+        $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+    }
+}
+
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
