@@ -256,7 +256,6 @@ int RThreadTest(void) {
 }
 
 void ComplexTest() {
-    enablePool(RPool);
     srand((unsigned int) time(nil));
     if(
            !RDynamicArrayTest()
