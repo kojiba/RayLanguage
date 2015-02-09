@@ -31,6 +31,8 @@
 #define RAY_CLASS_TABLE_THREAD_SAFE
 
 #define RAY_POOL_THREAD_SAFE
+#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+
 #define RAY_SAND_BOX_THREAD_SAFE
 
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors

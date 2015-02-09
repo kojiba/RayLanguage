@@ -33,9 +33,16 @@ typedef enum RSandBoxAllocationMode {
 } RSandBoxAllocationMode;
 
 typedef struct RControlDescriptor {
-//    size_t identifier;  //  reserved
+#ifdef R_POOL_DETAILED
+    RProcessId allocatorThread;
+#endif
     RRange memRange;
 } RControlDescriptor;
+
+RCompareFlags compareRControlDescriptor(RControlDescriptor *first, RControlDescriptor *second);
+void          deleterOfRControlDescriptor(RControlDescriptor *object);
+
+//---------------------------------------------------------------------------------
 
 struct RSandBox;
 
@@ -46,22 +53,22 @@ class(RSandBoxDelegate)
 endOf(RSandBoxDelegate)
 
 class(RSandBox)
-    RByteArray             *memPart;
+    RByteArray         *memPart;
 
-    RControlDescriptor     *descriptorTable;
-    RRange                  descriptorsInfo; // size - size of places, start - placed
+    RControlDescriptor *descriptorTable;
+    RRange              descriptorsInfo; // size - size of places, start - placed
 
     // inner (high-lvl in hierarchy functions)
-    pointer               (*innerMalloc) (size_t size);
-    pointer               (*innerRealloc)(pointer ptr, size_t oldSize);
-    pointer               (*innerCalloc) (size_t size, size_t blockSize);
-    void                  (*innerFree)   (pointer ptr);
+    pointer           (*innerMalloc) (size_t size);
+    pointer           (*innerRealloc)(pointer ptr, size_t oldSize);
+    pointer           (*innerCalloc) (size_t size, size_t blockSize);
+    void              (*innerFree)   (pointer ptr);
 
     // self functions
-    pointer               (*selfMalloc) (size_t size);
-    pointer               (*selfRealloc)(pointer ptr, size_t oldSize);
-    pointer               (*selfCalloc) (size_t size, size_t blockSize);
-    void                  (*selfFree)   (pointer ptr);
+    pointer           (*selfMalloc) (size_t size);
+    pointer           (*selfRealloc)(pointer ptr, size_t oldSize);
+    pointer           (*selfCalloc) (size_t size, size_t blockSize);
+    void              (*selfFree)   (pointer ptr);
 
     RSandBoxDelegate *delegate;
 

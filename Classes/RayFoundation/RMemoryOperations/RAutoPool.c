@@ -17,6 +17,12 @@
 
 #include <RAutoPool.h>
 
+#ifdef R_POOL_DETAILED
+    #include <RSandBox.h>
+    #include <unistd.h>
+
+#endif
+
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
     #define poolMutex &object->mutex
     #define RMutexLockPool() RMutexLock(poolMutex)
@@ -33,6 +39,22 @@
                      RCallocPtr = object->innerCalloc;\
                      RFreePtr = object->innerFree
 
+void poolPrinter(pointer some) {
+#ifdef R_POOL_DETAILED
+    RControlDescriptor* temp = some;
+    RPrintf("%p [s: %lu] (pid: %i)\n", (pointer)temp->memRange.start, temp->memRange.size, temp->allocatorThread);
+#else
+    RPrintf("%p\n", some);
+#endif
+}
+
+void innerFree(pointer some) {
+#ifdef R_POOL_DETAILED
+    free((pointer)((RControlDescriptor*)some)->memRange.start);
+#endif
+    free(some);
+}
+
 constructor(RAutoPool)) {
     object = allocator(RAutoPool);
     if(object != nil) {
@@ -43,7 +65,8 @@ constructor(RAutoPool)) {
             object->innerRealloc = realloc;
             object->innerCalloc  = calloc;
             object->innerFree    = free;
-            object->pointersInWork->destructorDelegate = object->innerFree;
+            object->pointersInWork->destructorDelegate = innerFree;
+            object->pointersInWork->printerDelegate = poolPrinter;
 
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
             object->mutex = mutexWithType(RMutexRecursive);
@@ -81,7 +104,15 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
     RMutexLockPool();
     pointer temp = RAlloc(sizeInBytes);
     if(temp != nil) {
+#ifdef R_POOL_DETAILED
+        RControlDescriptor* descriptor = allocator(RControlDescriptor);
+        descriptor->memRange.size = sizeInBytes;
+        descriptor->memRange.start = (size_t) temp;
+        descriptor->allocatorThread = getppid();
+        $(object->pointersInWork, m(addObject, RArray)), descriptor);
+#else
         $(object->pointersInWork, m(addObject, RArray)), temp);
+#endif
     }
     RMutexUnlockPool();
     backPtrs();
@@ -97,24 +128,48 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         RMutexLockPool();
         RCompareDelegate *delegate = allocator(RCompareDelegate);
         if(delegate != nil) {
-            delegate->etaloneObject = ptr;
+#ifndef R_POOL_DETAILED
             delegate->virtualCompareMethod = nil;
-            // search if it not first realloc for ptr, not destruct
+            delegate->etaloneObject = ptr;
+#else
+            RControlDescriptor *descriptor = allocator(RControlDescriptor);
+            descriptor->memRange.start = (size_t) ptr;
+            delegate->etaloneObject = descriptor;
+            delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRControlDescriptor;
+#endif
+            // search if it not first realloc for ptr
             RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
             if(result.object != nil) {
+#ifndef R_POOL_DETAILED
+                // not destruct it
                 object->pointersInWork->destructorDelegate = nil;
+#else
+                // only free (must dealloc struct)
+                object->pointersInWork->destructorDelegate = object->innerFree;
+#endif
                 if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
                     RError("Bad pointers array index.", object);
                 }
-                object->pointersInWork->destructorDelegate = object->innerFree;
-
+                object->pointersInWork->destructorDelegate = innerFree;
             }
 
             pointer temp = RReAlloc(ptr, newSize);
+            if(temp != nil) {
+                // finally add new pointer
+#ifdef R_POOL_DETAILED
+                RControlDescriptor* descriptor2 = allocator(RControlDescriptor);
+                descriptor2->memRange.size = newSize;
+                descriptor2->memRange.start = (size_t) temp;
+                descriptor2->allocatorThread = getppid();
+                $(object->pointersInWork, m(addObject, RArray)), descriptor2);
+#else
+                $(object->pointersInWork, m(addObject, RArray)), temp);
+#endif
+            }
 
-            // finally add new pointer
-            $(object->pointersInWork, m(addObject, RArray)), temp);
-
+#ifdef R_POOL_DETAILED
+            deallocator(descriptor);
+#endif
             deallocator(delegate);
             RMutexUnlockPool();
             backPtrs();
@@ -134,7 +189,17 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
     // high lvl calloc
     RMutexLockPool();
     pointer temp = RClearAlloc(blockCount, blockSize);
-    $(object->pointersInWork, m(addObject, RArray)), temp);
+    if(temp != nil) {
+#ifdef R_POOL_DETAILED
+        RControlDescriptor* descriptor = allocator(RControlDescriptor);
+        descriptor->memRange.size = blockCount * blockSize;
+        descriptor->memRange.start = (size_t) temp;
+        descriptor->allocatorThread = getppid();
+        $(object->pointersInWork, m(addObject, RArray)), descriptor);
+#else
+        $(object->pointersInWork, m(addObject, RArray)), temp);
+#endif
+    }
     RMutexUnlockPool();
     backPtrs();
     return temp;
@@ -146,8 +211,16 @@ method(void, free, RAutoPool), pointer ptr) {
     RMutexLockPool();
     RCompareDelegate *delegate = allocator(RCompareDelegate);
     if(delegate != nil) {
-        delegate->etaloneObject = ptr;
+#ifndef R_POOL_DETAILED
         delegate->virtualCompareMethod = nil;
+        delegate->etaloneObject = ptr;
+#else
+        RControlDescriptor *descriptor = allocator(RControlDescriptor);
+        descriptor->memRange.start = (size_t) ptr;
+        delegate->etaloneObject = descriptor;
+        delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRControlDescriptor;
+        object->pointersInWork->destructorDelegate = object->innerFree;
+#endif
         // search ptr
         RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
         if(result.object != nil) {
@@ -157,6 +230,11 @@ method(void, free, RAutoPool), pointer ptr) {
         } else {
             RErrStr "ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool - %p\n", ptr, object);
         }
+#ifdef R_POOL_DETAILED
+        object->pointersInWork->destructorDelegate = innerFree;
+        deallocator(descriptor);
+#endif
+        deallocator(delegate);
     } else {
         RError("RAutoPool. Bad RCompareDelegate allocation on free.", object);
     }

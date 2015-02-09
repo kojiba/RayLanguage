@@ -39,6 +39,10 @@
                     RFreePtr = oldFree
 
 
+RCompareFlags compareRControlDescriptor(RControlDescriptor *first, RControlDescriptor *second) {
+    return /*first != nil && */first->memRange.start == second->memRange.start ? equals : not_equals;
+}
+
 constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {

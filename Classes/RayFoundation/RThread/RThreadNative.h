@@ -22,6 +22,7 @@
     typedef pthread_attr_t                   RThreadAttributes;
     typedef pthread_mutex_t                  RMutexDescriptor;
     typedef pthread_mutexattr_t              RMutexAttributes;
+    typedef pid_t                            RProcessId;
     typedef pointer (*RThreadFunction)(pointer);
 
     #define RMutexInit                       pthread_mutex_init

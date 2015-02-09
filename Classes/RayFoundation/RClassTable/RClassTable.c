@@ -168,7 +168,7 @@ method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
 }
 
 singleton(RClassTable) {
-    static RClassTable *instance;
+    static RClassTable *instance = nil;
     if (instance == nil) {
 #ifdef RAY_SHORT_DEBUG
         RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);

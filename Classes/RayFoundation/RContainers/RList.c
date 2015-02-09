@@ -50,15 +50,20 @@ constructor(RList)) {
 
 destructor(RList) {
     RNode *iterator = object->tail;
+    RNode *temp;
     RMutexLockList();
     if (object->destructorDelegate != nil) {
-        for (; iterator != nil; iterator = iterator->next) {
-            object->destructorDelegate(iterator->data);
+        while(iterator != nil) {
+            temp = iterator->next;
+            object->destructorDelegate(iterator);
             deallocator(iterator);
+            iterator = temp;
         }
     } else {
-        for (; iterator != nil; iterator = iterator->next) {
+       while(iterator != nil) {
+            temp = iterator->next;
             deallocator(iterator);
+            iterator = temp;
         }
     }
     RMutexUnlockList();
