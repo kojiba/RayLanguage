@@ -267,11 +267,11 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 }
 
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
-    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray deleteObjectAtIndex of %p\n", object);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
+        RMutexLockArray(arrayMutex);
         destroyElementAtIndex(index);
         $(object, m(shift, RArray)), yes, makeRRange(index, 1));
         RMutexUnlockArray(arrayMutex);
@@ -366,6 +366,7 @@ inline method(pointer, elementAtIndex, RArray), size_t index) {
 method(RArray *, getSubarray, RArray), RRange range) {
     if(range.size + range.start <= object->count
             && range.start < object->count) {
+        RMutexLockArray(arrayMutex);
         RArray *result = makeRArrayOptions(range.size, object->sizeMultiplier, nil);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray getSubarray of %p\n", object);
@@ -375,7 +376,6 @@ method(RArray *, getSubarray, RArray), RRange range) {
             // set up subArray delegates
             result->destructorDelegate = object->destructorDelegate;
             result->printerDelegate = object->printerDelegate;
-            RMutexLockArray(arrayMutex);
             fromStartForAll(iterator, range.start, range.size) {
                 $(result, m(addObjectUnsafe, RArray)), object->array[iterator]);
             }
@@ -392,21 +392,22 @@ inline method(pointer, lastObject, RArray)) {
 
 method(void, enumerate, RArray), REnumerateDelegate *delegate) {
     size_t iterator;
+    RMutexLockArray(arrayMutex);
     forAll(iterator, object->count) {
         $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
     }
+    RMutexUnlockArray(arrayMutex);
 }
 
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
-    RMutexLockArray(arrayMutex);
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
 #endif
-
     register size_t inner;
     register size_t outer;
+    RMutexLockArray(arrayMutex);
 
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
@@ -420,7 +421,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
 }
 
 byte RArrayStandartComparator(pointer first, pointer second) {
-    // whats-inside-higher, sort
+    // pointer sort
     if (first > second) {
         return swap_objects;
     } else {
@@ -503,9 +504,12 @@ method(void, shift, RArray), rbool isToLeft, RRange range) {
 #pragma mark Info
 
 method(static inline byte, checkIfIndexIn, RArray), size_t index) {
+    RMutexLockArray(arrayMutex);
     if (index < object->count) {
+        RMutexUnlockArray(arrayMutex);
         return index_exists;
     } else {
+        RMutexUnlockArray(arrayMutex);
         return index_does_not_exist;
     }
 }
@@ -516,9 +520,9 @@ method(RList *, toRList, RArray)) {
     RList *result = $(nil, c(RList)));
     if(result != nil) {
         size_t iterator;
+        RMutexLockArray(arrayMutex);
         result->destructorDelegate = object->destructorDelegate;
         result->printerDelegate = object->printerDelegate;
-        RMutexLockArray(arrayMutex);
         forAll(iterator, object->count) {
             $(result, m(addHead, RList)), object->array[iterator]);
         }

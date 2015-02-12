@@ -19,8 +19,6 @@
 
 #ifdef R_POOL_DETAILED
     #include <RSandBox.h>
-    #include <unistd.h>
-
 #endif
 
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
@@ -42,7 +40,7 @@
 void poolPrinter(pointer some) {
 #ifdef R_POOL_DETAILED
     RControlDescriptor* temp = some;
-    RPrintf("%p [s: %lu] (pid: %i)\n", (pointer)temp->memRange.start, temp->memRange.size, temp->allocatorThread);
+    RPrintf("%p [s: %lu] (tuid: %qu)\n", (pointer)temp->memRange.start, temp->memRange.size, temp->allocatorThread);
 #else
     RPrintf("%p\n", some);
 #endif
@@ -108,7 +106,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
         RControlDescriptor* descriptor = allocator(RControlDescriptor);
         descriptor->memRange.size = sizeInBytes;
         descriptor->memRange.start = (size_t) temp;
-        descriptor->allocatorThread = getppid();
+        descriptor->allocatorThread = getThreadId();
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);
@@ -160,7 +158,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 RControlDescriptor* descriptor2 = allocator(RControlDescriptor);
                 descriptor2->memRange.size = newSize;
                 descriptor2->memRange.start = (size_t) temp;
-                descriptor2->allocatorThread = getppid();
+                descriptor2->allocatorThread = getThreadId();
                 $(object->pointersInWork, m(addObject, RArray)), descriptor2);
 #else
                 $(object->pointersInWork, m(addObject, RArray)), temp);
@@ -194,7 +192,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
         RControlDescriptor* descriptor = allocator(RControlDescriptor);
         descriptor->memRange.size = blockCount * blockSize;
         descriptor->memRange.start = (size_t) temp;
-        descriptor->allocatorThread = getppid();
+        descriptor->allocatorThread = getThreadId();
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);

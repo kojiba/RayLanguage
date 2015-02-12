@@ -16,13 +16,16 @@
 #ifndef __R_THREAD_NATIVE__
 #define __R_THREAD_NATIVE__
 
+#include <RSyntax.h>
+
 #ifndef __WIN32
     #include <pthread.h>
+
     typedef pthread_t                        RThreadDescriptor;
     typedef pthread_attr_t                   RThreadAttributes;
     typedef pthread_mutex_t                  RMutexDescriptor;
     typedef pthread_mutexattr_t              RMutexAttributes;
-    typedef pid_t                            RProcessId;
+    typedef uint64_t                         RProcessId;
     typedef pointer (*RThreadFunction)(pointer);
 
     #define RMutexInit                       pthread_mutex_init
@@ -57,5 +60,7 @@
 
     // fixme in progress
 #endif
+
+RProcessId getThreadId(); // returns caller thread unique identifier
 
 #endif /*__R_THREAD_NATIVE__*/

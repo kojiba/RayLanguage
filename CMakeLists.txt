@@ -104,6 +104,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
                  Classes/RayFoundation/RCustomIO/RCustomIO.c
 
+                 Classes/RayFoundation/RThread/RThreadNative.c
                  Classes/RayFoundation/RThread/RThread.c
                  Classes/RayFoundation/RThread/RThreadPool.c
 
