@@ -48,9 +48,7 @@ method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
             }
         }
         if(master(checkPair, RCString) != nil && master(object, RCString) != nil) {
-            if($(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString)) == equals){
-                return equals;
-            }
+            return $(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString));
         }
     } else {
         RError("RCNP. Name and Id (or Object), is nil, please delete function call, or fix it", object);

@@ -19,6 +19,10 @@
 #include <RSyntax.h>
 #include <RArray.h>
 
+#ifndef RAY_ARRAY_THREAD_SAFE
+    #include <RThread.h>
+#endif
+
 class(RThreadPool)
     REnumerateDelegate enumerator;
     RThreadFunction delegate;

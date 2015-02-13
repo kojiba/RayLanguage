@@ -15,7 +15,7 @@
 
 #include <RClassTable.h>
 
-#if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+#if defined(RAY_CLASS_TABLE_THREAD_SAFE)
     #define tableMutex          &object->mutex
     #define RMutexLockTable()   RMutexLock(tableMutex)
     #define RMutexUnlockTable() RMutexUnlock(tableMutex)
@@ -52,8 +52,8 @@ constructor(RClassTable)) {
                 // 4 it's for self
                 object->classId = 3;
 
-#if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-                object->mutex = mutexWithType(RMutexRecursive);
+#if defined(RAY_CLASS_TABLE_THREAD_SAFE)
+                object->mutex = mutexWithType(RMutexNormal);
 #endif
             } else {
                 RError("RClassTable. Bad allocation on delegate.", object);
@@ -74,13 +74,39 @@ destructor(RClassTable) {
     deallocator(master(object, RCompareDelegate));
 }
 
+#pragma mark Private worker
+
+method(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
+    RClassNamePair *pair = $(nil, c(RClassNamePair)));
+    if(pair != nil) {
+        $(master(pair, RCString), m(setConstantString, RCString)), name);
+        master(object, RCompareDelegate)->etaloneObject = pair;
+        RFindResult foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+
+        // delete temp
+        deleter(pair, RClassNamePair);
+
+        if(foundedObject.object == nil){
+            return 0;
+        } else {
+            return ((RClassNamePair*)foundedObject.object)->idForClassName;
+        }
+    } else {
+        RError("RClassTable. Bad allocation of temp RClassNamePair.", object);
+    }
+    return 0;
+}
+
+#pragma mark Public
+
 method(size_t, registerClassWithName, RClassTable), char *name) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
 #endif
-    RMutexLockTable();
     if(name != nil) {
-        register size_t result = $(object, m(getIdentifierByClassName, RClassTable)), name);
+        size_t result;
+        RMutexLockTable();
+        result = $(object, m(getIdentifierByClassNameWorker, RClassTable)), name);
         if(result == 0) {
             RClassNamePair *pair = $(nil, c(RClassNamePair)));
             if (pair != nil) {
@@ -109,7 +135,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
             return result;
         }
     } else {
-        RError("RClassTable. Register classname is nil, do nothig, please remove function call, or fix it.", object);
+        RWarning("RClassTable. Register classname is nil.", object);
         RMutexUnlockTable();
         return 0;
     }
@@ -128,37 +154,15 @@ printer(RClassTable) {
 
 method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     RMutexLockTable();
-    RClassNamePair *pair = $(nil, c(RClassNamePair)));
-    if(pair != nil) {
-        $(master(pair, RCString), m(setConstantString, RCString)), name);
-        master(object, RCompareDelegate)->etaloneObject = pair;
-        RFindResult foundedObject;
-        foundedObject.object = nil;
-
-        if(foundedObject.object == nil) {
-            foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
-        }
-        // delete temp
-        deleter(pair, RClassNamePair);
-
-        if(foundedObject.object == nil){
-            RMutexUnlockTable();
-            return 0;
-        } else {
-            RMutexUnlockTable();
-            return ((RClassNamePair*)foundedObject.object)->idForClassName;
-        }
-    } else {
-        RError("RClassTable. Bad allocation of temp RClassNamePair.", object);
-    }
+    size_t result = $(object, m(getIdentifierByClassNameWorker, RClassTable)), name);
     RMutexUnlockTable();
-    return 0;
+    return result;
 }
 
 method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
     RMutexLockTable();
     if(id <= master(object, RArray)->count) {
-        RClassNamePair *temp = master(object, RArray)->array[id];
+        RClassNamePair *temp = $(master(object, RArray), m(elementAtIndex, RArray)), id);
         RMutexUnlockTable();
         return master(temp, RCString);
     } else {
@@ -175,7 +179,7 @@ singleton(RClassTable) {
 #endif
         instance = $(nil, c(RClassTable)));
         if(instance != nil) {
-            // register classes on that  RClassTable was built (only our singleton)
+            // register classes on that RClassTable was built (only our singleton)
             $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
             $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));

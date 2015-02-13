@@ -336,6 +336,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     RPrintf("RArray findObjectWithDelegate of %p\n", object);
 #endif
     RMutexLockArray(arrayMutex);
+    result.index = object->count;
     if(delegate != nil) {
         forAll(iterator, object->count) {
             if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
