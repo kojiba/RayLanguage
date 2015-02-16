@@ -35,7 +35,7 @@
 #define toPoolPtrs() RMallocPtr = object->innerMalloc;\
                      RReallocPtr = object->innerRealloc;\
                      RCallocPtr = object->innerCalloc;\
-                     RFreePtr = object->innerFree
+                     RFreePtr = object->innerFree;
 
 void poolPrinter(pointer some) {
 #ifdef R_POOL_DETAILED
@@ -59,6 +59,7 @@ constructor(RAutoPool)) {
         object->pointersInWork = makeRArray();
         if(object->pointersInWork != nil) {
             object->classId      = 5;
+            // store current hierarchy lvl memory functions
             object->innerMalloc  = malloc;
             object->innerRealloc = realloc;
             object->innerCalloc  = calloc;
@@ -67,7 +68,7 @@ constructor(RAutoPool)) {
             object->pointersInWork->printerDelegate = poolPrinter;
 
 #if defined(RAY_POOL_THREAD_SAFE)
-            object->mutex = mutexWithType(RMutexRecursive);
+            object->mutex = mutexWithType(RMutexNormal);
 #endif
         } else {
             RError("RAutoPool. Bad workers RArray allocation.", object);
@@ -127,8 +128,8 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         RCompareDelegate *delegate = allocator(RCompareDelegate);
         if(delegate != nil) {
 #ifndef R_POOL_DETAILED
-            delegate->virtualCompareMethod = nil;
-            delegate->etaloneObject = ptr;
+            delegateFunction->virtualCompareMethod = nil;
+            delegateFunction->etaloneObject = ptr;
 #else
             RControlDescriptor *descriptor = allocator(RControlDescriptor);
             descriptor->memRange.start = (size_t) ptr;
@@ -231,7 +232,7 @@ method(void, free, RAutoPool), pointer ptr) {
 #ifdef R_POOL_DETAILED
         object->pointersInWork->destructorDelegate = innerFree;
         if(RFreePtr == object->selfFree) {
-            RError("inner free is self free, bad bad bad!!!", object);
+            RError("RAutoPool. Inner free is self free, bad bad bad!!!", object);
         }
         deallocator(descriptor);
 #endif
@@ -249,16 +250,20 @@ method(void, drain, RAutoPool)) {
     RMutexUnlockPool();
 }
 
-void enablePool(RAutoPool *pool) {
-    malloc = pool->selfMalloc;
-    realloc = pool->selfRealloc;
-    calloc = pool->selfCalloc;
-    free = pool->selfFree;
+void enablePool(RAutoPool *object) {
+    RMutexLockPool();
+    malloc = object->selfMalloc;
+    realloc = object->selfRealloc;
+    calloc = object->selfCalloc;
+    free = object->selfFree;
+    RMutexUnlockPool();
 }
 
-void disablePool(RAutoPool *pool) {
-    malloc = pool->innerMalloc;
-    realloc = pool->innerRealloc;
-    calloc = pool->innerCalloc;
-    free = pool->innerFree;
+void disablePool(RAutoPool *object) {
+    RMutexLockPool();
+    malloc = object->innerMalloc;
+    realloc = object->innerRealloc;
+    calloc = object->innerCalloc;
+    free = object->innerFree;
+    RMutexUnlockPool();
 }

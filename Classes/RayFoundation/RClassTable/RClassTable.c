@@ -175,7 +175,7 @@ singleton(RClassTable) {
     static RClassTable *instance = nil;
     if (instance == nil) {
 #ifdef RAY_SHORT_DEBUG
-        RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n", instance);
+        RPrintf("--------------------- RCTS FIRST_CALL START -------------------\n");
 #endif
         instance = $(nil, c(RClassTable)));
         if(instance != nil) {
@@ -186,10 +186,11 @@ singleton(RClassTable) {
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
             $(instance, m(registerClassWithName, RClassTable)), toString(RSandBox));
             $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RThread));
         }
 
 #ifdef RAY_SHORT_DEBUG
-        RPrintf("--------------------- RCTS FIRST_CALL ---------------------\n\n", instance);
+        RPrintf("--------------------- RCTS FIRST_CALL END ---------------------\n\n");
 #endif
     }
     return instance;

@@ -73,7 +73,7 @@ method(void,     deleteDataAt,     RBuffer),    size_t index);
 
 // casts
 method(RArray *, toReferencesRArray, RBuffer)); // using data reference from RBuffer, delegates not set, size to fit
-method(RArray *, toRArray,           RBuffer)); // copy, delete delegate is free, size to fit
+method(RArray *, toRArray,           RBuffer)); // copy, delete delegateFunction is free, size to fit
 
 // file i/o
 RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit

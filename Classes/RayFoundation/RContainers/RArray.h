@@ -56,8 +56,8 @@ class(RArray) //----------------------------------------------------------------
     size_t    sizeMultiplier;                // size multiplier when auto-add-size
     size_t    count;                         // size of elements in array
     size_t    freePlaces;                    // size of free places for elements
-    void    (*destructorDelegate)(pointer);  // destructor of elements delegate
-    void    (*printerDelegate)   (pointer);  // printer of elements delegate
+    void    (*destructorDelegate)(pointer);  // destructor of elements delegateFunction
+    void    (*printerDelegate)   (pointer);  // printer of elements delegateFunction
     pointer  *array;                         // array
 
 #ifdef RAY_ARRAY_THREAD_SAFE

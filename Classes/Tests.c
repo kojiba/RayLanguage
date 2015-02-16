@@ -192,7 +192,7 @@ int RListTest(void) {
     size_t iterator;
     RListFinder finder;
     // link virtual
-    finder.master.checkObject = checkObjectRListFinder;
+    finder.master.virtualCheckObject = checkObjectRListFinder;
 
     RList *list = constructorOfRList(nil);
     list->printerDelegate = printfInt;
@@ -249,7 +249,7 @@ int RThreadTest(void) {
     }
 
     $(thread1, m(join, RThread)));
-    deleter(thread1, RThread);
+    deallocator(thread1);
 
     RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);
@@ -260,17 +260,17 @@ int RThreadTest(void) {
 void ComplexTest() {
     srand((unsigned int) time(nil));
     if(
-//           !RDynamicArrayTest()
-        /*&& */!RListTest()
-//        && !RClassNamePairTest()
-//        && !RClassTableTest()
-//        && !RDictionaryTest()
-//        && !StringArrayTest()
-//        && !StringDictionaryTest()
-//        && !RByteArrayTest()
-//        && !RBufferTest()
+           !RDynamicArrayTest()
+        && !RListTest()
+        && !RClassNamePairTest()
+        && !RClassTableTest()
+        && !RDictionaryTest()
+        && !StringArrayTest()
+        && !StringDictionaryTest()
+        && !RByteArrayTest()
+        && !RBufferTest()
         #ifndef __WIN32
-//            && !RThreadTest() // fixme in progress
+            && !RThreadTest() // fixme in progress
         #endif
     ) {
         RPrintf("All tests passed successfully\n");

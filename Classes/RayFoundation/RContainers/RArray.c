@@ -476,7 +476,7 @@ method(void, shift, RArray), rbool isToLeft, RRange range) {
     size_t iterator;
 #ifdef RAY_SHORT_DEBUG
     char *sideName;
-    if(side == shift_left) {
+    if(isToLeft) {
          sideName = "left";
     } else {
          sideName = "right";

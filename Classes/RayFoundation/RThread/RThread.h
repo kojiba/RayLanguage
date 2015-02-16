@@ -24,7 +24,7 @@ RMutexDescriptor mutexWithType(unsigned short mutexType);
 
 // wrapper
 class(RThread)
-    RThreadDescriptor *descriptor;
+    RThreadDescriptor descriptor;
 endOf(RThread)
 
 constructor (RThread),
@@ -32,8 +32,6 @@ constructor (RThread),
         RThreadFunction function,
         pointer argument);
 
-destructor  (RThread);
-void RThreadDeleter(pointer rthread);
 printer     (RThread);
 
 method(void, cancel,  RThread));

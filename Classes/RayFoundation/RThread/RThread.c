@@ -12,8 +12,8 @@
  *         |__/
  **/
 
-#include <RClassTable.h>
 #include <RThread.h>
+#include <RClassTable.h>
 
 #pragma mark Base
 
@@ -25,7 +25,7 @@ RMutexDescriptor mutexWithType(unsigned short mutexType) {
         RMutexAttributeInit(&Attr);
         RMutexAttributeSetType(&Attr, mutexType);
         if(RMutexInit(&mutex,  &Attr) != 0) {
-            RError("RMutexWithType. Error creating mutex.", &mutex);
+            RError("RMutexWithType. Error creating mutex with type.", &mutex);
         }
     #else
         mutex = RMutexInit(nil, no, nil);
@@ -44,9 +44,7 @@ constructor(RThread),
     object = allocator(RThread);
     if(object != nil) {
             #ifndef __WIN32
-                object->descriptor = allocator(RThreadDescriptor);
-                if(object->descriptor != nil) {
-                    if(pthread_create(object->descriptor, attributes, function, argument) != 0) {
+                    if(pthread_create(&object->descriptor, attributes, function, argument) != 0) {
                         RError("RThread. Bad pthread_create.", object);
                         return nil;
                     }
@@ -54,20 +52,9 @@ constructor(RThread),
                 object->descriptor = CreateThread(nil, 0, function, argument, 0, nil);
                 if(object->descriptor != nil) {
             #endif
-                    object->classId = registerClassOnce(toString(RThread));
-        } else {
-            RError("RThread. Bad creation/allocation of thread descriptor.", object);
-        }
+                    object->classId = 6; //registerClassOnce(toString(RThread));
     }
     return object;
-}
-
-destructor(RThread) {
-    deallocator(object->descriptor);
-}
-
-void RThreadDeleter(pointer rthread) {
-    deleter(rthread, RThread);
 }
 
 printer(RThread) {
@@ -76,16 +63,16 @@ printer(RThread) {
 
 method(void, cancel, RThread)) {
 #ifndef __WIN32
-    pthread_cancel(*object->descriptor);
+    pthread_cancel(object->descriptor);
 #else
-    TerminateThread(*object->descriptor, nil);
+    TerminateThread(object->descriptor, nil);
 #endif
 }
 
 method(void, join, RThread)) {
 #ifndef __WIN32
-    pthread_join(*object->descriptor, nil);
+    pthread_join(object->descriptor, nil);
 #else
-    WaitForSingleObject(*object->descriptor, INFINITE);
+    WaitForSingleObject(object->descriptor, INFINITE);
 #endif
 }

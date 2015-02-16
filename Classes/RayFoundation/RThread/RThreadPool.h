@@ -25,7 +25,7 @@
 
 class(RThreadPool)
     REnumerateDelegate enumerator;
-    RThreadFunction delegate;
+    RThreadFunction delegateFunction;
     RArray *threads;
 endOf(RThreadPool)
 

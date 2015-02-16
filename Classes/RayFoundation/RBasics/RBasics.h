@@ -71,7 +71,7 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);
 // -----------------------------------------------------------------------
 
 protocol(REnumerateDelegate) //--------------------------------------------
-    rbool (*checkObject)(pointer data, size_t index);
+    rbool (*virtualCheckObject)(pointer data, size_t index);
 
 endOf(REnumerateDelegate)
 
