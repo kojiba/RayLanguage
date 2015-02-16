@@ -7,11 +7,10 @@ that makes object-oriented life easier for C developers.
 All based on defines.  
   
 Containers:  
-1.  Array (dynamicly self-longs, store pointers to objects)  
+1.  Array, List (dynamicly self-longs, store pointers to objects)  
 2.  Dictionary (NSDictionary, std::map analog, self-longs)  
 3.  Buffer (self-longs, sore full copy of objects)  
-4.  StringDictionary (Dictionary with keys like strings)  
-5.  ClassTable (for store pairs of number and string once)  
+5.  ClassTable (for store pairs of number and string once, may be used like runtime enum etc.)  
   
 Strings:  
 1. Wide range of c-string processing operations (RCString)  
