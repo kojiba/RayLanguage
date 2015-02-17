@@ -95,7 +95,7 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 // Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
 method(RArray *,           getSubarray,               RArray),    RRange range);
-method(void,               enumerate,                 RArray),    REnumerateDelegate *delegate);
+method(void,               enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 extern inline
 method(pointer,            elementAtIndex,            RArray),    size_t index);

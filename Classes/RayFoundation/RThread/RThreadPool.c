@@ -6,7 +6,7 @@ constructor(RThreadPool)) {
     if(object != nil) {
         object->threads = makeRArray();
         if(object->threads != nil) {
-//            object->threads->destructorDelegate = (void (*)(pointer)) RThreadDeleter;
+            object->threads->destructorDelegate = RFree;
             object->threads->printerDelegate = (void (*)(pointer)) p(RThread);
             object->classId = registerClassOnce(toString(RThreadPool));
         } else {
@@ -24,6 +24,7 @@ destructor(RThreadPool) {
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
     RThread *newOne = $(nil, c(RThread)), nil, object->delegateFunction, argumentForNewWorker);
     if(newOne != nil) {
+        RPrintf("Thread - %p added\n", newOne);
         $(object->threads, m(addObject, RArray)), newOne);
     } else {
         RError("RThreadPool. Add with arg bad worker allocation.", object);
@@ -36,5 +37,5 @@ method(void, addWorker,  RThreadPool), RThread *worker) {
 
 method(void, join, RThreadPool)) {
     object->enumerator.virtualCheckObject = (rbool (*)(pointer, size_t)) m(join, RThread);
-    $(object->threads, m(enumerate, RArray)), &object->enumerator);
+    $(object->threads, m(enumerate, RArray)), &object->enumerator, no);
 }

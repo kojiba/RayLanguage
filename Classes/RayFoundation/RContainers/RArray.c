@@ -391,11 +391,17 @@ inline method(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
-method(void, enumerate, RArray), REnumerateDelegate *delegate) {
+method(void, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
     RMutexLockArray(arrayMutex);
-    forAll(iterator, object->count) {
-        $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+    if(isFromLeft) {
+        forAll(iterator, object->count) {
+            $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+        }
+    } else {
+        for(iterator = object->count - 1; iterator != 0; --iterator) {
+            $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+        }
     }
     RMutexUnlockArray(arrayMutex);
 }
