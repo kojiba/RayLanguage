@@ -59,7 +59,7 @@ method(pointer,     objectAtIndex, RList),    size_t index);
 method(RList *,     subList,       RList),    RRange range); // copy of sub-part, with set-upd delegates
 
 // enumerate
-method(RFindResult, enumerate,     RList),    REnumerateDelegate *delegate);
+method(RFindResult, enumerate,     RList),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 // delete
 method(void,        deleteObjects, RList),    RRange range);

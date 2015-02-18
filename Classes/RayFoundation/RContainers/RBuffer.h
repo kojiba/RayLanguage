@@ -62,28 +62,31 @@ method(inline rbool, checkIndexWithError, RBuffer),    size_t index);
 
 // Data operations
 // setters
-method(void,     addData,          RBuffer),    pointer data, size_t sizeInBytes);   // copies data
+method(void,        addData,            RBuffer),    pointer data, size_t sizeInBytes);   // copies data
 
 // getters
-method(pointer,  getDataReference, RBuffer),    size_t index);                       // return pointer
-method(pointer,  getDataCopy,      RBuffer),    size_t index);                       // return copy
+method(pointer,     getDataReference,   RBuffer),    size_t index);                       // return pointer
+method(pointer,     getDataCopy,        RBuffer),    size_t index);                       // return copy
 
 // deleters
-method(void,     deleteDataAt,     RBuffer),    size_t index);
+method(void,        deleteDataAt,       RBuffer),    size_t index);
+
+// enumeration
+method(RFindResult, enumerate,          RBuffer), REnumerateDelegate *delegate, rbool isFromLeft);
 
 // casts
-method(RArray *, toReferencesRArray, RBuffer)); // using data reference from RBuffer, delegates not set, size to fit
-method(RArray *, toRArray,           RBuffer)); // copy, delete delegateFunction is free, size to fit
+method(RArray *,    toReferencesRArray, RBuffer)); // using data reference from RBuffer, delegates not set, size to fit
+method(RArray *,    toRArray,           RBuffer)); // copy, delete delegateFunction is free, size to fit
 
 // file i/o
 RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit
-method(void,     saveToFile,       RBuffer),    const char* filename);
+method(void,        saveToFile,         RBuffer),    const char* filename);
 
 // Additions to RByteArray
-method(RBuffer *, serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
+method(RBuffer *,   serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
 
 // Additions to RArray
-method(RBuffer *, serializeToBuffer,      RArray),    size_t size);
-method(RBuffer *, serializeToBufferSizes, RArray),    size_t *sizesArray);       // return created RBuffer, sizesArray must ends on 0
+method(RBuffer *,   serializeToBuffer,      RArray),    size_t size);
+method(RBuffer *,   serializeToBufferSizes, RArray),    size_t *sizesArray);       // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

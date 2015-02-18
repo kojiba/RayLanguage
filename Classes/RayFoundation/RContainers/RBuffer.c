@@ -228,6 +228,35 @@ method(void, deleteDataAt, RBuffer), size_t index) {
     RMutexUnlockBuffer();
 }
 
+#pragma mark Enumeration
+
+method(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rbool isFromLeft) {
+    size_t iterator;
+    RFindResult result;
+    result.index  = object->count;
+    result.object = nil;
+    RMutexLockBuffer();
+    if(isFromLeft) {
+        forAll(iterator, object->count) {
+            if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                break;
+            }
+        }
+    } else {
+        for(iterator = object->count - 1; iterator != 0; --iterator) {
+            if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                break;
+            }
+        }
+    }
+    if(iterator != object->count) {
+        result.index = iterator;
+        result.object = master(object, RByteArray)->array + object->sizesArray[iterator].start;
+    }
+    RMutexUnlockBuffer();
+    return result;
+}
+
 #pragma mark Casts
 
 method(RArray*, toReferencesRArray, RBuffer)) {

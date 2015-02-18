@@ -391,19 +391,31 @@ inline method(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
-method(void, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
+method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
+    RFindResult result;
+    result.index  = object->count;
+    result.object = nil;
     RMutexLockArray(arrayMutex);
     if(isFromLeft) {
         forAll(iterator, object->count) {
-            $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
+                break;
+            }
         }
     } else {
         for(iterator = object->count - 1; iterator != 0; --iterator) {
-            $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
+            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
+                break;
+            }
         }
     }
+    if(iterator != object->count) {
+        result.index = iterator;
+        result.object = object->array[iterator];
+    }
     RMutexUnlockArray(arrayMutex);
+    return result;
 }
 
 #pragma mark Sort

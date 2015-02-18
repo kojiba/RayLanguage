@@ -24,7 +24,7 @@ destructor(RThreadPool) {
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
     RThread *newOne = $(nil, c(RThread)), nil, object->delegateFunction, argumentForNewWorker);
     if(newOne != nil) {
-        RPrintf("Thread - %p added\n", newOne);
+//        RPrintf("Thread - %p added\n", newOne);
         $(object->threads, m(addObject, RArray)), newOne);
     } else {
         RError("RThreadPool. Add with arg bad worker allocation.", object);

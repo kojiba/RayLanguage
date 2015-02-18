@@ -206,20 +206,31 @@ method(RList *, subList, RList), RRange range) {
 
 #pragma mark Enumerate
 
-method(RFindResult, enumerate, RList), REnumerateDelegate *delegate) {
+method(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool isFromLeft) {
     RNode *iterator = object->tail;
-    size_t numericIterator = 0;
+    size_t numericIterator;
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
     RMutexLockList();
-    for (; iterator != nil; iterator = iterator->next, ++numericIterator) {
-        if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
-            result.index = numericIterator;
-            result.object = iterator->data;
-            break;
+    if(isFromLeft) {
+        for (numericIterator = 0; iterator != nil; iterator = iterator->next, ++numericIterator) {
+            if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
+                break;
+            }
+        }
+    } else {
+        for (numericIterator = object->count - 1; iterator != nil; iterator = iterator->previous, --numericIterator) {
+            if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
+                break;
+            }
         }
     }
+    if(iterator != nil) {
+        result.index = numericIterator;
+        result.object = iterator->data;
+    }
+
     RMutexUnlockList();
     return result;
 }

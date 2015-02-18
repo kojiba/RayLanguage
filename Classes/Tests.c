@@ -206,7 +206,7 @@ int RListTest(void) {
     RAY_TEST(!result, "RList. Bad sublist.", -2);
     RAY_TEST(result->count != 5, "RList. Bad sublist count.", -3);
 
-    RFindResult founded = $(result, m(enumerate, RList)), &finder.master);
+    RFindResult founded = $(result, m(enumerate, RList)), &finder.master, yes);
 
     RAY_TEST(!founded.object, "RList. Bad founded object.", -4);
     RAY_TEST(founded.index == list->count, "RList. Bad finded index.", -5);
