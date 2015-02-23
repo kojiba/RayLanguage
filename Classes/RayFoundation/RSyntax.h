@@ -72,7 +72,7 @@ typedef uint8_t byte;
 typedef byte    rbool;
 #define yes                                               ((rbool) 1)
 #define no                                                ((rbool) 0)
-#define nil                                               ((pointer) 0)
+#define nil                                               NULL //((pointer) 0)
 
 // declarations
 #define class(className)                                  typedef struct className { \

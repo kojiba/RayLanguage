@@ -14,6 +14,7 @@
  **/
 
 #include <RCString.h>
+#include <stdarg.h>
 
 #pragma mark Basics
 
@@ -92,16 +93,6 @@ RCString *randomRCString(void) {
     return string;
 }
 
-#pragma mark  Make RCS constant start constant ""-string
-
-RCString makeRCSConstant(char *string) {
-    RCString result;
-    result.baseString = string;
-    result.size       = strlen(string);
-    result.classId    = 1;
-    return result;
-}
-
 #pragma mark Constructor - Destructor - Reallocation
 
 constructor(RCString)) {
@@ -129,6 +120,32 @@ method(void, flush, RCString)) {
         deallocator(object->baseString);
         object->size = 0;
     }
+}
+
+RCString *stringWithFormat(char *string, ...) {
+    va_list args;
+    int size;
+    RCString *result = nil;
+    char *buffer = RAlloc(100);
+    va_start(args, string);
+    if(buffer != nil) {
+        size = vsnprintf(buffer, 100, string, args);
+        if(size > 100) {
+            buffer = RReAlloc(buffer, (size_t) size);
+            size = vsnprintf(buffer, 100, string, args);
+        } else if(size > 0) {
+            buffer = RReAlloc(buffer, (size_t) size);
+        } else {
+            RError("StringWithFormat. Bad size", nil);
+        }
+        if (size > 0 && buffer != nil) {
+            result = c(RCString)(nil);
+            result->baseString = buffer;
+            result->size = (size_t) size;
+        }
+    }
+    va_end(args);
+    return result;
 }
 
 void stringDeleter(RCString *string) {

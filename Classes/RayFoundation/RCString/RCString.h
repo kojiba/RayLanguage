@@ -35,14 +35,13 @@ class(RCString) //------------------------------------
 
 endOf(RCString) //------------------------------------
 
-// Make RCS constant start constant ""-string
-RCString makeRCSConstant(char *string);
-
 // Constructor - Destructor - Reallocation
 constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
-void        stringDeleter(RCString *string); // destructs and deallocates ptr
+RCString*   stringWithFormat(char *format, ...); // uses vsnprintf, string must be deletet with deleter(obj, RCString)
+
+void        stringDeleter(RCString *string); // call destructor and deallocates ptr
 
 method(void,                flush,                        RCString));                                         // deletes old string
 // Setters

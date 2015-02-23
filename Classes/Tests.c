@@ -259,6 +259,8 @@ int RThreadTest(void) {
 
 void ComplexTest() {
     srand((unsigned int) time(nil));
+    RPrintCurrentSystem();
+    RPrintf("Main tuid - %qu\n", getThreadId());
     if(
            !RDynamicArrayTest()
         && !RListTest()
