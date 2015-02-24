@@ -41,20 +41,16 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
     }
     return last;
 }
-char* copyOfString(const char *string) {
+char* copyOfCString(const char *string) {
     size_t length = RStringLength(string);
     if(length > 0) {
         char *result = RAlloc(length * sizeof(char));
         if(result != nil) {
             RMemCpy(result, string, length);
             return result;
-        } else {
-            RError("CString. Bad allocation", (pointer) result);
-            return nil;
         }
-    } else {
-        return nil;
     }
+    return nil;
 }
 
 
@@ -93,6 +89,32 @@ RCString *randomRCString(void) {
     return string;
 }
 
+char* cstringWithFormat(char *format, ...) {
+    va_list args;
+    char *buffer;
+    va_start(args, format);
+    buffer = vcstringWithFormat(format, args);
+    va_end(args);
+    return buffer;
+}
+char* vcstringWithFormat(char *format, va_list list) {
+    int size;
+    char *buffer = RAlloc(100);
+    if(buffer != nil) {
+        size = vsnprintf(buffer, 100, format, list);
+        if(size > 100) {
+            buffer = RReAlloc(buffer, (size_t) size);
+            vsnprintf(buffer, 100, format, list);
+        } else if(size > 0) {
+            buffer = RReAlloc(buffer, (size_t) size);
+        } else {
+            RError("StringWithFormat. Bad size", nil);
+        }
+    }
+    return buffer;
+}
+
+
 #pragma mark Constructor - Destructor - Reallocation
 
 constructor(RCString)) {
@@ -124,25 +146,13 @@ method(void, flush, RCString)) {
 
 RCString *stringWithFormat(char *string, ...) {
     va_list args;
-    int size;
     RCString *result = nil;
-    char *buffer = RAlloc(100);
+    char *buffer;
     va_start(args, string);
+    buffer = vcstringWithFormat(string, args);
     if(buffer != nil) {
-        size = vsnprintf(buffer, 100, string, args);
-        if(size > 100) {
-            buffer = RReAlloc(buffer, (size_t) size);
-            size = vsnprintf(buffer, 100, string, args);
-        } else if(size > 0) {
-            buffer = RReAlloc(buffer, (size_t) size);
-        } else {
-            RError("StringWithFormat. Bad size", nil);
-        }
-        if (size > 0 && buffer != nil) {
-            result = c(RCString)(nil);
-            result->baseString = buffer;
-            result->size = (size_t) size;
-        }
+        result = makeRCString();
+        $(result, m(setConstantString, RCString)), buffer);
     }
     va_end(args);
     return result;

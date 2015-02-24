@@ -32,7 +32,7 @@
 
 #ifdef __APPLE__
     #define RSystemString "Apple "
-    #include "TargetConditionals.h"
+    #include <TargetConditionals.h>
     #if TARGET_IPHONE_SIMULATOR
              // iOS Simulator
             #define RSystemDetails "iOS Simulator "
@@ -41,7 +41,7 @@
             #define RSystemDetails "iOS Device "
     #elif TARGET_OS_MAC
             // OSX
-            #define RSystemDetails "Mac OSX "
+            #define RSystemDetails "OSX "
     #endif
 #endif
 
@@ -56,7 +56,7 @@
     #define RSystemString  "Unix "
 #endif
 
-#ifdef __posix
+#ifdef _POSIX_C_SOURCE
     // with posix support
     #define RPosixSupport "Posix Support"
 #endif
