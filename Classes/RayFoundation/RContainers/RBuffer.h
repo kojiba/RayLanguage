@@ -45,7 +45,7 @@ class(RBuffer) // -------------------
 endOf(RBuffer) // -------------------
 
 extern inline
-RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount);
+RBuffer* makeRBufferOptions (size_t startSize, size_t objectCount);
 
 constructor (RBuffer));
 destructor  (RBuffer);

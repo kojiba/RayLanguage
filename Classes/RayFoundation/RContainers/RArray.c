@@ -14,6 +14,7 @@
  **/
 
 #include <RArray.h>
+#include <stdarg.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
     #define arrayMutex &object->mutex
@@ -579,6 +580,25 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray) {
         }
     }
     return result;
+}
+
+RArray* arrayFromArray(pointer start, ...) {
+    va_list args;
+    pointer temp;
+    RArray *array = makeRArray();
+
+    if(array != nil) {
+        $(array, m(addObject, RArray)), start);
+        va_start(args, start);
+
+        temp = va_arg(args, pointer);
+        while(temp != nil) {
+            $(array, m(addObject, RArray)), temp);
+            temp = va_arg(args, pointer);
+        }
+        va_end(args);
+    }
+    return array;
 }
 
 
