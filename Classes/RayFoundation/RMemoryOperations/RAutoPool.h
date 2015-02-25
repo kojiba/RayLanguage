@@ -25,6 +25,14 @@
     #include <RThread.h>
 #endif
 
+#ifdef R_POOL_DETAILED
+typedef struct RPoolDescriptor {
+    RProcessId allocatorThread;
+    pointer ptr;
+    size_t size;
+} RPoolDescriptor;
+#endif
+
 class(RAutoPool)
     RArray *pointersInWork;
 

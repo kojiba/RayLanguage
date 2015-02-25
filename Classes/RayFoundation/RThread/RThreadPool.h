@@ -25,12 +25,13 @@
 
 class(RThreadPool)
     REnumerateDelegate enumerator;
-    RThreadFunction delegateFunction;
-    RArray *threads;
+    RThreadFunction    delegateFunction;
+    RArray            *threads;
 endOf(RThreadPool)
 
 constructor(RThreadPool));
-destructor(RThreadPool);
+destructor (RThreadPool);
+printer    (RThreadPool);
 
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker);
 method(void, addWorker,  RThreadPool), RThread *worker);

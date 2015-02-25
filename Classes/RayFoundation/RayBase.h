@@ -26,10 +26,10 @@
 // Hooks for self-code malloc, calloc, realloc, free ----------
 
 // constant pointers to stdlib (OS) functions
-static void* (*const RTrueMalloc) (size_t size) = malloc;
-static void* (*const RTrueRealloc)(void*  ptr, size_t size) = realloc;
-static void* (*const RTrueCalloc) (size_t size, size_t blockSize) = calloc;
-static void  (*const RTrueFree)   (void*  ptr) = free;
+void* (*const RTrueMalloc) (size_t size);
+void* (*const RTrueRealloc)(void*  ptr, size_t size);
+void* (*const RTrueCalloc) (size_t size, size_t blockSize);
+void  (*const RTrueFree)   (void*  ptr);
 
 // pointers to functions
 extern void*   (*RMallocPtr) (size_t size);

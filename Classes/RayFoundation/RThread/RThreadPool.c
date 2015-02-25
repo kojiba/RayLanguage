@@ -21,8 +21,16 @@ destructor(RThreadPool) {
     deleter(object->threads, RArray);
 }
 
+printer(RThreadPool) {
+    RPrintf("%s object %p {", toString(RThreadPool), object);
+    $(object->threads, p(RArray)));
+    RPrintf("} end of %s\n", toString(RThreadPool));
+}
+
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
+//    RPrintf("malloc - %p\n", malloc);
     RThread *newOne = $(nil, c(RThread)), nil, object->delegateFunction, argumentForNewWorker);
+//    RPrintf("malloc - %p\n", malloc);
     if(newOne != nil) {
 //        RPrintf("Thread - %p added\n", newOne);
         $(object->threads, m(addObject, RArray)), newOne);
