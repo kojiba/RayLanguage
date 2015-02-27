@@ -14,7 +14,6 @@
  **/
 
 #include <RArray_Parallel.h>
-#include <Python/Python.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
     #define arrayMutex &object->mutex
@@ -27,9 +26,6 @@
     #define RMutexUnlockArray(some)
 #endif
 
-RMutexDescriptor     conditionMutex = RStackRecursiveMutexInitializer;
-RConditionDescriptor condition      = RStackConditionInitializer;
-
 typedef struct enumeratorArgument {
     // pointers
     RCompareDelegate *delegate;
@@ -37,7 +33,7 @@ typedef struct enumeratorArgument {
 
     // directly structures
     RRange           partRange;
-    RFindResult      result;
+    RFindResult     *result;
     unsigned        *signaled;
     unsigned        *selfIterator;
     rbool           *isFound;
@@ -45,11 +41,11 @@ typedef struct enumeratorArgument {
 
 void privatePartEnumerator(enumeratorArgument *argument) {
     size_t iterator;
-    argument->result.object = nil;
+    (*argument->result).object = nil;
     inRange(iterator, argument->partRange) {
         if ($(argument->delegate, m(checkObject, RCompareDelegate)), argument->object->array[iterator]) == equals) {
-            argument->result.index  = iterator;
-            argument->result.object = argument->object->array[iterator];
+            (*argument->result).index  = iterator;
+            (*argument->result).object = argument->object->array[iterator];
             *argument->signaled = *argument->selfIterator;
             *argument->isFound = yes;
             RThreadExit(nil);
@@ -70,13 +66,15 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
     if(delegate != nil) {
         unsigned coreCount = processorsCount();
 
-        unsigned *signaled  = allocator(unsigned);
-        unsigned *iterators = RAlloc(sizeof(unsigned) * coreCount);
-        rbool    *isFound   = allocator(rbool);
+        unsigned    *signaled  = allocator(unsigned);
+        rbool       *isFound   = allocator(rbool);
+        unsigned    *iterators = RAlloc(sizeof(unsigned) * coreCount);
+        RFindResult *results   = RAlloc(sizeof(RFindResult) * coreCount);
 
         if(signaled != nil
                 && iterators != nil
-                && isFound   != nil) {
+                && isFound   != nil
+                && results   != nil) {
             unsigned iterator;
             size_t partForCore = object->count / coreCount;
             size_t additionalForLastCore = object->count - partForCore * coreCount;
@@ -94,11 +92,12 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
                 RThreadDescriptor descriptor;
                 iterators[iterator] = iterator;
 
-                arguments[iterator].delegate = delegate;
-                arguments[iterator].object = object;
+                arguments[iterator].delegate     = delegate;
+                arguments[iterator].object       = object;
                 arguments[iterator].selfIterator = &iterators[iterator];
-                arguments[iterator].signaled = signaled;
-                arguments[iterator].isFound = isFound;
+                arguments[iterator].signaled     = signaled;
+                arguments[iterator].isFound      = isFound;
+                arguments[iterator].result       = &results[iterator];
 
                 if (iterator != coreCount - 1) {
                     arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore);
@@ -109,7 +108,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             }
 
             // wait while not found or all threads not found
-            while(allNotFound && ((*isFound) != yes)) {
+            while(allNotFound && ((*isFound) == no)) {
                 allNotFound = yes;
                 forAll(iterator, coreCount) {
                     if (iterators[iterator] != 0) {
@@ -117,9 +116,10 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
                     }
                 }
             }
-            if (*signaled != coreCount) {
+            if ((*signaled) != coreCount) {
                 *isFound = yes;
-                result = arguments[*signaled].result;
+                result.index = results[(*signaled)].index;
+                result.object = results[(*signaled)].object;
             }
 
             // white before free isFound
@@ -136,6 +136,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             RFree(signaled);
             RFree(isFound);
             RFree(iterators);
+            RFree(results);
         }
     } else {
         RWarning("RArray. Delegate for searching is nil." , object);
