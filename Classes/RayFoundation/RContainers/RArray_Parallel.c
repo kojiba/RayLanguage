@@ -70,15 +70,17 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
         rbool       *isFound   = allocator(rbool);
         unsigned    *iterators = RAlloc(sizeof(unsigned) * coreCount);
         RFindResult *results   = RAlloc(sizeof(RFindResult) * coreCount);
+        enumeratorArgument *arguments = RAlloc(sizeof(enumeratorArgument) * coreCount);
 
         if(signaled != nil
                 && iterators != nil
                 && isFound   != nil
-                && results   != nil) {
+                && results   != nil
+                && arguments != nil) {
             unsigned iterator;
             size_t partForCore = object->count / coreCount;
             size_t additionalForLastCore = object->count - partForCore * coreCount;
-            enumeratorArgument *arguments = RAlloc(sizeof(enumeratorArgument) * coreCount);
+
             rbool allNotFound = yes;
             *isFound = no;
 
@@ -86,7 +88,6 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             RPrintf("RArray findObjectParallel of %p\n", object);
 #endif
             RMutexLockArray();
-
 
             forAll(iterator, coreCount) {
                 RThreadDescriptor descriptor;
@@ -116,7 +117,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
                     }
                 }
             }
-            if ((*signaled) != coreCount) {
+            if ((*signaled) != coreCount && (*signaled) < coreCount) {
                 *isFound = yes;
                 result.index = results[(*signaled)].index;
                 result.object = results[(*signaled)].object;
@@ -133,10 +134,11 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             RMutexUnlockArray();
 
             // free temp pointers
-            RFree(signaled);
-            RFree(isFound);
-            RFree(iterators);
-            RFree(results);
+            deallocator(signaled);
+            deallocator(isFound);
+            deallocator(iterators);
+            deallocator(results);
+            deallocator(arguments);
         }
     } else {
         RWarning("RArray. Delegate for searching is nil." , object);
