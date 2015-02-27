@@ -11,12 +11,12 @@ RThreadId currentTreadIdentifier() {
     return threadId;
 }
 
-long processorsCount() {
+unsigned processorsCount() {
     #ifdef __WIN32
         SYSTEM_INFO sysinfo;
         GetSystemInfo( &sysinfo );
         return sysinfo.dwNumberOfProcessors;
     #else
-        return sysconf( _SC_NPROCESSORS_ONLN );
+        return (unsigned) sysconf( _SC_NPROCESSORS_ONLN );
     #endif
 }

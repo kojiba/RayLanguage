@@ -21,25 +21,39 @@
 #ifndef __WIN32
     #include <pthread.h>
 
+    // types
     typedef pthread_t                        RThreadDescriptor;
     typedef pthread_attr_t                   RThreadAttributes;
     typedef pthread_mutex_t                  RMutexDescriptor;
     typedef pthread_mutexattr_t              RMutexAttributes;
+    typedef pthread_cond_t                   RConditionDescriptor;
     typedef uint64_t                         RThreadId;
     typedef pointer (*RThreadFunction)(pointer);
 
+    // functions
     #define RMutexInit                       pthread_mutex_init
     #define RMutexLock                       pthread_mutex_lock
     #define RMutexUnlock                     pthread_mutex_unlock
-    #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+    #define RThreadCreate                    pthread_create
+    #define RThreadExit                      pthread_exit
+
     #define RMutexAttributeInit              pthread_mutexattr_init
     #define RMutexAttributeSetType           pthread_mutexattr_settype
+    #define RConditionSignal                 pthread_cond_signal
+    #define RConditionWait                   pthread_cond_wait
 
+    // initializers
+    #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+    #define RStackConditionInitializer       PTHREAD_COND_INITIALIZER
+
+    // mutex types
     #define RMutexRecursive                  PTHREAD_MUTEX_RECURSIVE
     #define RMutexNormal                     PTHREAD_MUTEX_NORMAL
     #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
 #else
     #include <windows.h>
+
+    // types
     typedef HANDLE                           RThreadDescriptor;
     typedef LPVOID                           RThreadAttributes;
     typedef HANDLE                           RMutexDescriptor;
@@ -62,6 +76,6 @@
 #endif
 
 RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
-long processorsCount();
+unsigned  processorsCount();
 
 #endif /*__R_THREAD_NATIVE__*/

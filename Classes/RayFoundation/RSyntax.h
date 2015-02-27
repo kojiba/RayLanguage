@@ -30,14 +30,13 @@
 #define _concatenate(one, two)                            one##two
 #define concatenate(one, two)                             _concatenate(one, two)  // concatenate two words: concatenate(Hello, World) -> HelloWorld
 
-#define initRClock()                                      clock_t start = clock(); \
-                                                          clock_t stop = 0; \
-                                                          clock_t diff = 0;
+#define initRClock()                                      clock_t tic = clock(); \
+                                                          clock_t diff = 0, toc = 0;
 
-#define tickRClock()                                      stop = clock(); \
-                                                          diff = stop - start; \
-                                                          start = clock(); \
-                                                          RPrintf("Time taken %d seconds %d milliseconds\n", (double) diff / CLOCKS_PER_SEC, (diff / CLOCKS_PER_SEC) % 1000 );
+#define tickRClock()                                      toc = clock(); \
+                                                          diff = toc - tic; \
+                                                          tic = clock(); \
+                                                          RPrintf("Elapsed: %f seconds\n", (double)(diff) / CLOCKS_PER_SEC);
 
 #ifdef RAY_ERRORS_ON
     #ifdef RAY_ASSERT_ON_ERRORS
@@ -54,7 +53,7 @@
 
 #ifdef RAY_WARNINGS_ON
     #define RPleaseRemoveString                           "Please, remove function call, or fix it!\n"
-    #define RWarning(string, object)                      RPrintf(RYellow"Warning. %p - "string RPleaseRemoveString RNC, object)
+    #define RWarning(string, object)                      RPrintf(RYellow "Warning. %p - " string RPleaseRemoveString RNC, object)
 #else
     #define RWarning(string, object)
 #endif
@@ -96,13 +95,13 @@ typedef byte    rbool;
 #define linkMethod(object, virtualName, realName)         object->virtualName = realName;
 
 // calls
-#define c(className)                                      concatenate(constructorOf, className)                                  // constructor function name
-#define d(className)                                      concatenate(destructorOf,  className)                                  // destructor function name
-#define p(className)                                      concatenate(printerOf,     className)                                  // printer function name
-#define m(methodName, className)                          concatenate(methodName,    className)                                  // some method function name
-#define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className))    // static method function name
-#define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))           // call to masterClassObject
-#define singletonCall(className)                          concatenate(singletonOf,className)()                                   // singleton call
+#define c(className)                                      concatenate(constructorOf, className)                                       // constructor function name
+#define d(className)                                      concatenate(destructorOf,  className)                                       // destructor function name
+#define p(className)                                      concatenate(printerOf,     className)                                       // printer function name
+#define m(methodName, className)                          concatenate(methodName,    className)                                       // some method function name
+#define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className)) // static method function name
+#define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))            // call to masterClassObject
+#define singletonCall(className)                          concatenate(singletonOf,className)()                                        // singleton call
 #define deleter(object, className)                        $(object, d(className))); deallocator(object)
 
 
@@ -111,6 +110,6 @@ typedef byte    rbool;
 // cases/if/for ...
 #define forAll(iterator, count)                           for(iterator = 0; iterator < count; ++iterator)
 #define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < start + count; ++iterator)
-#define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.count; ++iterator)
+#define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.size; ++iterator)
 
 #endif /*__R_SYNTAX_H__*/

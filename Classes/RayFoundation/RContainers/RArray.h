@@ -167,7 +167,7 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // i
     deleter(array, RArray);
 */
 
-RArray* arrayFromArray(pointer pointerToArray, ...); // last must be nil
+RArray* arrayFromArray(pointer pointerToArray, ...); // array from array of pointers, last must be nil
 
 //----------------------------------------------------------------------------------
 

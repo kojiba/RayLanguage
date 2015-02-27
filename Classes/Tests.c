@@ -261,7 +261,7 @@ void ComplexTest() {
     srand((unsigned int) time(nil));
 
     RPrintCurrentSystem();
-    RPrintf("Number of processors - %li \n", processorsCount());
+    RPrintf("Number of processors - %u \n", processorsCount());
     RPrintf("Main tuid - %qu \n", currentTreadIdentifier());
 
     if(
