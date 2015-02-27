@@ -25,7 +25,7 @@
     typedef pthread_attr_t                   RThreadAttributes;
     typedef pthread_mutex_t                  RMutexDescriptor;
     typedef pthread_mutexattr_t              RMutexAttributes;
-    typedef uint64_t                         RProcessId;
+    typedef uint64_t                         RThreadId;
     typedef pointer (*RThreadFunction)(pointer);
 
     #define RMutexInit                       pthread_mutex_init
@@ -61,6 +61,7 @@
     // fixme in progress
 #endif
 
-RProcessId getThreadId(); // returns caller thread unique identifier
+RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
+long processorsCount();
 
 #endif /*__R_THREAD_NATIVE__*/

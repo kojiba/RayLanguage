@@ -27,9 +27,9 @@
 
 #ifdef R_POOL_DETAILED
 typedef struct RPoolDescriptor {
-    RProcessId allocatorThread;
-    pointer ptr;
-    size_t size;
+    RThreadId allocatorThread;
+    pointer   ptr;
+    size_t    size;
 } RPoolDescriptor;
 #endif
 

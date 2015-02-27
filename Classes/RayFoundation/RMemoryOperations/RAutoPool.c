@@ -108,7 +108,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
         RPoolDescriptor* descriptor = allocator(RPoolDescriptor);
         descriptor->size = sizeInBytes;
         descriptor->ptr = temp;
-        descriptor->allocatorThread = getThreadId();
+        descriptor->allocatorThread = currentTreadIdentifier();
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);
@@ -160,7 +160,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 RPoolDescriptor* descriptor2 = allocator(RPoolDescriptor);
                 descriptor2->size = newSize;
                 descriptor2->ptr = temp;
-                descriptor2->allocatorThread = getThreadId();
+                descriptor2->allocatorThread = currentTreadIdentifier();
                 $(object->pointersInWork, m(addObject, RArray)), descriptor2);
 #else
                 $(object->pointersInWork, m(addObject, RArray)), temp);
@@ -194,7 +194,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
         RPoolDescriptor* descriptor = allocator(RPoolDescriptor);
         descriptor->size = blockCount * blockSize;
         descriptor->ptr = temp;
-        descriptor->allocatorThread = getThreadId();
+        descriptor->allocatorThread = currentTreadIdentifier();
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);

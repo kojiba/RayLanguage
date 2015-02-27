@@ -259,8 +259,11 @@ int RThreadTest(void) {
 
 void ComplexTest() {
     srand((unsigned int) time(nil));
+
     RPrintCurrentSystem();
-    RPrintf("Main tuid - %qu\n", getThreadId());
+    RPrintf("Number of processors - %li \n", processorsCount());
+    RPrintf("Main tuid - %qu \n", currentTreadIdentifier());
+
     if(
            !RDynamicArrayTest()
         && !RListTest()

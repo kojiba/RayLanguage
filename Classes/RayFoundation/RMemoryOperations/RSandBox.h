@@ -34,7 +34,7 @@ typedef enum RSandBoxAllocationMode {
 
 typedef struct RControlDescriptor {
 #ifdef R_POOL_DETAILED
-    RProcessId allocatorThread;
+    RThreadId allocatorThread;
 #endif
     RRange memRange;
 } RControlDescriptor;
