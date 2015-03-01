@@ -54,11 +54,9 @@ int StringDictionaryTest(void) {
 int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
-//    stringArray->printerDelegate = p(RCString);
     stringArray->destructorDelegate = (void (*)(pointer)) stringDeleter;
-
     for(i = 0; i < 10; ++i) {
-        addObjectToRA(stringArray, randomRCString());
+        addObjectToRA(stringArray, stringWithFormat("Temp string %i", i));
     }
     RAY_TEST(stringArray->count != 10, "String array size is not 10", -1);
 

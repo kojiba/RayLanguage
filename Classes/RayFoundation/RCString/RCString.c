@@ -75,7 +75,7 @@ RCString *randomRCString(void) {
         }
         cstring = RAlloc(size * sizeof(char));
         if(cstring != nil) {
-            forAll(iterator, size - 1){
+            forAll(iterator, size - 2){
                 cstring[iterator] = randomCharacter();
             }
             cstring[++iterator] = 0;
