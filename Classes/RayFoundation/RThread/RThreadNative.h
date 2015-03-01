@@ -59,10 +59,14 @@
     typedef HANDLE                           RMutexDescriptor;
     typedef LPSECURITY_ATTRIBUTES            RMutexAttributes;
     typedef DWORD (*RThreadFunction)(pointer);
+    typedef uint64_t                         RThreadId;
 
     #define RMutexInit                       CreateMutex
     #define RMutexLock(mutex)                WaitForSingleObject(mutex, INFINITE);
     #define RMutexUnlock                     ReleaseMutex
+
+    #define RThreadCreate                    CreateThread
+    #define RThreadExit                      ExitThread
 
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
     #define RMutexAttributeInit              pthread_mutexattr_init

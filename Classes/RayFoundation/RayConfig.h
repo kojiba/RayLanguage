@@ -31,7 +31,12 @@
 #define RAY_POOL_THREAD_SAFE
 #define RAY_SAND_BOX_THREAD_SAFE
 
-#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+//#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+
+#if defined(__WIN32) && defined(R_POOL_DETAILED)
+    #error NOT AVAILABLE
+#else
+#endif
 
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 #ifdef RAY_ASSERT_ON_ERRORS

@@ -50,7 +50,7 @@ constructor(RThread),
                     }
             #else
                 object->descriptor = CreateThread(nil, 0, function, argument, 0, nil);
-                if(object->descriptor != nil) {
+                if(object->descriptor != nil)
             #endif
                     object->classId = 6; //registerClassOnce(toString(RThread));
     }

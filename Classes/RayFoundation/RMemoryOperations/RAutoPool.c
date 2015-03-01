@@ -42,9 +42,11 @@ void poolPrinter(pointer some) {
 #endif
 }
 
+#ifdef R_POOL_DETAILED
 RCompareFlags compareRPoolDescriptor(RPoolDescriptor *first, RPoolDescriptor *second) {
     return /*first != nil && */first->ptr == second->ptr ? equals : not_equals;
 }
+#endif
 
 void innerFree(pointer some) {
 #ifdef R_POOL_DETAILED
@@ -129,8 +131,8 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         RCompareDelegate *delegate = allocator(RCompareDelegate);
         if(delegate != nil) {
 #ifndef R_POOL_DETAILED
-            delegateFunction->virtualCompareMethod = nil;
-            delegateFunction->etaloneObject = ptr;
+            delegate->virtualCompareMethod = nil;
+            delegate->etaloneObject = ptr;
 #else
             RPoolDescriptor *descriptor = allocator(RPoolDescriptor);
             descriptor->ptr = ptr;
