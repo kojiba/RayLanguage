@@ -146,7 +146,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             deallocator(arguments);
         }
     } else {
-        RWarning("RArray. Delegate for searching is nil." , object);
+        RWarning("RArray. Delegate for searching is nil.", object);
     }
     return result;
 }
