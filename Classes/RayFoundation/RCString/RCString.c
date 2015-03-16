@@ -114,7 +114,6 @@ char* vcstringWithFormat(char *format, va_list list) {
     return buffer;
 }
 
-
 #pragma mark Constructor - Destructor - Reallocation
 
 constructor(RCString)) {

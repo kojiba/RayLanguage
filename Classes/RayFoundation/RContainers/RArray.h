@@ -167,7 +167,7 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // i
     deleter(array, RArray);
 */
 
-RArray* arrayFromArray(pointer pointerToArray, ...); // array from array of pointers, last must be nil
+RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointers, last must be nil
 
 //----------------------------------------------------------------------------------
 
@@ -177,5 +177,6 @@ RArray* arrayFromArray(pointer pointerToArray, ...); // array from array of poin
 #define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))
 #define elementAtIndexRA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
 #define sizeToFitRA(dynamicArray)             $(dynamicArray, m(sizeToFit, RArray)) )
+#define RA arrayFromArray
 
 #endif /*__R_ARRAY_H__*/
