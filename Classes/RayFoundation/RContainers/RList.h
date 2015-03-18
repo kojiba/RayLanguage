@@ -21,7 +21,7 @@
 #include <RArray.h>
 
 #ifdef RAY_LIST_THREAD_SAFE
-    #include <RThread.h>
+    #include <RThreadNative.h>
 #endif
 
 struct RList;

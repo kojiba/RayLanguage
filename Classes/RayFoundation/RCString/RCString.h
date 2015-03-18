@@ -69,6 +69,9 @@ method(RCString *,          deleteAllCharacters,          RCString),    char cha
 method(void,                removeRepetitionsOf,          RCString),    char character);
 
 method(RCString *,          deleteAllSubstrings,          RCString),    const RCString *substring);           // returns reference (not copy!)
+extern inline
+method(RCString *,          deleteAllSubstringsCStr,      RCString),    const char     *substring);
+
 method(void,                removeRepetitionsOfString,    RCString),    const RCString *substring);
 
 method(RCString *,          deleteCharacterAt,            RCString),    size_t index);                        // returns reference (not copy!)
@@ -78,7 +81,7 @@ method(void,                trimTail,                     RCString),    size_t s
 extern inline
 method(void,                trimHead,                     RCString),    size_t size);                         // deletes start start
 
-// Substrings and Copies
+// Subs and Copies
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
 method(RCString *,          insertSubstringAt,            RCString),    RCString *substring, size_t place);   // returns reference (not copy!)
 

@@ -57,9 +57,6 @@ method(RByteArray *, addSizeToMem,   RBuffer),    size_t newSize);          // a
 method(void,         flush,          RBuffer));                             // flushes buffer, returns self
 method(RBuffer *,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
-// Workers
-method(inline rbool, checkIndexWithError, RBuffer),    size_t index);
-
 // Data operations
 // setters
 method(void,        addData,            RBuffer),    pointer data, size_t sizeInBytes);   // copies data
@@ -82,11 +79,12 @@ method(RArray *,    toRArray,           RBuffer)); // copy, delete delegateFunct
 RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit
 method(void,        saveToFile,         RBuffer),    const char* filename);
 
+
 // Additions to RByteArray
-method(RBuffer *,   serializeToBuffer, RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
+method(RBuffer *,   serializeToBuffer,  RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
 
 // Additions to RArray
-method(RBuffer *,   serializeToBuffer,      RArray),    size_t size);
+method(RBuffer *,   serializeToBuffer,      RArray),    size_t size);              // if all object one sized
 method(RBuffer *,   serializeToBufferSizes, RArray),    size_t *sizesArray);       // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

@@ -52,7 +52,7 @@
 #endif
 
 #ifdef RAY_WARNINGS_ON
-    #define RPleaseRemoveString                           "Please, remove function call, or fix it!\n"
+    #define RPleaseRemoveString                           " Please, remove function call, or fix it!\n"
     #define RWarning(string, object)                      RPrintf(RYellow "Warning. %p - " string RPleaseRemoveString RNC, object)
 #else
     #define RWarning(string, object)
@@ -69,9 +69,9 @@
 typedef void*   pointer;
 typedef uint8_t byte;
 typedef byte    rbool;
-#define yes                                               ((rbool) 1)
-#define no                                                ((rbool) 0)
-#define nil                                               NULL //((pointer) 0)
+#define yes                                               ((rbool)   1)
+#define no                                                ((rbool)   0)
+#define nil                                               ((pointer) 0)
 
 // declarations
 #define class(className)                                  typedef struct className { \

@@ -181,7 +181,7 @@ method(RCString *, setString, RCString), const char *string) {
 
         // final copying
         object->size = stringSize;
-        RMemMove(object->baseString, string, object->size);
+        RMemCpy(object->baseString, string, object->size);
         --object->size;
     } else {
         RWarning("RCS. Setted strings or container is empty, please delete function call, or fix it.", object);
@@ -275,7 +275,8 @@ method(size_t, numberOfSubstrings, RCString), RCString *string) {
     }
 }
 
-method(static inline rbool, isContains, RCString), char character) {
+static inline
+method(rbool, isContains, RCString), char character) {
     size_t iterator = 0;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -285,7 +286,8 @@ method(static inline rbool, isContains, RCString), char character) {
     return no;
 }
 
-method(static inline rbool, isContainsSubsting, RCString), RCString *string) {
+static inline
+method(rbool, isContainsSubsting, RCString), RCString *string) {
     // search for first symbol
     size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
     if(iterator != string->size) {
@@ -322,6 +324,8 @@ method(void, removeRepetitionsOf, RCString), char character) {
     register size_t iterator;
     register size_t inner;
     forAll(iterator, object->size - 1) {
+
+        // search first occurrence
         if(object->baseString[iterator] == character) {
 
             // find length of repetition
@@ -341,34 +345,28 @@ method(void, removeRepetitionsOf, RCString), char character) {
 
 method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     register size_t iterator;
-    register size_t inner;
-    register byte flag = 1;
+    register rbool  needMove = yes;
 
     if(substring->size != 0
             || substring->baseString == nil) {
+
         forAll(iterator, object->size - substring->size) {
-
-            // compare to substring
+            // search first symbol
             if(object->baseString[iterator] == substring->baseString[0]) {
-                for(inner = 1; inner < substring->size; ++inner) {
-
-                    if(object->baseString[iterator + 1] != substring->baseString[inner]) {
-                        flag = 0;
-                        break;
-                    }
-
+                // compare others
+                if(RMemCmp(object->baseString + iterator + 1, substring->baseString + 1, substring->size - 1) != 0) {
+                    needMove = no;
                 }
             } else {
-                flag = 0;
+                needMove = no;
             }
-
             // moving
-            if(flag == 1) {
+            if(needMove) {
                 RMemCpy(object->baseString + iterator, object->baseString + iterator + substring->size, object->size + 1 - iterator - substring->size);
                 --iterator;
                 object->size -= substring->size;
             } else {
-                flag = 1;
+                needMove = yes;
             }
         }
         return object;
@@ -376,6 +374,14 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
         RWarning("RCS. Substring size is 0, or, substring is nil.", object);
     }
     return nil;
+}
+
+inline
+method(RCString *, deleteAllSubstringsCStr, RCString), const char *substring) {
+    RCString *temp = RS(substring);
+    RCString *result = $(object, m(deleteAllSubstrings, RCString)), temp);
+    deallocator(temp);
+    return result;
 }
 
 method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
@@ -440,14 +446,18 @@ method(void, deleteInRange, RCString), RRange range) {
         RError("RCS. deleteInRange, bad range, do nothing.", object);
     }
 }
-inline  method(void, trimTail, RCString), size_t size) {
+
+inline
+method(void, trimTail, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(object->size - size, size));
 }
-inline  method(void, trimHead, RCString), size_t size) {
+
+inline
+method(void, trimHead, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(0, size));
 }
 
-#pragma mark Substrings and Copies
+#pragma mark Subs and Copies
 
 method(RCString *, setSubstringInRange, RCString), RRange range, const char *string) {
     if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
@@ -541,8 +551,8 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
     register size_t  iterator;
     register size_t  endOfSubstring   = 0;
     register size_t  startOfSubstring = 0;
-    register byte      isFirst          = 1;
-             RArray   *result           =  nil;
+    register rbool     isFirst        = yes;
+             RArray   *result         = nil;
              RCString *substring;
 
     if(separatorsString != nil
@@ -553,15 +563,23 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
         forAll(iterator, object->size) {
             // check if separator
             if($(separatorsString, m(isContains, RCString)), object->baseString[iterator]) == yes) {
-                if(isFirst == 1) {
-                    // if first separator set end
+                // if first separator set end of substring
+                if(isFirst) {
                     endOfSubstring = iterator;
-                    isFirst = 0;
+                    isFirst = no;
                     if(result == nil) {
                         result = makeRArray();
-                        // set-up delegates
-                        result->printerDelegate    = (void (*)(pointer)) p(RCString);
-                        result->destructorDelegate = (void (*)(pointer)) stringDeleter;
+
+                        if(result != nil) {
+                            // set-up delegates
+                            result->printerDelegate = (void (*)(pointer)) p(RCString);
+                            result->destructorDelegate = (void (*)(pointer)) stringDeleter;
+
+                        // exit if allocation fails
+                        } else {
+                            RError("RCString. Bad array for substrings allocation.", object);
+                            return nil;
+                        }
                     }
                 }
 
@@ -569,8 +587,8 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
             } else {
 
                 // if we found some separators
-                if(isFirst == 0) {
-                    isFirst = 1;
+                if(!isFirst) {
+                    isFirst = yes;
                     substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
                     addObjectToRA(result, substring);
                     startOfSubstring = iterator;
@@ -580,25 +598,24 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
 
         // if we found some
         if(result != nil) {
-            // if last it is not separator
-            if(endOfSubstring < object->size) {
+            // if last is not separator - add whole last word
+            if(endOfSubstring < startOfSubstring) {
                 endOfSubstring = object->size;
             }
-            // add last and sizeToFit
+            // add last
             substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
             if(substring != nil) {
-                forAll(iterator, separatorsString->size) {
-                    $(substring, m(deleteAllCharacters, RCString)), separatorsString->baseString[iterator]);
-                }
                 addObjectToRA(result, substring);
             }
+            // and sizeToFit
             $(result, m(sizeToFit, RArray)) );
         }
     }
     return result;
 }
 
-inline method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
+inline
+method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
     RCString *temp = RS(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);
