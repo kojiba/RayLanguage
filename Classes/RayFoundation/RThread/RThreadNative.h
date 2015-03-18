@@ -34,14 +34,16 @@
     #define RMutexInit                       pthread_mutex_init
     #define RMutexLock                       pthread_mutex_lock
     #define RMutexUnlock                     pthread_mutex_unlock
+
     #define RThreadCreate                    pthread_create
     #define RThreadExit                      pthread_exit
+    #define RThreadCancel                    pthread_cancel
+    #define RThreadJoin                      pthread_join
 
     #define RMutexAttributeInit              pthread_mutexattr_init
     #define RMutexAttributeSetType           pthread_mutexattr_settype
     #define RConditionSignal                 pthread_cond_signal
     #define RConditionWait                   pthread_cond_wait
-    #define RThreadCancel                    pthread_cancel
 
     // initializers
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER

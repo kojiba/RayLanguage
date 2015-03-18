@@ -26,7 +26,7 @@
     #define RMutexUnlockArray(some)
 #endif
 
-typedef struct enumeratorArgument {
+typedef struct finderArgument {
     // data pointers
     RCompareDelegate *delegate;
     RArray           *object;
@@ -39,9 +39,9 @@ typedef struct enumeratorArgument {
     // global flags
     unsigned        *signaled;
     rbool           *isFound;
-} enumeratorArgument;
+} finderArgument;
 
-void privatePartEnumerator(enumeratorArgument *argument) {
+void privatePartFinder(finderArgument *argument) {
     size_t iterator;
     argument->result.object = nil;
     inRange(iterator, argument->partRange) {
@@ -72,9 +72,9 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
     if(delegate != nil) {
         unsigned coreCount = processorsCount();
 
-        unsigned    *signaled  = allocator(unsigned);
-        rbool       *isFound   = allocator(rbool);
-        enumeratorArgument *arguments = RAlloc(sizeof(enumeratorArgument) * coreCount);
+        unsigned    *signaled = allocator(unsigned);
+        rbool       *isFound  = allocator(rbool);
+        finderArgument *arguments = RAlloc(sizeof(finderArgument) * coreCount);
 
         if(signaled != nil
                 && isFound   != nil
@@ -108,7 +108,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
                     arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore + additionalForLastCore);
                 }
                 #ifndef __WIN32
-                RThreadCreate(&descriptor, nil, (pointer (*)(pointer)) privatePartEnumerator, &arguments[iterator]);
+                RThreadCreate(&descriptor, nil, (pointer (*)(pointer)) privatePartFinder, &arguments[iterator]);
                 #else
                     #warning FIXME threads
                 #endif
@@ -146,7 +146,73 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             deallocator(arguments);
         }
     } else {
-        RWarning("RArray. Delegate for searching is nil.", object);
+        RWarning("RArray_Parallel. Delegate for searching is nil.", object);
     }
     return result;
+}
+
+typedef struct executerArgument {
+    // data pointers
+    REnumerateDelegate *delegate;
+    RArray             *object;
+
+    // range
+    RRange           partRange;
+} executerArgument;
+
+void privatePartExecuter(executerArgument *argument) {
+    size_t iterator;
+    inRange(iterator, argument->partRange) {
+        $(argument->delegate, m(checkObject, REnumerateDelegate)), argument->object->array[iterator], iterator);
+    }
+}
+
+method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
+    if(delegate != nil) {
+        unsigned coreCount = processorsCount();
+
+        executerArgument  *arguments   = arrayAllocator(finderArgument, coreCount);
+        RThreadDescriptor *descriptors = arrayAllocator(RThreadDescriptor, coreCount);
+
+        if(arguments != nil
+                && descriptors != nil) {
+            unsigned iterator;
+            size_t partForCore = object->count / coreCount;
+            size_t additionalForLastCore = object->count - partForCore * coreCount;
+
+#ifdef RAY_SHORT_DEBUG
+            RPrintf("RArray executeParallel of %p\n", object);
+#endif
+            RMutexLockArray();
+
+            forAll(iterator, coreCount) {
+                arguments[iterator].delegate = delegate;
+                arguments[iterator].object   = object;
+
+                if (iterator != coreCount - 1) {
+                    arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore);
+                } else {
+                    arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore + additionalForLastCore);
+                }
+#ifndef __WIN32
+                RThreadCreate(&descriptors[iterator], nil, (pointer (*)(pointer)) privatePartExecuter, &arguments[iterator]);
+#else
+                #warning FIXME threads
+#endif
+            }
+
+            // join all threads
+            forAll(iterator, coreCount) {
+                RThreadJoin(descriptors[iterator], nil);
+            }
+
+            RMutexUnlockArray();
+
+            // free temp pointers
+            deallocator(arguments);
+            deallocator(descriptors);
+        }
+    } else {
+        RWarning("RArray_Parallel. Delegate for execute operation is nil.", object);
+    }
 }

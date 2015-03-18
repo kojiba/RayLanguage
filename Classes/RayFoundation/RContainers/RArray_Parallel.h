@@ -1,6 +1,7 @@
 /**
  * RArray_Parallel.h
  * Threaded optimisation for RArray functions.
+ * Operations is synchronous.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2/27/15 Ukraine Kharkiv
  *  _         _ _ _
@@ -20,5 +21,6 @@
 #include <RArray.h>
 
 method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate);
+method(void,        executeParallel,    RArray),    REnumerateDelegate *delegate);
 
 #endif /*__R_ARRAY_PARALLEL_H__*/
