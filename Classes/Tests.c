@@ -321,7 +321,7 @@ void ComplexTest() {
             && !RThreadTest() // fixme in progress
         #endif
     ) {
-        RPrintf("All tests passed successfully\n");
+        RPrintLn("All tests passed successfully\n");
     } else {
         RError("TESTS ERROR!", nil);
     }

@@ -72,8 +72,8 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
     if(delegate != nil) {
         unsigned coreCount = processorsCount();
 
-        unsigned    *signaled = allocator(unsigned);
-        rbool       *isFound  = allocator(rbool);
+        volatile unsigned    *signaled = allocator(unsigned);
+        volatile rbool       *isFound  = allocator(rbool);
         finderArgument *arguments = RAlloc(sizeof(finderArgument) * coreCount);
 
         if(signaled != nil
