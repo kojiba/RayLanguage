@@ -15,6 +15,7 @@ int StringArrayTest(void);
 int StringDictionaryTest(void);
 int RByteArrayTest(void);
 int RBufferTest(void);
+int RCStringTest(void);
 
 #ifdef  __cplusplus
 }
