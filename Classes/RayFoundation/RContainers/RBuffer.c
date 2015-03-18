@@ -36,7 +36,7 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
         if(master(object, RByteArray) != nil) {
 
             // allocation of sizes array
-            object->sizesArray = RAlloc(sizeof(RRange) * objectCount);
+            object->sizesArray = arrayAllocator(RRange, objectCount);
 
             if(object->sizesArray  != nil) {
                 object->classId     = registerClassOnce(toString(RBuffer));
@@ -303,7 +303,7 @@ RBuffer* RBufferFromFile(const char *filename) {
         fileSize = RFTell(file);
         if(fileSize > 0) {
             RRewind(file);
-            buffer = RAlloc(fileSize * (sizeof(byte)));
+            buffer = arrayAllocator(byte, fileSize);
             if(buffer != nil) {
                 // create variables
                 uint64_t *sizesArray = nil;
@@ -379,7 +379,7 @@ method(void, saveToFile, RBuffer), const char* filename) {
         }
 
         // create sizes array
-        size_t *tempSizes = RAlloc(object->count * sizeof(size_t));
+        size_t *tempSizes = arrayAllocator(size_t, object->count);
         if(tempSizes == nil) {
             RError("RBuffer. Allocation of temp sizes array failed.", object);
         } else {
@@ -433,7 +433,7 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
             if(master(result, RByteArray) != nil) {
                 result->count = iterator;
 
-                RRange *newSizesArray = RAlloc(sizeof(RRange) * result->count);
+                RRange *newSizesArray = arrayAllocator(RRange, result->count);
                 if(newSizesArray != nil) {
                     size_t sum = 0;
 

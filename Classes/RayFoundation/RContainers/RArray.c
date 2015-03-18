@@ -46,7 +46,7 @@
 #pragma mark More Flexible
 
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error) {
-    RArray *object = malloc(sizeof(RArray));
+    RArray *object = allocator(RArray);
 
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray constructor of %p with size %lu, multiplier %lu \n", object, startSize, multiplier);
@@ -63,7 +63,7 @@ RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *erro
         // default start size in elements
         object->startSize      = startSize;
         object->sizeMultiplier = multiplier;
-        object->array          = RAlloc(object->startSize * sizeof(pointer));
+        object->array          = arrayAllocator(pointer, object->startSize);
 
         if (object->array == nil) {
             if(error != nil) {
