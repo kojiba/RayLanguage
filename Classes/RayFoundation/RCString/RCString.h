@@ -92,6 +92,7 @@ method(RArray *,            substringsSeparatedBySymbol,  RCString),    char sym
 method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
 extern inline
 method(RArray *,            substringsSeparatedBySymCStr, RCString),    char *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
+method(RArray *,            substringsSeparatedByString,  RCString),    RCString *separatorString);           // separatorString length > 1, not use for one symbol
 
 method(RCString *,          copy,                         RCString));
 

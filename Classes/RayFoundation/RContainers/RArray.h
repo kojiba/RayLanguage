@@ -1,6 +1,7 @@
 /**
  * RArray.h
- * Realization of C dynamic array, in Ray additions.
+ * Realization of C dynamic array of pointers
+ * In Ray additions.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -66,21 +67,21 @@ class(RArray) //----------------------------------------------------------------
 
 endOf(RArray) //--------------------------------------------------------------------
 
-// more flexible constructor
+#pragma mark Flexible constructor
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error);
 
-// Constructor - Destructor - Printer
+#pragma mark Constructor - Destructor - Printer
 extern inline
 constructor (RArray), RArrayFlags *error);
 destructor  (RArray);
 printer     (RArray);
 
-// Allocation - Reallocation
+#pragma mark Allocation - Reallocation
 method(RArrayFlags,        addSize,                   RArray),    size_t newSize);                    // adds some size, store data
 method(void,               flush,                     RArray));                                       // destroys all old elements
 method(byte,               sizeToFit,                 RArray));
 
-// Add - Set - Delete
+#pragma mark Add - Set - Delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 
 extern inline
@@ -92,7 +93,7 @@ method(void,               deleteObjects,             RArray),    RRange range);
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
-// Get - Find
+#pragma mark Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
@@ -102,25 +103,25 @@ method(pointer,            elementAtIndex,            RArray),    size_t index);
 extern inline
 method(pointer,            lastObject,                RArray));
 
-// Sorts
+#pragma mark Sorts
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
 method(void,               quickSortWithDelegate,     RArray),    size_t first, size_t last, byte (*comparator)(pointer, pointer));
 method(void,               sort,                      RArray));
 
-// Work
+#pragma mark Work
 method(void,               shift,                     RArray),    rbool isToLeft, RRange range);           // do not call destructor
 
-// Info
+#pragma mark Info
 static inline
 method(byte,               checkIfIndexIn,            RArray),    size_t index);
 
-// Casts
+#pragma mark Casts
 method(struct RList *,     toRList,      RArray));
 
-// standart comparator
+#pragma mark Standart comparator
 byte RArrayStandartComparator(pointer first, pointer second);
 
-// Init from scratch
+#pragma mark Init from scratch
 
 /*
  * Example

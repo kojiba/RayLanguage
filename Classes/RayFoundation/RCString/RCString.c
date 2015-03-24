@@ -44,7 +44,7 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
 char* copyOfCString(const char *string) {
     size_t length = RStringLength(string);
     if(length > 0) {
-        char *result = RAlloc(length * sizeof(char));
+        char *result = RAlloc((length + 1) * sizeof(char));
         if(result != nil) {
             RMemCpy(result, string, length);
             return result;
@@ -133,7 +133,11 @@ destructor(RCString) {
 }
 
 printer(RCString) {
-    RPrintf("%s\n", object->baseString);
+    if(object != nil) {
+        RPrintf("%s\n", object->baseString);
+    } else {
+        RPrintf("nil\n");
+    }
 }
 
 method(void, flush, RCString)) {
@@ -463,7 +467,8 @@ method(RCString *, setSubstringInRange, RCString), RRange range, const char *str
     if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
         RMemMove(object->baseString + range.start, string, range.size);
     } else {
-        RError("RCS. BAD RANGE!\n", object);
+        RErrStr "%p ERROR. RCString. setSubstringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
+                object, range.start, range.start + range.size, object->size);
     }
     return object;
 }
@@ -501,7 +506,8 @@ method(RCString *, substringInRange, RCString), RRange range) {
 
         return rcString;
     } else {
-        RError("RCS. BAD RANGE!\n", object);
+        RErrStr "%p ERROR. RCString. substringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
+                object, range.start, range.start + range.size, object->size);
         return nil;
     }
 
@@ -548,17 +554,17 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 }
 
 method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsString) {
-    register size_t  iterator;
-    register size_t  endOfSubstring   = 0;
-    register size_t  startOfSubstring = 0;
-    register rbool     isFirst        = yes;
-             RArray   *result         = nil;
-             RCString *substring;
+    RArray *result = nil;
 
     if(separatorsString != nil
             && separatorsString->size != 0
             && object != nil
             && object->size != 0) {
+        register size_t  iterator;
+        register size_t  endOfSubstring   = 0;
+        register size_t  startOfSubstring = 0;
+        register rbool   isFirst          = yes;
+        RCString *substring;
 
         forAll(iterator, object->size) {
             // check if separator
@@ -610,6 +616,8 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
             // and sizeToFit
             $(result, m(sizeToFit, RArray)) );
         }
+    } else {
+        RWarning("RCString. Bad separator string size, or string size.", object);
     }
     return result;
 }
@@ -625,8 +633,65 @@ method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString
 method(RCString *, substringByBounds, RCString), RBounds bounds) {
     register RRange range;
     range.start = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
-    range.size = indexOfLastCharacterCString (object->baseString, object->size, bounds.endSymbol) - range.start;
+    range.size  = indexOfLastCharacterCString(object->baseString, object->size, bounds.endSymbol) - range.start;
     return $(object, m(substringInRange, RCString)), range);
+}
+
+method(RArray *, substringsSeparatedByString, RCString), RCString *separatorString) {
+    RArray *result = nil;
+    if(object->size >= separatorString->size) {
+        register size_t iterator;
+        register size_t startOfSubstring = 0;
+                 size_t inner;
+                 RCString *substring = nil;
+
+        forAll(iterator, object->size) {
+            // check if separator
+            if(object->baseString[iterator] == separatorString->baseString[0]) {
+                // compare others
+                for(inner = 1; inner < separatorString->size; ++inner) {
+                    if(object->baseString[iterator + inner] != separatorString->baseString[inner]) {
+                        break;
+                    }
+                }
+                if(inner == separatorString->size) {
+                    substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
+                    if(result == nil) {
+                        result = makeRArray();
+                        if(result != nil) {
+                            // set-up delegates
+                            result->printerDelegate = (void (*)(pointer)) p(RCString);
+                            result->destructorDelegate = (void (*)(pointer)) stringDeleter;
+
+                        // exit if allocation fails
+                        } else {
+                            RError("RCString. Bad array for substrings allocation.", object);
+                            return nil;
+                        }
+                    }
+                    $(result, m(addObject, RArray)), substring);
+                    startOfSubstring = iterator + inner;
+                }
+                iterator += inner;
+            }
+        }
+
+        if(result != nil) {
+            // if last is not separator - add whole last word
+            if(startOfSubstring < object->size && iterator == object->size) {
+                // add last
+                substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
+                if(substring != nil) {
+                    addObjectToRA(result, substring);
+                }
+            }
+            $(result, m(sizeToFit, RArray)));
+        }
+    } else {
+        RWarning("RCString. Bad separator string size, or string size.", object);
+    }
+
+    return result;
 }
 
 method(RCString *, copy, RCString)) {
