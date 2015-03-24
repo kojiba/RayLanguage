@@ -57,7 +57,6 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
 
-                 Classes/RayFoundation/RThread/RThreadNative.h
                  Classes/RayFoundation/RThread/RThread.h
                  Classes/RayFoundation/RThread/RThreadPool.h
 
@@ -100,7 +99,6 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
                  Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
 
-                 Classes/RayFoundation/RThread/RThreadNative.c
                  Classes/RayFoundation/RThread/RThread.c
                  Classes/RayFoundation/RThread/RThreadPool.c
 
@@ -122,6 +120,8 @@ add_library(
 file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
 
 add_executable(${EXECUTABLE_NAME} Classes/main.c
+#${HEADER_FILES}
+#${SOURCE_FILES}
 )
 
 target_link_libraries(
