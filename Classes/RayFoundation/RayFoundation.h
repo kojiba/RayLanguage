@@ -55,7 +55,6 @@ extern "C" {
 #include <RClassTable.h>
 #include <RFloatingEnum.h>
 
-#include <RThreadNative.h>
 #include <RThread.h>
 #include <RThreadPool.h>
 

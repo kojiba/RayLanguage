@@ -49,7 +49,7 @@ class(RAutoPool)
     void                  (*selfFree)   (pointer ptr);
 
 #if defined(RAY_POOL_THREAD_SAFE)
-    RMutexDescriptor mutex;
+    RMutex mutex;
 #endif
 endOf(RAutoPool)
 

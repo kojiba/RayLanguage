@@ -29,7 +29,7 @@ class(RClassTable) //-----------------------------------------------------------
     discipleOf(RCompareDelegate)
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE)
-    RMutexDescriptor mutex;
+    RMutex mutex;
 #endif
 endOf(RClassTable) //-------------------------------------------------------
 

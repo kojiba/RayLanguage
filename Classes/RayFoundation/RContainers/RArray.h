@@ -62,7 +62,7 @@ class(RArray) //----------------------------------------------------------------
     pointer  *array;                         // array of pointers
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    RMutexDescriptor mutex;
+    RMutex mutex;
 #endif
 
 endOf(RArray) //--------------------------------------------------------------------

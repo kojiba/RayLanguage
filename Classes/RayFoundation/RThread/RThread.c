@@ -13,66 +13,98 @@
  **/
 
 #include <RThread.h>
-#include <RClassTable.h>
+#include <unistd.h>
 
-#pragma mark Base
+#pragma mark Info
 
-RMutexDescriptor mutexWithType(unsigned short mutexType) {
-    RMutexDescriptor mutex;
+RThreadId currentTreadIdentifier() {
+    RThreadId threadId = 0;
+#ifndef __WIN32
+    pthread_threadid_np(pthread_self(), &threadId);
+#else
+    #warning fixme currentTreadIdentifier will always 0
+#endif
+    return threadId;
+}
 
-    #ifndef _WIN32
-        RMutexAttributes Attr;
-        RMutexAttributeInit(&Attr);
-        RMutexAttributeSetType(&Attr, mutexType);
-        if(RMutexInit(&mutex,  &Attr) != 0) {
-            RError("RMutexWithType. Error creating mutex with type.", &mutex);
-        }
-    #else
-        mutex = RMutexInit(nil, no, nil);
-    #endif
+unsigned processorsCount() {
+#ifdef __WIN32
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo( &sysinfo );
+    return sysinfo.dwNumberOfProcessors;
+#else
+    return (unsigned) sysconf( _SC_NPROCESSORS_ONLN );
+#endif
+}
+
+#pragma mark Thread
+
+int RThreadCreate(RThread *thread,
+                  RThreadAttributes *attributes,
+                  RThreadFunction function,
+                  pointer argument ) {
+
+#ifndef __WIN32
+    return pthread_create(thread, attributes, function, argument);
+#else
+    *thread = CreateThread(nil, 0, function, argument, 0, nil);
+#endif
+}
+
+int RThreadCancel(RThread *thread) {
+#ifndef __WIN32
+    return pthread_cancel(*thread);
+#else
+    return TerminateThread(thread, nil);
+#endif
+}
+
+int RThreadJoin(RThread *thread) {
+#ifndef __WIN32
+    return pthread_join(*thread, nil);
+#else
+    return WaitForSingleObject(object->descriptor, INFINITE);
+#endif
+}
+
+void RThreadExit(pointer data) {
+#ifndef _WIN32
+    pthread_exit(data);
+#else
+    ExitThread(data);
+#endif
+}
+
+#pragma mark Mutex
+
+RMutex mutexWithType(byte mutexType) {
+    RMutex mutex;
+#ifndef _WIN32
+    RMutexAttributes Attr;
+    pthread_mutexattr_init(&Attr);
+    pthread_mutexattr_settype(&Attr, mutexType);
+    if(pthread_mutex_init(&mutex,  &Attr) != 0) {
+        RError("RMutexWithType. Error creating mutex with type.", &mutex);
+    }
+#else
+    mutex = RMutexInit(nil, no, nil);
+#endif
 
     return mutex;
 }
 
-#pragma mark Wrapper
-
-constructor(RThread),
-        RThreadAttributes *attributes,
-        RThreadFunction function,
-        pointer argument ) {
-
-    object = allocator(RThread);
-    if(object != nil) {
-            #ifndef __WIN32
-                    if(RThreadCreate(&object->descriptor, attributes, function, argument) != 0) {
-                        RError("RThread. Bad pthread_create.", object);
-                        return nil;
-                    }
-            #else
-                object->descriptor = CreateThread(nil, 0, function, argument, 0, nil);
-                if(object->descriptor != nil)
-            #endif
-                    object->classId = 6; //registerClassOnce(toString(RThread));
-    }
-    return object;
-}
-
-printer(RThread) {
-    RPrintf("%s object - %p, RThreadDescriptor - %p\n", toString(RThread), object, object->descriptor);
-}
-
-method(void, cancel, RThread)) {
-#ifndef __WIN32
-    pthread_cancel(object->descriptor);
+int RMutexLock(RMutex *mutex) {
+#ifndef _WIN32
+    return pthread_mutex_lock(mutex);
 #else
-    TerminateThread(object->descriptor, nil);
+    return WaitForSingleObject(mutex, INFINITE);
 #endif
 }
 
-method(void, join, RThread)) {
-#ifndef __WIN32
-    pthread_join(object->descriptor, nil);
+int RMutexUnlock(RMutex *mutex) {
+#ifndef _WIN32
+    return pthread_mutex_unlock(mutex);
 #else
-    WaitForSingleObject(object->descriptor, INFINITE);
+    return ReleaseMutex(mutex);
 #endif
 }

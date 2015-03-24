@@ -228,7 +228,6 @@ int RListTest(void) {
 RArray *arrayTest;
 
 pointer func1(pointer arg) {
-    enablePool(RPool);
     int i;
     forAll(i, TEST_COUNT) {
         $(arrayTest, m(addObject, RArray)), RS((char*)arg));
@@ -237,21 +236,22 @@ pointer func1(pointer arg) {
 }
 
 int RThreadTest(void) {
+    storePtrs();
     arrayTest = makeRArray();
     int i;
     arrayTest->destructorDelegate = free;
-    RThread *thread1 = $(nil, c(RThread)), nil, func1, "1 thread");
+    RThread thread1;
+    RThreadCreate(&thread1, nil, func1, "1 thread");
 
     forAll(i, TEST_COUNT) {
         $(arrayTest, m(addObject, RArray)), RS("main"));
     }
 
-    $(thread1, m(join, RThread)));
-    deallocator(thread1);
+    $(&thread1, RThreadJoin));
 
     RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);
-
+    backPtrs();
     return 0;
 }
 

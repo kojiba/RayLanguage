@@ -47,7 +47,7 @@ void privatePartFinder(finderArgument *argument) {
     inRange(iterator, argument->partRange) {
         if(*(argument->isFound) == yes) {
             argument->selfIterator = 0;
-            RThreadExit(nil);
+            return;
         }
         if ($(argument->delegate, m(checkObject, RCompareDelegate)), argument->object->array[iterator]) == equals) {
 
@@ -57,11 +57,11 @@ void privatePartFinder(finderArgument *argument) {
             *(argument->signaled)  = argument->selfIterator - 1;
             *(argument->isFound)   = yes;
             argument->selfIterator = 0;
-            RThreadExit(nil);
+            return;
         }
     }
     argument->selfIterator = 0;
-    RThreadExit(nil);
+    return;
 }
 
 method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) {
@@ -93,7 +93,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             RMutexLockArray();
 
             forAll(iterator, coreCount) {
-                RThreadDescriptor descriptor;
+                RThread descriptor;
 
                 arguments[iterator].delegate      = delegate;
                 arguments[iterator].object        = object;
@@ -163,7 +163,7 @@ typedef struct executerArgument {
 void privatePartExecuter(executerArgument *argument) {
     size_t iterator;
     inRange(iterator, argument->partRange) {
-        $(argument->delegate, m(checkObject, REnumerateDelegate)), argument->object->array[iterator], iterator);
+        argument->delegate->virtualCheckObject(argument->object->array[iterator], iterator);
     }
 }
 
@@ -172,7 +172,7 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
         unsigned coreCount = processorsCount();
 
         executerArgument  *arguments   = arrayAllocator(finderArgument, coreCount);
-        RThreadDescriptor *descriptors = arrayAllocator(RThreadDescriptor, coreCount);
+        RThread *descriptors = arrayAllocator(RThread, coreCount);
 
         if(arguments != nil
                 && descriptors != nil) {
@@ -203,7 +203,7 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
 
             // join all threads
             forAll(iterator, coreCount) {
-                RThreadJoin(descriptors[iterator], nil);
+                RThreadJoin(&descriptors[iterator]);
             }
 
             RMutexUnlockArray();

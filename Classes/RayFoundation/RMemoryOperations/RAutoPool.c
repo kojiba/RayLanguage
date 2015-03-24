@@ -221,7 +221,6 @@ method(void, free, RAutoPool), pointer ptr) {
         descriptor->ptr = ptr;
         delegate->etaloneObject = descriptor;
         delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRPoolDescriptor;
-//        object->pointersInWork->destructorDelegate = object->innerFree;
 #endif
         // search ptr
         RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
@@ -233,7 +232,6 @@ method(void, free, RAutoPool), pointer ptr) {
             RErrStr "%p ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool.\n", object, ptr);
         }
 #ifdef R_POOL_DETAILED
-//        object->pointersInWork->destructorDelegate = innerFree;
         if(RFreePtr == object->selfFree) {
             RError("RAutoPool. Inner free is self free, bad bad bad!!!", object);
         }

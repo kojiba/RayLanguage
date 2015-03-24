@@ -74,7 +74,7 @@ class(RSandBox)
 
     RSandBoxAllocationMode  allocationMode; // by default is RSandBoxAllocationModeRandom
 #ifdef RAY_SAND_BOX_THREAD_SAFE
-    RMutexDescriptor mutex;
+    RMutex mutex;
 #endif
 endOf(RSandBox)
 

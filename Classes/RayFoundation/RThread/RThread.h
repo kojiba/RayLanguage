@@ -17,24 +17,76 @@
 #define __R__THREAD_H__
 
 #include <RSyntax.h>
-#include <RThreadNative.h>
 
-// base
-RMutexDescriptor mutexWithType(unsigned short mutexType);
+#ifndef __WIN32
+    #include <pthread.h>
 
-// wrapper
-class(RThread)
-    RThreadDescriptor descriptor;
-endOf(RThread)
+    // types
+    typedef pthread_t              RThread;
+    typedef pthread_attr_t         RThreadAttributes;
 
-constructor (RThread),
-        RThreadAttributes *attributes,
-        RThreadFunction function,
-        pointer argument);
+    typedef pthread_mutex_t        RMutex;
+    typedef pthread_mutexattr_t    RMutexAttributes;
 
-printer     (RThread);
+    typedef pthread_cond_t         RCondition;
+    typedef uint64_t               RThreadId;
+    typedef pointer             (* RThreadFunction)(pointer);
 
-method(void, cancel,  RThread));
-method(void, join,    RThread));
+    #define RMutexAttributeInit              pthread_mutexattr_init
+    #define RMutexAttributeSetType           pthread_mutexattr_settype
+    #define RConditionSignal                 pthread_cond_signal
+    #define RConditionWait                   pthread_cond_wait
+
+    // initializers
+    #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+    #define RStackConditionInitializer       PTHREAD_COND_INITIALIZER
+
+    // mutex types
+    #define RMutexRecursive                  PTHREAD_MUTEX_RECURSIVE
+    #define RMutexNormal                     PTHREAD_MUTEX_NORMAL
+    #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
+#else
+    #include <windows.h>
+
+    // types
+    typedef HANDLE                    RThread;
+    typedef LPVOID                    RThreadAttributes;
+    typedef HANDLE                    RMutex;
+    typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
+    typedef DWORD                  (* RThreadFunction)(pointer);
+    typedef uint64_t                  RThreadId;
+
+    #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+    #define RMutexAttributeInit              pthread_mutexattr_init
+    #define RMutexAttributeSetType           pthread_mutexattr_settype
+
+    #define RMutexRecursive                  1
+    #define RMutexNormal                     2
+    #define RMutexErrorCheck                 3
+    // fixme in progress
+#endif
+
+#pragma mark Info
+
+RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
+unsigned  processorsCount();        // returns cores count
+
+#pragma mark Thread
+
+int RThreadCreate(RThread *thread,
+                  RThreadAttributes *attributes,
+                  RThreadFunction function,
+                  pointer argument);
+
+int  RThreadCancel(RThread *thread);
+int  RThreadJoin  (RThread *thread);
+void RThreadExit  (pointer data);
+
+#pragma mark Mutex
+
+RMutex mutexWithType(byte mutexType);
+
+int RMutexLock  (RMutex *mutex);
+int RMutexUnlock(RMutex *mutex);
 
 #endif /*__R__THREAD_H__*/

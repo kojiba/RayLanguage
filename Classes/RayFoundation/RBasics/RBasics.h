@@ -71,10 +71,10 @@ method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);
 // -----------------------------------------------------------------------
 
 protocol(REnumerateDelegate) //--------------------------------------------
-    rbool (*virtualCheckObject)(pointer data, size_t index);
+    rbool (*virtualCheckObject)(pointer data, size_t index); // if return yes - continue enumerating, else stops it
 
 endOf(REnumerateDelegate)
 
-method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index); // if return yes - continue enumerating, else stops it
+method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index); // call virtualCheck for all while not no
 
 #endif
