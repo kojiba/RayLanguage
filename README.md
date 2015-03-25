@@ -37,82 +37,74 @@ Some test projects based on RayFoundation:
 Work with RArray:  
 
 ```C
-#include "RayFoundation/RArray/RArray.h"
+#include <RayFoundation.h>
 
-void printString(char *src) {
-    printf("%s \n", src);
+typedef struct ComplexStruct {
+    size_t id;
+    RCString *fullName;
+} ComplexStruct;
+
+void printComplexStruct(ComplexStruct *some) {
+    printf("%p | id: %02lu | fullname : \'%s\' \n", some, some->id, some->fullName->baseString);
 }
 
-byte stringSorter(char *first, char *second) {
-    if (first != second) {
-        if (first[6] > second[6]) {
-            return swap_objects;
-        }
-    }
-    return 0;
+void complexDeleter(ComplexStruct *some) {
+    deleter(some->fullName, RCString);
+    free(some);
 }
 
 int main(int argc, const char *argv[]) {
-    // create your dynamic array
-    RArray *dynamicArray = makeRArray();
+    size_t iterator;
 
-    dynamicArray->printerDelegate = printString;
-    dynamicArray->destructorDelegate = free;
+    RArray *array = makeRArray(); // create array
+    // sets delegates for automatic print and cleanup
+    array->printerDelegate = (PrinterDelegate) printComplexStruct;
+    array->destructorDelegate = (DestructorDelegate) complexDeleter;
 
-    for (int i = 0; i < 10; ++i) {
-        char *a = malloc(sizeof(char) * 8);
-        memmove(a, "Hello  ", sizeof("Hello  "));
-        a[6] = (char) (i % 10 + 48);
-        addObjectToRA(dynamicArray, a);
+    forAll(iterator, 100) {
+        // create struct and add to array
+        ComplexStruct *some = malloc(sizeof(ComplexStruct));
+        some->id = iterator + 1;
+        some->fullName = stringWithFormat("Object # %lu", iterator + 1); // more string processing API in RCString.h
+        $(array, m(addObject, RArray)), some);
+    }
+    // print
+    printerOfRArray(array);
+
+    // delete, automatically calls destructor delegate and free array prt
+    deleter(array, RArray);
+
+    // some syntaxic sugar see initFromArray, initFromArrayWithSizes, arrayFromArray
+
+    // create array of strings
+    RCString *uniqTok = RS("Unique token");
+    array = RA(RS("Token 1"), RS("Token 2"), uniqTok, nil); // must be NULL terminated
+
+    array->printerDelegate = (PrinterDelegate) p(RCString);
+    array->destructorDelegate = free;
+
+    printerOfRArray(array);
+
+    RCompareDelegate delegate;
+    delegate.etaloneObject = uniqTok;
+    delegate.virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareWithRCString;
+
+    RFindResult result = findObjectWithDelegateRArray(array, &delegate); // search
+
+    if(result.object != nil) { // object != nil -> found object, place also logged
+        printf("Found some object at place %lu!\n", result.index);
+    } else {
+        printf("Object not found!\n");
     }
 
-    // print your array
-    printRA(dynamicArray);
+    RArray *subarray = getSubarrayRArray(array, makeRRange(1, 2)); // delegates will be copied
+    printerOfRArray(subarray);
+    subarray->destructorDelegate = nil; // not want to delete strings
+    deleter(subarray, RArray);
 
-    // built-in sort
-    sortRA(dynamicArray);
-    printRA(dynamicArray);
-    
-    // sort with delegate
-    $(dynamicArray, m(quickSortWithDelegate, RArray)), 0, dynamicArray->count - 1, stringSorter);
-    printRA(dynamicArray);
-    
-    // get sub-arrays, there will be two errorrs logged in console,
-    // and subarray will consist two last elements like null
-    RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(1, 11));
-    printRA(sub);
+    deleter(array, RArray); // cleanup strings
 
-    // fast delete objects
-    $(dynamicArray, m(fastDeleteObjectAtIndexIn, RArray)), 9);
-    printRA(dynamicArray);
-
-    // make your array size-to-fit (without free space)
-    sizeToFitRA(dynamicArray);
-    printRA(dynamicArray);
-
-    // delete your array
-    deleteRA(dynamicArray);
-    deallocator(sub);
-    
-    //--------------------------------------------------
-    
-    // create c-string array
-    RArray *stringArray = makeRArray();
-    
-    // set-up delegates
-    stringArray->printerDelegate = p(RCString);
-    stringArray->destructorDelegate = d(RCString);
-
-    for(unsigned i = 0; i < 10; ++i) {
-        // genering simly-rand() strings
-        addObjectToRA(stringArray, randomRCString());
-    }
-    printRA(stringArray);
-
-    // delete subArray in range [5...9]
-    $(stringArray, m(deleteObjects, RArray)), makeRRange(5, 4));
-
-    printRA(stringArray);
+    return 0;
 }
 ```
 
