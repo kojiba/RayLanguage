@@ -58,8 +58,6 @@ extern "C" {
 #include <RThread.h>
 #include <RThreadPool.h>
 
-#include <RSystem.h>
-
 #define endRay() deleter(RCTSingleton, RClassTable); \
                  printerOfRAutoPool(RPool); \
                  deleter(RPool, RAutoPool); \

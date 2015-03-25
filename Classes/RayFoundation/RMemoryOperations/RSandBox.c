@@ -63,7 +63,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
             object->delegate              = nil;
 
 #ifdef RAY_SAND_BOX_THREAD_SAFE
-            object->mutex = mutexWithType(RMutexRecursive);
+            mutexWithType(&object->mutex, RMutexRecursive);
 #endif
         } else {
             RError("RSandBox. Can't allocate descriptors table or memory part.", object);

@@ -42,7 +42,7 @@ constructor(RList)) {
         object->printerDelegate = nil;
         object->classId = registerClassOnce(toString(RList));
 #ifdef RAY_LIST_THREAD_SAFE
-        object->mutex = mutexWithType(RMutexNormal); // note: be aware with normal mute
+        mutexWithType(&object->mutex, RMutexNormal); // note: be aware with normal mute
 #endif
     }
     return object;

@@ -26,6 +26,10 @@
 #endif
 
 #ifdef R_POOL_DETAILED
+    #if !defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
+        #include <RThread.h>
+    #endif
+
 typedef struct RPoolDescriptor {
     RThreadId allocatorThread;
     pointer   ptr;

@@ -84,7 +84,7 @@ void RThreadExit  (pointer data);
 
 #pragma mark Mutex
 
-RMutex mutexWithType(byte mutexType);
+int mutexWithType(RMutex *mutex, byte mutexType);
 
 int RMutexLock  (RMutex *mutex);
 int RMutexUnlock(RMutex *mutex);

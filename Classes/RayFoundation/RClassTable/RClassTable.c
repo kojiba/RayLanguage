@@ -53,7 +53,7 @@ constructor(RClassTable)) {
                 object->classId = 3;
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE)
-                object->mutex = mutexWithType(RMutexNormal);
+                mutexWithType(&object->mutex, RMutexNormal);
 #endif
             } else {
                 RError("RClassTable. Bad allocation on delegate.", object);

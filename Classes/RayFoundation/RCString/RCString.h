@@ -27,8 +27,8 @@ size_t    indexOfLastCharacterCString   (const char *string, size_t size, char c
 char*     copyOfCString                 (const char *string);
 RCString* randomRCString                (void);
 char      randomCharacter               (void);
-char*     cstringWithFormat             (char *format, ...);
-char*     vcstringWithFormat            (char *format, va_list list);
+char*     cstringWithFormat             (const char *format, ...);
+char*     vcstringWithFormat            (const char *format, va_list list);
 
 class(RCString) //------------------------------------
 

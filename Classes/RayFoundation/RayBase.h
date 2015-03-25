@@ -48,10 +48,10 @@ volatile extern void    (*RFreePtr)   (void*  ptr);
                        RCallocPtr  = RTrueCalloc;\
                        RReallocPtr = RTrueRealloc
 
-#define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
-                    pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
-                    pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
-                    void    (*oldFree)   (pointer ptr) = RFreePtr
+#define storePtrs() volatile pointer (*oldMalloc) (size_t size) = RMallocPtr;\
+                    volatile pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
+                    volatile pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
+                    volatile void    (*oldFree)   (pointer ptr) = RFreePtr
 
 #define backPtrs()  RMallocPtr = oldMalloc;\
                     RReallocPtr = oldRealloc;\

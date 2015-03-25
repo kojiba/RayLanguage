@@ -77,20 +77,16 @@ void RThreadExit(pointer data) {
 
 #pragma mark Mutex
 
-RMutex mutexWithType(byte mutexType) {
-    RMutex mutex;
+int mutexWithType(RMutex *mutex, byte mutexType) {
 #ifndef _WIN32
     RMutexAttributes Attr;
     pthread_mutexattr_init(&Attr);
     pthread_mutexattr_settype(&Attr, mutexType);
-    if(pthread_mutex_init(&mutex,  &Attr) != 0) {
-        RError("RMutexWithType. Error creating mutex with type.", &mutex);
-    }
+    return pthread_mutex_init(mutex,  &Attr);
 #else
-    mutex = RMutexInit(nil, no, nil);
+    *mutex = RMutexInit(nil, no, nil);
+    return 0;
 #endif
-
-    return mutex;
 }
 
 int RMutexLock(RMutex *mutex) {

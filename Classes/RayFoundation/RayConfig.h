@@ -18,6 +18,8 @@
 #ifndef __RAY_CONFIG_H__
 #define __RAY_CONFIG_H__
 
+#include <RSystem.h>
+
 #define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h
 #define RAY_ERRORS_ON   // --//-- errors
 

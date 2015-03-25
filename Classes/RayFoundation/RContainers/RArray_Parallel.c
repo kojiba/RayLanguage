@@ -20,6 +20,7 @@
     #define RMutexLockArray() RMutexLock(arrayMutex)
     #define RMutexUnlockArray() RMutexUnlock(arrayMutex)
 #else
+    #include <RThread.h>
     // sets empty
     #define arrayMutex
     #define RMutexLockArray(some)

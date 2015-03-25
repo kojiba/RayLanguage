@@ -39,6 +39,7 @@
     #elif TARGET_OS_IPHONE
             // iOS device
             #define RSystemDetails "iOS Device "
+            #define iOSDevice
     #elif TARGET_OS_MAC
             // OSX
             #define RSystemDetails "OSX "

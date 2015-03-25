@@ -33,14 +33,8 @@ typedef enum RSandBoxAllocationMode {
 } RSandBoxAllocationMode;
 
 typedef struct RControlDescriptor {
-#ifdef R_POOL_DETAILED
-    RThreadId allocatorThread;
-#endif
     RRange memRange;
 } RControlDescriptor;
-
-RCompareFlags compareRControlDescriptor(RControlDescriptor *first, RControlDescriptor *second);
-void          deleterOfRControlDescriptor(RControlDescriptor *object);
 
 //---------------------------------------------------------------------------------
 

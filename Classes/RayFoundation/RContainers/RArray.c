@@ -81,7 +81,7 @@ RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *erro
             object->destructorDelegate = nil;
             object->printerDelegate    = nil;
 #ifdef RAY_ARRAY_THREAD_SAFE
-            object->mutex = mutexWithType(RMutexRecursive);
+            mutexWithType(&object->mutex, RMutexRecursive);
 #endif
             return object;
         }

@@ -317,7 +317,7 @@ void ComplexTest() {
         && !RByteArrayTest()
         && !RBufferTest()
         && !RCStringTest()
-        #ifndef __WIN32
+        #if !defined(__WIN32) && defined(RAY_ARRAY_THREAD_SAFE)
             && !RThreadTest() // fixme in progress
         #endif
     ) {

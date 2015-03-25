@@ -89,7 +89,7 @@ RCString *randomRCString(void) {
     return string;
 }
 
-char* cstringWithFormat(char *format, ...) {
+char* cstringWithFormat(const char *format, ...) {
     va_list args;
     char *buffer;
     va_start(args, format);
@@ -97,7 +97,8 @@ char* cstringWithFormat(char *format, ...) {
     va_end(args);
     return buffer;
 }
-char* vcstringWithFormat(char *format, va_list list) {
+
+char* vcstringWithFormat(const char *format, va_list list) {
     int size;
     char *buffer = RAlloc(100);
     if(buffer != nil) {

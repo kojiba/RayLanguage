@@ -71,7 +71,7 @@ constructor(RAutoPool)) {
             object->pointersInWork->printerDelegate = poolPrinter;
 
 #if defined(RAY_POOL_THREAD_SAFE)
-            object->mutex = mutexWithType(RMutexNormal);
+            mutexWithType(&object->mutex, RMutexNormal);
 #endif
         } else {
             RError("RAutoPool. Bad workers RArray allocation.", object);

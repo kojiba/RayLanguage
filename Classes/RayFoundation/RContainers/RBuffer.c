@@ -44,7 +44,7 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
                 object->count       = 0;
                 object->totalPlaced = 0;
 #ifdef RAY_BUFFER_THREAD_SAFE
-                object->mutex = mutexWithType(RMutexRecursive);
+                mutexWithType(&object->mutex, RMutexRecursive);
 #endif
             } else {
 //                RError("RBuffer. Allocation of sizes array failed.", object);
