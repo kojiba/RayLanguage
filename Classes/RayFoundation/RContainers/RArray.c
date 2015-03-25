@@ -95,7 +95,7 @@ inline constructor(RArray), RArrayFlags *error) {
 }
 
 destructor(RArray) {
-
+    RMutexLockArray();
     size_t iterator;
     // call destructors for all of objects in array or do nothing
     if(object->destructorDelegate != nil) {
@@ -109,7 +109,7 @@ destructor(RArray) {
     object->freePlaces         = 0;
     object->destructorDelegate = nil;
     object->printerDelegate    = nil;
-
+    RMutexUnlockArray();
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray destructor of %p\n", object);
 #endif

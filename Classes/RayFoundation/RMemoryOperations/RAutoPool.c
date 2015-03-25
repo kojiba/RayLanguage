@@ -247,7 +247,13 @@ method(void, free, RAutoPool), pointer ptr) {
 
 method(void, drain, RAutoPool)) {
     RMutexLockPool();
+#ifndef R_POOL_DETAILED
     $(object->pointersInWork, m(flush, RArray)));
+#else
+//    fixme partiral delete
+//    storedId = currentTreadIdentifier();
+//    $(object->pointersInWork, m(enumerate, RArray)), &delegate, yes);
+#endif
     RMutexUnlockPool();
 }
 
