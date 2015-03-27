@@ -12,9 +12,9 @@ RayPropertyType PropertyTypeFromString(const char *string);
 // ----------------------------
 
 class(RayProperty)
-    size_t          memSizeType;     // like void, int, double etc.
-    RayPropertyType type;
-    RCString       *name;
+    size_t           memSizeType; // like void, int, double etc.
+    RayPropertyType  type;        // from RInterpereterConsts.h
+    RArray          *names;
 endOf(RayProperty)
 
 constructor (RayProperty));
@@ -23,7 +23,7 @@ printer     (RayProperty);
 
 method(RCString *, serializeToCType, RayProperty), RClassTable *delegate);
 
-RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate);
+RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate); // must be already preprocessed
 
 extern inline
 RayProperty* parseSourceCRayProperty (char *code, RClassTable *delegate);
