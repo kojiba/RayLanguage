@@ -54,12 +54,13 @@ typedef enum RArrayFlags {
 typedef void (* DestructorDelegate)(pointer);
 typedef void (* PrinterDelegate)(pointer);
 
+typedef struct RArray RArray;
+
 class(RArray) //---------------------------------------------------------------------
 
-    size_t    startSize;                     // start size of array in elements
-    size_t    sizeMultiplier;                // size multiplier when auto-add-size
-    size_t    count;                         // count of elements in array
-    size_t    freePlaces;                    // count of free places for elements
+    size_t sizeMultiplier;                // size multiplier when auto-add-size
+    size_t count;                         // count of elements in array
+    size_t freePlaces;                    // count of free places for elements
 
     DestructorDelegate destructorDelegate;   // destructor of elements delegate
     PrinterDelegate    printerDelegate;      // printer of elements delegate

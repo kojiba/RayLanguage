@@ -61,9 +61,8 @@ RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *erro
 
     } else {
         // default start size in elements
-        object->startSize      = startSize;
         object->sizeMultiplier = multiplier;
-        object->array          = arrayAllocator(pointer, object->startSize);
+        object->array          = arrayAllocator(pointer, startSize);
 
         if (object->array == nil) {
             if(error != nil) {
@@ -76,7 +75,7 @@ RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *erro
             object->classId = 0;
             // set up members
             object->count = 0;
-            object->freePlaces = object->startSize;
+            object->freePlaces = startSize;
             // set up delegates
             object->destructorDelegate = nil;
             object->printerDelegate    = nil;
@@ -105,10 +104,6 @@ destructor(RArray) {
     }
     // dealloc array pointer
     deallocator(object->array);
-    object->count              = 0;
-    object->freePlaces         = 0;
-    object->destructorDelegate = nil;
-    object->printerDelegate    = nil;
     RMutexUnlockArray();
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray destructor of %p\n", object);

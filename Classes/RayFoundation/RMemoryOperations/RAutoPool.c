@@ -161,7 +161,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
 #ifdef R_POOL_DETAILED
                 RPoolDescriptor* descriptor2 = allocator(RPoolDescriptor);
                 descriptor2->size = newSize;
-                descriptor2->ptr = temp;
+                descriptor2->ptr  = temp;
                 descriptor2->allocatorThread = currentTreadIdentifier();
                 $(object->pointersInWork, m(addObject, RArray)), descriptor2);
 #else
@@ -195,7 +195,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 #ifdef R_POOL_DETAILED
         RPoolDescriptor* descriptor = allocator(RPoolDescriptor);
         descriptor->size = blockCount * blockSize;
-        descriptor->ptr = temp;
+        descriptor->ptr  = temp;
         descriptor->allocatorThread = currentTreadIdentifier();
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
@@ -259,18 +259,18 @@ method(void, drain, RAutoPool)) {
 
 void enablePool(RAutoPool *object) {
     RMutexLockPool();
-    malloc = object->selfMalloc;
+    malloc  = object->selfMalloc;
     realloc = object->selfRealloc;
-    calloc = object->selfCalloc;
-    free = object->selfFree;
+    calloc  = object->selfCalloc;
+    free    = object->selfFree;
     RMutexUnlockPool();
 }
 
 void disablePool(RAutoPool *object) {
     RMutexLockPool();
-    malloc = object->innerMalloc;
+    malloc  = object->innerMalloc;
     realloc = object->innerRealloc;
-    calloc = object->innerCalloc;
-    free = object->innerFree;
+    calloc  = object->innerCalloc;
+    free    = object->innerFree;
     RMutexUnlockPool();
 }
