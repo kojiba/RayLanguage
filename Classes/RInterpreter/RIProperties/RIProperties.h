@@ -25,5 +25,7 @@ printer     (RayProperty);
 method(RCString *, serializeToCType,      RayProperty), RClassTable *delegate);
 
 RayProperty* parseSourceRayProperty  (RCString *code, RClassTable *delegate);
-inline RayProperty* parseSourceCRayProperty (char *code,     RClassTable *delegate);
+
+extern inline
+RayProperty* parseSourceCRayProperty (char *code,     RClassTable *delegate);
 #endif /*__RAY_PROPERTY_H__*/

@@ -116,13 +116,74 @@ add_library(
     ${SOURCE_FILES}
 )
 
-#file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
+set(RVM NO)
 
-add_executable(${EXECUTABLE_NAME} Classes/main.c
+if(RVM) # RVM -----------------------------------------------------------------------
+    set(RVM_HEADERS
+                   Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
+                   Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
+                   Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
+
+    set(RVM_SOURCES
+                   Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
+                   Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
+                   Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
+
+    add_executable(RVM ${RVM_HEADERS} ${RVM_SOURCES})
+
+    target_link_libraries(
+        RVM
+        ${LIBRARY_NAME}
+    )
+else()
+    set(RVM_HEADERS)
+    set(RVM_SOURCES)
+endif() # RVM -----------------------------------------------------------------------
+
+set(RayInterpreter NO)
+
+if(RayInterpreter) # RInterpreter ---------------------------------------------------
+    set(RINTERPRETER_HEADERS # Interpreter
+
+                            Classes/RInterpreter/RIProperties/RIProperties.h
+                            Classes/RInterpreter/RIMethods/RIMethods.h
+                            Classes/RInterpreter/RIClass/RIClass.h
+
+                            Classes/RInterpreter/RInterpreter.h)
+
+
+    set(RINTERPRETER_SOURCES # Interpreter
+                             Classes/RInterpreter/RIProperties/RIProperties.c
+                             Classes/RInterpreter/RIMethods/RIMethods.c
+                             Classes/RInterpreter/RIClass/RIClass.c
+
+                             Classes/RInterpreter/RInterpreter.c)
+
+    add_executable(RayInterpreter ${RINTERPRETER_HEADERS} ${RINTERPRETER_SOURCES})
+    target_link_libraries(
+        RayInterpreter
+        ${LIBRARY_NAME}
+    )
+else()
+    set(RINTERPRETER_HEADERS)
+    set(RINTERPRETER_SOURCES)
+endif() # RInterpreter ---------------------------------------------------
+
+add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
+                                                 ${RVM_SOURCES}
+                                                 ${RINTERPRETER_HEADERS}
+                                                 ${RINTERPRETER_SOURCES}
 #${HEADER_FILES}
 #${SOURCE_FILES}
 )
+
+set(copyResources NO)
+
+if(copyResources)
+    file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+endif()
+
+file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
 
 target_link_libraries(
     ${EXECUTABLE_NAME}
@@ -138,56 +199,6 @@ install( TARGETS ${EXECUTABLE_NAME}
          RUNTIME DESTINATION bin COMPONENT libraries
          LIBRARY DESTINATION lib COMPONENT libraries
          ARCHIVE DESTINATION lib/static COMPONENT libraries)
-
-# RVM -----------------------------------------------------------------------
-#set(RVM_HEADERS
-#               Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
-#               Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h
-#               Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.h)
-#
-#set(RVM_SOURCES
-#               Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.c
-#               Classes/RVirtualMachine/RVirtualCompiler/RVirtualCompiler.c
-#               Classes/RVirtualMachine/RVirtualMachine/RVirtualMachine.c)
-# RVM -----------------------------------------------------------------------
-
-# RInterpreter --------------------------------------------------------------
-#set(RINTERPRETER_HEADERS # Interpreter
-
-#                        Classes/RInterpreter/RIProperties/RIProperties.h
-#                        Classes/RInterpreter/RIMethods/RIMethods.h
-#                        Classes/RInterpreter/RIClass/RIClass.h
-#
-#                        Classes/RInterpreter/RInterpreter.h)
-#
-
-#set(RINTERPRETER_SOURCES # Interpreter
-#                         Classes/RInterpreter/RIProperties/RIProperties.c
-#                         Classes/RInterpreter/RIMethods/RIMethods.c
-#                         Classes/RInterpreter/RIClass/RIClass.c
-#
-#                         Classes/RInterpreter/RInterpreter.c)
-#
-# RInterpreter --------------------------------------------------------------
-
-
-#add_executable(RayInterpreter ${RINTERPRETER_HEADERS} ${RINTERPRETER_SOURCES})
-#target_link_libraries(
-#    RayInterpreter
-#    ${LIBRARY_NAME}
-#)
-
-#add_executable(RayInterpreter ${RINTERPRETER_HEADERS} ${RINTERPRETER_SOURCES})
-#target_link_libraries(
-#    RayInterpreter
-#    ${LIBRARY_NAME}
-#)
-
-#add_executable(RVM ${RVM_HEADERS} ${RVM_SOURCES})
-#target_link_libraries(
-#    RVM
-#    ${LIBRARY_NAME}
-#)
 
 
 

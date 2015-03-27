@@ -61,6 +61,11 @@ typedef struct RFindResult {
 
 // -----------------------------------------------------------------------
 
+typedef void (* DestructorDelegate)(pointer);
+typedef void (* PrinterDelegate)(pointer);
+
+// -----------------------------------------------------------------------
+
 protocol(RCompareDelegate) //--------------------------------------------
     RCompareFlags (*virtualCompareMethod)(pointer first, pointer second);
     pointer         etaloneObject;

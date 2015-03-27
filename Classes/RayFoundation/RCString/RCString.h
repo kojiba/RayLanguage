@@ -122,5 +122,6 @@ RCString* RCStringFromFile(const char *filename); // may not be 0-terminated, us
 #define makeRCString()             $(nil, c(RCString)))
 #define RS(CString)                $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant, ATTENTION need to be deallocated, but not destructed
 #define RSC(CString)               $(makeRCString(), m(setString, RCString)), CString)         // makes copy from constant
-
+#define stringDelegates(array)     array->destructorDelegate = (DestructorDelegate) stringDeleter; \
+                                   array->printerDelegate = (PrinterDelegate) p(RCString)
 #endif /*__R_C_STRING_H__*/

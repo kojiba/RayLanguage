@@ -17,7 +17,7 @@
 
 #pragma mark RRange
 
-inline RRange makeRRange(size_t from, size_t count) {
+extern inline RRange makeRRange(size_t from, size_t count) {
     RRange range;
     range.start = from;
     range.size = count;

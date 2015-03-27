@@ -38,8 +38,8 @@ class(RList) //-----------------------------------------------------------------
 
     size_t  count; // readonly, signaling about successful addition, deletion of elements
 
-    void  (*destructorDelegate)(pointer);
-    void  (*printerDelegate)   (pointer);
+    DestructorDelegate destructorDelegate;
+    PrinterDelegate    printerDelegate;
 
 #ifdef RAY_LIST_THREAD_SAFE
     RMutexDescriptor mutex;

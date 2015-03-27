@@ -121,6 +121,7 @@ RayProperty* parseSourceRayProperty(RCString *code, RClassTable *delegate) {
     return nil;
 }
 
+inline
 RayProperty* parseSourceCRayProperty(char *code, RClassTable *delegate) {
     RCString *source = RS(code);
     RayProperty *result = parseSourceRayProperty(source, delegate);

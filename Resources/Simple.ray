@@ -2,17 +2,17 @@
 
 class Simple {
 properties:
-    int a, b;
+    int a, b
 methods:
-    printA;
-    printB;
+    printA
+    printB
 }
 
 implementation Simple {
     printA {
-        printf("A is - %d", object.a);
+        printf("A is - %d", object.a)
     }
     printfB {
-        printf("B is - %d", object.b);
+        printf("B is - %d", object.b)
     }
 }

@@ -54,21 +54,11 @@ constructor(RInterpreter)) {
 }
 
 destructor(RInterpreter) {
-    if(object->sourceFileString != nil) {
-        deleter(object->sourceFileString, RCString);
-    }
-    if(object->rayTokens != nil) {
-        deleter(object->rayTokens, RArray);
-    }
-    if(object->codeTokens != nil) {
-        deleter(object->codeTokens, RArray);
-    }
-    if(object->stringConsts != nil) {
-        deleter(object->stringConsts, RArray);
-    }
-    if(object->classes != nil) {
-        deleter(object->classes, RArray);
-    }
+    nilDeleter(object->sourceFileString, RCString)
+    nilDeleter(object->rayTokens, RArray)
+    nilDeleter(object->codeTokens, RArray)
+    nilDeleter(object->stringConsts, RArray)
+    nilDeleter(object->classes, RArray)
 }
 
 singleton(RInterpreter) {
@@ -102,23 +92,17 @@ method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceF
 
 method(void, initContainers, RInterpreter)) {
     // create source file string
-    if(object->sourceFileString != nil) {
-        deleter(object->sourceFileString, RCString);
-    }
+    nilDeleter(object->sourceFileString, RCString)
 
     // create source rayTokens
-    if(object->codeTokens != nil) {
-        deleter(object->codeTokens, RArray);
-    }
+    nilDeleter(object->codeTokens, RArray)
     object->codeTokens = makeRArray();
-    makeStringArrayFrom(object->codeTokens);
+    stringDelegates(object->codeTokens);
 
     // create stringConsts
-    if(object->stringConsts != nil) {
-        deleter(object->stringConsts, RArray);
-    }
+    nilDeleter(object->stringConsts, RArray)
     object->stringConsts = makeRArray();
-    makeStringArrayFrom(object->stringConsts);
+    stringDelegates(object->stringConsts);
 }
 
 method(void, parseClass, RInterpreter), size_t iterator) {
@@ -191,7 +175,7 @@ method(void, parseTokens, RInterpreter)) {
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {
-                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfCString(name->baseString));
                             $(object, m(parseClass, RInterpreter)), iterator);
                         } else {
                             RFPrintf(stderr, "%p ERROR. RInterpreter. Class with name \"%s\" already exists.\n", object, name->baseString);
@@ -209,7 +193,7 @@ method(void, parseTokens, RInterpreter)) {
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {
-                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfString(name->baseString));
+                            $(object->typesTable, m(registerClassWithName, RClassTable)), copyOfCString(name->baseString));
                         } else {
                             RFPrintf(stderr, "%p ERROR. RInterpreter. Type with name \"%s\" already exists.\n", object, name->baseString);
                         }

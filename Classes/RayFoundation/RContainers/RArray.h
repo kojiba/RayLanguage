@@ -51,11 +51,6 @@ typedef enum RArrayFlags {
 #define startSizeOfRArrayDefault      20
 #define sizeMultiplierOfRArrayDefault 2
 
-typedef void (* DestructorDelegate)(pointer);
-typedef void (* PrinterDelegate)(pointer);
-
-typedef struct RArray RArray;
-
 class(RArray) //---------------------------------------------------------------------
 
     size_t sizeMultiplier;                // size multiplier when auto-add-size
