@@ -1,18 +1,39 @@
 #include "RIProperties.h"
 
+const char * PropertyTypeToString(RayPropertyType type) {
+    if(type < PropertyTypeCount) {
+        return propertyTypesConst[type];
+    } else {
+        return nil;
+    }
+}
+
+RayPropertyType PropertyTypeFromString(const char* const string) {
+    unsigned result = 0;
+    const char *etalon = propertyTypesConst[result];
+    while(result < PropertyTypeCount) {
+        if(strcmp(etalon, string) == 0) {
+            break;
+        }
+        ++result;
+        etalon = propertyTypesConst[result];
+    }
+    return (RayPropertyType) result;
+}
+
+
 constructor (RayProperty)) {
     object = allocator(RayProperty);
     if(object != nil) {
         object->classId = registerClassOnce(toString(RayProperty));
-        object->type = PTReadOnly;
+        object->type    = default_property_qualifier;
+        object->name    = nil;
     }
     return object;
 }
 
 destructor(RayProperty) {
-    if(object->name != nil) {
-        deallocator(object->name);
-    }
+    nilDeleter(object->name, RCString);
 }
 
 printer(RayProperty) {
@@ -34,28 +55,8 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
     $(result, m(concatenate, RCString)), space);
 
     // add prefix to name
-    switch (object->type) {
-        case PTReadOnly: {
-            RCString *temp = RS("readOnly_");
-            $(result, m(concatenate, RCString)), temp);
-            deallocator(temp);
-            break;
-        }
-
-        case PTReadWrite: {
-            RCString *temp = RS("readWrite_");
-            $(result, m(concatenate, RCString)), temp);
-            deallocator(temp);
-            break;
-        }
-
-        case PTInner: {
-            RCString *temp = RS("inner_");
-            $(result, m(concatenate, RCString)), temp);
-            deallocator(temp);
-            break;
-        }
-    }
+    RCString *propertyString = RSC(PropertyTypeToString(object->type));
+    $(propertyString, m(appendString, RCString)), property_type_prefix_postfix);
 
     // add name
     $(result, m(concatenate, RCString)), object->name);
@@ -63,68 +64,44 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
     return result;
 }
 
-RayProperty* parseSourceRayProperty(RCString *code, RClassTable *delegate) {
+RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
     rbool        isTypised = no;
     size_t       iterator;
-    RArray *tokens = $(code, m(substringsSeparatedBySymCStr, RCString)), "  ;\r\n\t");
+    RayProperty *property = $(nil, c(RayProperty)));
 
-    if(tokens != nil) {
-        $(tokens, p(RArray)));
-        RayProperty *property  = $(nil, c(RayProperty)));
+    if(property != nil) {
+        size_t startOfQualifier = indexOfFirstCharacterCString(code->baseString, code->size,
+                                                               property_qualifier_start_symbol);
 
-        forAll(iterator, tokens->count) {
-            RCString *token = $(tokens, m(elementAtIndex, RArray)), iterator);
-
-            if(RMemCmp(token->baseString, "readOnly", token->size) == 0) {
-                if(!isTypised) {
-                    property->type = PTReadOnly;
-                    isTypised = yes;
-                    continue;
-                } else {
-                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
-                }
-            }
-
-            if(RMemCmp(token->baseString, "readWrite", token->size) == 0) {
-                if (!isTypised) {
-                    property->type = PTReadWrite;
-                    isTypised = yes;
-                    continue;
-                } else {
-                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
-                }
-            }
-
-            if(RMemCmp(token->baseString, "inner", token->size) == 0) {
-                if (!isTypised) {
-                    property->type = PTInner;
-                    isTypised = yes;
-                    continue;
-                } else {
-                    RErrStr "Already have type. Token : %lu\n", iterator + 1);
-                }
+        // found start qualifier
+        if(startOfQualifier < code->size) {
+            size_t endOfQualifier = indexOfFirstCharacterCString(code->baseString + startOfQualifier, code->size - startOfQualifier,
+                                                                 property_qualifier_end_symbol);
+            // end qualifier
+            if(endOfQualifier < code->size - startOfQualifier) {
+                char *qualifierString = substringInRange(code->baseString + startOfQualifier, makeRRange(0, endOfQualifier));
+                property->type = PropertyTypeFromString(qualifierString);
+                deallocator(qualifierString);
+            } else {
+                deallocator(property);
+                RError("ParsePropertyString. Not found end of property qualifier.", code);
+                return nil;
             }
         }
 
-        // must be type
-        RCString *type = $(tokens, m(elementAtIndex, RArray)), tokens->count - 2);
-        property->memSizeType = $(delegate, m(getIdentifierByClassName, RClassTable)), type->baseString);
+        // not set qualifier constructor uses default
 
-        if(property->memSizeType == 0) {
-            RErrStr "Unknown type. Token : %lu\n", tokens->count - 2);
-        }
 
-        // last must be name
-        property->name = copyRCString($(tokens, m(lastObject, RArray))));
-        return property;
+    } else {
+        RError("ParsePropertyString. Bad property allocation.", code);
     }
-    return nil;
+    return property;
 }
 
 inline
 RayProperty* parseSourceCRayProperty(char *code, RClassTable *delegate) {
     RCString *source = RS(code);
-    RayProperty *result = parseSourceRayProperty(source, delegate);
+    RayProperty *result = ParsePropertyString(source, delegate);
     deallocator(source);
     return result;
 }

@@ -1,31 +1,31 @@
-#include "../../RayFoundation/RSyntax.h"
-
 #ifndef __RAY_PROPERTY_H__
 #define __RAY_PROPERTY_H__
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
+#include "../RInterpereterConsts.h"
 
-typedef enum RayPropertyType {
-    PTReadOnly,
-    PTReadWrite,
-    PTInner,
-} RayPropertyType;
+const char *    PropertyTypeToString(RayPropertyType type);
+RayPropertyType PropertyTypeFromString(const char *string);
+
+
+// ----------------------------
 
 class(RayProperty)
-    size_t memSizeType;     // like void, int, double etc.
+    size_t          memSizeType;     // like void, int, double etc.
     RayPropertyType type;
-    RCString *name;
+    RCString       *name;
 endOf(RayProperty)
 
 constructor (RayProperty));
 destructor  (RayProperty);
 printer     (RayProperty);
 
-method(RCString *, serializeToCType,      RayProperty), RClassTable *delegate);
+method(RCString *, serializeToCType, RayProperty), RClassTable *delegate);
 
-RayProperty* parseSourceRayProperty  (RCString *code, RClassTable *delegate);
+RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate);
 
 extern inline
-RayProperty* parseSourceCRayProperty (char *code,     RClassTable *delegate);
+RayProperty* parseSourceCRayProperty (char *code, RClassTable *delegate);
+
 #endif /*__RAY_PROPERTY_H__*/

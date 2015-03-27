@@ -59,6 +59,7 @@ destructor(RInterpreter) {
     nilDeleter(object->codeTokens, RArray)
     nilDeleter(object->stringConsts, RArray)
     nilDeleter(object->classes, RArray)
+    deleter(object->typesTable, RClassTable);
 }
 
 singleton(RInterpreter) {
@@ -107,7 +108,7 @@ method(void, initContainers, RInterpreter)) {
 
 method(void, parseClass, RInterpreter), size_t iterator) {
     size_t inner;
-    RayClass *rayClass =  $(nil, c(RayClass)));
+    RayClass *rayClass = c(RayClass)(nil);
 
     // add name
     rayClass->name = copyRCString($(object->rayTokens, m(elementAtIndex, RArray)), iterator - 1));

@@ -22,13 +22,15 @@
 typedef struct RCString RCString;
 
 // basics
-size_t    indexOfFirstCharacterCString  (const char *string, size_t size, char character); // returns index, or size
-size_t    indexOfLastCharacterCString   (const char *string, size_t size, char character); // returns index, or size
-char*     copyOfCString                 (const char *string);
-RCString* randomRCString                (void);
-char      randomCharacter               (void);
-char*     cstringWithFormat             (const char *format, ...);
-char*     vcstringWithFormat            (const char *format, va_list list);
+size_t     indexOfFirstCharacterCString  (const char *string, size_t size, char character); // returns index, or size
+size_t     indexOfLastCharacterCString   (const char *string, size_t size, char character); // returns index, or size
+char *     copyOfCString                 (const char *string);
+char *     substringInRange              (const char *string, RRange range);
+RCString * randomRCString                (void);
+char       randomCharacter               (void);
+
+char *     cstringWithFormat             (const char *format, ...);
+char *     vcstringWithFormat            (const char *format, va_list list);
 
 class(RCString) //------------------------------------
 
@@ -41,7 +43,7 @@ endOf(RCString) //------------------------------------
 constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
-RCString*   stringWithFormat(char *format, ...); // uses vsnprintf, string must be deleted with deleter(obj, RCString)
+RCString *  stringWithFormat(char *format, ...); // uses vsnprintf, string must be deleted with deleter(obj, RCString)
 
 void        stringDeleter(RCString *string); // call destructor and deallocates ptr
 

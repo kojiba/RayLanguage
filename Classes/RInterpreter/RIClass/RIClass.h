@@ -19,16 +19,7 @@ constructor (RayClass));
 destructor  (RayClass);
 printer     (RayClass);
 
-// Workers
-method(RCString*, methodSingletonName,         RayClass));
-
-// fully typedefs method singleton struct with all methods
-method(RCString*, methodSingletonFor,          RayClass),    RClassTable *table);
-
 // Try to deserialize start source
 method(RCString*, deserializeFromCode,         RayClass),    RCString *code);
-
-// typedefs class struct
-method(RCString*, classStructWithMasterClass,  RayClass),    RClassTable *table);
 
 #endif /*__RAY_CLASS_H__*/

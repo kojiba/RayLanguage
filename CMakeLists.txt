@@ -11,6 +11,10 @@ set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 set(LIBRARY_NAME    Ray)
 set(EXECUTABLE_NAME RayLanguage)
 
+# sub-sources flags
+set(RVM            NO)
+set(RayInterpreter YES)
+
 include_directories(Classes/RayFoundation)
 include_directories(Classes/RayFoundation/RBasics)
 include_directories(Classes/RayFoundation/RClassTable)
@@ -116,8 +120,6 @@ add_library(
     ${SOURCE_FILES}
 )
 
-set(RVM NO)
-
 if(RVM) # RVM -----------------------------------------------------------------------
     set(RVM_HEADERS
                    Classes/RVirtualMachine/RVirtualFunction/RVirtualFunction.h
@@ -140,11 +142,10 @@ else()
     set(RVM_SOURCES)
 endif() # RVM -----------------------------------------------------------------------
 
-set(RayInterpreter NO)
-
 if(RayInterpreter) # RInterpreter ---------------------------------------------------
     set(RINTERPRETER_HEADERS # Interpreter
 
+                            Classes/RInterpreter/RInterpereterConsts.h
                             Classes/RInterpreter/RIProperties/RIProperties.h
                             Classes/RInterpreter/RIMethods/RIMethods.h
                             Classes/RInterpreter/RIClass/RIClass.h
@@ -173,8 +174,6 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
-#${HEADER_FILES}
-#${SOURCE_FILES}
 )
 
 set(copyResources NO)

@@ -41,7 +41,7 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
     }
     return last;
 }
-char* copyOfCString(const char *string) {
+char * copyOfCString(const char *string) {
     size_t length = RStringLength(string);
     if(length > 0) {
         char *result = RAlloc((length + 1) * sizeof(char));
@@ -53,6 +53,19 @@ char* copyOfCString(const char *string) {
     return nil;
 }
 
+char * substringInRange(const char *string, RRange range) {
+    char     *result = nil;
+    RCString *temp   = RS(string);
+    if(temp != nil) {
+        RCString *sub = $(temp, m(substringInRange, RCString)), range);
+        if(sub != nil) {
+            result = sub->baseString;
+            deallocator(sub);
+        }
+        deallocator(temp);
+    }
+    return result;
+}
 
 char randomCharacter(void) {
     register char character = ((char)rand());
@@ -63,7 +76,7 @@ char randomCharacter(void) {
     return character;
 }
 
-RCString *randomRCString(void) {
+RCString * randomRCString(void) {
     register size_t  iterator;
              RCString *string = makeRCString();
     register size_t  size   = ((size_t)rand()) % 50;
@@ -89,7 +102,7 @@ RCString *randomRCString(void) {
     return string;
 }
 
-char* cstringWithFormat(const char *format, ...) {
+char * cstringWithFormat(const char *format, ...) {
     va_list args;
     char *buffer;
     va_start(args, format);
@@ -98,7 +111,7 @@ char* cstringWithFormat(const char *format, ...) {
     return buffer;
 }
 
-char* vcstringWithFormat(const char *format, va_list list) {
+char * vcstringWithFormat(const char *format, va_list list) {
     int size;
     char *buffer = RAlloc(100);
     if(buffer != nil) {

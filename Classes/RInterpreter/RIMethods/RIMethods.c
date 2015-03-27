@@ -170,7 +170,7 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
     RCString *result = RSC("");
     forAll(iterator, object->arguments->masterRDictionaryObject->keys->count) {
         size_t type = (size_t) $(master(object->arguments, RDictionary)->values, m(elementAtIndex, RArray)), iterator);
-        RCString * temp = $(delegate, m(getClassNameByIdentifier, RClassTable)), type);
+        RCString *temp = $(delegate, m(getClassNameByIdentifier, RClassTable)), type);
 
         // add type
         $(result, m(concatenate, RCString)), temp );

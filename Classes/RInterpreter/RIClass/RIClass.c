@@ -2,9 +2,6 @@
 #include "../RIMethods/RIMethods.h"
 #include "../RIProperties/RIProperties.h"
 
-#define ifdel(object, property, class) if(object->property != nil) { \
-                                       deleter(object->property, class) }
-
 constructor(RayClass)) {
     object = allocator(RayClass);
     if(object != nil) {
@@ -30,11 +27,11 @@ constructor(RayClass)) {
 }
 
 destructor(RayClass) {
-    ifdel(object, methods,       RArray);
-    ifdel(object, properties,    RArray);
-    ifdel(object, masterClasses, RArray);
-    ifdel(object, statics,       RArray);
-    ifdel(object, name,          RCString);
+    nilDeleter(object->methods,       RArray);
+    nilDeleter(object->properties,    RArray);
+    nilDeleter(object->masterClasses, RArray);
+    nilDeleter(object->statics,       RArray);
+    nilDeleter(object->name,          RCString);
 }
 
 printer(RayClass) {
@@ -121,7 +118,7 @@ method(RCString*, classStructWithMasterClass, RayClass), RClassTable *table) {
         forAll(iterator, masterClass->properties->count) {
 
             // if property is not inner
-            if(((RayProperty*)masterClass->properties->array[iterator])->type != PTInner) {
+            if(((RayProperty*)masterClass->properties->array[iterator])->type != Inner) {
                 RCString *property = $((RayProperty*)masterClass->properties->array[iterator], m(serializeToCType, RayProperty)), table);
 
                 // serialize it
