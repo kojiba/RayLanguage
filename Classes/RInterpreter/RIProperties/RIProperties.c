@@ -68,6 +68,7 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
     if(result != nil) {
         REnumerateDelegate enumerator;
         enumerator.virtualCheckObject = nameEnumerator;
+
         // add type declaration
         RCString *type = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->memSizeType);
         $(result, m(concatenate, RCString)), type);
@@ -135,7 +136,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
         // not set qualifier constructor uses default
         // search type
         tokenEnd = indexOfFirstCharacterCString(codeIterator, codeSize, property_type_separator);
-        if(tokenStart < codeSize) {
+        if(tokenEnd < codeSize) {
             char * memSizeType = substringInRange(codeIterator, makeRRange(0, tokenEnd));
             size_t memoryType = $(delegate, m(getIdentifierByClassName, RClassTable)), memSizeType);
             deallocator(memSizeType);
@@ -154,7 +155,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
         }
 
         // next must be names separated
-        RCString *tempCode = RS(codeIterator);
+        RCString *tempCode = RCStringInit(codeIterator, codeSize);
         RCString *tempSeparator = RS(property_names_separator_string);
 
         // parse names
@@ -162,9 +163,17 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
 
         if(names != nil) {
             property->names = names;
-        } else  {
-            errorString = RSC("ParsePropertyString. Bad property names array.");
-            goto error;
+
+        // names not separated
+        } else {
+            property->names = makeRArrayOptions(1, 2, nil);
+            if(property->names != nil) {
+                $(property->names, m(addObject, RArray)), $(tempCode, m(copy, RCString))));
+            } else {
+                errorString = RSC("ParsePropertyString. Bad property names array.");
+                goto error;
+            }
+
         }
 
         deallocator(tempCode);
@@ -186,7 +195,7 @@ error:
 }
 
 inline
-RayProperty* parseSourceCRayProperty(char *code, RClassTable *delegate) {
+RayProperty* ParsePropertyCString(char *code, RClassTable *delegate) {
     RCString *source = RS(code);
     RayProperty *result = ParsePropertyString(source, delegate);
     deallocator(source);

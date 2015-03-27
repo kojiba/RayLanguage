@@ -26,6 +26,6 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate);
 RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate); // must be already preprocessed
 
 extern inline
-RayProperty* parseSourceCRayProperty (char *code, RClassTable *delegate);
+RayProperty* ParsePropertyCString(char *code, RClassTable *delegate);
 
 #endif /*__RAY_PROPERTY_H__*/

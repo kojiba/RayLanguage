@@ -44,7 +44,7 @@ constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
 RCString *  stringWithFormat(char *format, ...); // uses vsnprintf, string must be deleted with deleter(obj, RCString)
-
+RCString *  RCStringInit(char *string, size_t size);
 void        stringDeleter(RCString *string); // call destructor and deallocates ptr
 
 method(void,                flush,                        RCString));                                         // deletes old string

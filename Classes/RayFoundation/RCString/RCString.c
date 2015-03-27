@@ -175,6 +175,13 @@ RCString *stringWithFormat(char *string, ...) {
     return result;
 }
 
+RCString * RCStringInit(char *string, size_t size){
+    RCString *result = makeRCString();
+    result->baseString = string;
+    result->size = size;
+    return result;
+}
+
 void stringDeleter(RCString *string) {
     deleter(string, RCString);
 }
@@ -718,7 +725,7 @@ method(RCString *, copy, RCString)) {
 method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     static size_t iterator;
     if(checkString == nil || object == nil) {
-        RWarning("RCS. One of compare strings is empty.", object);
+        RWarning("RCString. One of compare strings is empty.", object);
         return not_equals;
     } else {
         if (checkString == object) {
@@ -788,14 +795,14 @@ method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != nil) {
         object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
         if(object->baseString == nil) {
-            RError("RCS. Concatenate realloc error.", object);
+            RError("RCString. Concatenate realloc error.", object);
         } else {
             RMemMove(object->baseString + object->size, string->baseString, string->size);
             object->baseString[string->size + object->size] = 0;
             object->size += string->size;
         }
     } else {
-        RWarning("RCS. Bad concatenate string.", object);
+        RWarning("RCString. Bad concatenate string.", object);
     }
 }
 
@@ -811,14 +818,14 @@ method(void, appendString, RCString), const char *string) {
             object->size += stringSize;
         }
     } else {
-        RWarning("RCS. Bad concatenate string.", object);
+        RWarning("RCString. Bad concatenate string.", object);
     }
 }
 
 method(void, append, RCString), const char character) {
     object->baseString = RReAlloc(object->baseString, object->size + 2);
     if(object->baseString == nil) {
-        RError("RCS. Concatenate realloc error.", object);
+        RError("RCString. Concatenate realloc error.", object);
     } else {
         object->baseString[object->size] = character;
         object->baseString[object->size + 1] = 0;
@@ -893,6 +900,6 @@ method(void, appendToFile, RCString), const char *filename) {
         }
         fclose(file);
     } else {
-        RError("RCString. Failed save string to file, cant open file.", object);
+        RError("RCString. appendToFile. Failed open file.", object);
     }
 }
