@@ -20,68 +20,32 @@
 #include "../../RayFoundation/RCString/RCString.h"
 #include "../../RayFoundation/RContainers/RStringDictionary.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
+#include "../RInterpereterConsts.h"
 
-typedef enum RayMethodType {
-    MTVirtual = 0,
-    MTInline  = 2,
-
-    MTSetter  = 4,
-    MTGetter  = 8,
-
-    MTConstructor = 16,
-    MTDestructor  = 32,
-
-    MTOperator = 64,
-
-    MTInner = 128,
-    MTStatic = 256,
-
-    MTExtern = 512,
-} RayMethodType;
-
-typedef enum RayOperatorType {
-    OTPrefix = 0,
-    OTPostfix = 1,
-
-// one operand
-    OTPlusPlus,
-    OTMinusMinus,
-
-// two operands
-    OTMinus,
-    OTPlus,
-    OTMultiplication,
-    OTDivision,
-    OTModulo,
-
-
-} RayOperatorType;
-
-char* toStringRayMethodType(RayMethodType object);
+RayMethodType RayMethodTypeFromString(char* string);
+const char*   RayMethodTypeToString(RayMethodType type);
 
 class(RayMethod)
 
-    RayMethodType    type;
-    RayOperatorType  operatorType;
+    RayMethodType     methodType;
+    RayOperatorType   operatorType;
 
-    RCString        *returnType;
-    RCString        *nativeName;
+    size_t         returnType;
+    RCString      *nativeName;
 
-    RStringDictionary *arguments;
-
+    RArray        *arguments;
     rbool          isImplemented;
 endOf(RayMethod)
 
-constructor (RayMethod),    RayMethodType type, RCString *returnType); // strings mustn't be copies
+constructor (RayMethod),    RayMethodType type, size_t returnType);
 destructor  (RayMethod);
 printer     (RayMethod);
 
 // Setters
-method(void, addArgument,  RayMethod), size_t type, RCString *name);      // name - is key, type is value, type - start typeTable of interpreter
-method(void, setArguments, RayMethod), RStringDictionary *args);          // not copies arg dict
+method(void, addArgument, RayMethod), size_t type, const char *name); // name - is key, type is value, type - start typeTable of interpreter
+method(void, setArguments, RayMethod), RArray *array);                // not copies arg dict
 
 // Main methods
-method(RCString*, serializetoCFunction, RayMethod),    RClassTable *delegate);
-method(RCString*, serializetoCPointer,  RayMethod),    RClassTable *delegate);
+method(RCString *, serializetoCFunction, RayMethod),    RClassTable *delegate, rbool isPointer);
 
 #endif /*__RAY_METHOD_H__*/

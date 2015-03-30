@@ -2,7 +2,7 @@
 
 const char * PropertyTypeToString(RayPropertyType type) {
     if(type < PropertyTypeCount) {
-        return propertyTypesConst[type];
+        return propertyTypesConsts[type];
     } else {
         return nil;
     }
@@ -10,13 +10,13 @@ const char * PropertyTypeToString(RayPropertyType type) {
 
 RayPropertyType PropertyTypeFromString(const char* const string) {
     unsigned result = 0;
-    const char *etalon = propertyTypesConst[result];
+    const char *etalon = propertyTypesConsts[result];
     while(result < PropertyTypeCount) {
         if(strcmp(etalon, string) == 0) {
             break;
         }
         ++result;
-        etalon = propertyTypesConst[result];
+        etalon = propertyTypesConsts[result];
     }
     return (RayPropertyType) result;
 }

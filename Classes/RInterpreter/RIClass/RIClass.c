@@ -62,28 +62,28 @@ method(RCString*, methodSingletonFor, RayClass), RClassTable *table) {
     forAll(masterClassIterator, object->masterClasses->count){
         RayClass *masterClass = object->masterClasses->array[masterClassIterator];
         forAll(iterator, masterClass->methods->count) {
-
-            // if method is not inner
-            if(!(((RayMethod*)masterClass->methods->array[iterator])->type & MTInner)) {
-
-                // serialize it
-                RCString *methodPtr = $((RayMethod*)masterClass->methods->array[iterator], m(serializetoCPointer, RayMethod)), table);
-                $(result, m(appendString, RCString)), "    ");
-                $(result, m(concatenate, RCString)),methodPtr);
-                $(result, m(appendString, RCString)), ";\n");
-                deleter(methodPtr, RCString);
-            }
+//fixme
+//            // if method is not inner
+//            if(!(((RayMethod*)masterClass->methods->array[iterator])->methodType & MTInner)) {
+//
+//                // serialize it
+//                RCString *methodPtr = $((RayMethod*)masterClass->methods->array[iterator], m(serializetoCPointer, RayMethod)), table);
+//                $(result, m(appendString, RCString)), "    ");
+//                $(result, m(concatenate, RCString)),methodPtr);
+//                $(result, m(appendString, RCString)), ";\n");
+//                deleter(methodPtr, RCString);
+//            }
         }
     }
-
-    // add some methods-pointers
-    forAll(iterator, object->methods->count) {
-        RCString *methodPtr = $((RayMethod*)object->methods->array[iterator], m(serializetoCPointer, RayMethod)), table);
-        $(result, m(appendString, RCString)), "    ");
-        $(result, m(concatenate, RCString)),methodPtr);
-        $(result, m(appendString, RCString)), ";\n");
-        deleter(methodPtr, RCString);
-    }
+//fixme
+//    // add some methods-pointers
+//    forAll(iterator, object->methods->count) {
+//        RCString *methodPtr = $((RayMethod*)object->methods->array[iterator], m(serializetoCPointer, RayMethod)), table);
+//        $(result, m(appendString, RCString)), "    ");
+//        $(result, m(concatenate, RCString)),methodPtr);
+//        $(result, m(appendString, RCString)), ";\n");
+//        deleter(methodPtr, RCString);
+//    }
 
     // end declare struct
     $(result, m(appendString, RCString)), "} ");

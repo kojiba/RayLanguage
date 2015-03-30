@@ -405,7 +405,9 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
                 break;
             }
         }
+        $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
     }
+
     if(iterator != object->count) {
         result.index = iterator;
         result.object = object->array[iterator];
@@ -558,6 +560,7 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
             $(result, m(addObject, RArray)), pointerToArray + iterator);
             iterator += stepToNextPtr;
         }
+        $(result, m(sizeToFit, RArray)));
     }
     return result;
 }
@@ -573,6 +576,7 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray) {
             totalShift += sizesArray[iterator];
             ++iterator;
         }
+        $(result, m(sizeToFit, RArray)));
     }
     return result;
 }
@@ -592,6 +596,7 @@ RArray* arrayFromArray(pointer start, ...) {
             temp = va_arg(args, pointer);
         }
         va_end(args);
+        $(array, m(sizeToFit, RArray)));
     }
     return array;
 }

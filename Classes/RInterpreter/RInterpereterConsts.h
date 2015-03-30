@@ -16,15 +16,75 @@ typedef enum RayPropertyType {
 
 static const RayPropertyType default_property_qualifier = ReadOnly;
 
-static const char* const propertyTypesConst[PropertyTypeCount] = {
+static const char* const propertyTypesConsts[PropertyTypeCount] = {
         "readonly",
-        "write",
+        "readwrite",
         "inner",
 };
 
 static const char* const property_type_prefix_postfix = "_";
 
+//--------------------------------------------------------------------------
+
+// toadd
+// MTInner
+// MTStatic
+// MTVirtual
+
+typedef enum RayMethodType {
+    MTSetter  = 0,
+    MTGetter,
+
+    MTConstructor,
+    MTDestructor ,
+
+    MTOperator,
+
+    MethodTypesCount
+
+} RayMethodType;
+
+static unsigned const maskToPower[] = {0, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, };
 
 
+static const char* const methodTypesConsts[MethodTypesCount] = {
+        "setter",
+        "getter",
+        "constructor",
+        "destructor",
+        "operator",
+};
+
+static const char* const method_type_prefix_postfix = "_";
+
+typedef enum RayOperatorType {
+    OTPrefix = 0,
+    OTPostfix = 1,
+
+// one operand
+    OTPlusPlus,
+    OTMinusMinus,
+
+// two operands
+    OTMinus,
+    OTPlus,
+    OTMultiplication,
+    OTDivision,
+    OTModulo,
+
+    OperatorTypesCount
+} RayOperatorType;
+
+static const char* const operatorTypesConsts[OperatorTypesCount] = {
+        "OTPrefix",
+        "OTPostfix",
+        "OTPlusPlus",
+        "OTMinusMinus",
+        "OTMinus",
+        "OTPlus",
+        "OTMultiplication",
+        "OTDivision",
+        "OTModulo",
+};
 
 #endif /*__R_INTERPRETER_CONSTS_H__*/

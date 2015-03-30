@@ -33,6 +33,10 @@ destructor(RClassNamePair) {
     deallocator(master(object, RCString));
 }
 
+void RClassNamePairDeleter(pointer ptr) {
+    deleter(ptr, RClassNamePair);
+}
+
 printer(RClassNamePair) {
     RPrintf("%p , { %lu : %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
 }

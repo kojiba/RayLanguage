@@ -26,10 +26,6 @@
     #define RMutexUnlockTable()
 #endif
 
-void pairPtrDeleter(pointer ptr) {
-    deleter(ptr, RClassNamePair);
-}
-
 constructor(RClassTable)) {
     // alloc RClassTable
     object = allocator(RClassTable);
@@ -44,10 +40,10 @@ constructor(RClassTable)) {
             master(object, RCompareDelegate) = allocator(RCompareDelegate);
             if(master(object, RCompareDelegate) != nil) {
                 // overload delegate function
-                master(object, RCompareDelegate)->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) m(compareWith, RClassNamePair);
+                master(object, RCompareDelegate)->virtualCompareMethod = (ComparatorDelegate) m(compareWith, RClassNamePair);
                 // we store pairs, and set destructor for pair, and printer for pair
-                master(object, RArray)->destructorDelegate = pairPtrDeleter;
-                master(object, RArray)->printerDelegate    = (void (*)(pointer)) p(RClassNamePair);
+                master(object, RArray)->destructorDelegate = RClassNamePairDeleter;
+                master(object, RArray)->printerDelegate    = (PrinterDelegate) p(RClassNamePair);
 
                 // 4 it's for self
                 object->classId = 3;
