@@ -36,7 +36,8 @@ constructor(RInterpreter)) {
             object->classes          = nil;
 
             // register some basic c types
-            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void)); // must be 0
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(ERROR_TYPE_UNUSED)); // must be 0
+            $(object->typesTable, m(registerClassWithName, RClassTable)), toString(void)); // must be 1
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(int));
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(char));
             $(object->typesTable, m(registerClassWithName, RClassTable)), toString(float));

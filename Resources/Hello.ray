@@ -32,36 +32,36 @@ implementation BaseHello {
 
 class Hello disciple of BaseHello {
 properties:
-    readonly    int a;
-    copy        uint b;          // getter returns copy
-    read, write double d;
-    writeonly   float f;
-    inner       SomeType c;
+    readonly    int a
+    copy        uint b          // getter returns copy
+    read, write double d
+    float f
+    inner       SomeType c
 
 methods:
     constructor: SomeType type {
         
     }
 
-    Hello initWithType: SomeType type;
-    sayHelloTo: String name, Object identifier, int a;
+    Hello initWithType: SomeType type
+    sayHelloTo: String name, Object identifier, int a
 
     operator(+) {
-        return leftOperand.a + rightOperand.a;
+        return leftOperand.a + rightOperand.a
     }
 
     operator(-) {
-        return leftOperand.a - rightOperand.a;
+        return leftOperand.a - rightOperand.a
     }
 
     operator(++) postfix {
         // has only leftOperand operand
-        return leftOperand.a++;
+        return leftOperand.a++
     }
 
     operator(++) prefix {
         // has only rightOperand operand
-        return ++rightOperand.b;
+        return ++rightOperand.b
     }
 
 static:
@@ -78,17 +78,17 @@ implementation Hello {
 }
 
 void main() {
-    SomeType t;
-    Hello stackObj : t;
-    Hello *obj = create 20 Hello;
-    obj.initWithType: Hello.basicType;
-    obj.sayHelloTo: "some string", 5, 2;
+    SomeType t
+    Hello stackObj : t
+    Hello *obj = create 20 Hello
+    obj.initWithType: Hello.basicType
+    obj.sayHelloTo: "some string", 5, 2
 
     for(Hello temp in obj) {
 
     }
 
 
-    delete obj;
-    return 0;
+    delete obj
+    return 0
 }

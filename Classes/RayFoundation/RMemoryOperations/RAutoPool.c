@@ -208,41 +208,45 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 }
 
 method(void, free, RAutoPool), pointer ptr) {
-    RMutexLockPool();
-    storePtrs();
-    toPoolPtrs();
-    RCompareDelegate *delegate = allocator(RCompareDelegate);
-    if(delegate != nil) {
+    if(ptr != nil) {
+        RMutexLockPool();
+        storePtrs();
+        toPoolPtrs();
+        RCompareDelegate *delegate = allocator(RCompareDelegate);
+        if(delegate != nil) {
 #ifndef R_POOL_DETAILED
-        delegate->virtualCompareMethod = nil;
-        delegate->etaloneObject = ptr;
+            delegate->virtualCompareMethod = nil;
+            delegate->etaloneObject = ptr;
 #else
-        RPoolDescriptor *descriptor = allocator(RPoolDescriptor);
-        descriptor->ptr = ptr;
-        delegate->etaloneObject = descriptor;
-        delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRPoolDescriptor;
+            RPoolDescriptor *descriptor = allocator(RPoolDescriptor);
+            descriptor->ptr = ptr;
+            delegate->etaloneObject = descriptor;
+            delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRPoolDescriptor;
 #endif
-        // search ptr
-        RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
-        if(result.object != nil) {
-            if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
-                RError("RAutoPool. Bad pointers array index.", object);
+            // search ptr
+            RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
+            if(result.object != nil) {
+                if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
+                    RError("RAutoPool. Bad pointers array index.", object);
+                }
+            } else {
+                RErrStr "%p ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool.\n", object, ptr);
             }
-        } else {
-            RErrStr "%p ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool.\n", object, ptr);
-        }
 #ifdef R_POOL_DETAILED
-        if(RFreePtr == object->selfFree) {
-            RError("RAutoPool. Inner free is self free, bad bad bad!!!", object);
-        }
-        deallocator(descriptor);
+            if(RFreePtr == object->selfFree) {
+                RError("RAutoPool. Inner free is self free, bad bad bad!!!", object);
+            }
+            deallocator(descriptor);
 #endif
-        deallocator(delegate);
+            deallocator(delegate);
+        } else {
+            RError("RAutoPool. Bad RCompareDelegate allocation (free).", object);
+        }
+        backPtrs();
+        RMutexUnlockPool();
     } else {
-        RError("RAutoPool. Bad RCompareDelegate allocation (free).", object);
+        RWarning("RAutoPool. Free nil.", object);
     }
-    backPtrs();
-    RMutexUnlockPool();
 }
 
 method(void, drain, RAutoPool)) {

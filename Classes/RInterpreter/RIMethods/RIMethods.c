@@ -50,6 +50,7 @@ constructor(RayMethod), RayMethodType type, size_t returnType) {
             object->methodType = type;
             object->returnType = returnType;
             object->nativeName = nil;
+            object->namespaceName = nil;
         }
 
     }
@@ -98,11 +99,6 @@ method(void, setNamespaceName, RayMethod), const char *name) {
 
 #pragma mark Workers
 
-//method(RCString*, CPrefix, RayMethod)) {
-//    RCString *result = RSC("");
-//    return result;
-//}
-
 static size_t lastIndex = 0;
 static RCString *stored;
 static RClassTable *storedDelegate = nil;
@@ -143,7 +139,7 @@ method(RCString*, CName, RayMethod)) {
 
 rbool argumentsEnumerator(pointer argument, size_t iterator) {
     RClassNamePair *temp = argument;
-    RCString *type = $(storedDelegate, m(getClassNameByIdentifier, RClassTable)), temp->classId);
+    RCString *type = $(storedDelegate, m(getClassNameByIdentifier, RClassTable)), temp->idForClassName);
 
     if(type != nil) {
         $(stored, m(concatenate, RCString)), type);
@@ -186,15 +182,13 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
 method(RCString *, serializetoCFunction, RayMethod), RClassTable *delegate, rbool isPointer) {
     RCString *result = RSC("");
 
-//    RCString *prefix = $(object, m(CPrefix, RayMethod)));
-    RCString *cname  = $(object, m(CName, RayMethod)));
-    RCString *cargs  = $(object, m(CArgs, RayMethod)), delegate);
+    RCString *cname = $(object, m(CName, RayMethod)));
+    RCString *cargs = $(object, m(CArgs, RayMethod)), delegate);
 
-//    $(result, m(concatenate, RCString)), prefix );
-    RCString *name = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->returnType);
+    RCString *returnTypeName = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->returnType);
 
-    if(name != nil) {
-        $(result, m(concatenate, RCString)), name);
+    if(returnTypeName != nil) {
+        $(result, m(concatenate, RCString)), returnTypeName);
     }
 
     $(result, m(append, RCString)), ' ');
@@ -202,18 +196,94 @@ method(RCString *, serializetoCFunction, RayMethod), RClassTable *delegate, rboo
     if(isPointer) {
         $(result, m(appendString, RCString)), "(* ");
     }
-    $(result, m(concatenate, RCString)), cname );
+
+    if(cname != nil) {
+        $(result, m(concatenate, RCString)), cname );
+        deleter(cname, RCString);
+    }
 
     if(isPointer) {
         $(result, m(appendString, RCString)), ")");
     }
     $(result, m(append, RCString)), '(');
-    $(result, m(concatenate, RCString)), cargs );
-    $(result, m(append, RCString)), ')');
 
-    // cleanup
-//    deleter(prefix, RCString);
-    deleter(cname, RCString);
+    if(cargs->size != 0) {
+        $(result, m(concatenate, RCString)), cargs );
+    }
+
+    $(result, m(append, RCString)), ')');
     deleter(cargs, RCString);
+
     return result;
+}
+
+RayMethod* ParseMethodString(RCString *code, RClassTable *delegate) {
+    RayMethod  *method = nil;
+    RCString   *errorString = nil;
+
+    // struct from scratch
+    RayMethodType methodType = MTMethod;
+    size_t        returnType = 1; // 1 - for void
+    char         *nameString = nil;
+
+    rbool   isOperator, isHaveArgs;
+    char   *codeIterator = code->baseString;
+    size_t  codeSize = code->size;
+    size_t  tokenEnd = indexOfFirstCharacterCString(codeIterator, codeSize,
+                                                     method_type_separator);
+
+    // found return type qualifier
+    if (tokenEnd < code->size) {
+        char *returnTypeString = substringInRange(codeIterator, makeRRange(0, tokenEnd));
+
+        // one for separator property_type_separator symbol if its not there - :(
+        codeSize -= tokenEnd + 2;
+        codeIterator += tokenEnd + 2;
+
+        returnType = $(delegate, m(getIdentifierByClassName, RClassTable)), returnTypeString);
+        if(returnType == 0) {
+            errorString = stringWithFormat("Bad return type string \'%s\', not found in registered types.", returnTypeString);
+            goto error;
+        }
+        deallocator(returnTypeString);
+    }
+
+    // next must be name or methodType
+    while( !((isHaveArgs = (rbool) (*codeIterator == method_arguments_start_separator))
+             || (isOperator = (rbool) (*codeIterator == method_operator_start_separator))
+            )
+            && codeSize < code->size) {
+        ++codeIterator;
+        --codeSize;
+    }
+
+    if(isOperator) {
+//        fixme
+    // argument started
+    } else if (isHaveArgs){
+//        fixme
+    // only name
+    } else {
+        nameString = substringInRange(code->baseString, makeRRange(tokenEnd + 1, code->size - tokenEnd - 1));
+    }
+
+    method = c(RayMethod)(nil, methodType, returnType);
+    if(method != nil) {
+        $(method, m(setName, RayMethod)), nameString);
+    } else {
+        errorString = RSC("Bad allocation of method struct.");
+        goto error;
+    }
+
+    error:
+    if(errorString != nil) {
+        deallocator(method);
+        RErrStr "Error. ParsePropertyString. %s\n", errorString->baseString);
+        deleter(errorString, RCString);
+        method = nil;
+    }
+
+    deallocator(nameString);
+
+    return method;
 }

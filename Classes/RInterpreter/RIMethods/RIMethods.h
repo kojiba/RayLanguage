@@ -51,4 +51,9 @@ method(void, setArguments,     RayMethod), RArray *array);                // not
 // Main methods
 method(RCString *, serializetoCFunction, RayMethod),    RClassTable *delegate, rbool isPointer);
 
+RayMethod* ParseMethodString(RCString *code, RClassTable *delegate); // must be already preprocessed
+
+extern inline
+RayMethod* ParseMethodCString(char *code, RClassTable *delegate);
+
 #endif /*__RAY_METHOD_H__*/

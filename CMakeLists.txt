@@ -3,12 +3,21 @@ project(RayLanguage)
 
 # Configure project
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
-set(BUILD_SHARED_LIBS      ON)
 
-# Display Build path
-set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    message("debug mode")
+    set(DebugFlag YES)
+else()
+    set(DebugFlag NO)
+endif()
 
-set(LIBRARY_NAME    Ray)
+if(NOT ${DebugFlag})
+    set(BUILD_SHARED_LIBS      ON)
+    # Display Build path
+    set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
+    set(LIBRARY_NAME    Ray)
+endif()
+
 set(EXECUTABLE_NAME RayLanguage)
 
 # sub-sources flags
@@ -113,12 +122,17 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Tests
                  Classes/Tests.c)
 
-add_library(
-    ${LIBRARY_NAME}
-    SHARED
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
-)
+if(NOT ${DebugFlag})
+    add_library(
+        ${LIBRARY_NAME}
+        SHARED
+        ${HEADER_FILES}
+        ${SOURCE_FILES}
+    )
+else()
+    set(DEBUG_SOURCES ${SOURCE_FILES})
+    set(DEBUG_HEADERS ${HEADER_FILES})
+endif()
 
 if(RVM) # RVM -----------------------------------------------------------------------
     set(RVM_HEADERS
@@ -174,6 +188,8 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
+                                                 ${DEBUG_SOURCES}
+                                                 ${DEBUG_HEADERS}
 )
 
 set(copyResources NO)
@@ -182,22 +198,28 @@ if(copyResources)
     file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 endif()
 
-file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
+if(NOT ${DebugFlag})
+    file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
 
-target_link_libraries(
-    ${EXECUTABLE_NAME}
-    ${LIBRARY_NAME}
-)
+    target_link_libraries(
+        ${EXECUTABLE_NAME}
+        ${LIBRARY_NAME}
+    )
 
-if(WIN32)
-  target_link_libraries(${LIBRARY_NAME} wsock32 ws2_32)
+    if(WIN32)
+      target_link_libraries(${LIBRARY_NAME} wsock32 ws2_32)
+    endif()
+
+    set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
+    install( TARGETS ${EXECUTABLE_NAME}
+             RUNTIME DESTINATION bin COMPONENT libraries
+             LIBRARY DESTINATION lib COMPONENT libraries
+             ARCHIVE DESTINATION lib/static COMPONENT libraries)
+else()
+    if(WIN32)
+      target_link_libraries(${EXECUTABLE_NAME} wsock32 ws2_32)
+    endif()
 endif()
-
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
-install( TARGETS ${EXECUTABLE_NAME}
-         RUNTIME DESTINATION bin COMPONENT libraries
-         LIBRARY DESTINATION lib COMPONENT libraries
-         ARCHIVE DESTINATION lib/static COMPONENT libraries)
 
 
 

@@ -128,7 +128,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
                 ++codeIterator;
 
             } else {
-                errorString = RSC("ParsePropertyString. Not found property_qualifier_end_symbol in code.");
+                errorString = RSC("Not found property_qualifier_end_symbol in code.");
                 goto error;
             }
         }
@@ -142,7 +142,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
             deallocator(memSizeType);
 
             if(memoryType == 0) {
-                errorString = RSC("ParsePropertyString. Unknown memory type qualifier.");
+                errorString = RSC("Unknown memory type qualifier.");
                 goto error;
             }
             property->memSizeType = memoryType;
@@ -150,7 +150,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
             codeIterator += tokenEnd + 1;
             codeSize     -= tokenEnd + 1;
         } else {
-            errorString = RSC("ParsePropertyString. Not found property_type_serparetor in code.");
+            errorString = RSC("Not found property_type_serparetor in code.");
             goto error;
         }
 
@@ -170,7 +170,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
             if(property->names != nil) {
                 $(property->names, m(addObject, RArray)), $(tempCode, m(copy, RCString))));
             } else {
-                errorString = RSC("ParsePropertyString. Bad property names array.");
+                errorString = RSC("Bad property names array.");
                 goto error;
             }
 
@@ -179,7 +179,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
         deallocator(tempCode);
         deallocator(tempSeparator);
     } else {
-        errorString = RSC("ParsePropertyString. Bad property allocation.");
+        errorString = RSC("Bad property allocation.");
         goto error;
     }
 

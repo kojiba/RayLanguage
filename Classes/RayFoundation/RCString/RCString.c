@@ -795,7 +795,7 @@ method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != nil) {
         object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
         if(object->baseString == nil) {
-            RError("RCString. Concatenate realloc error.", object);
+            RError("RCString. concatenate. Realloc error.", object);
         } else {
             RMemMove(object->baseString + object->size, string->baseString, string->size);
             object->baseString[string->size + object->size] = 0;
@@ -811,7 +811,7 @@ method(void, appendString, RCString), const char *string) {
         size_t stringSize = RStringLength(string);
         object->baseString = RReAlloc(object->baseString, stringSize + object->size + 1);
         if(object->baseString == nil) {
-            RError("RCS. Concatenate realloc error.", object);
+            RError("RCS. appendString. realloc error.", object);
         } else {
             RMemMove(object->baseString + object->size, string, stringSize);
             object->baseString[stringSize + object->size] = 0;
@@ -825,7 +825,7 @@ method(void, appendString, RCString), const char *string) {
 method(void, append, RCString), const char character) {
     object->baseString = RReAlloc(object->baseString, object->size + 2);
     if(object->baseString == nil) {
-        RError("RCString. Append realloc error.", object);
+        RError("RCString. append. Realloc error.", object);
     } else {
         object->baseString[object->size] = character;
         object->baseString[object->size + 1] = 0;
