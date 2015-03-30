@@ -802,7 +802,7 @@ method(void, concatenate, RCString), const RCString *string) {
             object->size += string->size;
         }
     } else {
-        RWarning("RCString. Bad concatenate string.", object);
+        RWarning("RCString. concatenate. Bad concatenate string.", object);
     }
 }
 
@@ -818,14 +818,14 @@ method(void, appendString, RCString), const char *string) {
             object->size += stringSize;
         }
     } else {
-        RWarning("RCString. Bad concatenate string.", object);
+        RWarning("RCString. appendString. Bad concatenate string.", object);
     }
 }
 
 method(void, append, RCString), const char character) {
     object->baseString = RReAlloc(object->baseString, object->size + 2);
     if(object->baseString == nil) {
-        RError("RCString. Concatenate realloc error.", object);
+        RError("RCString. Append realloc error.", object);
     } else {
         object->baseString[object->size] = character;
         object->baseString[object->size + 1] = 0;

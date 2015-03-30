@@ -56,6 +56,7 @@ static const char* const methodTypesConsts[MethodTypesCount] = {
 };
 
 static const char* const method_type_prefix_postfix = "_";
+static const char* const namespace_name_prefix = "@";
 
 typedef enum RayOperatorType {
     OTPrefix = 0,

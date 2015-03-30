@@ -32,6 +32,7 @@ class(RayMethod)
 
     size_t         returnType;
     RCString      *nativeName;
+    RCString      *namespaceName;
 
     RArray        *arguments;
     rbool          isImplemented;
@@ -42,8 +43,10 @@ destructor  (RayMethod);
 printer     (RayMethod);
 
 // Setters
-method(void, addArgument, RayMethod), size_t type, const char *name); // name - is key, type is value, type - start typeTable of interpreter
-method(void, setArguments, RayMethod), RArray *array);                // not copies arg dict
+method(void, setName,          RayMethod), const char *name);
+method(void, setNamespaceName, RayMethod), const char *name);
+method(void, addArgument,      RayMethod), size_t type, const char *name); // name - is key, type is value, type - start typeTable of interpreter
+method(void, setArguments,     RayMethod), RArray *array);                // not copies arg dict
 
 // Main methods
 method(RCString *, serializetoCFunction, RayMethod),    RClassTable *delegate, rbool isPointer);

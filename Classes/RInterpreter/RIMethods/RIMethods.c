@@ -49,6 +49,7 @@ constructor(RayMethod), RayMethodType type, size_t returnType) {
             object->classId = registerClassOnce(toString(RayMethod));
             object->methodType = type;
             object->returnType = returnType;
+            object->nativeName = nil;
         }
 
     }
@@ -56,9 +57,9 @@ constructor(RayMethod), RayMethodType type, size_t returnType) {
 }
 
 destructor(RayMethod) {
-    deleter(object->nativeName, RCString);
-    deleter(object->returnType, RCString);
-    deleter(object->arguments,  RStringDictionary);
+    nilDeleter(object->namespaceName, RCString);
+    nilDeleter(object->nativeName,    RCString);
+       deleter(object->arguments,     RArray);
 }
 
 printer(RayMethod) {
@@ -68,6 +69,11 @@ printer(RayMethod) {
 }
 
 #pragma mark Setters
+
+method(void, setName, RayMethod), const char *name) {
+    nilDeleter(object->nativeName, RCString);
+    object->nativeName = RSC(name);
+}
 
 method(void, addArgument, RayMethod), size_t type, const char *name) {
     RClassNamePair *newOne = c(RClassNamePair)(nil);
@@ -84,12 +90,18 @@ method(void, setArguments, RayMethod), RArray *array) {
     object->arguments = array;
 }
 
+method(void, setNamespaceName, RayMethod), const char *name) {
+    nilDeleter(object->namespaceName, RCString);
+    object->namespaceName = RSC(name);
+}
+
+
 #pragma mark Workers
 
-method(RCString*, CPrefix, RayMethod)) {
-    RCString *result = RSC("");
-    return result;
-}
+//method(RCString*, CPrefix, RayMethod)) {
+//    RCString *result = RSC("");
+//    return result;
+//}
 
 static size_t lastIndex = 0;
 static RCString *stored;
@@ -104,9 +116,22 @@ method(RCString*, CName, RayMethod)) {
         // add postfix
         $(result, m(appendString, RCString)), method_type_prefix_postfix);
 
-        // append native name, must be nil if operator
-        if(object->nativeName != nil) {
-            $(result, m(concatenate, RCString)), object->nativeName);
+        // append native name, must be nil if operator or constructor
+        if(!(object->methodType == MTConstructor
+                || object->methodType == MTDestructor
+                || object->methodType == MTOperator)) {
+            if(object->nativeName == nil) {
+                RError("RayMethod. No name for method", object);
+            } else {
+                $(result, m(concatenate, RCString)), object->nativeName);
+            }
+        }
+
+        if(object->namespaceName == nil) {
+            RError("RayMethod. No namespace name for method", object);
+        } else {
+            $(result, m(appendString, RCString)), namespace_name_prefix);
+            $(result, m(concatenate, RCString)), object->namespaceName);
         }
 
         return result;
@@ -133,10 +158,7 @@ rbool argumentsEnumerator(pointer argument, size_t iterator) {
 
     if(iterator != lastIndex) {
         $(stored, m(appendString, RCString)), ", ");
-    } else {
-        $(stored, m(append, RCString)), ';');
     }
-
     return yes;
 }
 
@@ -164,11 +186,11 @@ method(RCString*, CArgs, RayMethod), RClassTable *delegate) {
 method(RCString *, serializetoCFunction, RayMethod), RClassTable *delegate, rbool isPointer) {
     RCString *result = RSC("");
 
-    RCString *prefix = $(object, m(CPrefix, RayMethod)));
+//    RCString *prefix = $(object, m(CPrefix, RayMethod)));
     RCString *cname  = $(object, m(CName, RayMethod)));
     RCString *cargs  = $(object, m(CArgs, RayMethod)), delegate);
 
-    $(result, m(concatenate, RCString)), prefix );
+//    $(result, m(concatenate, RCString)), prefix );
     RCString *name = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->returnType);
 
     if(name != nil) {
@@ -190,7 +212,7 @@ method(RCString *, serializetoCFunction, RayMethod), RClassTable *delegate, rboo
     $(result, m(append, RCString)), ')');
 
     // cleanup
-    deleter(prefix, RCString);
+//    deleter(prefix, RCString);
     deleter(cname, RCString);
     deleter(cargs, RCString);
     return result;
