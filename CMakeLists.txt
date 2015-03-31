@@ -4,12 +4,11 @@ project(RayLanguage)
 # Configure project
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
 
-if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-    message("debug mode")
-    set(DebugFlag YES)
-else()
-    set(DebugFlag NO)
-endif()
+# sub-sources flags
+set(RVM            NO)
+set(RayInterpreter NO)
+set(DebugFlag      NO) # NO - for build library
+
 
 if(NOT ${DebugFlag})
     set(BUILD_SHARED_LIBS      ON)
@@ -19,10 +18,6 @@ if(NOT ${DebugFlag})
 endif()
 
 set(EXECUTABLE_NAME RayLanguage)
-
-# sub-sources flags
-set(RVM            NO)
-set(RayInterpreter YES)
 
 include_directories(Classes/RayFoundation)
 include_directories(Classes/RayFoundation/RBasics)

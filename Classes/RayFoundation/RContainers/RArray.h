@@ -94,6 +94,8 @@ method(void,               deleteObjects,             RArray),    RRange range);
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
+method(void,               deleteWithPredicate,       RArray),    REnumerateDelegate *delegate);      // if delegate returns yes -> deletes object like fastDeleteObject
+
 #pragma mark Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
 method(RArray *,           getSubarray,               RArray),    RRange range);

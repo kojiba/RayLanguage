@@ -18,8 +18,8 @@
 #include <RAutoPool.h>
 
 #if defined(RAY_POOL_THREAD_SAFE)
-    #define poolMutex &object->mutex
-    #define RMutexLockPool() RMutexLock(poolMutex)
+    #define poolMutex          &object->mutex
+    #define RMutexLockPool()   RMutexLock(poolMutex)
     #define RMutexUnlockPool() RMutexUnlock(poolMutex)
 #else
     #define poolMutex
@@ -81,7 +81,7 @@ constructor(RAutoPool)) {
 }
 
 // create implementation for default singleton
-autoPoolNamed(singletonOfRAutoPool);
+autoPoolNamed(singletonOfRAutoPool)
 
 destructor(RAutoPool) {
     disablePool(object);
@@ -90,13 +90,13 @@ destructor(RAutoPool) {
 
 printer(RAutoPool) {
     RMutexLockPool();
-    storePtrs();
-    toPoolPtrs();
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
+#ifdef R_POOL_DETAILED
+    RPrintf("\t Printer thread id : %qu\n", currentTreadIdentifier());
+#endif
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
     RPrintf("---------------------- %p\n", object);
-    backPtrs();
     RMutexUnlockPool();
 }
 
@@ -137,7 +137,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             RPoolDescriptor *descriptor = allocator(RPoolDescriptor);
             descriptor->ptr = ptr;
             delegate->etaloneObject = descriptor;
-            delegate->virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRPoolDescriptor;
+            delegate->virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
 #endif
             // search if it not first realloc for ptr
             RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
@@ -249,15 +249,34 @@ method(void, free, RAutoPool), pointer ptr) {
     }
 }
 
+#ifdef R_POOL_DETAILED
+
+static RThreadId storedId = 0;
+
+rbool deleterEnumerator(pointer object, size_t iterator) {
+    RPoolDescriptor *temp = object;
+    if(temp->allocatorThread == storedId) {
+        return yes;
+    } else {
+        return no;
+    }
+}
+
+#endif
+
 method(void, drain, RAutoPool)) {
     RMutexLockPool();
+    storePtrs();
+    toPoolPtrs();
 #ifndef R_POOL_DETAILED
     $(object->pointersInWork, m(flush, RArray)));
 #else
-//    fixme partiral delete
-//    storedId = currentTreadIdentifier();
-//    $(object->pointersInWork, m(enumerate, RArray)), &delegate, yes);
+    REnumerateDelegate delegate;
+    storedId = currentTreadIdentifier();
+    delegate.virtualCheckObject = deleterEnumerator;
+    $(object->pointersInWork, m(deleteWithPredicate, RArray)), &delegate);
 #endif
+    backPtrs();
     RMutexUnlockPool();
 }
 

@@ -142,11 +142,11 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 #endif
     if(newSize > object->count) {
 #ifdef RAY_SHORT_DEBUG
-        RPrintf("\t Old array - %p", object->array);
+        RPrintf("\t Old array - %p\n", object->array);
 #endif
         object->array = RReAlloc(object->array, newSize * sizeof(pointer));
 #ifdef RAY_SHORT_DEBUG
-        RPrintf(", new - %p\n", object->array);
+        RPrintf("\t New array - %p\n", object->array);
 #endif
         if (object->array == nil) {
             RMutexUnlockArray();
@@ -286,10 +286,7 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
     RMutexLockArray();
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
-        // if not last
-        if(index != object->count - 1) {
-            object->array[index] = object->array[object->count - 1];
-        }
+        object->array[index] = object->array[object->count - 1];
         incrementFreePlaces();
         RMutexUnlockArray();
         return no_error;
@@ -319,6 +316,37 @@ method(void, deleteLast, RArray)){
     RMutexLockArray();
     destroyElementAtIndex(object->count - 1);
     incrementFreePlaces();
+    RMutexUnlockArray();
+}
+
+method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
+    size_t iterator;
+#ifdef RAY_SHORT_DEBUG
+    RPrintf("RArray %p delete objects with predicate", object);
+#endif
+    RMutexLockArray();
+    if(object->destructorDelegate != nil) {
+        for(iterator = 0; iterator < object->count; ) {
+            if($(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
+                object->destructorDelegate(object->array[iterator]);
+                object->array[iterator] = object->array[object->count - 1];
+                incrementFreePlaces();
+                --iterator;
+            } else {
+                ++iterator;
+            }
+        }
+    } else {
+        for(iterator = 0; iterator < object->count; ) {
+            if($(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
+                object->array[iterator] = object->array[object->count - 1];
+                incrementFreePlaces();
+                --iterator;
+            } else {
+                ++iterator;
+            }
+        }
+    }
     RMutexUnlockArray();
 }
 
@@ -400,12 +428,11 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
             }
         }
     } else {
-        for(iterator = object->count - 1; iterator != 0; --iterator) {
-            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
+        for(iterator = object->count; iterator != 0; --iterator) {
+            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator - 1], iterator - 1)) {
                 break;
             }
         }
-        $(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator);
     }
 
     if(iterator != object->count) {

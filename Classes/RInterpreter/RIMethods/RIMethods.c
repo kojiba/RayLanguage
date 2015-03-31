@@ -225,11 +225,13 @@ RayMethod* ParseMethodString(RCString *code, RClassTable *delegate) {
     RayMethodType methodType = MTMethod;
     size_t        returnType = 1; // 1 - for void
     char         *nameString = nil;
+    // workers
+    rbool   isOperator = no,
+            isHaveArgs = no;
 
-    rbool   isOperator, isHaveArgs;
     char   *codeIterator = code->baseString;
-    size_t  codeSize = code->size;
-    size_t  tokenEnd = indexOfFirstCharacterCString(codeIterator, codeSize,
+    size_t  codeSize     = code->size;
+    size_t  tokenEnd     = indexOfFirstCharacterCString(codeIterator, codeSize,
                                                      method_type_separator);
 
     // found return type qualifier
@@ -237,7 +239,7 @@ RayMethod* ParseMethodString(RCString *code, RClassTable *delegate) {
         char *returnTypeString = substringInRange(codeIterator, makeRRange(0, tokenEnd));
 
         // one for separator property_type_separator symbol if its not there - :(
-        codeSize -= tokenEnd + 2;
+        codeSize     -= tokenEnd + 2;
         codeIterator += tokenEnd + 2;
 
         returnType = $(delegate, m(getIdentifierByClassName, RClassTable)), returnTypeString);
@@ -252,16 +254,28 @@ RayMethod* ParseMethodString(RCString *code, RClassTable *delegate) {
     while( !((isHaveArgs = (rbool) (*codeIterator == method_arguments_start_separator))
              || (isOperator = (rbool) (*codeIterator == method_operator_start_separator))
             )
-            && codeSize < code->size) {
+            && codeSize <= code->size) {
         ++codeIterator;
         --codeSize;
     }
 
     if(isOperator) {
-//        fixme
+        char * operatorTokenString = substringInRange(code->baseString, makeRRange(tokenEnd + 1, code->size - codeSize - tokenEnd - 1));
+
+        // next must be operator symbols like ++, --, etc
+        if(strcmp(operatorTokenString, "operator") != 0) {
+//            fixme
+        } else {
+            errorString = stringWithFormat("Bad operator token \'%s\'.", operatorTokenString);
+            deallocator(operatorTokenString);
+            goto error;
+        }
+        deallocator(operatorTokenString);
+
     // argument started
-    } else if (isHaveArgs){
-//        fixme
+    } else if (isHaveArgs) {
+        nameString = substringInRange(code->baseString, makeRRange(tokenEnd + 1, code->size - codeSize - tokenEnd - 1));
+
     // only name
     } else {
         nameString = substringInRange(code->baseString, makeRRange(tokenEnd + 1, code->size - tokenEnd - 1));

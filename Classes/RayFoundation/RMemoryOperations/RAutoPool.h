@@ -67,7 +67,7 @@ method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
 method(pointer, calloc,         RAutoPool),    size_t blockCount, size_t blockSize);
 method(void,    free,           RAutoPool),    pointer ptr);
 
-method(void,    drain,          RAutoPool));
+method(void,    drain,          RAutoPool)); // cleanup pointers only for that thread, not all if R_AUTO_POOL_DETAILED macro defined
 
 void enablePool(RAutoPool *pool);
 void disablePool(RAutoPool *pool);
