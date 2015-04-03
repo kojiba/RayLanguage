@@ -28,7 +28,7 @@ printer(RThreadPool) {
 
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
     RThread *newOne = allocator(RThread);
-//    RPrintf("malloc ptr %p\n", RMallocPtr);
+//    RPrintf("malloc ptr %p, RTrueMalloc %p, is equals = %d\n", RMallocPtr, RTrueMalloc, RMallocPtr == RTrueMalloc);
     if(newOne != nil) {
 //        RPrintf("new worker %p\n", newOne);
         RThreadCreate(newOne, nil, object->delegateFunction, argumentForNewWorker);
@@ -42,12 +42,12 @@ method(void, addWorker,  RThreadPool), RThread *worker) {
     $(object->threads, m(addObject, RArray)), worker);
 }
 
-rbool joinThreadCheck(pointer thread) {
+rbool joinThreadCheck(pointer thread, size_t iterator) {
     RThreadJoin(thread);
     return yes;
 }
 
 method(void, join, RThreadPool)) {
-    object->enumerator.virtualCheckObject = (rbool (*)(pointer, size_t)) joinThreadCheck;
-    $(object->threads, m(enumerate, RArray)), &object->enumerator, no);
+    object->enumerator.virtualCheckObject = joinThreadCheck;
+    $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
 }

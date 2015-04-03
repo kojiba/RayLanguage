@@ -24,10 +24,10 @@ void* (*const RTrueRealloc)(void*  ptr, size_t size) = &realloc;
 void* (*const RTrueCalloc) (size_t size, size_t blockSize) = &calloc;
 void  (*const RTrueFree)   (void*  ptr) = &free;
 
-void* volatile (*RMallocPtr) (size_t size) = &malloc;
-void* volatile (*RCallocPtr) (size_t size, size_t blockSize) = &calloc;
-void* volatile (*RReallocPtr)(void*  ptr,  size_t size) = &realloc;
-void  volatile (*RFreePtr)   (void*  ptr) = &free;
+void* (* volatile RMallocPtr) (size_t size) = &malloc;
+void* (* volatile RCallocPtr) (size_t size, size_t blockSize) = &calloc;
+void* (* volatile RReallocPtr)(void*  ptr,  size_t size) = &realloc;
+void  (* volatile RFreePtr)   (void*  ptr) = &free;
 
 #define malloc  RMallocPtr
 #define realloc RReallocPtr

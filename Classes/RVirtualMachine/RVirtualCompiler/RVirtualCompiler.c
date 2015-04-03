@@ -14,11 +14,6 @@ constructor(RVirtualCompiler)) {
 }
 
 destructor(RVirtualCompiler) {
-    if(object != nil) {
-        $(object->code, d(RCString)) );
-        deallocator(object->code);
-
-    }
 }
 
 singleton(RVirtualCompiler) {
@@ -51,49 +46,6 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 }
 
 #pragma mark Brainfuck lang to rasm
-
-method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
-    RByteArray *body;
-    byte        character;
-    size_t      sizeOfByteCode;
-    object->iterator      = 0;
-    object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
-
-    // delete spaces
-    $(object->code, m(deleteAllCharacters, RCString)), ' ');
-    object->numberOfLines = $(object->code, m(numberOfCharacters, RCString)), '\n');
-
-    // all [, ] instructions will be doubled in the byte-code,
-    // because of r_if instruction build
-    object->forwardRepetitions  = $(object->code, m(numberOfCharacters, RCString)), '[');
-    object->backwardRepetitions = $(object->code, m(numberOfCharacters, RCString)), ']');
-
-    if(object->forwardRepetitions != object->backwardRepetitions) {
-        RPrintf("Warning. RVC (BrainFuck). Count of \'[\' and \']\' isn't equal!");
-    }
-
-    // removing all '\n' start byte-code, +1 to r_end
-    sizeOfByteCode = object->code->size - object->numberOfLines + 1 + 2 * (object->forwardRepetitions + object->backwardRepetitions);
-
-    body = makeRByteArray(sizeOfByteCode);
-
-    // set pointer to body
-    object->body = body;
-
-    while(object->iterator < object->code->size) {
-        character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
-
-        if(character != r_ignore) {
-            body->array[object->iterator + object->iteratorShift] = character;
-        }
-
-        ++object->iterator;
-    }
-
-    body->array[object->iterator + object->iteratorShift] = r_end;
-
-    return body;
-}
 
 method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     byte byteCode;
@@ -186,6 +138,49 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     return byteCode;
 }
 
+method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
+    RByteArray *body;
+    byte        character;
+    size_t      sizeOfByteCode;
+    object->iterator      = 0;
+    object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
+
+    // delete spaces
+    $(object->code, m(deleteAllCharacters, RCString)), ' ');
+    object->numberOfLines = $(object->code, m(numberOfCharacters, RCString)), '\n');
+
+    // all [, ] instructions will be doubled in the byte-code,
+    // because of r_if instruction build
+    object->forwardRepetitions  = $(object->code, m(numberOfCharacters, RCString)), '[');
+    object->backwardRepetitions = $(object->code, m(numberOfCharacters, RCString)), ']');
+
+    if(object->forwardRepetitions != object->backwardRepetitions) {
+        RPrintf("Warning. RVC (BrainFuck). Count of \'[\' and \']\' isn't equal!");
+    }
+
+    // removing all '\n' start byte-code, +1 to r_end
+    sizeOfByteCode = object->code->size - object->numberOfLines + 1 + 2 * (object->forwardRepetitions + object->backwardRepetitions);
+
+    body = makeRByteArray(sizeOfByteCode);
+
+    // set pointer to body
+    object->body = body;
+
+    while(object->iterator < object->code->size) {
+        character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
+
+        if(character != r_ignore) {
+            body->array[object->iterator + object->iteratorShift] = character;
+        }
+
+        ++object->iterator;
+    }
+
+    body->array[object->iterator + object->iteratorShift] = r_end;
+
+    return body;
+}
+
 method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), const RCString *sourceCode) {
 
     if(sourceCode->size != 0) {
@@ -205,7 +200,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         if(function->name == nil) {
             function->name = RSC("Unnamed");
         }
-        $(object->code, d(RCString)) );
+        deleter(object->code, RCString);
 
         RPrintf("RVC. Brainfuck. Processed lines - %lu of %lu, in %lu iterations \n", object->lines, object->numberOfLines + 1, object->iterator);
         // print result for debug

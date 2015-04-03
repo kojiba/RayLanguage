@@ -10,12 +10,8 @@ constructor(RVirtualFunction)) {
 }
 
 destructor(RVirtualFunction) {
-    if(object != nil) {
-        $(master(object, RByteArray), d(RByteArray)) );
-        deallocator(master(object, RByteArray));
-    } else {
-        RPrintf("Warning. RVF. Destructor of nil.\n");
-    }
+    deleter(master(object, RByteArray), RByteArray);
+    nilDeleter(object->name, RCString);
 }
 
 printer(RVirtualFunction) {

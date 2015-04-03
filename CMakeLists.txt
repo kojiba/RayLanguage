@@ -5,7 +5,7 @@ project(RayLanguage)
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
 
 # sub-sources flags
-set(RVM            NO)
+set(RVM            YES)
 set(RayInterpreter NO)
 set(DebugFlag      NO) # NO - for build library
 

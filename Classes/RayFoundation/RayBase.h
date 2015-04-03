@@ -32,10 +32,10 @@ void* (*const RTrueCalloc) (size_t size, size_t blockSize);
 void  (*const RTrueFree)   (void*  ptr);
 
 // pointers to functions
-extern void* volatile (*RMallocPtr) (size_t size);
-extern void* volatile (*RCallocPtr) (size_t size, size_t blockSize);
-extern void* volatile (*RReallocPtr)(void*  ptr,  size_t size);
-extern void  volatile (*RFreePtr)   (void*  ptr);
+extern void* (*volatile RMallocPtr) (size_t size);
+extern void* (*volatile RCallocPtr) (size_t size, size_t blockSize);
+extern void* (*volatile RReallocPtr)(void*  ptr,  size_t size);
+extern void  (*volatile RFreePtr)   (void*  ptr);
 
 // all entry points is pointers
 #define malloc  RMallocPtr

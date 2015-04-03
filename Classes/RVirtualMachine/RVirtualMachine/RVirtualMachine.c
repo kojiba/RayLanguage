@@ -135,7 +135,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     object->functionExecuting = function;
 
     // function name label
-    RPrintf("RVM. Start Executing Function : \"%s\"\n\n", function->name->baseString);
+    RPrintf("RVM. Start Executing Function \"%s\"\n\n", function->name->baseString);
 
     // set tick size is 0
     object->tickCount = 0;
@@ -159,11 +159,11 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     }
 
     // at end of processing print analytics
-    RPrintf("\nRVM. End Executing Function : \"%s\"\n", function->name->baseString);
-    RPrintf("Ticks size for executing is - %lu\n", object->tickCount);
-    RPrintf("Memory snapshot : {\n\n");
+    RPrintf("\nRVM. End Executing Function \"%s\"\n", function->name->baseString);
+    RPrintf("Ticks count for executing is - %lu\n", object->tickCount);
+    RPrintf("Memory snapshot : {\n");
     $(object->memory, p(RByteArray)) );
-    RPrintf("\n } end memory snapshot\n\n");
+    RPrintf("} end memory snapshot\n");
 }
 
 singleton(RVirtualMachine) {
