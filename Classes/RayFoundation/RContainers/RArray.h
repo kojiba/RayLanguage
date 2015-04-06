@@ -97,14 +97,16 @@ method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);
 method(void,               deleteWithPredicate,       RArray),    REnumerateDelegate *delegate);      // if delegate returns yes -> deletes object like fastDeleteObject
 
 #pragma mark Get - Find
-method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
-method(RArray *,           getSubarray,               RArray),    RRange range);
-method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
+constMethod(RFindResult,   findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
+constMethod(RArray *,      getSubarray,               RArray),    RRange range);
+constMethod(RFindResult,   enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 extern inline
-method(pointer,            elementAtIndex,            RArray),    size_t index);
+constMethod(pointer,       elementAtIndex,            RArray),    size_t index);
 extern inline
-method(pointer,            lastObject,                RArray));
+constMethod(pointer,       lastObject,                RArray));
+extern inline
+constMethod(RArray *,      copy,                      RArray));
 
 #pragma mark Sorts
 method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
@@ -116,7 +118,7 @@ method(void,               shift,                     RArray),    rbool isToLeft
 
 #pragma mark Info
 static inline
-method(byte,               checkIfIndexIn,            RArray),    size_t index);
+constMethod(byte,          checkIfIndexIn,            RArray),    size_t index);
 
 #pragma mark Casts
 method(struct RList *,     toRList,      RArray));

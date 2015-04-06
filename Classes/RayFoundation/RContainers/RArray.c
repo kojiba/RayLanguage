@@ -352,7 +352,7 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
 
 #pragma mark Get - Find
 
-method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
+constMethod(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
     size_t      iterator;
     RFindResult result;
     result.object = nil;
@@ -376,7 +376,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     return result;
 }
 
-inline method(pointer, elementAtIndex, RArray), size_t index) {
+inline constMethod(pointer, elementAtIndex, RArray), size_t index) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray elementAtIndex of %p\n", object);
 #endif
@@ -388,7 +388,7 @@ inline method(pointer, elementAtIndex, RArray), size_t index) {
     }
 }
 
-method(RArray *, getSubarray, RArray), RRange range) {
+constMethod(RArray *, getSubarray, RArray), RRange range) {
     if(range.size + range.start <= object->count
             && range.start < object->count) {
         RMutexLockArray();
@@ -411,11 +411,11 @@ method(RArray *, getSubarray, RArray), RRange range) {
     return nil;
 }
 
-inline method(pointer, lastObject, RArray)) {
+inline constMethod(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
-method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
+constMethod(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
     RFindResult result;
     result.index  = object->count;
@@ -441,6 +441,11 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
     }
     RMutexUnlockArray();
     return result;
+}
+
+inline
+constMethod(RArray *, copy, RArray)) {
+    return $(object, m(getSubarray, RArray)), makeRRange(0, object->count));
 }
 
 #pragma mark Sort
@@ -547,7 +552,8 @@ method(void, shift, RArray), rbool isToLeft, RRange range) {
 
 #pragma mark Info
 
-method(static inline byte, checkIfIndexIn, RArray), size_t index) {
+static inline
+constMethod(byte, checkIfIndexIn, RArray), size_t index) {
     RMutexLockArray();
     if (index < object->count) {
         RMutexUnlockArray();
