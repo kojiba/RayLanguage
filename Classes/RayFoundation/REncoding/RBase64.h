@@ -59,11 +59,11 @@ size_t decodeBase64 (pointer destination, const pointer encodedData);           
 
 // Additions
 // RCString
-method(RCString*,   encodeBase64,        RCString));
-method(RCString*,   decodeBase64,        RCString));
-method(RByteArray*, decodeBase64ToBytes, RCString));
+constMethod(RCString*,   encodeBase64,        RCString));
+constMethod(RCString*,   decodeBase64,        RCString));
+constMethod(RByteArray*, decodeBase64ToBytes, RCString));
 
 // RByteArray
-method(RCString*, encodeBase64, RByteArray));
+constMethod(RCString*, encodeBase64, RByteArray));
 
 #endif /*__R_BASE_64_H__*/

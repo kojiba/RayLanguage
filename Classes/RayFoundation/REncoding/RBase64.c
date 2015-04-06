@@ -118,7 +118,7 @@ size_t decodeBase64(pointer destination, const pointer encodedData) {
 
 #pragma mark RCString
 
-method(RCString*, encodeBase64, RCString)) {
+constMethod(RCString*, encodeBase64, RCString)) {
     RCString *result = makeRCString();
     if(result != nil) {
         char  *string = nil;
@@ -134,7 +134,7 @@ method(RCString*, encodeBase64, RCString)) {
     return nil;
 }
 
-method(RCString*, decodeBase64, RCString)) {
+constMethod(RCString*, decodeBase64, RCString)) {
     RCString *result = makeRCString();
     if(result != nil) {
         size_t length = base64decodeLength(object->baseString);
@@ -151,7 +151,7 @@ method(RCString*, decodeBase64, RCString)) {
     return nil;
 }
 
-method(RByteArray*, decodeBase64ToBytes, RCString)) {
+constMethod(RByteArray*, decodeBase64ToBytes, RCString)) {
     size_t length = base64decodeLength(object->baseString);
     RByteArray *result = makeRByteArray(length);
     if(result != nil) {
@@ -170,7 +170,7 @@ method(RByteArray*, decodeBase64ToBytes, RCString)) {
 
 #pragma mark RByteArray
 
-method(RCString*, encodeBase64, RByteArray)) {
+constMethod(RCString*, encodeBase64, RByteArray)) {
     RCString *result = makeRCString();
     if(result != nil) {
         char  *string = nil;
