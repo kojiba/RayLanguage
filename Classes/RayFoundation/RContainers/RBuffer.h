@@ -52,21 +52,21 @@ destructor  (RBuffer);
 printer     (RBuffer);
 
 // Reallocation
-method(RRange *,     addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
-method(RByteArray *, addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RByteArray, store data, returns self, newsize in bytes
-method(void,         flush,          RBuffer));                             // flushes buffer, returns self
-method(RBuffer *,    sizeToFit,      RBuffer));                             // make without free places, store data, returns self
+method(RRange *,          addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
+method(RByteArray *,      addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RByteArray, store data, returns self, newsize in bytes
+method(void,              flush,          RBuffer));                             // flushes buffer, returns self
+method(RBuffer *,         sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
 // Data operations
 // setters
-method(void,         addData,            RBuffer),    pointer data, size_t sizeInBytes);   // copies data
+method(void,              addData,            RBuffer),    pointer data, size_t sizeInBytes);   // copies data
 
 // getters
-constMethod(pointer, getDataReference,   RBuffer),    size_t index);                       // return pointer
-constMethod(pointer, getDataCopy,        RBuffer),    size_t index);                       // return copy
+constMethod(pointer,      getDataReference,   RBuffer),    size_t index);                       // return pointer
+constMethod(pointer,      getDataCopy,        RBuffer),    size_t index);                       // return copy
 
 // deleters
-method(void,         deleteDataAt,       RBuffer),    size_t index);
+method(void,              deleteDataAt,       RBuffer),    size_t index);
 
 // enumeration
 constMethod(RFindResult,  enumerate,          RBuffer), REnumerateDelegate *delegate, rbool isFromLeft);

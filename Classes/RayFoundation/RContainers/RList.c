@@ -130,7 +130,7 @@ method(void, addTail, RList), pointer src) {
 
 #pragma mark Private Node At Index
 
-method(RNode *, nodeAtIndex, RList), size_t index) {
+constMethod(RNode *, nodeAtIndex, RList), size_t index) {
     size_t  delta   = object->count - index;
     RNode *iterator = nil;
     RMutexLockList();
@@ -158,7 +158,7 @@ method(RNode *, nodeAtIndex, RList), size_t index) {
 
 #pragma mark Get
 
-method(pointer, objectAtIndex, RList), size_t index) {
+constMethod(pointer, objectAtIndex, RList), size_t index) {
     RNode *node = $(object, m(nodeAtIndex, RList)), index);
     if(node != nil) {
         return node->data;
@@ -206,7 +206,7 @@ method(RList *, subList, RList), RRange range) {
 
 #pragma mark Enumerate
 
-method(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool isFromLeft) {
+constMethod(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool isFromLeft) {
     RNode *iterator = object->tail;
     size_t numericIterator;
     RFindResult result;
@@ -329,7 +329,7 @@ method(void, deleteObject,  RList), size_t index) {
 
 #pragma mark Casts
 
-method(RArray*, toRArray, RList)) {
+constMethod(RArray*, toRArray, RList)) {
     RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
     if(result != nil) {
         copyDelegatesToResult();

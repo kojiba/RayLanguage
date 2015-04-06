@@ -51,21 +51,21 @@ destructor  (RList);
 printer     (RList);
 
 // add
-method(void,        addHead,       RList),    pointer src);
-method(void,        addTail,       RList),    pointer src);
+method(void,                 addHead,       RList),    pointer src);
+method(void,                 addTail,       RList),    pointer src);
 
 // get
-method(pointer,     objectAtIndex, RList),    size_t index);
-method(RList *,     subList,       RList),    RRange range); // copy of sub-part, with set-upd delegates
+constMethod(pointer,         objectAtIndex, RList),    size_t index);
+method(RList *,              subList,       RList),    RRange range); // copy of sub-part, with set-upd delegates
 
 // enumerate
-method(RFindResult, enumerate,     RList),    REnumerateDelegate *delegate, rbool isFromLeft);
+constMethod(RFindResult,     enumerate,     RList),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 // delete
-method(void,        deleteObjects, RList),    RRange range);
-method(void,        deleteObject,  RList),    size_t index);
+method(void,                 deleteObjects, RList),    RRange range);
+method(void,                 deleteObject,  RList),    size_t index);
 
 // casts
-method(struct RArray *,    toRArray,      RList));
+constMethod(struct RArray *, toRArray,      RList));
 
 #endif /*__R_LIST_H__*/
