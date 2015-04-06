@@ -41,7 +41,7 @@ printer(RClassNamePair) {
     RPrintf("%p , { %lu : %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
 }
 
-method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
+constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
     if(object == checkPair) {
         return equals;
     }

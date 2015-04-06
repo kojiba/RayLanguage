@@ -32,6 +32,6 @@ void RClassNamePairDeleter(pointer ptr);
 
 printer    (RClassNamePair);
 
-method(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
+constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair);
 
 #endif /*__R_CLASS_NAME_PAIR_H__*/
