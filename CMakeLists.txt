@@ -60,7 +60,6 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/REncoding/RBase64.h
 
                  # Others
-                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.h
                  Classes/RayFoundation/RClassTable/RClassTable.h
                  Classes/RayFoundation/RClassTable/RClassNamePair.h
 
@@ -103,7 +102,6 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Others
                  Classes/RayFoundation/RClassTable/RClassTable.c
                  Classes/RayFoundation/RClassTable/RClassNamePair.c
-                 Classes/RayFoundation/RFloatingEnum/RFloatingEnum.c
 
                  Classes/RayFoundation/RThread/RThread.c
                  Classes/RayFoundation/RThread/RThreadPool.c
