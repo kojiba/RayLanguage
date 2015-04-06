@@ -17,40 +17,6 @@ int RByteArrayTest(void) {
     return 0;
 }
 
-int StringDictionaryTest(void) {
-    // some key constant
-    RCString *key = RS("Veider");
-
-    // create dictionary
-    RStringDictionary *dictionary = $(nil, c(RStringDictionary)) );
-    master(dictionary, RDictionary)->values->destructorDelegate = (void (*)(pointer)) stringDeleter;
-    master(dictionary, RDictionary)->keys->destructorDelegate = (void (*)(pointer)) stringDeleter;
-
-    // fill dictionary with some object-keys,
-    // use RSC, cause we need copies of constant,
-    // also use m(copy, RCString)
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
-
-    RAY_TEST(dictionary->masterRDictionaryObject->keys->count > 3
-            || dictionary->masterRDictionaryObject->values->count > 3,
-            "StringDictionaryTest. Duplication of setBy key", -1);
-
-    // find some object for key
-    RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
-    RAY_TEST(object == nil, "StringDictionaryTest. Error find object for key", -2)
-    else {
-        deallocator(key);
-    }
-
-    // destructs, and delete pointer
-    deleter(dictionary, RStringDictionary);
-    return 0;
-}
-
-
-
 int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
@@ -302,9 +268,7 @@ int RCStringTest(void) {
 void ComplexTest() {
     srand((unsigned int) time(nil));
 
-    RPrintCurrentSystem();
-    RPrintf("Number of processors - %u \n", processorsCount());
-    RPrintf("Main tuid - %qu \n", currentTreadIdentifier());
+    RPrintSystemInfo();
 
     if(
            !RDynamicArrayTest()
@@ -313,7 +277,6 @@ void ComplexTest() {
         && !RClassTableTest()
         && !RDictionaryTest()
         && !StringArrayTest()
-        && !StringDictionaryTest()
         && !RByteArrayTest()
         && !RBufferTest()
         && !RCStringTest()

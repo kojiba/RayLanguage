@@ -32,7 +32,6 @@ extern "C" {
 #include <RList.h>
 #include <RBuffer.h>
 #include <RDictionary.h>
-#include <RStringDictionary.h>
 
 // Strings
 #include <RCString.h>
