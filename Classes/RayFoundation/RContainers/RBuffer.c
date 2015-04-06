@@ -140,7 +140,7 @@ method(RBuffer*, sizeToFit, RBuffer)) {
 
 #pragma mark Workers
 
-method(rbool, checkIndexWithError, RBuffer), size_t index) {
+constMethod(rbool, checkIndexWithError, RBuffer), size_t index) {
     RMutexLockBuffer();
     if(index < object->count) {
         RMutexUnlockBuffer();
@@ -182,7 +182,7 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
     RMutexUnlockBuffer();
 }
 
-method(pointer, getDataReference, RBuffer), size_t index) {
+constMethod(pointer, getDataReference, RBuffer), size_t index) {
     RMutexLockBuffer();
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
         RMutexUnlockBuffer();
@@ -193,7 +193,7 @@ method(pointer, getDataReference, RBuffer), size_t index) {
     }
 }
 
-method(pointer, getDataCopy, RBuffer), size_t index) {
+constMethod(pointer, getDataCopy, RBuffer), size_t index) {
     byte *result = nil;
     RMutexLockBuffer();
     pointer ref = $(object, m(getDataReference, RBuffer)), index);
@@ -230,7 +230,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 
 #pragma mark Enumeration
 
-method(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rbool isFromLeft) {
+constMethod(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rbool isFromLeft) {
     size_t iterator;
     RFindResult result;
     result.index  = object->count;
@@ -259,7 +259,7 @@ method(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rbool isF
 
 #pragma mark Casts
 
-method(RArray*, toReferencesRArray, RBuffer)) {
+constMethod(RArray*, toReferencesRArray, RBuffer)) {
     size_t iterator;
     RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
 
@@ -274,7 +274,7 @@ method(RArray*, toReferencesRArray, RBuffer)) {
     return result;
 }
 
-method(RArray *, toRArray, RBuffer)) {
+constMethod(RArray *, toRArray, RBuffer)) {
     size_t iterator;
     RArray *result = makeRArrayOptions(object->count, sizeMultiplierOfRArrayDefault, nil);
 
@@ -359,7 +359,7 @@ RBuffer* RBufferFromFile(const char *filename) {
     return result;
 }
 
-method(void, saveToFile, RBuffer), const char* filename) {
+constMethod(void, saveToFile, RBuffer), const char* filename) {
     FILE *file = fopen(filename, "r");
     if (file != nil) {
         if (remove(filename) != 0) {
@@ -418,7 +418,7 @@ method(void, saveToFile, RBuffer), const char* filename) {
 
 #pragma mark Addition to RByteArray
 
-method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
+constMethod(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
     size_t iterator = 0;
 
     // search end 0, compute length
@@ -459,7 +459,7 @@ method(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
 
 #pragma mark Additions to RArray
 
-method(RBuffer *, serializeToBuffer, RArray), size_t size) {
+constMethod(RBuffer *, serializeToBuffer, RArray), size_t size) {
     size_t iterator;
     RBuffer *result = $(nil, c(RBuffer)));
     if(result != nil) {
@@ -471,7 +471,7 @@ method(RBuffer *, serializeToBuffer, RArray), size_t size) {
     return result;
 }
 
-method(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
+constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
     size_t iterator = 0;
     RBuffer *result = $(nil, c(RBuffer)));
     if(result != nil) {

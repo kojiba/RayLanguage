@@ -163,7 +163,7 @@ method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
     return object;
 }
 
-method(RByteArray*, copy, RByteArray)) {
+constMethod(RByteArray*, copy, RByteArray)) {
     RByteArray *copy = $(nil, c(RByteArray)), object->size);
     if(copy != nil) {
         RMemCpy(copy->array, object->array, object->size);
