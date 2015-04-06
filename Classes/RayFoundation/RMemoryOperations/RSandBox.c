@@ -28,17 +28,6 @@
     #define RMutexUnlockSandbox()
 #endif
 
-#define storePtrs() pointer (*oldMalloc) (size_t size) = RMallocPtr;\
-                    pointer (*oldRealloc)(pointer ptr, size_t oldSize) = RReallocPtr;\
-                    pointer (*oldCalloc) (size_t size, size_t blockSize) = RCallocPtr;\
-                    void    (*oldFree)   (pointer ptr) = RFreePtr
-
-#define backPtrs()  RMallocPtr = oldMalloc;\
-                    RReallocPtr = oldRealloc;\
-                    RCallocPtr = oldCalloc;\
-                    RFreePtr = oldFree
-
-
 RCompareFlags compareRControlDescriptor(RControlDescriptor *first, RControlDescriptor *second) {
     return /*first != nil && */first->memRange.start == second->memRange.start ? equals : not_equals;
 }

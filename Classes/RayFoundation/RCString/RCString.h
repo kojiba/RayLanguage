@@ -57,8 +57,8 @@ method(void,                replaceCharacters,            RCString),    char cha
 method(void,                replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
 
 // Info
-method(size_t,              numberOfCharacters,           RCString),    char character);
-method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
+constMethod(size_t,         numberOfCharacters,           RCString),    char character);
+constMethod(size_t,         numberOfSubstrings,           RCString),    const RCString * const string);
 static inline
 constMethod(rbool,          isContains,                   RCString),    char character);
 static inline
@@ -84,17 +84,17 @@ extern inline
 method(void,                trimHead,                     RCString),    size_t size);                         // deletes start start
 
 // Subs and Copies
-method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
+method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char * const string);    // returns reference (not copy!)
 method(RCString *,          insertSubstringAt,            RCString),    RCString *substring, size_t place);   // returns reference (not copy!)
 
 constMethod(RCString *,     substringToSymbol,            RCString),    char symbol);                         // or nil
 constMethod(RCString *,     substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
 constMethod(RCString *,     substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting (search first and last)
 constMethod(RArray *,       substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nil, RArray is sizeToFit, subs are copies
-constMethod(RArray *,       substringsSeparatedBySymbols, RCString),    const RCString const *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,       substringsSeparatedBySymbols, RCString),    const RCString * const separatorsString);          // or nil, RArray is sizeToFit, subs are copies
 extern inline
-constMethod(RArray *,       substringsSeparatedBySymCStr, RCString),    const char const *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
-constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RCString const *separatorString);           // separatorString length > 1, not use for one symbol
+constMethod(RArray *,       substringsSeparatedBySymCStr, RCString),    const char * const separatorsString);              // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RCString * const separatorString);           // separatorString length > 1, not use for one symbol
 
 constMethod(RCString *,     copy,                         RCString));
 

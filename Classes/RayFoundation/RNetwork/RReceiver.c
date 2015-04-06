@@ -64,7 +64,7 @@ destructor(RReceiver) {
 
 printer(RReceiver) {
     RPrintf("%s object - %p {\n", toString(VReceiverThread), object);
-    RPrintf("\t Socket descriptor : %p\n", (pointer) object->socket);
+    RPrintf("\t Socket descriptor : %d\n", object->socket);
     RPrintf("\t Total packets received : %lu\n", object->packetCounter);
     RPrintf("} - %p\n", object);
 }

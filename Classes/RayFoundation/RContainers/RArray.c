@@ -229,7 +229,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     return errors;
 }
 
-method(void, addObjectUnsafe, RArray), pointer src) {
+inline method(void, addObjectUnsafe, RArray), pointer src) {
     RMutexLockArray();
     object->array[object->count] = src;
     incrementCount();
@@ -352,7 +352,7 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
 
 #pragma mark Get - Find
 
-constMethod(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
+method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate) {
     size_t      iterator;
     RFindResult result;
     result.object = nil;
@@ -388,7 +388,7 @@ inline constMethod(pointer, elementAtIndex, RArray), size_t index) {
     }
 }
 
-constMethod(RArray *, getSubarray, RArray), RRange range) {
+method(RArray *, getSubarray, RArray), RRange range) {
     if(range.size + range.start <= object->count
             && range.start < object->count) {
         RMutexLockArray();
@@ -415,7 +415,7 @@ inline constMethod(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
-constMethod(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
+method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
     RFindResult result;
     result.index  = object->count;
@@ -444,7 +444,7 @@ constMethod(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rb
 }
 
 inline
-constMethod(RArray *, copy, RArray)) {
+method(RArray *, copy, RArray)) {
     return $(object, m(getSubarray, RArray)), makeRRange(0, object->count));
 }
 
@@ -554,12 +554,9 @@ method(void, shift, RArray), rbool isToLeft, RRange range) {
 
 static inline
 constMethod(byte, checkIfIndexIn, RArray), size_t index) {
-    RMutexLockArray();
     if (index < object->count) {
-        RMutexUnlockArray();
         return index_exists;
     } else {
-        RMutexUnlockArray();
         return index_does_not_exist;
     }
 }

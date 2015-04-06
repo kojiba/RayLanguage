@@ -267,7 +267,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
 
 #pragma mark Info
 
-method(size_t, numberOfCharacters, RCString), char character) {
+constMethod(size_t, numberOfCharacters, RCString), char character) {
     register size_t reps     = 0;
     register size_t iterator;
 
@@ -279,7 +279,7 @@ method(size_t, numberOfCharacters, RCString), char character) {
     return reps;
 }
 
-method(size_t, numberOfSubstrings, RCString), RCString *string) {
+constMethod(size_t, numberOfSubstrings, RCString), const RCString * const string) {
     if(string->size == 1) {
         return $(object, m(numberOfCharacters, RCString)), string->baseString[0]);
     } else if(object->size >= string->size) {
@@ -484,7 +484,7 @@ method(void, trimHead, RCString), size_t size) {
 
 #pragma mark Subs and Copies
 
-method(RCString *, setSubstringInRange, RCString), RRange range, const char *string) {
+method(RCString *, setSubstringInRange, RCString), RRange range, const char * const string) {
     if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
         RMemMove(object->baseString + range.start, string, range.size);
     } else {
@@ -572,7 +572,7 @@ constMethod(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     return result;
 }
 
-constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString const *separatorsString) {
+constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * const separatorsString) {
     RArray *result = nil;
 
     if(separatorsString != nil
@@ -642,7 +642,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString co
 }
 
 inline
-constMethod(RArray *, substringsSeparatedBySymCStr, RCString), const char const *separatorsString) {
+constMethod(RArray *, substringsSeparatedBySymCStr, RCString), const char * const separatorsString) {
     RCString *temp = RS(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);
@@ -656,7 +656,7 @@ constMethod(RCString *, substringByBounds, RCString), RBounds bounds) {
     return $(object, m(substringInRange, RCString)), range);
 }
 
-constMethod(RArray *, substringsSeparatedByString, RCString), const RCString const *separatorString) {
+constMethod(RArray *, substringsSeparatedByString, RCString), const RCString * const separatorString) {
     RArray *result = nil;
     if(object->size >= separatorString->size) {
         register size_t iterator;

@@ -86,11 +86,12 @@ typedef byte    rbool;
 #define deallocator(object)                               RFree(object);
 
 #define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object
-#define constMethod(returnValue, methodName, className)        returnValue concatenate(methodName, className)(const className const *object
+#define constMethod(returnValue, methodName, className)   returnValue concatenate(methodName, className)(const className *const object
 
 #define constructor(className)                            className* concatenate(constructorOf,className) (className *object
 #define destructor(className)                             void concatenate(destructorOf,className) (className *object)
-#define printer(className)                                constMethod(void, printerOf, className))
+#define printer(className)                                method(void, printerOf, className))
+
 #define singleton(className)                              className* concatenate(singletonOf,className)(void)
 #define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
 #define virtualMethod(returnValue, methodName)            returnValue (*methodName)

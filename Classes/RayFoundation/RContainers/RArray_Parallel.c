@@ -65,7 +65,7 @@ void privatePartFinder(finderArgument *argument) {
     return;
 }
 
-constMethod(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) {
+method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) {
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
@@ -168,7 +168,7 @@ void privatePartExecuter(executerArgument *argument) {
     }
 }
 
-constMethod(void, executeParallel, RArray), REnumerateDelegate *delegate) {
+method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
     if(delegate != nil) {
         unsigned coreCount = processorsCount();
 
