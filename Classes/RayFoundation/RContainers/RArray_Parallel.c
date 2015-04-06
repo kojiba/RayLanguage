@@ -30,7 +30,7 @@
 typedef struct finderArgument {
     // data pointers
     RCompareDelegate *delegate;
-    RArray           *object;
+    RArray const *object;
 
     // directly structures
     RRange           partRange;
@@ -65,7 +65,7 @@ void privatePartFinder(finderArgument *argument) {
     return;
 }
 
-method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) {
+constMethod(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) {
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
@@ -155,7 +155,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
 typedef struct executerArgument {
     // data pointers
     REnumerateDelegate *delegate;
-    RArray             *object;
+    RArray const *object;
 
     // range
     RRange           partRange;
@@ -168,7 +168,7 @@ void privatePartExecuter(executerArgument *argument) {
     }
 }
 
-method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
+constMethod(void, executeParallel, RArray), REnumerateDelegate *delegate) {
     if(delegate != nil) {
         unsigned coreCount = processorsCount();
 

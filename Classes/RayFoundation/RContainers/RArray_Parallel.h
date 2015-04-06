@@ -20,7 +20,7 @@
 #include <RBasics.h>
 #include <RArray.h>
 
-method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate);
-method(void,        executeParallel,    RArray),    REnumerateDelegate *delegate);
+constMethod(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate);
+constMethod(void,        executeParallel,    RArray),    REnumerateDelegate *delegate);
 
 #endif /*__R_ARRAY_PARALLEL_H__*/
