@@ -301,7 +301,7 @@ method(size_t, numberOfSubstrings, RCString), RCString *string) {
 }
 
 static inline
-method(rbool, isContains, RCString), char character) {
+constMethod(rbool, isContains, RCString), char character) {
     size_t iterator = 0;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -312,7 +312,7 @@ method(rbool, isContains, RCString), char character) {
 }
 
 static inline
-method(rbool, isContainsSubsting, RCString), RCString *string) {
+constMethod(rbool, isContainsSubsting, RCString), RCString *string) {
     // search for first symbol
     size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
     if(iterator != string->size) {
@@ -327,7 +327,7 @@ method(rbool, isContainsSubsting, RCString), RCString *string) {
     }
 }
 
-inline method(size_t, numberOfLines, RCString)) {
+inline constMethod(size_t, numberOfLines, RCString)) {
     return $(object, m(numberOfCharacters, RCString)), '\n');
 }
 
@@ -514,7 +514,7 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
     return object;
 }
 
-method(RCString *, substringInRange, RCString), RRange range) {
+constMethod(RCString *, substringInRange, RCString), RRange range) {
     if(range.size != 0
             && ((range.start + range.size) <= object->size)) {
         char *cstring = RAlloc((range.size + 1) * sizeof(char));
@@ -534,7 +534,7 @@ method(RCString *, substringInRange, RCString), RRange range) {
 
 }
 
-method(RCString *, substringToSymbol, RCString), char symbol) {
+constMethod(RCString *, substringToSymbol, RCString), char symbol) {
     register size_t index = indexOfFirstCharacterCString(object->baseString, object->size, symbol);
     if(index != object->size) {
         return $(object, m(substringInRange, RCString)), makeRRange(0, index));
@@ -543,11 +543,11 @@ method(RCString *, substringToSymbol, RCString), char symbol) {
     }
 }
 
-method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
+constMethod(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     // store value of original pointers and size
-    RCString tempObject = *object;
+    RCString *tempObject = $(object, m(copy, RCString)));
     RArray   *result    =  nil;
-    RCString *string    = $(object, m(substringToSymbol, RCString)), symbol);
+    RCString *string    = $(tempObject, m(substringToSymbol, RCString)), symbol);
 
     if(string != nil) {
         result = makeRArray();
@@ -557,16 +557,14 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
 
     while(string != nil) {
         $(result, m(addObject, RArray)), string);
-        object->baseString += string->size + 1;
-        object->size       -= string->size + 1;
-        string = $(object, m(substringToSymbol, RCString)), symbol);
+        tempObject->baseString += string->size + 1;
+        tempObject->size       -= string->size + 1;
+        string = $(tempObject, m(substringToSymbol, RCString)), symbol);
         if(string == nil) {
-            $(result, m(addObject, RArray)), $(object, m(copy, RCString))) );
+            $(result, m(addObject, RArray)), $(tempObject, m(copy, RCString))) );
         }
     }
 
-    // restore original pointers and size
-    *object = tempObject;
     // size to fit RArray
     if(result != nil) {
         $(result, m(sizeToFit, RArray)) );
@@ -574,7 +572,7 @@ method(RArray *, substringsSeparatedBySymbol, RCString), char symbol) {
     return result;
 }
 
-method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsString) {
+constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString const *separatorsString) {
     RArray *result = nil;
 
     if(separatorsString != nil
@@ -644,21 +642,21 @@ method(RArray *, substringsSeparatedBySymbols, RCString), RCString *separatorsSt
 }
 
 inline
-method(RArray *, substringsSeparatedBySymCStr, RCString), char *separatorsString) {
+constMethod(RArray *, substringsSeparatedBySymCStr, RCString), const char const *separatorsString) {
     RCString *temp = RS(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);
     return result;
 }
 
-method(RCString *, substringByBounds, RCString), RBounds bounds) {
+constMethod(RCString *, substringByBounds, RCString), RBounds bounds) {
     register RRange range;
     range.start = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
     range.size  = indexOfLastCharacterCString(object->baseString, object->size, bounds.endSymbol) - range.start;
     return $(object, m(substringInRange, RCString)), range);
 }
 
-method(RArray *, substringsSeparatedByString, RCString), RCString *separatorString) {
+constMethod(RArray *, substringsSeparatedByString, RCString), const RCString const *separatorString) {
     RArray *result = nil;
     if(object->size >= separatorString->size) {
         register size_t iterator;
@@ -715,14 +713,14 @@ method(RArray *, substringsSeparatedByString, RCString), RCString *separatorStri
     return result;
 }
 
-method(RCString *, copy, RCString)) {
+constMethod(RCString *, copy, RCString)) {
     RCString *copy = $(object, m(substringInRange, RCString)), makeRRange(0, object->size));
     return copy;
 }
 
 #pragma mark Comparator
 
-method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
+constMethod(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     static size_t iterator;
     if(checkString == nil || object == nil) {
         RWarning("RCString. One of compare strings is empty.", object);
@@ -749,14 +747,14 @@ method(RCompareFlags, compareWith, RCString), const RCString *checkString) {
     }
 }
 
-method(RCompareFlags, compareWithStr, RCString), const char *const checkString) {
+constMethod(RCompareFlags, compareWithStr, RCString), const char *const checkString) {
     RCString *temp = RS(checkString);
     RCompareFlags result = $(object, m(compareWith, RCString)), temp);
     deallocator(temp);
     return result;
 }
 
-method(rbool, startsOnStr, RCString), const char *const checkString) {
+constMethod(rbool, startsOnStr, RCString), const char *const checkString) {
     size_t iterator = 0;
     while(checkString[iterator]) {
         if(object->baseString[iterator] != checkString[iterator]) {
@@ -767,18 +765,18 @@ method(rbool, startsOnStr, RCString), const char *const checkString) {
     return yes;
 }
 
-method(rbool, startsOn, RCString), const RCString *const checkString) {
+constMethod(rbool, startsOn, RCString), const RCString *const checkString) {
     return $(object, m(startsOnStr, RCString)), checkString->baseString);
 }
 
-method(rbool, endsOnStr, RCString), const char *const checkString) {
+constMethod(rbool, endsOnStr, RCString), const char *const checkString) {
     RCString *temp = RS(checkString);
     rbool result = $(object, m(endsOn, RCString)), temp);
     deallocator(temp);
     return result;
 }
 
-method(rbool, endsOn, RCString), const RCString *const checkString) {
+constMethod(rbool, endsOn, RCString), const RCString *const checkString) {
     ssize_t iterator = 0;
     while(iterator < checkString->size) {
         if(object->baseString[object->size - iterator] != checkString->baseString[checkString->size - iterator]) {

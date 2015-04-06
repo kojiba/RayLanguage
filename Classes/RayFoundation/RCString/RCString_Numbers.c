@@ -53,7 +53,7 @@ static inline rbool isBinaryDigit(char character) {
 
 #pragma mark RNumberSystemBase
 
-method(RCString *, toRCString, RNumberSystemBase)) {
+constMethod(RCString *, toRCString, RNumberSystemBase)) {
     switch (*object) {
         case RNotNumber : {
             return RS(toString(RNotNumber));
@@ -80,7 +80,7 @@ method(RCString *, toRCString, RNumberSystemBase)) {
 
 #pragma mark RCString Additions
 
-method(RNumberSystemBase, isNumber, RCString)) {
+constMethod(RNumberSystemBase, isNumber, RCString)) {
     size_t iterator;
     // not too large
     if(object->size < 200) {

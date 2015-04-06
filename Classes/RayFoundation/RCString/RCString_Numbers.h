@@ -32,12 +32,12 @@ typedef enum RNumberSystemBase { //--------------------------
     RHex,
 } RNumberSystemBase; //--------------------------------------
 
-method(RCString *,        toRCString, RNumberSystemBase));
+constMethod(RCString *,        toRCString, RNumberSystemBase));
 
 //-----------------------------------------------------------
 
 // RCString Additions
-method(RNumberSystemBase, isNumber,       RCString));
+constMethod(RNumberSystemBase, isNumber,       RCString));
 
 #define toUnsignedRCString(object) RStringToUnsigned(object->baseString, nil, 0)
 #define toIntRCString(object)      RStringToInt(object->baseString)

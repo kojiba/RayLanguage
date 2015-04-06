@@ -60,11 +60,11 @@ method(void,                replaceSubstrings,            RCString),    RCString
 method(size_t,              numberOfCharacters,           RCString),    char character);
 method(size_t,              numberOfSubstrings,           RCString),    RCString *string);
 static inline
-method(rbool,               isContains,                   RCString),    char character);
+constMethod(rbool,          isContains,                   RCString),    char character);
 static inline
-method(rbool,               isContainsSubsting,           RCString),    RCString *string);
+constMethod(rbool,          isContainsSubsting,           RCString),    RCString *string);
 extern inline
-method(size_t,              numberOfLines,                RCString));
+constMethod(size_t,         numberOfLines,                RCString));
 
 // Deletions
 method(RCString *,          deleteAllCharacters,          RCString),    char character);                      // returns reference (not copy!)
@@ -87,33 +87,33 @@ method(void,                trimHead,                     RCString),    size_t s
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char *string);    // returns reference (not copy!)
 method(RCString *,          insertSubstringAt,            RCString),    RCString *substring, size_t place);   // returns reference (not copy!)
 
-method(RCString *,          substringToSymbol,            RCString),    char symbol);                         // or nil
-method(RCString *,          substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
-method(RCString *,          substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting (search first and last)
-method(RArray *,            substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nil, RArray is sizeToFit, subs are copies
-method(RArray *,            substringsSeparatedBySymbols, RCString),    RCString *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
+constMethod(RCString *,     substringToSymbol,            RCString),    char symbol);                         // or nil
+constMethod(RCString *,     substringInRange,             RCString),    RRange range);                        // substring is a copy, basic method, that uses others
+constMethod(RCString *,     substringByBounds,            RCString),    RBounds bounds);                      // substring is a copy, by nesting (search first and last)
+constMethod(RArray *,       substringsSeparatedBySymbol,  RCString),    char symbol);                         // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,       substringsSeparatedBySymbols, RCString),    const RCString const *separatorsString);          // or nil, RArray is sizeToFit, subs are copies
 extern inline
-method(RArray *,            substringsSeparatedBySymCStr, RCString),    char *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
-method(RArray *,            substringsSeparatedByString,  RCString),    RCString *separatorString);           // separatorString length > 1, not use for one symbol
+constMethod(RArray *,       substringsSeparatedBySymCStr, RCString),    const char const *separatorsString);              // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RCString const *separatorString);           // separatorString length > 1, not use for one symbol
 
-method(RCString *,          copy,                         RCString));
+constMethod(RCString *,     copy,                         RCString));
 
 // Comparator
-method(RCompareFlags,       compareWith,                  RCString),    const RCString *checkString);
-method(RCompareFlags,       compareWithStr,               RCString),    const char *const checkString);
-method(rbool,               startsOnStr,                  RCString),    const char *const checkString);
-method(rbool,               startsOn,                     RCString),    const RCString *const checkString);
-method(rbool,               endsOnStr,                    RCString),    const char *const checkString);
-method(rbool,               endsOn,                       RCString),    const RCString *const checkString);
+constMethod(RCompareFlags,  compareWith,                  RCString),    const RCString *checkString);
+constMethod(RCompareFlags,  compareWithStr,               RCString),    const char *const checkString);
+constMethod(rbool,          startsOnStr,                  RCString),    const char *const checkString);
+constMethod(rbool,          startsOn,                     RCString),    const RCString *const checkString);
+constMethod(rbool,          endsOnStr,                    RCString),    const char *const checkString);
+constMethod(rbool,          endsOn,                       RCString),    const RCString *const checkString);
 
 // Concatenate
 method(void,                concatenate,                  RCString),    const RCString *string);
 method(void,                appendString,                 RCString),    const char *string);
 method(void,                append,                       RCString),    const char character);
 
-// Conversions
-method(RCString *,           toUpperCase,                 RCString));                                          // returns reference (not copy!)
-method(RCString *,           toLowerCase,                 RCString));                                          // returns reference (not copy!)
+// Conversions (only ASCII)
+method(RCString *,          toUpperCase,                 RCString));                                          // returns reference (not copy!)
+method(RCString *,          toLowerCase,                 RCString));                                          // returns reference (not copy!)
 
 // With file
 method(void,                appendToFile,                 RCString),    const char *filename);

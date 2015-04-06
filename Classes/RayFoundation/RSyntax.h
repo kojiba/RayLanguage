@@ -86,6 +86,7 @@ typedef byte    rbool;
 #define deallocator(object)                               RFree(object);
 
 #define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object
+#define constMethod(returnValue, methodName, className)        returnValue concatenate(methodName, className)(const className const *object
 
 #define constructor(className)                            className* concatenate(constructorOf,className) (className *object
 #define destructor(className)                             void concatenate(destructorOf,className) (className *object)

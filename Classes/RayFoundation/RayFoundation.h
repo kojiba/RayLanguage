@@ -60,7 +60,8 @@ extern "C" {
 
 #define endRay() deleter(RCTSingleton, RClassTable); \
                  printerOfRAutoPool(RPool); \
-                 deleter(RPool, RAutoPool)
+                 deleter(RPool, RAutoPool); \
+                 return 0;
 
 #ifdef  __cplusplus
 }
