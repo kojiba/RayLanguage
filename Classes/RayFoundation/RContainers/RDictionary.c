@@ -72,7 +72,7 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
     }
 }
 
-method(pointer, getObjectForKey, RDictionary), pointer key) {
+constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
     master(object, RCompareDelegate)->etaloneObject = key;
     RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 

@@ -29,9 +29,9 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor (RDictionary));
 destructor  (RDictionary);
 
-method(void,       initDelegate,    RDictionary),    const RCompareDelegate *delegate);
-method(void,       setObjectForKey, RDictionary),    pointer value, pointer key);
-method(pointer,    getObjectForKey, RDictionary),    pointer key);
+method(void,            initDelegate,    RDictionary),    const RCompareDelegate *delegate);
+method(void,            setObjectForKey, RDictionary),    pointer value, pointer key);
+constMethod(pointer,    getObjectForKey, RDictionary),    pointer key);
 
 printer(RDictionary);
 
