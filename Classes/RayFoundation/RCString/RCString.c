@@ -15,6 +15,7 @@
 
 #include <RCString.h>
 #include <stdarg.h>
+#include <wchar.h>
 
 #pragma mark Basics
 

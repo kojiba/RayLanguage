@@ -59,7 +59,7 @@
 #endif
 
 #define RAY_TEST(conditionZero, message, errorCode)       if(conditionZero) { \
-                                                              RFPrintf(stderr, "ERROR. TESTS. " message "\n", nil); \
+                                                              RFPrintf(stderr, "ERROR. TESTS. " message "\n"); \
                                                               return errorCode;\
                                                           }
 

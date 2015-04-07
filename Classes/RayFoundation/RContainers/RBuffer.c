@@ -339,7 +339,7 @@ RBuffer* RBufferFromFile(const char *filename) {
                         array->array = buffer + 1 + (buffer[0] * (iterator + 1));
 
                         // processing
-                        result = $(array, m(serializeToBuffer, RByteArray)), sizesArray);
+                        result = $(array, m(serializeToBuffer, RByteArray)), (size_t*)sizesArray);
 
                         // cleanup
                         deallocator(array);

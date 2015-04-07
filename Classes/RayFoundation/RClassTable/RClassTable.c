@@ -137,7 +137,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
     }
 }
 
-constMethod(size_t, getNumberOfClasses, RClassTable)) {
+method(size_t, getNumberOfClasses, RClassTable)) {
     return master(object, RArray)->count;
 }
 
@@ -148,14 +148,14 @@ printer(RClassTable) {
     RPrintf("} end of %s object %p \n\n", toString(RClassTable), object);
 }
 
-constMethod(size_t, getIdentifierByClassName, RClassTable), char *name) {
+method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     RMutexLockTable();
     size_t result = $(object, m(getIdentifierByClassNameWorker, RClassTable)), name);
     RMutexUnlockTable();
     return result;
 }
 
-constMethod(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
+method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
     RMutexLockTable();
     if(id <= master(object, RArray)->count) {
         RClassNamePair *temp = $(master(object, RArray), m(elementAtIndex, RArray)), id);

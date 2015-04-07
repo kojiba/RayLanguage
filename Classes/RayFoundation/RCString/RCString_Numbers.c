@@ -35,8 +35,8 @@ static inline rbool isOctalDigit(char character) {
 
 static inline rbool isHexDigit(char character) {
     if(isDecimalDigit(character)
-            || character > 64 && character < 71
-            || character > 96 && character < 103) {
+            || (character > 64 && character < 71)
+            || (character > 96 && character < 103)) {
         return yes;
     } else {
         return no;

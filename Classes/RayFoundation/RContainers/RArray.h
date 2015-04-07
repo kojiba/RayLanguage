@@ -72,7 +72,7 @@ endOf(RArray) //----------------------------------------------------------------
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error);
 
 #pragma mark Constructor - Destructor - Printer
-extern inline
+extern
 constructor (RArray), RArrayFlags *error);
 destructor  (RArray);
 printer     (RArray);
@@ -85,7 +85,7 @@ method(byte,               sizeToFit,                 RArray));
 #pragma mark Add - Set - Delete
 method(RArrayFlags,        addObject,                 RArray),    pointer src);                       // push_back analog
 
-extern inline
+extern
 method(void,               addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 
@@ -101,11 +101,11 @@ method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelega
 method(RArray *,           getSubarray,               RArray),    RRange range);
 method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
-extern inline
+extern
 constMethod(pointer,       elementAtIndex,            RArray),    size_t index);
-extern inline
+extern
 constMethod(pointer,       lastObject,                RArray));
-extern inline
+extern
      method(RArray *,      copy,                      RArray));
 
 #pragma mark Sorts
