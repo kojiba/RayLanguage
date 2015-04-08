@@ -68,8 +68,6 @@ set(HEADER_FILES # Worker headers
 
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.h
-                 Classes/RayFoundation/RNetwork/RReceiver.h
-                 Classes/RayFoundation/RNetwork/RSender.h
 
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
@@ -107,8 +105,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RThread/RThreadPool.c
 
                  # Networking
-                 Classes/RayFoundation/RNetwork/RReceiver.c
-                 Classes/RayFoundation/RNetwork/RSender.c
+                 Classes/RayFoundation/RNetwork/RSocket.c
 
                  # Tests
                  Classes/Tests.c)
@@ -181,7 +178,7 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
                                                  ${DEBUG_SOURCES}
                                                  ${DEBUG_HEADERS}
-)
+Classes/RayFoundation/RNetwork/RSocket.c)
 
 set(copyResources NO)
 

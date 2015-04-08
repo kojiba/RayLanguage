@@ -47,8 +47,6 @@ extern "C" {
 
 // Networking
 #include <RSocket.h>
-#include <RSender.h>
-#include <RReceiver.h>
 
 // Others
 #include <RClassTable.h>
