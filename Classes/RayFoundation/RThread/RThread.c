@@ -48,6 +48,8 @@ int RThreadCreate(RThread *thread,
     return pthread_create(thread, attributes, function, argument);
 #else
     *thread = CreateThread(nil, 0, function, argument, 0, nil);
+    if(*thread != nil)
+        return 1;
 #endif
 }
 
@@ -55,7 +57,7 @@ int RThreadCancel(RThread *thread) {
 #ifndef __WIN32
     return pthread_cancel(*thread);
 #else
-    return TerminateThread(thread, nil);
+    return (int)TerminateThread(thread, nil);
 #endif
 }
 
@@ -63,7 +65,7 @@ int RThreadJoin(RThread *thread) {
 #ifndef __WIN32
     return pthread_join(*thread, nil);
 #else
-    return WaitForSingleObject(object->descriptor, INFINITE);
+    return (int)WaitForSingleObject(*thread, INFINITE);
 #endif
 }
 
@@ -84,7 +86,7 @@ int mutexWithType(RMutex *mutex, byte mutexType) {
     pthread_mutexattr_settype(&Attr, mutexType);
     return pthread_mutex_init(mutex,  &Attr);
 #else
-    *mutex = RMutexInit(nil, no, nil);
+    *mutex = CreateMutex(nil, no, nil);
     return 0;
 #endif
 }

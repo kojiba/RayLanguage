@@ -53,7 +53,7 @@
     typedef LPVOID                    RThreadAttributes;
     typedef HANDLE                    RMutex;
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
-    typedef DWORD                  (* RThreadFunction)(pointer);
+    typedef DWORD            (WINAPI* RThreadFunction)(pointer);
     typedef uint64_t                  RThreadId;
 
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER

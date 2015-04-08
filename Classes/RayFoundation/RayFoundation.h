@@ -54,9 +54,16 @@ extern "C" {
 #include <RThread.h>
 #include <RThreadPool.h>
 
+#ifdef __WIN32
+#define stopConsole() fgetchar()
+#else
+#define stopConsole()
+#endif
+
 #define endRay() deleter(RCTSingleton, RClassTable); \
                  printerOfRAutoPool(RPool); \
                  deleter(RPool, RAutoPool); \
+                 stopConsole();\
                  return 0;
 
 #ifdef  __cplusplus
