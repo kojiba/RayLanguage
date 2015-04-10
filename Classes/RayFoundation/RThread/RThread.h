@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#ifndef __R__THREAD_H__
-#define __R__THREAD_H__
+#ifndef __R_THREAD_H__
+#define __R_THREAD_H__
 
 #include <RSyntax.h>
 
@@ -89,4 +89,4 @@ int mutexWithType(RMutex *mutex, byte mutexType);
 int RMutexLock  (RMutex *mutex);
 int RMutexUnlock(RMutex *mutex);
 
-#endif /*__R__THREAD_H__*/
+#endif /*__R_THREAD_H__*/

@@ -13,8 +13,8 @@
  *         |__/
  **/
  
-#ifndef __RSocket_H__
-#define __RSocket_H__
+#ifndef __R_SOCKET_H__
+#define __R_SOCKET_H__
 
 #include <RCString.h>
 #include <RByteOperations.h>
@@ -66,4 +66,4 @@ method(void,  reuseAddress,       RSocket));
 method(byte,  send,               RSocket),    RByteArray *buffer);  // sends to receiver size bytes
 method(byte,  receive,            RSocket),    RByteArray *buffer);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
-#endif /*__RSocket_H__*/
+#endif /*__R_SOCKET_H__*/
