@@ -1,5 +1,6 @@
 /**
  * RThread.c
+ * Simple compile-based wrapper posix and winapi thread dependency.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 12/16/14 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -17,7 +18,7 @@
 
 #pragma mark Info
 
-RThreadId currentTreadIdentifier() {
+inline RThreadId currentTreadIdentifier() {
     RThreadId threadId = 0;
 #ifndef __WIN32
     pthread_threadid_np(pthread_self(), &threadId);
@@ -27,7 +28,7 @@ RThreadId currentTreadIdentifier() {
     return threadId;
 }
 
-unsigned processorsCount() {
+inline unsigned processorsCount() {
 #ifdef __WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo( &sysinfo );
@@ -39,7 +40,7 @@ unsigned processorsCount() {
 
 #pragma mark Thread
 
-int RThreadCreate(RThread *thread,
+inline int RThreadCreate(RThread *thread,
                   RThreadAttributes *attributes,
                   RThreadFunction function,
                   pointer argument ) {
@@ -53,7 +54,7 @@ int RThreadCreate(RThread *thread,
 #endif
 }
 
-int RThreadCancel(RThread *thread) {
+inline int RThreadCancel(RThread *thread) {
 #ifndef __WIN32
     return pthread_cancel(*thread);
 #else
@@ -61,7 +62,7 @@ int RThreadCancel(RThread *thread) {
 #endif
 }
 
-int RThreadJoin(RThread *thread) {
+inline int RThreadJoin(RThread *thread) {
 #ifndef __WIN32
     return pthread_join(*thread, nil);
 #else
@@ -69,7 +70,7 @@ int RThreadJoin(RThread *thread) {
 #endif
 }
 
-void RThreadExit(pointer data) {
+inline void RThreadExit(pointer data) {
 #ifndef _WIN32
     pthread_exit(data);
 #else
@@ -79,7 +80,7 @@ void RThreadExit(pointer data) {
 
 #pragma mark Mutex
 
-int mutexWithType(RMutex *mutex, byte mutexType) {
+inline int mutexWithType(RMutex *mutex, byte mutexType) {
 #ifndef _WIN32
     RMutexAttributes Attr;
     pthread_mutexattr_init(&Attr);
@@ -91,7 +92,7 @@ int mutexWithType(RMutex *mutex, byte mutexType) {
 #endif
 }
 
-int RMutexLock(RMutex *mutex) {
+inline int RMutexLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_lock(mutex);
 #else
@@ -99,7 +100,7 @@ int RMutexLock(RMutex *mutex) {
 #endif
 }
 
-int RMutexUnlock(RMutex *mutex) {
+inline int RMutexUnlock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_unlock(mutex);
 #else

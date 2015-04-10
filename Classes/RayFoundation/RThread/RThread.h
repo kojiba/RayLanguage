@@ -68,25 +68,24 @@
 
 #pragma mark Info
 
-RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
-unsigned  processorsCount();        // returns cores count
+extern RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
+extern unsigned  processorsCount();        // returns cores count
 
 #pragma mark Thread
 
-int RThreadCreate(RThread *thread,
-                  RThreadAttributes *attributes,
-                  RThreadFunction function,
-                  pointer argument);
+extern int  RThreadCreate (RThread *thread,
+                           RThreadAttributes *attributes,
+                           RThreadFunction function,
+                           pointer argument);
 
-int  RThreadCancel(RThread *thread);
-int  RThreadJoin  (RThread *thread);
-void RThreadExit  (pointer data);
+extern int  RThreadCancel (RThread *thread);
+extern int  RThreadJoin   (RThread *thread);
+extern void RThreadExit   (pointer data);
 
 #pragma mark Mutex
 
-int mutexWithType(RMutex *mutex, byte mutexType);
-
-int RMutexLock  (RMutex *mutex);
-int RMutexUnlock(RMutex *mutex);
+extern int mutexWithType (RMutex *mutex, byte mutexType);
+extern int RMutexLock   (RMutex *mutex);
+extern int RMutexUnlock (RMutex *mutex);
 
 #endif /*__R_THREAD_H__*/
