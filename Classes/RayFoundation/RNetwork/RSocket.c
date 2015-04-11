@@ -20,9 +20,25 @@ const byte networkConnectionClosedConst = 0;
 const byte networkOperationErrorConst = 254;
 const byte networkOperationSuccessConst = 1;
 
+#ifdef _WIN32
+    static rbool   isFirstSocket = yes;
+    static WSADATA wsaData;
+
+    #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
+#endif
+
 constructor(RSocket)) {
     object = allocator(RSocket);
     if (object != nil) {
+#ifdef _WIN32
+        if(isFirstSocket) {
+            int result = wsaStartUp();
+            if(result != 0) {
+                RError("Windows sockets startup failed, errorcode in begin of line.", (pointer)result);
+            }
+            isFirstSocket = no;
+        }
+#endif
         object->socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
         if (object->socket < 0) {
             RError("RSocket. Socket creation error.", object);
@@ -57,6 +73,10 @@ method(rbool, bindPort, RSocket), uint16_t port) {
 
     // bind port
     if (bind(object->socket, (SocketAddress *) &address, sizeof(address)) < 0) {
+        #ifdef _WIN32
+            WSAGetLastError();
+        #else
+        #endif
         return no;
     }
 
@@ -108,7 +128,7 @@ method(void, reuseAddress, RSocket)) {
 
 method(byte, send, RSocket), const RByteArray * const buffer) {
     ssize_t messageLength = sendto(object->socket,
-                                   (char const *) buffer->array,
+                                   buffer->array,
                                    buffer->size,
                                    0,
                                    (SocketAddress *) &object->address,

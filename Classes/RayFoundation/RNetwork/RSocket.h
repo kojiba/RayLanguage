@@ -24,12 +24,14 @@
     #include <netinet/in.h>
     #include <arpa/inet.h>
 
-typedef int SocketDescriptor;
+    typedef int SocketDescriptor;
+    #define endSockets()
 #else
     #include <winsock2.h>
     #include <ws2tcpip.h>
 
     typedef SOCKET SocketDescriptor;
+    #define endSockets() WSACleanup();
 #endif
 
 extern const byte networkConnectionClosedConst;
