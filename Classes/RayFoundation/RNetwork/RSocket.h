@@ -63,7 +63,7 @@ method(void,  setAddress,         RSocket),    const char * const address);
 method(void,  reuseAddress,       RSocket));
 
 // Main methods
-method(byte,  send,               RSocket),    RByteArray *buffer);  // sends to receiver size bytes
+method(byte,  send,               RSocket),    const RByteArray * const buffer);  // sends to receiver size bytes
 method(byte,  receive,            RSocket),    RByteArray *buffer);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
 #endif /*__R_SOCKET_H__*/

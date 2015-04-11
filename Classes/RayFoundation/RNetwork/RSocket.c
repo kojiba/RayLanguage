@@ -76,7 +76,7 @@ method(rbool, joinMulticastGroup, RSocket), const char * const address) {
     if (setsockopt(object->socket,
                    IPPROTO_IP,
                    IP_ADD_MEMBERSHIP,
-                   &multicastAddress,
+                   (char const *) &multicastAddress,
                    sizeof(multicastAddress)) < 0) {
         return no;
     } else {
@@ -98,7 +98,7 @@ method(void, reuseAddress, RSocket)) {
     if (setsockopt(object->socket,
                    SOL_SOCKET,
                    SO_REUSEADDR,
-                   &YES,
+                   (char const *) &YES,
                    sizeof(int)) == -1) {
         RError("RSocket. Set socket option SO_REUSEADDR failed.", object);
     }
@@ -106,9 +106,9 @@ method(void, reuseAddress, RSocket)) {
 
 #pragma mark Main Method
 
-method(byte, send, RSocket), RByteArray *buffer) {
+method(byte, send, RSocket), const RByteArray * const buffer) {
     ssize_t messageLength = sendto(object->socket,
-                                   buffer->array,
+                                   (char const *) buffer->array,
                                    buffer->size,
                                    0,
                                    (SocketAddress *) &object->address,

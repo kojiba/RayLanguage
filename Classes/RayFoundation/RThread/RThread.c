@@ -19,13 +19,13 @@
 #pragma mark Info
 
 inline RThreadId currentTreadIdentifier() {
-    RThreadId threadId = 0;
 #ifndef __WIN32
+    RThreadId threadId = 0;
     pthread_threadid_np(pthread_self(), &threadId);
-#else
-    #warning fixme currentTreadIdentifier will always 0
-#endif
     return threadId;
+#else
+    return GetCurrentThreadId();
+#endif
 }
 
 inline unsigned processorsCount() {
@@ -58,7 +58,7 @@ inline int RThreadCancel(RThread *thread) {
 #ifndef __WIN32
     return pthread_cancel(*thread);
 #else
-    return (int)TerminateThread(thread, nil);
+    return (int)TerminateThread(thread, 0);
 #endif
 }
 
@@ -74,7 +74,7 @@ inline void RThreadExit(pointer data) {
 #ifndef _WIN32
     pthread_exit(data);
 #else
-    ExitThread(data);
+    ExitThread((DWORD) data);
 #endif
 }
 

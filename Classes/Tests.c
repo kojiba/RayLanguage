@@ -149,7 +149,7 @@ rbool checkObjectRListFinder(pointer data, size_t index) {
 }
 
 void printfInt(pointer ptr) {
-    printf("%qu\n", (unsigned long long int) ptr);
+    printf("%u\n", (uintptr_t) ptr);
 }
 
 int RListTest(void) {
@@ -207,7 +207,7 @@ int RThreadTest(void) {
     int i;
     arrayTest->destructorDelegate = free;
     RThread thread1;
-    RThreadCreate(&thread1, nil, func1, "1 thread");
+    RThreadCreate(&thread1, nil, (RThreadFunction) func1, "1 thread");
 
     forAll(i, TEST_COUNT) {
         $(arrayTest, m(addObject, RArray)), RS("main"));
