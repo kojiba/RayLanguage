@@ -19,7 +19,7 @@
 #include <RArray.h>
 
 class(RDictionary) //---------------------------------------------------------------------
-    discipleOf(RCompareDelegate)
+    ComparatorDelegate comparator;
 
     RArray *keys;
     RArray *values;
@@ -29,17 +29,18 @@ endOf(RDictionary) //-----------------------------------------------------------
 constructor (RDictionary));
 destructor  (RDictionary);
 
-method(void,            initDelegate,    RDictionary),    const RCompareDelegate *delegate);
-method(void,            setObjectForKey, RDictionary),    pointer value, pointer key);
-constMethod(pointer,    getObjectForKey, RDictionary),    pointer key);
+     method(void,            initDelegate,    RDictionary),    ComparatorDelegate comparator); // comparator for keys
+     method(void,            setObjectForKey, RDictionary),    pointer value, pointer key);
+     method(void,            sizeToFit,       RDictionary));
+constMethod(pointer,         getObjectForKey, RDictionary),    pointer key);
 
 printer(RDictionary);
 
-// some macros for shorter work
-#define makeRDictionary()       $(nil, c(RDictionary)) );
-#define printRD(rayDictionary)  $(rayDictionary, p(RDictionary)) );
-#define deleteRD(rayDictionary) $(rayDictionary, d(RDictionary)) );\
-                                deallocator(rayDictionary)
+#pragma mark Init from scratch
 
+RDictionary* dictionaryFromPairs(pointer firstKey, ...); // dict from array of pointers of type key, value, last must be nil)
+
+// some macros for shorter work
+#define makeRDictionary()       $(nil, c(RDictionary)) )
 
 #endif /*__R_DICTIONARY_H__*/

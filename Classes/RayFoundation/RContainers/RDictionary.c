@@ -15,6 +15,7 @@
 
 #include <RDictionary.h>
 #include <RClassTable.h>
+#include <stdarg.h>
 
 constructor(RDictionary)) {
     object = allocator(RDictionary);
@@ -34,9 +35,7 @@ constructor(RDictionary)) {
             object->keys->destructorDelegate   = nil;
             object->values->printerDelegate    = nil;
             object->keys->printerDelegate      = nil;
-
-            master(object, RCompareDelegate) = allocator(RCompareDelegate);
-            master(object, RCompareDelegate)->virtualCompareMethod = nil;
+            object->comparator                 = nil;
         }
     }
     return object;
@@ -46,20 +45,21 @@ destructor(RDictionary) {
     if(object != nil) {
         deleter(object->keys, RArray);
         deleter(object->values, RArray);
-        deallocator(master(object, RCompareDelegate));
     } else {
         RWarning("Warning. RD. Destructing a nil, do nothing, please delete function call, or fix it.", object);
     }
 }
 
-method(void, initDelegate, RDictionary), const RCompareDelegate *delegate) {
-    master(object, RCompareDelegate)->etaloneObject        = delegate->etaloneObject;
-    master(object, RCompareDelegate)->virtualCompareMethod = delegate->virtualCompareMethod;
+method(void, initDelegate, RDictionary), ComparatorDelegate comparator) {
+    object->comparator = comparator;
 }
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
-    master(object, RCompareDelegate)->etaloneObject = key;
-    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    RCompareDelegate delegate;
+    delegate.etaloneObject = key;
+    delegate.virtualCompareMethod = object->comparator;
+
+    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
 
     // if object for key not exist
     if(findResult.object == nil){
@@ -72,9 +72,17 @@ method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
     }
 }
 
+method(void, sizeToFit, RDictionary)) {
+    $(object->keys,   m(sizeToFit, RArray)));
+    $(object->values, m(sizeToFit, RArray)));
+}
+
 constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
-    master(object, RCompareDelegate)->etaloneObject = key;
-    RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
+    RCompareDelegate delegate;
+    delegate.etaloneObject = key;
+    delegate.virtualCompareMethod = object->comparator;
+
+    RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
 
     if(findResult.object != nil) {
         return $(object->values, m(elementAtIndex, RArray)), findResult.index);
@@ -94,4 +102,35 @@ printer(RDictionary){
                                  $(object->values, m(elementAtIndex, RArray)), iterator) );
     }
     RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
+}
+
+#pragma mark Init from scratch
+
+RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
+    RDictionary *result = makeRDictionary();
+    pointer temp;
+    va_list args;
+
+    if(result != nil) {
+        register rbool isKey = no;
+        $(result->keys, m(addObject, RArray)), firstKey);
+
+        va_start(args, firstKey);
+        temp = va_arg(args, pointer);
+
+        while(temp != nil) {
+            if(isKey) {
+                $(result->keys, m(addObject, RArray)), temp);
+            } else {
+                $(result->values, m(addObject, RArray)), temp);
+                isKey = yes;
+            }
+
+            temp = va_arg(args, pointer);
+        }
+        va_end(args);
+        $(result, m(sizeToFit, RDictionary)));
+    }
+
+    return result;
 }

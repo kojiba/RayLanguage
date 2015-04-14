@@ -183,6 +183,6 @@ RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointer
 #define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))
 #define elementAtIndexRA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
 #define sizeToFitRA(dynamicArray)             $(dynamicArray, m(sizeToFit, RArray)) )
-#define RA arrayFromArray
+#define RA                                    arrayFromArray
 
 #endif /*__R_ARRAY_H__*/

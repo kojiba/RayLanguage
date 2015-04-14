@@ -3,6 +3,8 @@ project(RayLanguage)
 
 # Configure project
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
+set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
+
 
 # sub-sources flags
 set(RVM            NO)
