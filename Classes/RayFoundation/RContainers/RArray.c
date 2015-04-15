@@ -632,5 +632,31 @@ RArray* arrayFromArray(pointer start, ...) {
     return array;
 }
 
+#pragma mark Delegates
+inline
+method(PrinterDelegate, printerDelegate, RArray)) {
+    return object->printerDelegate;
+}
+
+inline
+method(void, setPrinterDelegate, RArray), PrinterDelegate delegate) {
+    RMutexLockArray();
+    object->printerDelegate = delegate;
+    RMutexUnlockArray();
+}
+
+inline
+method(PrinterDelegate, destructorDelegate, RArray)) {
+    return object->destructorDelegate;
+}
+
+inline
+method(void, setDestructorDelegate, RArray), DestructorDelegate delegate) {
+    RMutexLockArray();
+    object->destructorDelegate = delegate;
+    RMutexUnlockArray();
+}
+
+
 
 

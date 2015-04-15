@@ -92,9 +92,11 @@ printer(RDictionary){
     RPrintf(" Count : %lu \n", object->keys->count);
     RPrintf(" Free  : %lu \n", object->keys->freePlaces);
     forAll(iterator, object->keys->count) {
-        RPrintf("\t %lu - {", iterator);
-        RPrintf(" %p : %p } \n", $(object->keys, m(elementAtIndex, RArray)), iterator),
-                                 $(object->values, m(elementAtIndex, RArray)), iterator) );
+        RPrintf("\t %lu - ", iterator);
+        object->keys->printerDelegate  ($(object->keys, m(elementAtIndex, RArray)),   iterator));
+        RPrintf(" : ");
+        object->values->printerDelegate($(object->values, m(elementAtIndex, RArray)), iterator));
+        RPrintLn("");
     }
     RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
 }

@@ -121,10 +121,20 @@ static inline
 constMethod(byte,          checkIfIndexIn,            RArray),    size_t index);
 
 #pragma mark Casts
-method(struct RList *,     toRList,      RArray));
+method(struct RList *,     toRList,                   RArray));
 
 #pragma mark Standart comparator
 byte RArrayStandartComparator(pointer first, pointer second);
+
+#pragma mark Delegates
+extern
+method(PrinterDelegate,   printerDelegate,            RArray));
+extern
+method(void,              setPrinterDelegate,         RArray), PrinterDelegate delegate);
+extern
+method(PrinterDelegate,   destructorDelegate,         RArray));
+extern
+method(void,              setDestructorDelegate,      RArray), DestructorDelegate delegate);
 
 #pragma mark Init from scratch
 
