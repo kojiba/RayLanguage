@@ -87,9 +87,9 @@ constMethod(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
         } else {
             return ((RClassNamePair*)foundedObject.object)->idForClassName;
         }
-    } else {
-        RError("RClassTable. Bad allocation of temp RClassNamePair.", object);
-    }
+
+    } elseError( RError("RClassTable. Bad allocation of temp RClassNamePair.", object) );
+
     return 0;
 }
 

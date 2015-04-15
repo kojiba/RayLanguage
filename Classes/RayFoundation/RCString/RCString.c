@@ -15,7 +15,6 @@
 
 #include <RCString.h>
 #include <stdarg.h>
-#include <wchar.h>
 
 #pragma mark Basics
 
@@ -94,12 +93,11 @@ RCString * randomRCString(void) {
             }
             cstring[++iterator] = 0;
             $(string, m(setConstantString, RCString)), cstring);
-        } else {
-            RError("RCString. Allocation of temp cstring error.", (pointer) cstring);
-        }
-    } else {
-        RError("RCString. randomRCString. Bad allocation of result.", nil);
-    }
+
+        } elseError( RError("RCString. Allocation of temp cstring error.", (pointer) cstring) );
+
+    } elseError( RError("RCString. randomRCString. Bad allocation of result.", nil) );
+
     return string;
 }
 
@@ -122,9 +120,8 @@ char * vcstringWithFormat(const char *format, va_list list) {
             vsnprintf(buffer, 100, format, list);
         } else if(size > 0) {
             buffer = RReAlloc(buffer, (size_t) size);
-        } else {
-            RError("StringWithFormat. Bad size", nil);
-        }
+
+        } elseError( RError("StringWithFormat. Bad size", nil) );
     }
     return buffer;
 }
@@ -176,7 +173,7 @@ RCString *stringWithFormat(char *string, ...) {
     return result;
 }
 
-RCString * RCStringInit(char *string, size_t size){
+RCString *RCStringInit(char *string, size_t size){
     RCString *result = makeRCString();
     result->baseString = string;
     result->size = size;
@@ -201,17 +198,16 @@ method(RCString *, setString, RCString), const char *string) {
             object->baseString = RReAlloc(object->baseString, stringSize * sizeof(char));
         }
 
-        if(object->baseString == nil) {
-            RError("RCS. SetString alloc or realloc returned nil.", object);
-        }
+        if(object->baseString != nil) {
+            // final copying
+            object->size = stringSize;
+            RMemCpy(object->baseString, string, object->size);
+            --object->size;
 
-        // final copying
-        object->size = stringSize;
-        RMemCpy(object->baseString, string, object->size);
-        --object->size;
-    } else {
-        RWarning("RCS. Setted strings or container is empty, please delete function call, or fix it.", object);
-    }
+        } elseError( RError("RCString. SetString alloc or realloc returned nil.", object) );
+
+    } elseWarning( RWarning("RCString. Setted strings or container is empty.", object) );
+
     return object;
 }
 
@@ -220,9 +216,9 @@ method(RCString *, setConstantString, RCString), char const *string) {
         // copy pointer, and compute length
         object->baseString = (char *) string;
         object->size       = RStringLength(string);
-    } else {
-        RWarning("RCS. Setted strings is empty, please delete function call, or fix it.", object);
-    }
+
+    } elseWarning( RWarning("RCS. Setted strings is empty.", object) );
+
     return object;
 }
 
@@ -261,9 +257,8 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
                 }
             }
         }
-    } else {
-        RWarning("RCS. Bad strings, or sizes, please delete function call, or fix it.", object);
-    }
+
+    } elseWarning( RWarning("RCS. Bad strings, or sizes.", object) );
 }
 
 #pragma mark Info
@@ -396,9 +391,9 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
             }
         }
         return object;
-    } else {
-        RWarning("RCS. Substring size is 0, or, substring is nil.", object);
-    }
+
+    } elseWarning( RWarning("RCS. Substring size is 0, or, substring is nil.", object) );
+
     return nil;
 }
 
@@ -452,11 +447,11 @@ method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
 }
 
 method(RCString *, deleteCharacterAt, RCString), size_t index) {
-    if(index > object->size) {
-        RError("RCS. Bad index!", object);
-    } else {
+    if(index < object->size) {
         RMemMove(object->baseString + index, object->baseString + index + 1, object->size - index);
-    }
+
+    } elseError( RError("RCS. Bad index!", object) );
+
     return object;
 }
 
@@ -468,9 +463,8 @@ method(void, deleteInRange, RCString), RRange range) {
                 object->size - range.size - range.start + 1);
         object->size -= range.size;
         object->baseString[object->size + 1] = 0;
-    } else {
-        RError("RCS. deleteInRange, bad range, do nothing.", object);
-    }
+
+    } elseError( RError("RCString. deleteInRange, bad range, do nothing.", object) );
 }
 
 inline
@@ -488,10 +482,10 @@ method(void, trimHead, RCString), size_t size) {
 method(RCString *, setSubstringInRange, RCString), RRange range, const char * const string) {
     if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
         RMemMove(object->baseString + range.start, string, range.size);
-    } else {
-        RErrStr "%p ERROR. RCString. setSubstringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
-                object, range.start, range.start + range.size, object->size);
-    }
+    } elseError( RError3(
+            "RCString. setSubstringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
+                object, range.start, range.start + range.size, object->size
+    ));
     return object;
 }
 
@@ -508,9 +502,8 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
         object->baseString = result;
     } else if(place == object->size) {
         $(object, m(concatenate, RCString)), substring);
-    } else {
-        RWarning("RCS. BAD place to insert!", object);
-    }
+
+    } elseWarning( RWarning("RCString. Bad place to insert!", object) );
 
     return object;
 }
@@ -527,12 +520,13 @@ constMethod(RCString *, substringInRange, RCString), RRange range) {
         rcString->baseString = cstring;
 
         return rcString;
-    } else {
-        RErrStr "%p ERROR. RCString. substringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
-                object, range.start, range.start + range.size, object->size);
-        return nil;
-    }
 
+    } elseError(
+        RError3(
+            "RCString. substringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
+                object, range.start, range.start + range.size, object->size
+    ));
+    return nil;
 }
 
 constMethod(RCString *, substringToSymbol, RCString), char symbol) {
@@ -636,9 +630,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
             // and sizeToFit
             $(result, m(sizeToFit, RArray)) );
         }
-    } else {
-        RWarning("RCString. Bad separator string size, or string size.", object);
-    }
+    } elseWarning( RWarning("RCString. Bad separator string size, or string size.", object) );
     return result;
 }
 
@@ -707,9 +699,7 @@ constMethod(RArray *, substringsSeparatedByString, RCString), const RCString * c
             }
             $(result, m(sizeToFit, RArray)));
         }
-    } else {
-        RWarning("RCString. Bad separator string size, or string size.", object);
-    }
+    } elseWarning( RWarning("RCString. Bad separator string size, or string size.", object) );
 
     return result;
 }
@@ -793,43 +783,38 @@ constMethod(rbool, endsOn, RCString), const RCString *const checkString) {
 method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != nil) {
         object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
-        if(object->baseString == nil) {
-            RError("RCString. concatenate. Realloc error.", object);
-        } else {
+        if(object->baseString != nil) {
             RMemMove(object->baseString + object->size, string->baseString, string->size);
             object->baseString[string->size + object->size] = 0;
             object->size += string->size;
-        }
-    } else {
-        RWarning("RCString. concatenate. Bad concatenate string.", object);
-    }
+
+        } elseError( RError("RCString. concatenate. Realloc error.", object) );
+
+    } elseWarning( RWarning("RCString. concatenate. Bad concatenate string.", object) );
 }
 
 method(void, appendString, RCString), const char *string) {
     if(string != nil) {
         size_t stringSize = RStringLength(string);
         object->baseString = RReAlloc(object->baseString, stringSize + object->size + 1);
-        if(object->baseString == nil) {
-            RError("RCS. appendString. realloc error.", object);
-        } else {
+        if(object->baseString != nil) {
             RMemMove(object->baseString + object->size, string, stringSize);
             object->baseString[stringSize + object->size] = 0;
             object->size += stringSize;
-        }
-    } else {
-        RWarning("RCString. appendString. Bad concatenate string.", object);
-    }
+
+        } elseError( RError("RCS. appendString. realloc error.", object) );
+
+    } elseWarning( RWarning("RCString. appendString. Bad concatenate string.", object) );
 }
 
 method(void, append, RCString), const char character) {
     object->baseString = RReAlloc(object->baseString, object->size + 2);
-    if(object->baseString == nil) {
-        RError("RCString. append. Realloc error.", object);
-    } else {
+    if(object->baseString != nil) {
         object->baseString[object->size] = character;
         object->baseString[object->size + 1] = 0;
         ++object->size;
-    }
+
+    } elseError( RError("RCString. append. Realloc error.", object) );
 }
 
 #pragma mark Conversions
@@ -875,18 +860,17 @@ RCString* RCStringFromFile(const char *filename) {
                     result->baseString = buffer;
                     result->size = (size_t) fileSize;
                     return result;
-                } else {
-                    RError("RCStringFromFile. Bad allocation of RCString.", nil);
-                }
-            } else {
-                RErrStr "RCStringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n", filename, fileSize);
-            }
-        } else {
-            RErrStr "RCStringFromFile. Error read file \"%s\".\n", filename);
-        }
-    } else {
-        RErrStr "RCStringFromFile. Cannot open file \"%s\".\n", filename);
-    }
+
+                } elseError( RError("RCStringFromFile. Bad allocation of RCString.", nil) );
+
+            } elseError( RError2(
+                    "RCStringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
+                    nil, filename, fileSize ));
+
+        } elseError( RError1("RCStringFromFile. Error read file \"%s\".\n", nil, filename));
+
+    } elseError( RError1( "RCStringFromFile. Cannot open file \"%s\".\n", nil, filename));
+
     return nil;
 }
 
@@ -894,11 +878,10 @@ method(void, appendToFile, RCString), const char *filename) {
     FILE *file = fopen(filename, "ab");
     if (file != nil) {
         ssize_t result = fputs(object->baseString, file);
-        if(result < 0) {
-            RError("RCString. Failed save string to file.", object);
-        }
+
+        ifError(result < 0, RError("RCString. Failed save string to file.", object) );
+
         fclose(file);
-    } else {
-        RError("RCString. appendToFile. Failed open file.", object);
-    }
+
+    } elseError( RError("RCString. appendToFile. Failed open file.", object));
 }

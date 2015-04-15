@@ -41,6 +41,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RColors.h
                  Classes/RayFoundation/RSyntax.h
                  Classes/RayFoundation/RBasics/RBasics.h
+                 Classes/RayFoundation/RErrors.h
 
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.h
@@ -179,8 +180,7 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
                                                  ${DEBUG_SOURCES}
-                                                 ${DEBUG_HEADERS}
-Classes/RayFoundation/RNetwork/RSocket.c)
+                                                 ${DEBUG_HEADERS})
 
 set(copyResources NO)
 

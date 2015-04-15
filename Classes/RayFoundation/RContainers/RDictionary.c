@@ -19,35 +19,30 @@
 
 constructor(RDictionary)) {
     object = allocator(RDictionary);
-    if(object == nil) {
-        RError("RD. Constructor allocation error.", object);
-    } else {
+    if(object != nil) {
         // set up class ID
         object->classId = registerClassOnce(toString(RDictionary));
         object->keys    = makeRArray();
         object->values  = makeRArray();
 
-        if(object->keys == nil
-                || object->values == nil) {
-            RPrintf("ERROR. RD. Allocation keys or values error.");
-        } else {
+        if(object->keys != nil
+                && object->values != nil) {
             object->values->destructorDelegate = nil;
             object->keys->destructorDelegate   = nil;
             object->values->printerDelegate    = nil;
             object->keys->printerDelegate      = nil;
             object->comparator                 = nil;
-        }
+
+        } elseError(
+                RError("RDictionary. Allocation keys or values error.", nil)
+        );
     }
     return object;
 }
 
 destructor(RDictionary) {
-    if(object != nil) {
-        deleter(object->keys, RArray);
-        deleter(object->values, RArray);
-    } else {
-        RWarning("Warning. RD. Destructing a nil, do nothing, please delete function call, or fix it.", object);
-    }
+    deleter(object->keys, RArray);
+    deleter(object->values, RArray);
 }
 
 method(void, initDelegate, RDictionary), ComparatorDelegate comparator) {
@@ -108,6 +103,10 @@ printer(RDictionary){
 
 RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
     RDictionary *result = makeRDictionary();
+#ifdef RAY_ERRORS_ON
+    size_t keysCount   = 1,
+           valuesCount = 0;
+#endif
     pointer temp;
     va_list args;
 
@@ -122,13 +121,23 @@ RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
             if(isKey) {
                 $(result->keys, m(addObject, RArray)), temp);
                 isKey = no;
+#ifdef RAY_ERRORS_ON
+                ++keysCount;
+#endif
             } else {
                 $(result->values, m(addObject, RArray)), temp);
                 isKey = yes;
+#ifdef RAY_ERRORS_ON
+                ++valuesCount;
+#endif
             }
 
             temp = va_arg(args, pointer);
         }
+        ifError(keysCount != valuesCount,
+                RError2("dictionaryFromPairs. Bad keys and values count (%lu, %lu).", nil, keysCount, valuesCount)
+        );
+
         va_end(args);
         $(result, m(sizeToFit, RDictionary)));
     }

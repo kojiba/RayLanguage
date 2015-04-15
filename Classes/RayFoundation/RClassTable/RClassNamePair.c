@@ -38,7 +38,7 @@ void RClassNamePairDeleter(pointer ptr) {
 }
 
 printer(RClassNamePair) {
-    RPrintf("%p , { %lu : %s }\n", object, object->idForClassName, master(object, RCString)->baseString);
+    RPrintf("%lu : \'%s\'\n", object->idForClassName, master(object, RCString)->baseString);
 }
 
 constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {
@@ -55,7 +55,7 @@ constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPa
             return $(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString));
         }
     } else {
-        RError("RCNP. Name and Id (or Object), is nil, please delete function call, or fix it", object);
+        RWarning("RClassNamePair. Name and Id (or Object), is nil.", object);
         return not_equals;
     }
     return not_equals;

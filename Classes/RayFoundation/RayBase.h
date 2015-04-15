@@ -31,7 +31,7 @@ void* (*const RTrueRealloc)(void*  ptr, size_t size);
 void* (*const RTrueCalloc) (size_t size, size_t blockSize);
 void  (*const RTrueFree)   (void*  ptr);
 
-// pointers to functions
+// pointers to mem-management functions
 extern void* (*volatile RMallocPtr) (size_t size);
 extern void* (*volatile RCallocPtr) (size_t size, size_t blockSize);
 extern void* (*volatile RReallocPtr)(void*  ptr,  size_t size);
@@ -60,6 +60,7 @@ extern void  (*volatile RFreePtr)   (void*  ptr);
 
 //---------------------------------------------------------
 
+// Additional DI
 // Memory management
 #define RAlloc            malloc
 #define RFree             free
@@ -80,8 +81,6 @@ extern void  (*volatile RFreePtr)   (void*  ptr);
 #define RFSeek            fseek
 #define RFTell            ftell
 #define RRewind           rewind
-
-#define RSocketOpen       socket
 
 // Memory operations
 #define RMemCpy           memcpy

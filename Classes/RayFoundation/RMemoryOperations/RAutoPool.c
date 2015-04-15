@@ -43,9 +43,9 @@ void poolPrinter(pointer some) {
 }
 
 #ifdef R_POOL_DETAILED
-RCompareFlags compareRPoolDescriptor(RPoolDescriptor *first, RPoolDescriptor *second) {
-    return /*first != nil && */first->ptr == second->ptr ? equals : not_equals;
-}
+    RCompareFlags compareRPoolDescriptor(RPoolDescriptor *first, RPoolDescriptor *second) {
+        return first->ptr == second->ptr ? equals : not_equals;
+    }
 #endif
 
 void innerFree(pointer some) {
@@ -73,9 +73,10 @@ constructor(RAutoPool)) {
 #if defined(RAY_POOL_THREAD_SAFE)
             mutexWithType(&object->mutex, RMutexNormal);
 #endif
-        } else {
-            RError("RAutoPool. Bad workers RArray allocation.", object);
-        }
+        } elseError(
+            RError("RAutoPool. Bad workers RArray allocation.", object)
+        );
+
     }
     return object;
 }
@@ -142,6 +143,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             // search if it not first realloc for ptr
             RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
             if(result.object != nil) {
+                RArrayFlags error;
 #ifndef R_POOL_DETAILED
                 // not destruct it
                 object->pointersInWork->destructorDelegate = nil;
@@ -149,9 +151,12 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 // only free (must dealloc struct)
                 object->pointersInWork->destructorDelegate = object->innerFree;
 #endif
-                if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
-                    RError("Bad pointers array index on delete (realloc).", object);
-                }
+                error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
+
+                ifError(error != no_error,
+                    RError("Bad pointers array index on delete (realloc).", object)
+                );
+
                 object->pointersInWork->destructorDelegate = innerFree;
             }
 
@@ -176,9 +181,11 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             backPtrs();
             RMutexUnlockPool();
             return temp;
-        } else {
-            RError("RAutoPool. Bad RCompareDelegate allocation (realloc).", object);
-        }
+
+        } elseError(
+            RError("RAutoPool. Bad RCompareDelegate allocation (realloc).", object)
+        );
+
         backPtrs();
         RMutexUnlockPool();
     }
@@ -229,19 +236,23 @@ method(void, free, RAutoPool), pointer ptr) {
                 if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
                     RError("RAutoPool. Bad pointers array index.", object);
                 }
-            } else {
-                RErrStr "%p ERROR. RAutoPool. Pointer - %p wasn't allocated on RAutoPool.\n", object, ptr);
-            }
+            } elseError(
+                    RError1("RAutoPool. Pointer - %p wasn't allocated on RAutoPool.", object, ptr)
+            );
 #ifdef R_POOL_DETAILED
-            if(RFreePtr == object->selfFree) {
-                RError("RAutoPool. Inner free is self free, bad bad bad!!!", object);
-            }
+
+            ifError(RFreePtr == object->selfFree,
+                RError("RAutoPool. Inner free is self free, bad bad bad!!!", object)
+            );
+
             deallocator(descriptor);
 #endif
             deallocator(delegate);
-        } else {
-            RError("RAutoPool. Bad RCompareDelegate allocation (free).", object);
-        }
+
+        } elseError(
+            RError("RAutoPool. Bad RCompareDelegate allocation (free).", object)
+        );
+
         backPtrs();
         RMutexUnlockPool();
     } else {

@@ -131,10 +131,9 @@ method(RCString*, CName, RayMethod)) {
         }
 
         return result;
-    } else {
-        RError("RayMethod. CName, unknown method type.", object);
-        return nil;
-    }
+    } elseRError("RayMethod. CName, unknown method type.", object)
+
+    return nil;
 }
 
 rbool argumentsEnumerator(pointer argument, size_t iterator) {
@@ -145,9 +144,7 @@ rbool argumentsEnumerator(pointer argument, size_t iterator) {
         $(stored, m(concatenate, RCString)), type);
         // add space
         $(stored, m(append, RCString)), ' ');
-    } else {
-        RError("RayMethod. Argument enumerator. Unknown argument type.", temp);
-    }
+    } elseRError("RayMethod. Argument enumerator. Unknown argument type.", temp)
 
     // add name
     $(stored, m(concatenate, RCString)), master(temp, RCString));

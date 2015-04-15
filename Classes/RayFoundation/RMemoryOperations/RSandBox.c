@@ -172,7 +172,7 @@ method(size_t, rangeForPointer, RSandBox), pointer ptr) {
     RMutexLockSandbox();
     if(shift < 0
             || shift > object->memPart->size) {
-        RErrStr "ERROR. RSandBox. Pointer - %p wasn't allocated with sandBox - %p.\n", ptr, object);
+        RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr);
         RMutexUnlockSandbox();
         return object->descriptorsInfo.start;
     } else {
@@ -266,14 +266,13 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         } break;
     }
 
-    if(placeToAlloc.start + sizeInBytes > object->memPart->size) {
-        RError("RSandBox. Not enought memory.", object);
-    } else {
+    if(placeToAlloc.start + sizeInBytes < object->memPart->size) {
         $(object, m(addFilledRange, RSandBox)), placeToAlloc);
         backPtrs();
         RMutexUnlockSandbox();
         return object->memPart->array + placeToAlloc.start;
-    }
+
+    } elseError( RError("RSandBox. Not enought memory.", object) );
 
     backPtrs();
     RMutexUnlockSandbox();
@@ -327,9 +326,9 @@ method(void, free, RSandBox), pointer ptr) {
         }
         RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
         --object->descriptorsInfo.start;
-    } else {
-        RErrStr "ERROR. RSandBox. Bad ptr - %p, wasn't allocated with sandBox - %p\n", ptr, object);
-    }
+
+    } elseError( RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr) );
+
     backPtrs();
     RMutexUnlockSandbox();
 }

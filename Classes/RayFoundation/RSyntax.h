@@ -22,6 +22,7 @@
 #include <RayCheckFoundation.h>
 #include <RColors.h>
 #include <RayBase.h>
+#include <RErrors.h>
 
 // working defines
 #define _TOSTRING(x)                                      #x
@@ -37,26 +38,6 @@
                                                           diff = toc - tic; \
                                                           tic = clock(); \
                                                           RPrintf("Elapsed: %f seconds\n", (double)(diff) / CLOCKS_PER_SEC);
-
-#ifdef RAY_ERRORS_ON
-    #ifdef RAY_ASSERT_ON_ERRORS
-        #define RErrStr                                   assert(nil); RFPrintf(stderr,
-        #define RError(string, object)                    RFPrintf(stderr, "%p ERROR. "string"\n", object); assert(nil);
-    #else
-        #define RErrStr                                   RFPrintf(stderr,
-        #define RError(string, object)                    RFPrintf(stderr, "%p ERROR. "string"\n", object)
-    #endif
-#else
-    #define RErrStr (
-    #define RError(string, object)
-#endif
-
-#ifdef RAY_WARNINGS_ON
-    #define RPleaseRemoveString                           " Please, remove function call, or fix it!\n"
-    #define RWarning(string, object)                      RPrintf(RYellow "Warning. %p - " string RPleaseRemoveString RNC, object)
-#else
-    #define RWarning(string, object)
-#endif
 
 #define RAY_TEST(conditionZero, message, errorCode)       if(conditionZero) { \
                                                               RFPrintf(stderr, "ERROR. TESTS. " message "\n"); \

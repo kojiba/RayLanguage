@@ -22,6 +22,7 @@
 
 #define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h
 #define RAY_ERRORS_ON   // --//-- errors
+//#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 
 //#define RAY_SHORT_DEBUG  // short trace for array and classTable
 
@@ -35,7 +36,8 @@
 
 #define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
 
-//#define RAY_ASSERT_ON_ERRORS // enables assert on errors
+
+
 #ifdef RAY_ASSERT_ON_ERRORS
     #include <assert.h>
 #endif

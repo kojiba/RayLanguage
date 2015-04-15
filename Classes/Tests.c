@@ -148,10 +148,6 @@ rbool checkObjectRListFinder(pointer data, size_t index) {
     return yes;
 }
 
-void printfInt(pointer ptr) {
-    printf("%u\n", (uintptr_t) ptr);
-}
-
 int RListTest(void) {
     size_t iterator;
     RListFinder finder;
@@ -159,7 +155,6 @@ int RListTest(void) {
     finder.master.virtualCheckObject = checkObjectRListFinder;
 
     RList *list = constructorOfRList(nil);
-    list->printerDelegate = printfInt;
 
     forAll(iterator, 20) {
         $(list, m(addHead, RList)), (pointer) iterator);
@@ -285,7 +280,5 @@ void ComplexTest() {
         #endif
     ) {
         RPrintLn("All tests passed successfully\n");
-    } else {
-        RError("TESTS ERROR!", nil);
-    }
+    } elseError( RError("TESTS ERROR!", nil) );
 }

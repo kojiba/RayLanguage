@@ -47,11 +47,11 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
                 mutexWithType(&object->mutex, RMutexRecursive);
 #endif
             } else {
-//                RError("RBuffer. Allocation of sizes array failed.", object);
+                RError("RBuffer. Allocation of sizes array failed.", object);
                 deleter(master(object, RByteArray), RByteArray);
             }
         } else {
-//            RError("RBuffer. Allocation of master RByteArray failed.", object);
+            RError("RBuffer. Allocation of master RByteArray failed.", object);
             deallocator(object);
             object = nil;
         }
@@ -99,9 +99,8 @@ method(RRange*, addSizeToSizes, RBuffer), size_t newSize) {
             // add free places
             object->freePlaces = newSize - object->count;
         }
-    } else {
-        RError("RBuffer. Bad new size for Sizes", object);
-    }
+    } elseError( RError("RBuffer. Bad new size for Sizes", object) );
+
     RMutexUnlockBuffer();
     return object->sizesArray;
 }
@@ -114,9 +113,8 @@ method(RByteArray*, addSizeToMem, RBuffer), size_t newSize) {
             // set newSize
             master(object, RByteArray)->size = newSize;
         }
-    } else {
-        RError("RBuffer. Bad new size for memory", object);
-    }
+    } elseError( RError("RBuffer. Bad new size for memory", object) );
+
     RMutexUnlockBuffer();
     return master(object, RByteArray);
 }
@@ -201,9 +199,8 @@ constMethod(pointer, getDataCopy, RBuffer), size_t index) {
         result = RAlloc(object->sizesArray[index].size);
         if (result != nil) {
             RMemCpy(result, ref, object->sizesArray[index].size);
-        } else {
-            RError("RBuffer. Bad allocation on getDataCopy.", object);
-        }
+
+        } elseError( RError("RBuffer. Bad allocation on getDataCopy.", object) );
     }
     RMutexUnlockBuffer();
     return result;
@@ -322,9 +319,8 @@ RBuffer* RBufferFromFile(const char *filename) {
                 } else if(buffer[0] == 8
                         && sizeof(size_t) == 8) {
                     sizesArray = (uint64_t *) (buffer + 1);
-                } else {
-                    RErrStr "ERROR. RBufferFromFile. Bad size_t size - %u for current size_t - %lu", buffer[0], sizeof(size_t));
-                }
+
+                } elseError( RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %lu", nil, buffer[0], sizeof(size_t)) );
 
                 if(sizesArray != nil) {
                     // find terminating '\0' size
@@ -347,15 +343,12 @@ RBuffer* RBufferFromFile(const char *filename) {
 
                     }
                 }
-            } else {
-                RErrStr "ERROR. RBufferFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n", filename, fileSize);
-            }
-        } else {
-            RErrStr "ERROR. RBufferFromFile. Error read file \"%s\".\n", filename);
-        }
-    } else {
-        RErrStr "ERROR. RBufferFromFile. Cannot open file \"%s\".\n", filename);
-    }
+            } elseError( RError2("RBufferFromFile. Bad allocation buffer for file \'%s\' of size %lu.\n", nil, filename, fileSize) );
+
+        } elseError( RError1("RBufferFromFile. Error read file \'%s\'.\n", nil, filename) );
+
+    } elseError( RError1("RBufferFromFile. Cannot open file \'%s\'.\n", nil, filename) );
+
     return result;
 }
 
@@ -374,15 +367,13 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
         // dump fist byte sizeof(size_t)
         size_t result = sizeof(size_t);
         result = fwrite(&result, 1, 1, file);
-        if(result != 1) {
-            RError("RBuffer. Failed save init data to file. Breaking process.", object);
-        }
+
+        ifError(result != 1, RError("RBuffer. Failed save init data to file. Breaking process.", object) );
 
         // create sizes array
         size_t *tempSizes = arrayAllocator(size_t, object->count);
-        if(tempSizes == nil) {
-            RError("RBuffer. Allocation of temp sizes array failed.", object);
-        } else {
+
+        if(tempSizes != nil) {
             // custom copy
             forAll(iterator, object->count) {
                 tempSizes[iterator] = object->sizesArray[iterator].size;
@@ -390,30 +381,27 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
 
             // dump sizes array
             result = RFWrite(tempSizes, sizeof(size_t), object->count, file);
-            if (result !=  object->count) {
-                RError("RBuffer. Failed save size array to file.", object);
-            }
+
+            ifError(result != object->count, RError("RBuffer. Failed save size array to file.", object) );
 
             // dump last size like 0
             result = 0;
             result = RFWrite(&result, sizeof(size_t), 1, file);
-            if (result != 1) {
-                RError("RBuffer. Failed save last sizes '\\0' to file.", object);
-            }
+
+            ifError(result != 1, RError("RBuffer. Failed save last sizes \'\\0\' to file.", object) );
 
             // dump body
             result = RFWrite(master(object, RByteArray)->array, object->totalPlaced, 1, file);
-            if (result != 1) {
-                RError("RBuffer. Failed save RBuffer body to file.", object);
-            }
+
+            ifError(result != 1, RError("RBuffer. Failed save RBuffer body to file.", object) );
 
             // cleanup
             deallocator(tempSizes);
             fclose(file);
-        }
-    } else {
-        RError("RBuffer. Failed save string to file, cant open file.", object);
-    }
+
+        } elseError(RError("RBuffer. Allocation of temp sizes array failed.", object) );
+
+    } elseError( RError("RBuffer. Failed save string to file, cant open file.", object) );
 }
 
 #pragma mark Addition to RByteArray
