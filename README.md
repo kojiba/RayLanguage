@@ -108,6 +108,33 @@ int main(int argc, const char *argv[]) {
 }
 ```
 
+RDictionary use:  
+
+```C
+#include <RayFoundation.h>
+#include "Tests.h"
+
+int main(int argc, const char *argv[]) {
+    enablePool(RPool);
+    ComplexTest();
+
+    RDictionary *dict =  dictionaryFromPairs("key", "value",
+                                             "key2", "value2",
+                                             "key3", "value3",
+                                             "key4", "value4",
+                                             "key5", "value5",
+                                             nil);
+
+    char * string = $(dict, m(getObjectForKey, RDictionary)), "key4");
+
+    printf("Found object for \'key4\' - \'%s\' \n\n", string);
+
+    deleter(dict, RDictionary);
+
+    endRay(); // standart cleanup
+}
+```
+
 BrainFuck samples:
 
 ```C
@@ -156,7 +183,7 @@ int main(int argc, const char *argv[]) {
 
     // RVM singleton cleanup
     deleteRVM();
-    return 0;
+    endRay(); // standart cleanup
 }
 ```
 RAutoPool:  
@@ -170,6 +197,7 @@ int main(int argc, const char *argv[]) {
     $(RPool, p(RAutoPool)));   // check leaks
     deleter(RPool, RAutoPool); // total cleanup 
     return 0;
+    // or use macro endRay -> standart cleanup
 }
 ```
 
@@ -227,46 +255,6 @@ void RClassTableTest(void){
 }
 ```
 
-Use of RStringDictionary:
-
-```C
-
-#include "RayFoundation/RStringDictionary/RStringDictionary.h"
-
-void StringDictionaryTest() {
-    // some key constant
-    RCString *key = RS("Veider");
-
-    // create dictionary
-    RStringDictionary *dictionary = $(NULL, c(RStringDictionary)) );
-
-    // fill dictionary with some object-keys,
-    // use RSC, cause we need copies of constant,
-    // also use m(copy, RCString)
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
-
-    // try once more, to check is it one-time-adding
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Value"), RSC("Key"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Leia"), RSC("Han Solo"));
-    $(dictionary, m(setObjectForKey, RStringDictionary)), RSC("Luke"), $(key, m(copy, RCString))) );
-
-    // print
-    $(dictionary, p(RStringDictionary)) );
-
-    // find some object for key
-    RCString *object = $(dictionary, m(getObjectForKey, RStringDictionary)), key);
-    if(object != NULL) {
-        RPrintf("Found something for key : %s is value: %s\n", key->baseString, object->baseString);
-    }
-
-    // destructs, and delete pointer
-    $(dictionary, d(RStringDictionary)) );
-    deallocator(dictionary);
-}
-```
-
 You can simply use it in Yours C++ projects:
 
 ```C++
@@ -318,43 +306,4 @@ int main(int argc, const char *argv[]) {
 }
 ```
 
-```C
-#include "RayFoundation/RFloatingEnum/RFloatingEnum.h"
-
-typedef enum codes {
-    first_opcode,
-    second_opcode,
-    third_opcode,
-    fourth_opcode,
-    opcode_count
-} codes;
-
-int main(int argc, const char *argv[]) {
- createFloatingEnum(codes, rand, first_opcode, opcode_count);
-    // cause not seed rand, in my case 282475249 is Bingo
-    if(checkValueToKey(codes, 282475249, second_opcode) == equals) {
-        RPrintf("Bingo!\n");
-    } else {
-        RPrintf("Not Bingo =(");
-    }
-    // print enum
-    printEnum(codes);
-
-    // rebase manually
-    rebaseEnum(codes);
-    printEnum(codes);
-
-    // enables rebasing after all checks
-    setFloatingEnum(codes);
-
-    checkValueToKey(codes, 282475249, second_opcode);
-    printEnum(codes);
-    printEnum(codes);
-    checkValueToKey(codes, 282475249, second_opcode);
-    printEnum(codes);
-
-    deleteEnum(codes);
-    return 0
-}
-```
 
