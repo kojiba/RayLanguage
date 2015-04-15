@@ -121,6 +121,7 @@ RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
         while(temp != nil) {
             if(isKey) {
                 $(result->keys, m(addObject, RArray)), temp);
+                isKey = no;
             } else {
                 $(result->values, m(addObject, RArray)), temp);
                 isKey = yes;
