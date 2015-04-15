@@ -65,7 +65,8 @@ size_t encodeBase64(char **destination, const char *data, size_t sizeInBytes) {
         *p++ = '\0';
         return p - *destination;
 
-    } elseError( RError("Base64. encoding buffer allocation error.", nil));
+    } elseError(
+            RError("Base64. encoding buffer allocation error.", nil));
 
     return 0;
 }
@@ -129,7 +130,8 @@ constMethod(RCString*, encodeBase64, RCString)) {
             return result;
         }
 
-    } elseError( RError("RCString. Base64 encode. Bad allocation of result struct.", result) );
+    } elseError(
+            RError("RCString. Base64 encode. Bad allocation of result struct.", result) );
     return nil;
 }
 
@@ -144,7 +146,8 @@ constMethod(RCString*, decodeBase64, RCString)) {
             result->baseString = string;
             return result;
         }
-    } elseError( RError("RCString. Base64 decode. Bad allocation of result struct.", result) );
+    } elseError(
+            RError("RCString. Base64 decode. Bad allocation of result struct.", result) );
     return nil;
 }
 
@@ -160,7 +163,8 @@ constMethod(RByteArray*, decodeBase64ToBytes, RCString)) {
             return result;
         }
 
-    } elseError( RError("RCString. Base64 decode. Bad allocation of result RByteArray struct.", result) );
+    } elseError(
+            RError("RCString. Base64 decode. Bad allocation of result RByteArray struct.", result) );
     return nil;
 }
 
@@ -177,7 +181,8 @@ constMethod(RCString*, encodeBase64, RByteArray)) {
             return result;
         }
 
-    } elseError( RError("RByteArray. Base64 encode. Bad allocation of result RCString struct.", result) );
+    } elseError(
+            RError("RByteArray. Base64 encode. Bad allocation of result RCString struct.", result) );
     return nil;
 }
 

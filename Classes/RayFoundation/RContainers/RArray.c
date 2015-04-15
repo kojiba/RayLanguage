@@ -111,12 +111,11 @@ destructor(RArray) {
 }
 
 printer(RArray) {
-
+    size_t iterator;
+    RMutexLockArray();
 #ifdef RAY_SHORT_DEBUG
       RPrintf("%s printer of %p \n", toString(RArray), object);
 #else
-    size_t iterator;
-    RMutexLockArray();
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
     RPrintf(" Count : %lu \n", object->count);
     RPrintf(" Free  : %lu \n", object->freePlaces);
@@ -248,16 +247,17 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
     } else {
 
-        // if space at index is not allocated
-        if(index > (object->freePlaces + object->count)) {
-            RWarning("RArray. Setting to a not allocated space, do nothing." , object);
         // if space is allocated
-        } else {
+        if(index < (object->freePlaces + object->count)) {
             object->array[index] = newObject;
             // note: size is not incrementing, cause we don't know place
             // addObject cause memory to leak, with objects added by setObject
             // destructor not called
-        }
+
+        // if space at index is not allocated
+        } elseWarning(
+            RWarning("RArray. Setting to a not allocated space, do nothing." , object);
+        );
     }
     RMutexUnlockArray();
 }
@@ -369,9 +369,9 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
                 break;
             }
         }
-    } else {
+    } elseWarning(
         RWarning("RArray. Delegate for searching is nil." , object);
-    }
+    );
     RMutexUnlockArray();
     return result;
 }
@@ -382,10 +382,10 @@ inline constMethod(pointer, elementAtIndex, RArray), size_t index) {
 #endif
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         return object->array[index];
-    } else {
+    } elseWarning(
         RWarning("RArray. Index not exist!", object);
-        return nil;
-    }
+    );
+    return nil;
 }
 
 method(RArray *, getSubarray, RArray), RRange range) {
@@ -545,9 +545,10 @@ method(void, shift, RArray), rbool isToLeft, RRange range) {
         object->count -= range.size;
         object->freePlaces += range.size;
         RMutexUnlockArray();
-    } else {
+
+    } elseWarning(
         RWarning("RArray. Shifts of RArray do nothing." , object);
-    }
+    );
 }
 
 #pragma mark Info

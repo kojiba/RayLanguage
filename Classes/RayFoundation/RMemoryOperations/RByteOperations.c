@@ -140,10 +140,10 @@ constructor(RByteArray), size_t size) {
         if(object->array != nil) {
             object->classId = registerClassOnce(toString(RByteArray));
             object->size    = size;
-        } else {
-            RError("RBA. Array allocation failed", object);
-            return nil;
-        }
+
+        } elseError(
+                RError("RBA. Array allocation failed", object)
+        );
     }
     return object;
 }

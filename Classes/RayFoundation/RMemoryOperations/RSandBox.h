@@ -67,6 +67,7 @@ class(RSandBox)
     RSandBoxDelegate *delegate;
 
     RSandBoxAllocationMode  allocationMode; // by default is RSandBoxAllocationModeRandom
+
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     RMutex mutex;
 #endif

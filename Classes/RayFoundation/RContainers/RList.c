@@ -198,9 +198,9 @@ method(RList *, subList, RList), RRange range) {
             RMutexUnlockList();
             return result;
         }
-    } else {
+    } elseWarning(
         RWarning("RList. Bad range to get sub list.", object);
-    }
+    );
     return nil;
 }
 
@@ -307,9 +307,9 @@ method(void, deleteObjects, RList), RRange range) {
             object->head = iterator;
         }
         RMutexUnlockList();
-    } else {
+    } elseWarning(
         RWarning("RList. Bad range to delete.", object);
-    }
+    );
 }
 
 method(void, deleteObject,  RList), size_t index) {

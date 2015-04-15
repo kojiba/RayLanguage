@@ -51,9 +51,9 @@ constructor(RClassTable)) {
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE)
                 mutexWithType(&object->mutex, RMutexNormal);
 #endif
-            } else {
+            } elseError(
                 RError("RClassTable. Bad allocation on delegate.", object);
-            }
+            );
         }
     }
 #ifdef RAY_SHORT_DEBUG
@@ -88,7 +88,9 @@ constMethod(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
             return ((RClassNamePair*)foundedObject.object)->idForClassName;
         }
 
-    } elseError( RError("RClassTable. Bad allocation of temp RClassNamePair.", object) );
+    } elseError(
+            RError("RClassTable. Bad allocation of temp RClassNamePair.", object)
+    );
 
     return 0;
 }

@@ -33,6 +33,7 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
 //        RPrintf("new worker %p\n", newOne);
         RThreadCreate(newOne, nil, object->delegateFunction, argumentForNewWorker);
         $(object->threads, m(addObject, RArray)), newOne);
+
     } elseError( RError("RThreadPool. Add with arg bad worker allocation.", object) );
 }
 

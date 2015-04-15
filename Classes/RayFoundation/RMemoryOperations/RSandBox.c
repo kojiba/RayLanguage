@@ -28,10 +28,6 @@
     #define RMutexUnlockSandbox()
 #endif
 
-RCompareFlags compareRControlDescriptor(RControlDescriptor *first, RControlDescriptor *second) {
-    return /*first != nil && */first->memRange.start == second->memRange.start ? equals : not_equals;
-}
-
 constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
@@ -272,7 +268,9 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
         RMutexUnlockSandbox();
         return object->memPart->array + placeToAlloc.start;
 
-    } elseError( RError("RSandBox. Not enought memory.", object) );
+    } elseError(
+            RError("RSandBox. Not enought memory.", object)
+    );
 
     backPtrs();
     RMutexUnlockSandbox();
@@ -327,7 +325,9 @@ method(void, free, RSandBox), pointer ptr) {
         RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
         --object->descriptorsInfo.start;
 
-    } elseError( RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr) );
+    } elseError(
+            RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr)
+    );
 
     backPtrs();
     RMutexUnlockSandbox();
