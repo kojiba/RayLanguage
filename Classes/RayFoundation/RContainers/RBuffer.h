@@ -76,7 +76,7 @@ constMethod(RArray *,     toReferencesRArray, RBuffer)); // using data reference
 constMethod(RArray *,     toRArray,           RBuffer)); // copy, delete delegateFunction is free, size to fit
 
 // file i/o
-RBuffer* RBufferFromFile (const char *filename);                                 // will be size-to-fit
+RBuffer* RBufferFromFile (const char *filename); // will be size-to-fit
 constMethod(void,         saveToFile,         RBuffer),    const char* filename);
 
 

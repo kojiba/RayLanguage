@@ -53,16 +53,16 @@ class(RSandBox)
     RRange              descriptorsInfo; // size - size of places, start - placed
 
     // inner (high-lvl in hierarchy functions)
-    pointer           (*innerMalloc) (size_t size);
-    pointer           (*innerRealloc)(pointer ptr, size_t oldSize);
-    pointer           (*innerCalloc) (size_t size, size_t blockSize);
-    void              (*innerFree)   (pointer ptr);
+    Allocator   innerMalloc;
+    Reallocator innerRealloc;
+    Callocator  innerCalloc;
+    Deallocator innerFree;
 
     // self functions
-    pointer           (*selfMalloc) (size_t size);
-    pointer           (*selfRealloc)(pointer ptr, size_t oldSize);
-    pointer           (*selfCalloc) (size_t size, size_t blockSize);
-    void              (*selfFree)   (pointer ptr);
+    Allocator   selfMalloc;
+    Reallocator selfRealloc;
+    Callocator  selfCalloc;
+    Deallocator selfFree;
 
     RSandBoxDelegate *delegate;
 
@@ -78,9 +78,6 @@ constructor (RSandBox),    size_t sizeOfMemory,
 destructor  (RSandBox);
 printer     (RSandBox);
 singleton   (RSandBox);
-
-// Workings
-method(size_t,  memoryPlaced,   RSandBox));
 
 // Main methods
 method(pointer, malloc,         RSandBox),    size_t sizeInBytes);
@@ -109,7 +106,7 @@ pointer concatenate(SandBoxReallocator_, name)(pointer ptr, size_t size) {\
 pointer concatenate(SandBoxCallocator_, name)(size_t size, size_t blockSize) {\
     return $(name(), m(calloc, RSandBox)), size, blockSize);\
 }\
-void concatenate(SandBoxFree_, name)(pointer ptr) {\
+void concatenate(SandBoxDeallocator_, name)(pointer ptr) {\
     return $(name(), m(free, RSandBox)), ptr);\
 }\
 RSandBox* name() { \
@@ -120,7 +117,7 @@ RSandBox* name() { \
             instance->selfMalloc  = concatenate(SandBoxAllocator_, name); \
             instance->selfRealloc = concatenate(SandBoxReallocator_, name); \
             instance->selfCalloc  = concatenate(SandBoxCallocator_, name); \
-            instance->selfFree    = concatenate(SandBoxFree_, name); \
+            instance->selfFree    = concatenate(SandBoxDeallocator_, name); \
             enableSandBox(instance); \
         } \
     } \

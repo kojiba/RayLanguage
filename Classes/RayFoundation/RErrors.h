@@ -3,7 +3,7 @@
  * A ray of light in the realm of darkness.
  * Some syntax additions to C.
  * If You don't like it,
- * You can preprocess file, to get pure-C code.
+ * You can preprocess files, to get pure-C code.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -23,10 +23,8 @@
 
 #ifdef RAY_ERRORS_ON
     #ifdef RAY_ASSERT_ON_ERRORS
-//        #define RErrStr                               assert(nil); RFPrintf(stderr, "ERROR. "
         #define endPrivateError                       ; assert(nil)
     #else
-//        #define RErrStr                               RFPrintf(stderr, "ERROR. "
         #define endPrivateError
     #endif
 
@@ -40,7 +38,6 @@
     #define elseError(error)                          else { error; }
     #define ifError(condition, error)                 if(condition) { error; }
 #else
-    #define RErrStr (
     #define RError(string, object)
 
     #define RError1(string, object, arg1)

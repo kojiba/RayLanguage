@@ -1,12 +1,20 @@
 #include <RThreadPool.h>
 #include <RClassTable.h>
 
+struct RThreadPool {
+    size_t classId;
+
+    REnumerateDelegate enumerator;
+    RThreadFunction    delegateFunction;
+    RArray            *threads;
+};
+
 constructor(RThreadPool)) {
     object = allocator(RThreadPool);
     if(object != nil) {
         object->threads = makeRArray();
         if(object->threads != nil) {
-            object->threads->destructorDelegate = RFree;
+            object->threads->destructorDelegate = getRFree();
             object->classId = registerClassOnce(toString(RThreadPool));
         } else {
             deallocator(object);
@@ -24,6 +32,14 @@ printer(RThreadPool) {
     RPrintf("%s object %p {", toString(RThreadPool), object);
     $(object->threads, p(RArray)));
     RPrintf("} end of %s\n", toString(RThreadPool));
+}
+
+method(void, setDelegateFunction, RThreadPool), RThreadFunction delegateFunction) {
+    object->delegateFunction = delegateFunction;
+}
+
+method(RThreadFunction, delegateFunction, RThreadPool)) {
+    return object->delegateFunction;
 }
 
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {

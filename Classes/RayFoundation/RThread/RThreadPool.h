@@ -23,19 +23,18 @@
     #include <RThread.h>
 #endif
 
-class(RThreadPool)
-    REnumerateDelegate enumerator;
-    RThreadFunction    delegateFunction;
-    RArray            *threads;
-endOf(RThreadPool)
+typedef struct RThreadPool RThreadPool;
 
 constructor(RThreadPool));
 destructor (RThreadPool);
 printer    (RThreadPool);
 
-method(void, addWithArg, RThreadPool), pointer argumentForNewWorker);
-method(void, addWorker,  RThreadPool), RThread *worker);
+method(void,            setDelegateFunction, RThreadPool),     RThreadFunction delegateFunction);
+method(RThreadFunction, delegateFunction,    RThreadPool));
 
-method(void, join, RThreadPool));
+method(void,            addWithArg,          RThreadPool),     pointer argumentForNewWorker);
+method(void,            addWorker,           RThreadPool),     RThread *worker);
+
+method(void,            join,                RThreadPool));
 
 #endif /*__R_THREAD_POOL_H__*/

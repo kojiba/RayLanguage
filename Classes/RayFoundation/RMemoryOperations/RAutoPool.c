@@ -28,10 +28,10 @@
 #endif
 
 
-#define toPoolPtrs() RMallocPtr = object->innerMalloc;\
-                     RReallocPtr = object->innerRealloc;\
-                     RCallocPtr = object->innerCalloc;\
-                     RFreePtr = object->innerFree;
+#define toPoolPtrs() setRMalloc (object->innerMalloc);\
+                     setRCalloc (object->innerCalloc);\
+                     setRRealloc(object->innerRealloc);\
+                     setRFree   (object->innerFree);
 
 void poolPrinter(pointer some) {
 #ifdef R_POOL_DETAILED
@@ -63,10 +63,10 @@ constructor(RAutoPool)) {
         if(object->pointersInWork != nil) {
             object->classId      = 5;
             // store current hierarchy lvl memory functions
-            object->innerMalloc  = malloc;
-            object->innerRealloc = realloc;
-            object->innerCalloc  = calloc;
-            object->innerFree    = free;
+            object->innerMalloc  = getRMalloc();
+            object->innerRealloc = getRRealloc();
+            object->innerCalloc  = getRCalloc();
+            object->innerFree    = getRFree();
             object->pointersInWork->destructorDelegate = innerFree;
             object->pointersInWork->printerDelegate = poolPrinter;
 
@@ -93,7 +93,7 @@ printer(RAutoPool) {
     RMutexLockPool();
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
-    RPrintf("\t Printer thread id : %qu\n", currentTreadIdentifier());
+    RPrintf("\t Printer tuid : %qu\n", currentTreadIdentifier());
 #endif
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
@@ -241,7 +241,7 @@ method(void, free, RAutoPool), pointer ptr) {
             );
 #ifdef R_POOL_DETAILED
 
-            ifError(RFreePtr == object->selfFree,
+            ifError(free == object->selfFree,
                 RError("RAutoPool. Inner free is self free, bad bad bad!!!", object)
             );
 
@@ -293,18 +293,15 @@ method(void, drain, RAutoPool)) {
 
 void enablePool(RAutoPool *object) {
     RMutexLockPool();
-    malloc  = object->selfMalloc;
-    realloc = object->selfRealloc;
-    calloc  = object->selfCalloc;
-    free    = object->selfFree;
+    setRMalloc (object->selfMalloc);
+    setRCalloc (object->selfCalloc);
+    setRRealloc(object->selfRealloc);
+    setRFree   (object->selfFree);
     RMutexUnlockPool();
 }
 
 void disablePool(RAutoPool *object) {
     RMutexLockPool();
-    malloc  = object->innerMalloc;
-    realloc = object->innerRealloc;
-    calloc  = object->innerCalloc;
-    free    = object->innerFree;
+    toPoolPtrs();
     RMutexUnlockPool();
 }

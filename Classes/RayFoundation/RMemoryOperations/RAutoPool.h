@@ -41,16 +41,16 @@ class(RAutoPool)
     RArray *pointersInWork;
 
     // inner (high-lvl in hierarchy functions)
-    pointer               (*innerMalloc) (size_t size);
-    pointer               (*innerRealloc)(pointer ptr, size_t oldSize);
-    pointer               (*innerCalloc) (size_t size, size_t blockSize);
-    void                  (*innerFree)   (pointer ptr);
+    Allocator   innerMalloc;
+    Reallocator innerRealloc;
+    Callocator  innerCalloc;
+    Deallocator innerFree;
 
     // self functions
-    pointer               (*selfMalloc) (size_t size);
-    pointer               (*selfRealloc)(pointer ptr, size_t oldSize);
-    pointer               (*selfCalloc) (size_t size, size_t blockSize);
-    void                  (*selfFree)   (pointer ptr);
+    Allocator   selfMalloc;
+    Reallocator selfRealloc;
+    Callocator  selfCalloc;
+    Deallocator selfFree;
 
 #if defined(RAY_POOL_THREAD_SAFE)
     RMutex mutex;
@@ -85,7 +85,7 @@ pointer concatenate(PoolReallocator_, name)(pointer ptr, size_t size) {\
 pointer concatenate(PoolCallocator_, name)(size_t size, size_t blockSize) {\
     return $(name(), m(calloc, RAutoPool)), size, blockSize);\
 }\
-void concatenate(PoolFree_, name)(pointer ptr) {\
+void concatenate(PoolDeallocator_, name)(pointer ptr) {\
     return $(name(), m(free, RAutoPool)), ptr);\
 }\
 RAutoPool* name(void) { \
@@ -96,7 +96,7 @@ RAutoPool* name(void) { \
             instance->selfMalloc  = concatenate(PoolAllocator_, name); \
             instance->selfRealloc = concatenate(PoolReallocator_, name); \
             instance->selfCalloc  = concatenate(PoolCallocator_, name); \
-            instance->selfFree    = concatenate(PoolFree_, name); \
+            instance->selfFree    = concatenate(PoolDeallocator_, name); \
             enablePool(instance); \
         } \
     } \
