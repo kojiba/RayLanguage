@@ -129,10 +129,10 @@ printer(RSandBox) {
     RPrintf("\t Descriptors total  - %lu\n", object->descriptorsInfo.size);
     RPrintf("\t Descriptors in use - %lu\n", object->descriptorsInfo.start);
     forAll(iterator, object->descriptorsInfo.start) {
-        RPrintf("\t\t [%lu : %lu] (%p)\n",
+        RPrintf("\t\t %p [%lu : %lu]\n",
+                (pointer) (object->memPart->array + object->descriptorTable[iterator].memRange.start),
                 object->descriptorTable[iterator].memRange.start,
-                object->descriptorTable[iterator].memRange.size,
-                (pointer) (object->memPart->array + object->descriptorTable[iterator].memRange.start));
+                object->descriptorTable[iterator].memRange.size );
     }
     RPrintLn("}\n");
 
@@ -145,70 +145,49 @@ printer(RSandBox) {
 
 method(rbool, isRangeFree, RSandBox), RRange range) {
     size_t iterator;
-    RMutexLockSandbox();
-    storePtrs();
-    toSandBoxPtrs();
     switch (object->allocationMode) {
         case RSandBoxAllocationModeRandom : {
             forAll(iterator, object->descriptorsInfo.start) {
                 if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
-                    backPtrs();
-                    RMutexUnlockSandbox();
                     return no;
                 }
             }
-            backPtrs();
-            RMutexUnlockSandbox();
             return yes;
         }
         case RSandBoxAllocationModeStandart : {
             // if start smaller than last size + start
             if(range.start > object->descriptorTable[object->descriptorsInfo.start - 1].memRange.size +
                     object->descriptorTable[object->descriptorsInfo.start - 1].memRange.start) {
-                backPtrs();
-                RMutexUnlockSandbox();
                 return yes;
             } else {
-                backPtrs();
-                RMutexUnlockSandbox();
                 return no;
             }
         }
         case RSandBoxAllocationModeDelegated : {
-            backPtrs();
-            RMutexUnlockSandbox();
             return object->delegate->isRangeFree(object);
         };
     }
-    backPtrs();
-    RMutexUnlockSandbox();
     return yes;
 }
 
 method(void, addFilledRange, RSandBox), RRange range) {
-    RMutexLockSandbox();
     object->descriptorTable[object->descriptorsInfo.start].memRange = range;
     ++object->descriptorsInfo.start;
-    RMutexUnlockSandbox();
 }
 
 method(size_t, rangeForPointer, RSandBox), pointer ptr) {
     ssize_t shift = ptr - (pointer)(object->memPart->array);
-    RMutexLockSandbox();
     if(shift < 0
             || shift > object->memPart->size) {
-        RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr);
-        RMutexUnlockSandbox();
+        RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.", object, ptr);
         return object->descriptorsInfo.start;
     } else {
         size_t iterator;
         forAll(iterator, object->descriptorsInfo.start) {
             if(object->descriptorTable[iterator].memRange.start == shift) {
-                RMutexUnlockSandbox();
                 return iterator;
             }
         }
-        RMutexUnlockSandbox();
         return object->descriptorsInfo.start;
     }
 }
@@ -281,17 +260,22 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
     if(ptr == nil) {
         return $(object, m(malloc, RSandBox)),newSize);
+    } else if (newSize == 0) {
+        $(object, m(free, RSandBox)), ptr);
+        return nil;
     } else {
-        size_t iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+        pointer some = nil;
+        size_t iterator;
+        RMutexLockSandbox();
+        storePtrs();
+        iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+        backPtrs();
+        RMutexUnlockSandbox();
         if(iterator != object->descriptorsInfo.start) {
-            pointer some = $(object, m(malloc, RSandBox)), newSize);
+            some = $(object, m(malloc, RSandBox)), newSize);
             if(some != nil) {
-                RMutexLockSandbox();
-                storePtrs();
                 RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
                 $(object, m(free, RSandBox)), ptr);
-                backPtrs();
-                RMutexUnlockSandbox();
                 return some;
             }
         }
@@ -310,25 +294,28 @@ method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
 }
 
 method(void, free, RSandBox), pointer ptr) {
-    size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
-    RMutexLockSandbox();
-    storePtrs();
-    toSandBoxPtrs();
-    if (rangeIterator != object->descriptorsInfo.start) {
-        if(object->allocationMode == RSandBoxAllocationModeRandom
-                || object->allocationMode == RSandBoxAllocationModeDelegated) {
-            // totally fresh all to 0
-            flushAllToByte(object->memPart->array + object->descriptorTable[rangeIterator].memRange.start, object->descriptorTable[rangeIterator].memRange.size, 0);
-        }
-        RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
-        --object->descriptorsInfo.start;
+    if(ptr != nil) {
+        RMutexLockSandbox();
+        storePtrs();
+        toSandBoxPtrs();
 
-    } elseError(
-            RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.\n", object, ptr)
-    );
+        size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+        if (rangeIterator != object->descriptorsInfo.start) {
+            if(object->allocationMode == RSandBoxAllocationModeRandom
+                    || object->allocationMode == RSandBoxAllocationModeDelegated) {
+                // totally fresh all to 0
+                flushAllToByte(object->memPart->array + object->descriptorTable[rangeIterator].memRange.start, object->descriptorTable[rangeIterator].memRange.size, 0);
+            }
+            RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsInfo.size - rangeIterator) * sizeof(RControlDescriptor));
+            --object->descriptorsInfo.start;
 
-    backPtrs();
-    RMutexUnlockSandbox();
+        } elseError(
+                RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.", object, ptr)
+        );
+
+        backPtrs();
+        RMutexUnlockSandbox();
+    }
 }
 
 

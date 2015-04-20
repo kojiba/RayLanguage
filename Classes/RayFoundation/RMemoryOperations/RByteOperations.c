@@ -138,7 +138,7 @@ constructor(RByteArray), size_t size) {
     if(object != nil) {
         object->array = RAlloc(size);
         if(object->array != nil) {
-            object->classId = registerClassOnce(toString(RByteArray));
+            object->classId = 7;//registerClassOnce(toString(RByteArray));
             object->size    = size;
 
         } elseError(
