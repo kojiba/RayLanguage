@@ -36,6 +36,7 @@
 
 #define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
 
+//#define RAY_CONSOLE_COLORS_ON // enable colored console messages
 
 
 #ifdef RAY_ASSERT_ON_ERRORS

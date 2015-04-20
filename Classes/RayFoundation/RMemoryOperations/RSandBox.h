@@ -47,10 +47,11 @@ class(RSandBoxDelegate)
 endOf(RSandBoxDelegate)
 
 class(RSandBox)
-    RByteArray         *memPart;
+    RByteArray *memPart;
 
     RControlDescriptor *descriptorTable;
-    RRange              descriptorsInfo; // size - size of places, start - placed
+                size_t  descriptorsCount;
+                size_t  descriptorsTotal;
 
     // inner (high-lvl in hierarchy functions)
     Allocator   innerMalloc;

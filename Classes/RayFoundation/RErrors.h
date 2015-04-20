@@ -28,12 +28,12 @@
         #define endPrivateError
     #endif
 
-    #define RPrivateErrStr                            RFPrintf(stderr, "%p ERROR. "
+    #define RPrivateErrStr                            RFPrintf(stderr, RRed "%p ERROR. "
 
-    #define RError(string, object)                    RPrivateErrStr string "\n", object) endPrivateError
-    #define RError1(string, object, arg1)             RPrivateErrStr string "\n", object, arg1) endPrivateError
-    #define RError2(string, object, arg1, arg2)       RPrivateErrStr string "\n", object, arg1, arg2) endPrivateError
-    #define RError3(string, object, arg1, arg2, arg3) RPrivateErrStr string "\n", object, arg1, arg2, arg3) endPrivateError
+    #define RError(string, object)                    RPrivateErrStr string "\n" RNC, object) endPrivateError
+    #define RError1(string, object, arg1)             RPrivateErrStr string "\n" RNC, object, arg1) endPrivateError
+    #define RError2(string, object, arg1, arg2)       RPrivateErrStr string "\n" RNC, object, arg1, arg2) endPrivateError
+    #define RError3(string, object, arg1, arg2, arg3) RPrivateErrStr string "\n" RNC, object, arg1, arg2, arg3) endPrivateError
 
     #define elseError(error)                          else { error; }
     #define ifError(condition, error)                 if(condition) { error; }
