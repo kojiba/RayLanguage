@@ -36,7 +36,7 @@
 void poolPrinter(pointer some) {
 #ifdef R_POOL_DETAILED
     RPoolDescriptor* temp = some;
-    RPrintf("%p [s: %lu] (tuid: %qu)\n", temp->ptr, temp->size, temp->allocatorThread);
+    RPrintf("%p [s: %lu] (tuid: %lu)\n", temp->ptr, temp->size, temp->allocatorThread);
 #else
     RPrintf("%p\n", some);
 #endif
@@ -93,7 +93,7 @@ printer(RAutoPool) {
     RMutexLockPool();
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
-    RPrintf("\t Printer tuid : %qu\n", currentTreadIdentifier());
+    RPrintf("\t Printer tuid : %lu\n", currentTreadIdentifier());
 #endif
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
