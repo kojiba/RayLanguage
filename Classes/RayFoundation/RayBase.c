@@ -20,11 +20,6 @@
 #undef calloc
 #undef free
 
-RMutex mallocMutex  = RStackRecursiveMutexInitializer;
-RMutex callocMutex  = RStackRecursiveMutexInitializer;
-RMutex reallocMutex = RStackRecursiveMutexInitializer;
-RMutex freeMutex    = RStackRecursiveMutexInitializer;
-
 const Allocator   RTrueMalloc  = &malloc;
 const Reallocator RTrueRealloc = &realloc;
 const Callocator  RTrueCalloc  = &calloc;
@@ -36,6 +31,11 @@ volatile Reallocator RReallocPtr = &realloc;
 volatile Deallocator RFreePtr    = &free;
 
 #ifdef RAY_GLOBAL_ALLOCATOR_SETTERS
+
+RMutex mallocMutex  = RStackRecursiveMutexInitializer;
+RMutex callocMutex  = RStackRecursiveMutexInitializer;
+RMutex reallocMutex = RStackRecursiveMutexInitializer;
+RMutex freeMutex    = RStackRecursiveMutexInitializer;
 
 void* RMalloc(size_t size) {
     return RMallocPtr(size);

@@ -41,21 +41,13 @@ int main(int argc, const char *argv[]) {
     p(RCString)(content);
     if(content != nil) {
         RSocket *socket = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
-        if($(socket, m(bindPort, RSocket)), 5000) == no) {
+        if($(socket, m(bindPort, RSocket)), 80) == no) {
             goto exit;
         } // open on http port
 
         $(socket->socket, listen), 10);
         for(;;) {
             RSocket * child = $(socket, m(accept, RSocket)));
-
-            int port;
-            struct sockaddr_in *ipv4 = &child->address;
-            char ipAddress[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
-            port = ntohs(child->address.sin_port);
-
-            printf("[%s:%d] connected\n", ipAddress, port);
 
             if (child != nil) {
                 $(child, m(receive, RSocket)), &buffer, 1500);
@@ -65,14 +57,16 @@ int main(int argc, const char *argv[]) {
                 $(child, m(setAddress, RSocket)), "127.0.0.1");
                 if($(child, m(send, RSocket)), content->baseString, content->size) == networkOperationSuccessConst) {
                     printf("send sucess\n");
-                } elseError (
-                      RError("Send data to socket", nil)
-                );
+                } else {
+                    RError("Send data to socket", nil);
+                    goto exit;
+                }
                 deleter(child, RSocket);
 
-            } elseError(
-                    RError("Bad create child socket.", nil)
-            );
+            } else {
+                RError("Bad create child socket.", nil);
+                goto exit;
+            }
         }
 
         deleter(socket, RSocket);

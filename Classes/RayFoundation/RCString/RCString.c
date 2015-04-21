@@ -124,7 +124,7 @@ char * vcstringWithFormat(const char *format, va_list list) {
         if(size > 100) {
             ++size;
             buffer = RReAlloc(buffer, (size_t) size);
-            vsnprintf(buffer, size, format, listCopy);
+            vsnprintf(buffer, (size_t) size, format, listCopy);
         } else if(size > 0) {
             buffer = RReAlloc(buffer, (size_t) size);
 
@@ -878,7 +878,7 @@ RCString* RCStringFromFile(const char *filename) {
         fileSize = RFTell(file);
         if(fileSize > 0) {
             RRewind(file);
-            buffer = RAlloc(fileSize * (sizeof(char)));
+            buffer = arrayAllocator(char, (fileSize/* + 1*/));
             if(buffer != nil) {
                 RFRead(buffer, sizeof(char), (size_t) fileSize, file);
                 RFClose(file);
@@ -886,6 +886,7 @@ RCString* RCStringFromFile(const char *filename) {
                 if(result != nil) {
                     result->baseString = buffer;
                     result->size = (size_t) fileSize;
+                    result->baseString[result->size] = 0;
                     return result;
 
                 } elseError(
@@ -894,8 +895,8 @@ RCString* RCStringFromFile(const char *filename) {
 
             } elseError( RError2(
                     "RCStringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
-                    nil, filename, fileSize )
-            );
+                    nil, filename, fileSize
+            ));
 
         } elseError(
                 RError1("RCStringFromFile. Error read file \"%s\".\n", nil, filename)
@@ -934,7 +935,11 @@ RCString * getInputString() {
         int symbol = ' ';
 
         while(symbol != '\n') {
+            #ifdef _WIN32
+            symbol = getchar();
+            #else
             symbol = getchar_unlocked();
+            #endif
             if (symbol < 256 && symbol != '\n') {
                 charBuff[result->size] = (char) symbol;
                 ++result->size;

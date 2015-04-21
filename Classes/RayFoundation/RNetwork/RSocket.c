@@ -17,7 +17,7 @@
 #include <RClassTable.h>
 
 const byte networkConnectionClosedConst = 0;
-const byte networkOperationErrorConst = 254;
+const byte networkOperationErrorConst   = 254;
 const byte networkOperationSuccessConst = 1;
 
 #ifdef _WIN32
