@@ -921,7 +921,7 @@ method(void, appendToFile, RCString), const char *filename) {
     );
 }
 
-RCString* getInputString() {
+RCString * getInputString() {
     RCString *result = makeRCString();
     char *charBuff = arrayAllocator(char, 40);
     size_t empty = 40;
@@ -932,18 +932,18 @@ RCString* getInputString() {
 
         while(symbol != '\n') {
             symbol = getchar_unlocked();
-            if (symbol < 256) {
+            if (symbol < 256 && symbol != '\n') {
                 charBuff[result->size] = (char) symbol;
                 ++result->size;
                 --empty;
-            }
-            if(empty == 0) {
-                charBuff = RReAlloc(charBuff, arraySize(char, result->size * 3));
-                if(charBuff != nil) {
-                    empty += (2 * result->size);
-                } elseError(
-                        RError1("getInputString. Bad result string reallocation on new size %lu.", (pointer)charBuff, (result->size * 3))
-                );
+                if(empty == 0) {
+                    charBuff = RReAlloc(charBuff, arraySize(char, result->size * 3));
+                    if(charBuff != nil) {
+                        empty += (2 * result->size);
+                    } elseError(
+                            RError1("getInputString. Bad result string reallocation on new size %lu.", (pointer)charBuff, (result->size * 3))
+                    );
+                }
             }
         }
 
