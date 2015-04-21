@@ -113,9 +113,6 @@ destructor(RArray) {
 printer(RArray) {
     size_t iterator;
     RMutexLockArray();
-#ifdef RAY_SHORT_DEBUG
-      RPrintf("%s printer of %p \n", toString(RArray), object);
-#else
     RPrintf("\n%s object %p: { \n", toString(RArray), object);
     RPrintf(" Count : %lu \n", object->count);
     RPrintf(" Free  : %lu \n", object->freePlaces);
@@ -128,8 +125,6 @@ printer(RArray) {
     }
     RPrintf("} end of %s object %p \n\n", toString(RArray), object);
     RMutexUnlockArray();
-#endif
-
 }
 
 #pragma mark Allocation - Reallocation

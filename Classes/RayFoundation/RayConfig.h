@@ -20,24 +20,26 @@
 
 #include <RSystem.h>
 
+#pragma mark Some config
+
+//#define RAY_SHORT_DEBUG  // short trace for array and classTable
+//#define RAY_CONSOLE_COLORS_ON // enable colored console messages
+#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+
+#pragma mark Errors
+
 #define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h
 #define RAY_ERRORS_ON   // --//-- errors
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 
-//#define RAY_SHORT_DEBUG  // short trace for array and classTable
+#pragma mark Thread-Safety flags
 
-// thread-safety flags
 #define RAY_ARRAY_THREAD_SAFE
 //#define RAY_LIST_THREAD_SAFE // note: mutex type normal
 //#define RAY_BUFFER_THREAD_SAFE
 #define RAY_CLASS_TABLE_THREAD_SAFE
 #define RAY_POOL_THREAD_SAFE
 #define RAY_SAND_BOX_THREAD_SAFE
-
-#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
-
-//#define RAY_CONSOLE_COLORS_ON // enable colored console messages
-
 
 #ifdef RAY_ASSERT_ON_ERRORS
     #include <assert.h>

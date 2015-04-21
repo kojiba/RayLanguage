@@ -920,3 +920,43 @@ method(void, appendToFile, RCString), const char *filename) {
             RError("RCString. appendToFile. Failed open file.", object)
     );
 }
+
+RCString* getInputString() {
+    RCString *result = makeRCString();
+    char *charBuff = arrayAllocator(char, 40);
+    size_t empty = 40;
+
+    if(result != nil
+       && charBuff != nil) {
+        int symbol = ' ';
+
+        while(symbol != '\n') {
+            symbol = getchar_unlocked();
+            if (symbol < 256) {
+                charBuff[result->size] = (char) symbol;
+                ++result->size;
+                --empty;
+            }
+            if(empty == 0) {
+                charBuff = RReAlloc(charBuff, arraySize(char, result->size * 3));
+                if(charBuff != nil) {
+                    empty += (2 * result->size);
+                } elseError(
+                        RError1("getInputString. Bad result string reallocation on new size %lu.", (pointer)charBuff, (result->size * 3))
+                );
+            }
+        }
+
+        if(empty > 0) {
+            charBuff = RReAlloc(charBuff, arraySize(char, result->size));
+        }
+
+        result->baseString = charBuff;
+        charBuff[result->size] = 0;
+
+    } elseError(
+            RError("getInputString. Bad result string allocation.", nil)
+    );
+
+    return result;
+}

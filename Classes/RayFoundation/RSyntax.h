@@ -69,6 +69,7 @@ typedef byte    rbool;
 
 #define allocator(className)                              RAlloc(sizeof(className))
 #define arrayAllocator(className, size)                   RAlloc(sizeof(className) * size)
+#define arraySize(className, size)                        (sizeof(className) * size)
 #define deallocator(object)                               RFree(object);
 
 #define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object

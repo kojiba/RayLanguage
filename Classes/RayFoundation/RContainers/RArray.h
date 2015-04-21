@@ -174,13 +174,15 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
 RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // if size not fixed, last in sizeArray must be 0, printer and destructor must be set manually
 
 /*
-    RArray* array = arrayFromArray(
-            RS("hello"), RS("omg"), RS("lol"), nil
-    );
-    array->printerDelegate = (void (*)(pointer)) p(RCString);
-    array->destructorDelegate = RFree;
-    p(RArray)(array);
-    deleter(array, RArray);
+ * Example
+ *
+ *  RArray* array = arrayFromArray(
+ *          RS("hello"), RS("omg"), RS("lol"), nil
+ *  );
+ *  array->printerDelegate = (void (*)(pointer)) p(RCString);
+ *  array->destructorDelegate = RFree;
+ *  p(RArray)(array);
+ *  deleter(array, RArray);
 */
 
 RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointers, last must be nil

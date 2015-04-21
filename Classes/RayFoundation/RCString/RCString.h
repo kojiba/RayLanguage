@@ -118,7 +118,17 @@ method(RCString *,          toLowerCase,                 RCString));            
 
 // With file
 method(void,                appendToFile,                 RCString),    const char *filename);
-RCString* RCStringFromFile(const char *filename); // may not be 0-terminated, use it like a buffer with file content
+RCString * RCStringFromFile(const char *filename); // may not be 0-terminated, use it like a buffer with file content
+
+/*
+ * Example
+ *
+ *  RPrintLn("Input some:");
+ *  RCString *input = getInputString();
+ *  p(RCString)(input);
+ *  deleter(input, RCString);
+*/
+RCString * getInputString(); // reads string from stdin, returns created RCString what must be destructed.
 
 //----------------------------------------------------------------------------------
 
