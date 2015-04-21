@@ -10,6 +10,7 @@ set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 set(RVM            NO)
 set(RayInterpreter NO)
 set(DebugFlag      YES) # NO - for build library
+set(copyResources  NO)
 
 
 if(NOT ${DebugFlag})
@@ -181,8 +182,6 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
                                                  ${DEBUG_SOURCES}
                                                  ${DEBUG_HEADERS})
-
-set(copyResources NO)
 
 if(copyResources)
     file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})

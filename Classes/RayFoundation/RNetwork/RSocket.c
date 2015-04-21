@@ -27,7 +27,7 @@ const byte networkOperationSuccessConst = 1;
     #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
 #endif
 
-constructor(RSocket)) {
+RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
     object = allocator(RSocket);
     if (object != nil) {
 #ifdef _WIN32
@@ -39,7 +39,7 @@ constructor(RSocket)) {
             isFirstSocket = no;
         }
 #endif
-        object->socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+        object->socket = socket(AF_INET, socketType, protocolType);
         if (object->socket < 0) {
             RError("RSocket. Socket creation error.", object);
             deallocator(object);
@@ -50,6 +50,10 @@ constructor(RSocket)) {
         }
     }
     return object;
+}
+
+inline constructor(RSocket)) {
+    return makeRSocket(object, SOCK_DGRAM, IPPROTO_IP);
 }
 
 destructor(RSocket) {
@@ -77,6 +81,7 @@ method(rbool, bindPort, RSocket), uint16_t port) {
             WSAGetLastError();
         #else
         #endif
+        RError1("RSocket. Bind to port %u error.", nil, port);
         return no;
     }
 
@@ -124,15 +129,31 @@ method(void, reuseAddress, RSocket)) {
     }
 }
 
+method(RSocket *, accept, RSocket)) {
+    RSocket *result = allocator(RSocket);
+    if(result != nil) {
+        flushAllToByte(&result->address, sizeof(result->address), 0);
+        result->socket = accept(object->socket,
+                                (SocketAddress*) &result->address,
+                                                 &result->addressLength);
+        if(result->socket < 0) {
+            RError("RSocket. Accept socket error.", object);
+            deallocator(result);
+            result = nil;
+        }
+    }
+    return result;
+}
+
 #pragma mark Main Method
 
-method(byte, send, RSocket), const RByteArray * const buffer) {
+method(byte, send, RSocket), const pointer buffer, size_t size) {
     ssize_t messageLength = sendto(object->socket,
-                                   buffer->array,
-                                   buffer->size,
+                                   buffer,
+                                   size,
                                    0,
                                    (SocketAddress *) &object->address,
-                                   (socklen_t) object->addressLength);
+                                                      object->addressLength);
 
     if (messageLength < 0) {
         return networkOperationErrorConst;
@@ -146,13 +167,13 @@ method(byte, send, RSocket), const RByteArray * const buffer) {
 
 #pragma mark Main Method
 
-method(byte, receive, RSocket), RByteArray *buffer) {
+method(byte, receive, RSocket), pointer buffer, size_t size) {
     ssize_t messageLength = recvfrom(object->socket,
-                                     buffer->array,
-                                     buffer->size,
+                                     buffer,
+                                     size,
                                      0,
                                      (SocketAddress*) &object->address,
-                                     (socklen_t *)    &object->addressLength);
+                                                      &object->addressLength);
 
     if (messageLength < 0) {
         return networkOperationErrorConst;

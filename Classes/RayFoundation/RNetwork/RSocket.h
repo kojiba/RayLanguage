@@ -47,11 +47,13 @@ class(RSocket)
 
         uint16_t         port;
         SocketAddressIn  address;
-        size_t           addressLength;
+        socklen_t        addressLength;
         size_t           packetCounter;
 
 endOf(RSocket)
 
+RSocket * makeRSocket(RSocket *object, int socketType, int protocolType);
+extern
 constructor (RSocket));
 destructor  (RSocket);
 printer     (RSocket);
@@ -64,8 +66,10 @@ method(rbool, joinMulticastGroup, RSocket),    const char * const address);
 method(void,  setAddress,         RSocket),    const char * const address);
 method(void,  reuseAddress,       RSocket));
 
+method(RSocket *,  accept,        RSocket));
+
 // Main methods
-method(byte,  send,               RSocket),    const RByteArray * const buffer);  // sends to receiver size bytes
-method(byte,  receive,            RSocket),    RByteArray *buffer);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
+method(byte,  send,               RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
+method(byte,  receive,            RSocket),    pointer buffer, size_t size);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
 #endif /*__R_SOCKET_H__*/

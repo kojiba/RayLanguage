@@ -28,7 +28,7 @@
 
 #pragma mark Errors
 
-#define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h
+#define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h, if this flag off - reduce bin/lib size
 #define RAY_ERRORS_ON   // --//-- errors
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 

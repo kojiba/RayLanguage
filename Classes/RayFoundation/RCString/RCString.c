@@ -117,16 +117,19 @@ char * cstringWithFormat(const char *format, ...) {
 char * vcstringWithFormat(const char *format, va_list list) {
     int size;
     char *buffer = RAlloc(100);
+    va_list listCopy;
+    va_copy(listCopy, list);
     if(buffer != nil) {
         size = vsnprintf(buffer, 100, format, list);
         if(size > 100) {
+            ++size;
             buffer = RReAlloc(buffer, (size_t) size);
-            vsnprintf(buffer, 100, format, list);
+            vsnprintf(buffer, size, format, listCopy);
         } else if(size > 0) {
             buffer = RReAlloc(buffer, (size_t) size);
 
         } elseError(
-                RError("StringWithFormat. Bad size", nil)
+                RError("vcstringWithFormat. Bad size", nil)
         );
     }
     return buffer;
