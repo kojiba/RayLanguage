@@ -30,8 +30,9 @@ int main(int argc, const char *argv[]) {
 
     if(html == nil)
         goto exit;
+
     p(RCString)(html);
-    printf("!yes - %x, !no - %x\n", !yes, !no);
+    printf("!yes - %x, !no - %x, ~yes - %x, ~no - %x\n", !yes, !no, ~yes, ~no);
     printf("html size %lu\n", html->size);
 
     RCString *content = stringWithFormat("HTTP/1.1 200 OK\n"
@@ -73,6 +74,7 @@ int main(int argc, const char *argv[]) {
         deleter(socket, RSocket);
         deleter(content, RCString);
     }
+    deleter(html, RCString);
 
     exit:
 
