@@ -18,13 +18,13 @@
 
 #include <RArray.h>
 
-class(RDictionary) //---------------------------------------------------------------------
+class(RDictionary) //--------------------------
     ComparatorDelegate comparator;
 
     RArray *keys;
     RArray *values;
 
-endOf(RDictionary) //----------------------------------------------------------------
+endOf(RDictionary) //--------------------------
 
 constructor (RDictionary));
 destructor  (RDictionary);

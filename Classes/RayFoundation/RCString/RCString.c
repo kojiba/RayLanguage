@@ -44,7 +44,7 @@ size_t indexOfLastCharacterCString(const char *string, size_t size, char charact
 char * copyOfCString(const char *string) {
     size_t length = RStringLength(string);
     if(length > 0) {
-        char *result = RAlloc((length + 1) * sizeof(char));
+        char *result = arrayAllocator(char, length + 1);
         if(result != nil) {
             RMemCpy(result, string, length);
             return result;
@@ -86,7 +86,7 @@ RCString * randomRCString(void) {
         while(size < 10) {
             size = ((size_t)rand()) % 50;
         }
-        cstring = RAlloc(size * sizeof(char));
+        cstring = arrayAllocator(char, size);
         if(cstring != nil) {
             forAll(iterator, size - 2){
                 cstring[iterator] = randomCharacter();
@@ -116,17 +116,17 @@ char * cstringWithFormat(const char *format, ...) {
 
 char * vcstringWithFormat(const char *format, va_list list) {
     int size;
-    char *buffer = RAlloc(100);
+    char *buffer = arrayAllocator(char, 100);
     va_list listCopy;
     va_copy(listCopy, list);
     if(buffer != nil) {
         size = vsnprintf(buffer, 100, format, list);
         if(size > 100) {
             ++size;
-            buffer = RReAlloc(buffer, (size_t) size);
+            buffer = RReAlloc(buffer, arraySize(char, (size_t) size));
             vsnprintf(buffer, (size_t) size, format, listCopy);
         } else if(size > 0) {
-            buffer = RReAlloc(buffer, (size_t) size);
+            buffer = RReAlloc(buffer, arraySize(char, (size_t) size));
 
         } elseError(
                 RError("vcstringWithFormat. Bad size", nil)
@@ -201,10 +201,10 @@ method(RCString *, setString, RCString), const char *string) {
 
         // checking, if exist and size like copying
         if(object->baseString == nil) {
-            object->baseString = RAlloc(stringSize * sizeof(char));
+            object->baseString = arrayAllocator(char, stringSize);
 
         } else if(object->size < stringSize) {
-            object->baseString = RReAlloc(object->baseString, stringSize * sizeof(char));
+            object->baseString = RReAlloc(object->baseString, arraySize(char, stringSize));
         }
 
         if(object->baseString != nil) {
@@ -510,7 +510,7 @@ method(RCString *, setSubstringInRange, RCString), RRange range, const char * co
 
 method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t place) {
     if(place < object->size) {
-        char *result = RAlloc(object->size + substring->size + 1);
+        char *result = arrayAllocator(char, object->size + substring->size + 1);
         RMemMove(result,                           object->baseString,         place);
         RMemMove(result + place,                   substring->baseString,      substring->size);
         RMemMove(result + place + substring->size, object->baseString + place, object->size - place);
@@ -532,7 +532,7 @@ method(RCString *, insertSubstringAt, RCString), RCString *substring, size_t pla
 constMethod(RCString *, substringInRange, RCString), RRange range) {
     if(range.size != 0
             && ((range.start + range.size) <= object->size)) {
-        char *cstring = RAlloc((range.size + 1) * sizeof(char));
+        char *cstring = arrayAllocator(char, range.size + 1);
         RMemMove(cstring, object->baseString + range.start, range.size);
         cstring[range.size] = 0;
 
@@ -807,7 +807,7 @@ constMethod(rbool, endsOn, RCString), const RCString *const checkString) {
 
 method(void, concatenate, RCString), const RCString *string) {
     if(string->size != 0 && string->baseString != nil) {
-        object->baseString = RReAlloc(object->baseString, string->size + object->size + 1);
+        object->baseString = RReAlloc(object->baseString, arraySize(char, string->size + object->size + 1));
         if(object->baseString != nil) {
             RMemMove(object->baseString + object->size, string->baseString, string->size);
             object->baseString[string->size + object->size] = 0;
@@ -825,7 +825,7 @@ method(void, concatenate, RCString), const RCString *string) {
 method(void, appendString, RCString), const char *string) {
     if(string != nil) {
         size_t stringSize = RStringLength(string);
-        object->baseString = RReAlloc(object->baseString, stringSize + object->size + 1);
+        object->baseString = RReAlloc(object->baseString, arraySize(char, stringSize + object->size + 1));
         if(object->baseString != nil) {
             RMemMove(object->baseString + object->size, string, stringSize);
             object->baseString[stringSize + object->size] = 0;
@@ -841,7 +841,7 @@ method(void, appendString, RCString), const char *string) {
 }
 
 method(void, append, RCString), const char character) {
-    object->baseString = RReAlloc(object->baseString, object->size + 2);
+    object->baseString = RReAlloc(object->baseString, arraySize(char, object->size + 2));
     if(object->baseString != nil) {
         object->baseString[object->size] = character;
         object->baseString[object->size + 1] = 0;

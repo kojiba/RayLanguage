@@ -28,7 +28,8 @@
 /*
  * Note:
  *
- * Only containers, no network, no threads, minimal lib.
+ * No network, no threads, minimal lib.
+ * This macro understand no OS, and no stdlib.
  * Redefine to change allocation points (RAlloc, RReAlloc, RClearAlloc, RFree)
  * Redefine RPrintf to change output point.
  * See full list to redefine in RayBase.h

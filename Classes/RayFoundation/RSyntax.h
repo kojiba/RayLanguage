@@ -68,7 +68,7 @@ typedef byte    rbool;
 #define endOf(className)                                  } className;
 
 #define allocator(className)                              RAlloc(sizeof(className))
-#define arrayAllocator(className, size)                   RAlloc(sizeof(className) * size)
+#define arrayAllocator(className, size)                   RAlloc(sizeof(className) * (size))
 #define arraySize(className, size)                        (sizeof(className) * size)
 #define deallocator(object)                               RFree(object);
 
