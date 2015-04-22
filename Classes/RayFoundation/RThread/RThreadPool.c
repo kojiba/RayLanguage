@@ -1,4 +1,7 @@
 #include <RThreadPool.h>
+
+#ifndef RAY_EMBEDDED
+
 #include <RClassTable.h>
 
 struct RThreadPool {
@@ -66,3 +69,5 @@ method(void, join, RThreadPool)) {
     object->enumerator.virtualCheckObject = joinThreadCheck;
     $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
 }
+
+#endif

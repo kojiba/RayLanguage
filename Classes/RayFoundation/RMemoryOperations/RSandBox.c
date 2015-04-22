@@ -292,6 +292,7 @@ method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
     RMutexLockSandbox();
     storePtrs();
     toSandBoxPtrs();
+//    fixme
     pointer some = RClearAlloc(blockCount, blockSize);
     backPtrs();
     RMutexUnlockSandbox();
@@ -318,7 +319,9 @@ method(void, free, RSandBox), pointer ptr) {
 
         backPtrs();
         RMutexUnlockSandbox();
-    }
+    } elseWarning(
+            RWarning("RSandBox. Free nil.", object)
+    );
 }
 
 

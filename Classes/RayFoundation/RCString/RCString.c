@@ -651,7 +651,9 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
             // and sizeToFit
             $(result, m(sizeToFit, RArray)) );
         }
-    } elseWarning( RWarning("RCString. Bad separator string size, or string size.", object) );
+    } elseWarning(
+            RWarning("RCString. Bad separator string size, or string size.", object)
+    );
     return result;
 }
 
@@ -811,9 +813,13 @@ method(void, concatenate, RCString), const RCString *string) {
             object->baseString[string->size + object->size] = 0;
             object->size += string->size;
 
-        } elseError( RError("RCString. concatenate. Realloc error.", object) );
+        } elseError(
+                RError("RCString. concatenate. Realloc error.", object)
+        );
 
-    } elseWarning( RWarning("RCString. concatenate. Bad concatenate string.", object) );
+    } elseWarning(
+            RWarning("RCString. concatenate. Bad concatenate string.", object)
+    );
 }
 
 method(void, appendString, RCString), const char *string) {
@@ -868,7 +874,7 @@ method(RCString*, toLowerCase, RCString)) {
 
 #pragma mark With file
 
-RCString* RCStringFromFile(const char *filename) {
+RCString* stringFromFile(const char *filename) {
     FILE *file = RFOpen(filename, "rb");
     char *buffer;
     ssize_t fileSize;
@@ -890,20 +896,20 @@ RCString* RCStringFromFile(const char *filename) {
                     return result;
 
                 } elseError(
-                        RError("RCStringFromFile. Bad allocation of RCString.", nil)
+                        RError("stringFromFile. Bad allocation of RCString.", nil)
                 );
 
             } elseError( RError2(
-                    "RCStringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
+                    "stringFromFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
                     nil, filename, fileSize
             ));
 
         } elseError(
-                RError1("RCStringFromFile. Error read file \"%s\".\n", nil, filename)
+                RError1("stringFromFile. Error read file \"%s\".\n", nil, filename)
         );
 
     } elseError(
-            RError1( "RCStringFromFile. Cannot open file \"%s\".\n", nil, filename)
+            RError1( "stringFromFile. Cannot open file \"%s\".\n", nil, filename)
     );
 
     return nil;

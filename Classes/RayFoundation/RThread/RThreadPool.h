@@ -17,6 +17,7 @@
 #define __R_THREAD_POOL_H__
 
 #include <RSyntax.h>
+#ifndef RAY_EMBEDDED
 #include <RArray.h>
 
 #ifndef RAY_ARRAY_THREAD_SAFE
@@ -36,5 +37,7 @@ method(void,            addWithArg,          RThreadPool),     pointer argumentF
 method(void,            addWorker,           RThreadPool),     RThread *worker);
 
 method(void,            join,                RThreadPool));
+
+#endif
 
 #endif /*__R_THREAD_POOL_H__*/

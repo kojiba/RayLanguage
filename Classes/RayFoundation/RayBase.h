@@ -32,55 +32,30 @@ typedef void  (*Deallocator)(void*);
 
 // constant pointers to stdlib (OS) functions
 
-const Allocator   RTrueMalloc;
-const Callocator  RTrueCalloc;
-const Reallocator RTrueRealloc;
-const Deallocator RTrueFree;
+static const Allocator   RTrueMalloc  = &malloc;
+static const Reallocator RTrueRealloc = &realloc;
+static const Callocator  RTrueCalloc  = &calloc;
+static const Deallocator RTrueFree    = &free;
 
 volatile Allocator   RMallocPtr;
 volatile Callocator  RCallocPtr;
 volatile Reallocator RReallocPtr;
 volatile Deallocator RFreePtr;
 
-//#define RAY_GLOBAL_ALLOCATOR_SETTERS
-#ifdef RAY_GLOBAL_ALLOCATOR_SETTERS // useless functions, not works
-    void* RMalloc (size_t size);
-    void* RCalloc (size_t size, size_t blockSize);
-    void* RRealloc(void*  ptr,  size_t size);
-    void  RFree   (void*  ptr);
+#define getRMalloc()  RMallocPtr
+#define getRCalloc()  RCallocPtr
+#define getRRealloc() RReallocPtr
+#define getRFree()    RFreePtr
 
-    void  setRMalloc (Allocator new);
-    void  setRCalloc (Callocator new);
-    void  setRRealloc(Reallocator new);
-    void  setRFree   (Deallocator new);
+#define setRMalloc(function)  RMallocPtr  = function;
+#define setRRealloc(function) RReallocPtr = function;
+#define setRCalloc(function)  RCallocPtr  = function;
+#define setRFree(function)    RFreePtr    = function;
 
-    Allocator   getRMalloc (void);
-    Callocator  getRCalloc (void);
-    Reallocator getRRealloc(void);
-    Deallocator getRFree   (void);
-
-    #define malloc  RMalloc
-    #define realloc RRealloc
-    #define calloc  RCalloc
-    #define free    RFree
-
-#else // only macro only hardcore
-
-    #define getRMalloc()  RMallocPtr
-    #define getRCalloc()  RCallocPtr
-    #define getRRealloc() RReallocPtr
-    #define getRFree()    RFreePtr
-
-    #define setRMalloc(function)  RMallocPtr  = function;
-    #define setRRealloc(function) RReallocPtr = function;
-    #define setRCalloc(function)  RCallocPtr  = function;
-    #define setRFree(function)    RFreePtr    = function;
-
-    #define malloc  RMallocPtr
-    #define realloc RReallocPtr
-    #define calloc  RCallocPtr
-    #define free    RFreePtr
-#endif
+#define malloc  RMallocPtr
+#define realloc RReallocPtr
+#define calloc  RCallocPtr
+#define free    RFreePtr
 
 // universal
 
@@ -106,9 +81,7 @@ volatile Deallocator RFreePtr;
 #define RAlloc            malloc
 #define RReAlloc          realloc
 #define RClearAlloc       calloc
-#ifndef RAY_GLOBAL_ALLOCATOR_SETTERS // RFree - is function name now
-    #define RFree             free
-#endif
+#define RFree             free
 
 // I/O
 #define RPrintf           printf

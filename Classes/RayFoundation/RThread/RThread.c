@@ -14,6 +14,9 @@
  **/
 
 #include <RThread.h>
+
+#ifndef RAY_EMBEDDED
+
 #include <unistd.h>
 
 #pragma mark Info
@@ -107,3 +110,5 @@ inline int RMutexUnlock(RMutex *mutex) {
     return ReleaseMutex(mutex);
 #endif
 }
+
+#endif

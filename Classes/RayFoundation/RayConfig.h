@@ -18,13 +18,38 @@
 #ifndef __RAY_CONFIG_H__
 #define __RAY_CONFIG_H__
 
-#include <RSystem.h>
-
 #pragma mark Some config
 
 //#define RAY_SHORT_DEBUG  // short trace for array and classTable
 //#define RAY_CONSOLE_COLORS_ON // enable colored console messages
-#define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+
+#pragma mark Embedded Cut
+
+/*
+ * Note:
+ *
+ * Only containers, no network, no threads, minimal lib.
+ * Redefine to change allocation points (RAlloc, RReAlloc, RClearAlloc, RFree)
+ * Redefine RPrintf to change output point.
+ * See full list to redefine in RayBase.h
+ */
+//#define RAY_EMBEDDED
+
+#ifdef RAY_EMBEDDED
+//    #warning Redefine RayBase.h DI macro and delete this warning
+#else
+
+    #define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
+
+    #pragma mark Thread-Safety flags
+
+    #define RAY_ARRAY_THREAD_SAFE
+    //#define RAY_LIST_THREAD_SAFE // note: mutex type normal
+    //#define RAY_BUFFER_THREAD_SAFE
+    #define RAY_CLASS_TABLE_THREAD_SAFE
+    #define RAY_POOL_THREAD_SAFE
+    #define RAY_SAND_BOX_THREAD_SAFE
+#endif
 
 #pragma mark Errors
 
@@ -32,17 +57,10 @@
 #define RAY_ERRORS_ON   // --//-- errors
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
 
-#pragma mark Thread-Safety flags
-
-#define RAY_ARRAY_THREAD_SAFE
-//#define RAY_LIST_THREAD_SAFE // note: mutex type normal
-//#define RAY_BUFFER_THREAD_SAFE
-#define RAY_CLASS_TABLE_THREAD_SAFE
-#define RAY_POOL_THREAD_SAFE
-#define RAY_SAND_BOX_THREAD_SAFE
-
 #ifdef RAY_ASSERT_ON_ERRORS
     #include <assert.h>
 #endif
+
+#include <RSystem.h>
 
 #endif /*__RAY_CONFIG_H__*/

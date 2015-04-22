@@ -197,6 +197,7 @@ pointer func1(pointer arg) {
 }
 
 int RThreadTest(void) {
+#if !defined(__WIN32) && !defined(RAY_EMBEDDED) && defined(RAY_ARRAY_THREAD_SAFE)
     storePtrs();
     arrayTest = makeRArray();
     int i;
@@ -213,6 +214,7 @@ int RThreadTest(void) {
     RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);
     backPtrs();
+#endif
     return 0;
 }
 
@@ -275,9 +277,7 @@ void ComplexTest() {
         && !RByteArrayTest()
         && !RBufferTest()
         && !RCStringTest()
-        #if !defined(__WIN32) && defined(RAY_ARRAY_THREAD_SAFE)
-            && !RThreadTest() // fixme in progress
-        #endif
+        && !RThreadTest()
     ) {
         RPrintLn("All tests passed successfully\n");
     } elseError( RError("TESTS ERROR!", nil) );

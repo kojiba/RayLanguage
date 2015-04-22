@@ -17,7 +17,7 @@
 #define __R_THREAD_H__
 
 #include <RSyntax.h>
-
+#ifndef RAY_EMBEDDED
 #ifndef __WIN32
     #include <pthread.h>
 
@@ -85,7 +85,10 @@ extern void RThreadExit   (pointer data);
 #pragma mark Mutex
 
 extern int mutexWithType (RMutex *mutex, byte mutexType);
-extern int RMutexLock   (RMutex *mutex);
-extern int RMutexUnlock (RMutex *mutex);
+extern int RMutexLock    (RMutex *mutex);
+extern int RMutexUnlock  (RMutex *mutex);
+
+#endif
 
 #endif /*__R_THREAD_H__*/
+

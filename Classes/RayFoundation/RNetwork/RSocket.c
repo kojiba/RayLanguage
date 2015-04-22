@@ -14,6 +14,9 @@
  **/
 
 #include <RSocket.h>
+
+#ifndef RAY_EMBEDDED
+
 #include <RClassTable.h>
 
 const byte networkConnectionClosedConst = 0;
@@ -184,3 +187,69 @@ method(byte, receive, RSocket), pointer buffer, size_t size) {
         return networkConnectionClosedConst;
     }
 }
+
+#endif
+
+/*
+ * some samples, code to store
+    char buffer[1500];
+
+    RCString *html = stringFromFile("hello.html");
+
+    if(html == nil)
+        goto exit;
+
+    printf("Html content begin =================\n");
+    p(RCString)(html);
+    printf("Html content end ===================\n");
+
+    printf("Html page size %lu\n", html->size);
+
+    RCString *content = stringWithFormat("HTTP/1.1 200 OK\n"
+                                         "Content-Type: text/html\n"
+                                         "Content-Length: %lu\n"
+                                         "\n"
+                                         "%s", (html->size), html->baseString);
+
+
+    if(content != nil) {
+        RSocket *socket = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
+        if($(socket, m(bindPort, RSocket)), 5000) == no) {
+            goto exit;
+        } // open on http port
+
+        $(socket->socket, listen), 10);
+        for(;;) {
+            RSocket * child = $(socket, m(accept, RSocket)));
+
+            if (child != nil) {
+                $(child, m(receive, RSocket)), &buffer, 1500);
+
+                printf("REQ ============\n"
+                       "%s\n"
+                       "REQ END ========\n", buffer);
+
+                $(child, m(setAddress, RSocket)), "127.0.0.1");
+                if($(child, m(send, RSocket)), content->baseString, content->size) == networkOperationSuccessConst) {
+                    printf("send sucess\n");
+                } else {
+                    RError("Send data to socket", nil);
+                    goto exit;
+                }
+                deleter(child, RSocket);
+
+            } else {
+                RError("Bad create child socket.", nil);
+                goto exit;
+            }
+        }
+
+        deleter(socket, RSocket);
+        deleter(content, RCString);
+    }
+    deleter(html, RCString);
+
+    exit:
+
+    endSockets();
+*/

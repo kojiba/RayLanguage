@@ -18,9 +18,13 @@
 #define __R_ARRAY_PARALLEL_H__
 
 #include <RBasics.h>
+
+#ifndef RAY_EMBEDDED
 #include <RArray.h>
 
 method(RFindResult, findObjectParallel, RArray),    RCompareDelegate   *delegate);
 method(void,        executeParallel,    RArray),    REnumerateDelegate *delegate);
+
+#endif
 
 #endif /*__R_ARRAY_PARALLEL_H__*/

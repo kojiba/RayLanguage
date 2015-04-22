@@ -15,6 +15,8 @@
 
 #include <RArray_Parallel.h>
 
+#ifndef RAY_EMBEDDED
+
 #ifdef RAY_ARRAY_THREAD_SAFE
     #define arrayMutex &object->mutex
     #define RMutexLockArray() RMutexLock(arrayMutex)
@@ -217,3 +219,5 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
         RWarning("RArray_Parallel. Delegate for execute operation is nil.", object);
     }
 }
+
+#endif

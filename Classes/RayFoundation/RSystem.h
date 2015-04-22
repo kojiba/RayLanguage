@@ -17,7 +17,10 @@
 #define __R_SYSTEM_H__
 
 // Bit architecture
-#if UINTPTR_MAX == 0xffffffff
+#if UINTPTR_MAX == 0xffffff
+    #define R24BIT
+    #define RSystemBitVersion "24-bit "
+#elif UINTPTR_MAX == 0xffffffff
     #define R32BIT
     #define RSystemBitVersion "32-bit "
 #else
@@ -25,50 +28,55 @@
     #define RSystemBitVersion "64-bit "
 #endif
 
-// OS type
-#ifdef _WIN32
-   #define RSystemString "Windows "
-#endif
-
-#ifdef __APPLE__
-    #define RSystemString "Apple "
-    #include <TargetConditionals.h>
-    #if TARGET_IPHONE_SIMULATOR
-             // iOS Simulator
-            #define RSystemDetails "iOS Simulator "
-    #elif TARGET_OS_IPHONE
-            // iOS device
-            #define RSystemDetails "iOS Device "
-            #define iOSDevice
-    #elif TARGET_OS_MAC
-            // OSX
-            #define RSystemDetails "OSX "
+#ifndef RAY_EMBEDDED
+    // OS type
+    #ifdef _WIN32
+       #define RSystemString "Windows "
     #endif
-#endif
 
-#ifdef __linux
-    // linux
-    #define RSystemString  "Unix "
-    #define RSystemDetails "Linux "
-#endif
+    #ifdef __APPLE__
+        #define RSystemString "Apple "
+        #include <TargetConditionals.h>
 
-#ifdef __unix
-    // unix-based
-    #define RSystemString  "Unix "
-#endif
+        #if TARGET_IPHONE_SIMULATOR
+                #define RSystemDetails "iOS Simulator "
+        #elif TARGET_OS_IPHONE
+                #define RSystemDetails "iOS Device "
+                #define iOSDevice
+        #elif TARGET_OS_MAC
+                #define RSystemDetails "OSX "
+        #endif
+    #endif
 
-#ifdef _POSIX_C_SOURCE
-    // with posix support
-    #define RPosixSupport "Posix Support"
-#endif
+    #ifdef __linux
+        // linux
+        #define RSystemString  "Unix "
+        #define RSystemDetails "Linux "
+    #endif
 
-// Make empty if undefined
-#ifndef RPosixSupport
-    #define RPosixSupport
-#endif
+    #ifdef __unix
+        // unix-based
+        #define RSystemString  "Unix "
+    #endif
 
-#ifndef RSystemDetails
+    #ifdef _POSIX_C_SOURCE
+        // with posix support
+        #define RPosixSupport "Posix Support"
+    #endif
+
+    // Make empty if undefined
+    #ifndef RPosixSupport
+        #define RPosixSupport
+    #endif
+
+    #ifndef RSystemDetails
+        #define RSystemDetails
+    #endif
+#else
+    // no OS
+    #define RSystemString "Embedded "
     #define RSystemDetails
+    #define RPosixSupport
 #endif
 
 
@@ -76,8 +84,12 @@
 
 #define RPrintCurrentSystem() RPrintLn("System : " RSystemType)
 
-#define RPrintSystemInfo() RPrintCurrentSystem();\
-                           RPrintf("Number of processors - %u \n", processorsCount());\
-                           RPrintf("Main tuid - %lu \n", currentTreadIdentifier())
+#ifdef RAY_EMBEDDED
+    #define RPrintSystemInfo() RPrintCurrentSystem()
+#else
+    #define RPrintSystemInfo() RPrintCurrentSystem();\
+                               RPrintf("Number of processors - %u \n", processorsCount());\
+                               RPrintf("Main tuid - %lu \n", currentTreadIdentifier())
+#endif
 
 #endif /*__R_SYSTEM_H__*/
