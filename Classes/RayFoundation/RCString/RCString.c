@@ -120,11 +120,11 @@ char * vcstringWithFormat(const char *format, va_list list) {
     va_list listCopy;
     va_copy(listCopy, list);
     if(buffer != nil) {
-        size = vsnprintf(buffer, 100, format, list);
+        size = RVSNPrintf(buffer, 100, format, list);
         if(size > 100) {
             ++size;
             buffer = RReAlloc(buffer, arraySize(char, (size_t) size));
-            vsnprintf(buffer, (size_t) size, format, listCopy);
+            RVSNPrintf(buffer, (size_t) size, format, listCopy);
         } else if(size > 0) {
             buffer = RReAlloc(buffer, arraySize(char, (size_t) size));
 

@@ -104,6 +104,7 @@ volatile Deallocator RFreePtr;
 #define RMemCmp           memcmp
 
 // Basics for strings
+#define RVSNPrintf        vsnprintf
 #define RSPrintf          sprintf
 #define RStringLength     strlen
 #define RStringToUnsigned strtoul
