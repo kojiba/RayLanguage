@@ -168,7 +168,7 @@ method(void, flush, RCString)) {
     }
 }
 
-RCString *stringWithFormat(char *string, ...) {
+RCString * stringWithFormat(char *string, ...) {
     va_list args;
     RCString *result = nil;
     char *buffer;
@@ -182,10 +182,12 @@ RCString *stringWithFormat(char *string, ...) {
     return result;
 }
 
-RCString *RCStringInit(char *string, size_t size){
+RCString * RCStringInit(pointer data, size_t size){
     RCString *result = makeRCString();
-    result->baseString = string;
-    result->size = size;
+    if(result != nil) {
+        result->baseString = data;
+        result->size = size;
+    }
     return result;
 }
 
@@ -213,9 +215,13 @@ method(RCString *, setString, RCString), const char *string) {
             RMemCpy(object->baseString, string, object->size);
             --object->size;
 
-        } elseError( RError("RCString. SetString alloc or realloc returned nil.", object) );
+        } elseError(
+                RError("RCString. setString alloc or realloc returned nil.", object)
+        );
 
-    } elseWarning( RWarning("RCString. Setted strings or container is empty.", object) );
+    } elseWarning(
+            RWarning("RCString. Setted strings or container is empty.", object)
+    );
 
     return object;
 }
@@ -253,7 +259,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
             && toReplace->size <= object->size) {
 
         register size_t iterator;
-        forAll(iterator, object->size) {
+        forAll(iterator, object->size - toReplace->size + 1) {
 
             // search first symbol
             if(object->baseString[iterator] == toReplace->baseString[0]) {
@@ -265,13 +271,23 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
 
                     // remove toReplace-string start main string
                     $(object, m(deleteInRange, RCString)), makeRRange(iterator + replacer->size, toReplace->size));
+
+                    iterator += replacer->size;
                 }
             }
         }
 
     } elseWarning(
-            RWarning("RCS. Bad strings, or sizes.", object)
+            RWarning("RCString. replaceSubstrings. Bad strings, or sizes.", object)
     );
+}
+
+method(void, replaceСSubstrings, RCString), char *toReplace, char *replacer) {
+    RCString *toReplaceTemp = RS(toReplace);
+    RCString *replacerTemp = RS(replacer);
+    $(object, m(replaceSubstrings, RCString)), toReplaceTemp, replacerTemp);
+    deallocator(toReplaceTemp);
+    deallocator(replacerTemp);
 }
 
 #pragma mark Info
@@ -321,19 +337,34 @@ constMethod(rbool, isContains, RCString), char character) {
 }
 
 static inline
-constMethod(rbool, isContainsSubsting, RCString), RCString *string) {
+constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
     // search for first symbol
-    size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
-    if(iterator != string->size) {
-        // compare others
-        if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
-            return yes;
+    if(object->size >= string->size) {
+        size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
+        if (iterator != string->size) {
+            // compare others
+            if (RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
+                return yes;
+            } else {
+                return no;
+            }
         } else {
             return no;
         }
     } else {
         return no;
     }
+}
+
+inline
+constMethod(rbool, isContainsCSubstring, RCString), char *string) {
+    RCString *temp = RS(string);
+    if(temp != nil) {
+        rbool result = $(object, m(isContainsSubstring, RCString)), temp);
+        deallocator(temp);
+        return result;
+    }
+    return nil;
 }
 
 inline constMethod(size_t, numberOfLines, RCString)) {
@@ -382,7 +413,8 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     register rbool  needMove = yes;
 
     if(substring->size != 0
-            || substring->baseString == nil) {
+            && substring->baseString != nil
+            && object->size >= substring->size) {
 
         forAll(iterator, object->size - substring->size) {
             // search first symbol
@@ -406,7 +438,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
         return object;
 
     } elseWarning(
-            RWarning("RCS. Substring size is 0, or, substring is nil.", object)
+            RWarning("RCS. Substring size is 0, or, substring is nil, or size of substring > size of string.", object)
     );
 
     return nil;
@@ -415,8 +447,11 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
 inline
 method(RCString *, deleteAllSubstringsCStr, RCString), const char *substring) {
     RCString *temp = RS(substring);
-    RCString *result = $(object, m(deleteAllSubstrings, RCString)), temp);
-    deallocator(temp);
+    RCString *result = nil;
+    if(temp != nil) {
+        result = $(object, m(deleteAllSubstrings, RCString)), temp);
+        deallocator(temp);
+    }
     return result;
 }
 
@@ -896,7 +931,7 @@ RCString* stringFromFile(const char *filename) {
                     return result;
 
                 } elseError(
-                        RError("stringFromFile. Bad allocation of RCString.", nil)
+                        RError("stringFromFile. Bad allocation of RCString struct.", nil)
                 );
 
             } elseError( RError2(

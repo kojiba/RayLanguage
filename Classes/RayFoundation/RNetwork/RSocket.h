@@ -45,6 +45,10 @@ extern const byte networkOperationSuccessConst;
 
 typedef struct sockaddr_in SocketAddressIn;
 typedef struct sockaddr    SocketAddress;
+typedef struct ip_mreq     MulticastAddress;
+
+extern
+const char* addressToString(SocketAddressIn *address);
 
 class(RSocket)
         SocketDescriptor socket;

@@ -30,6 +30,22 @@ const byte networkOperationSuccessConst = 1;
     #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
 #endif
 
+inline
+const char* addressToString(SocketAddressIn *address) {
+//#ifndef _WIN32
+//    char ipAddress[INET_ADDRSTRLEN];
+//    return inet_ntop(AF_INET, &(address->sin_addr), ipAddress, INET_ADDRSTRLEN);
+//#else
+    return inet_ntoa(address->sin_addr);
+//#endif
+//    char buffer[4];
+//    buffer[0] = (byte)( address->sin_addr.s_addr&0xFF);
+//    buffer[1] = (byte)((address->sin_addr.s_addr&0xFF00)>>8);
+//    buffer[2] = (byte)((address->sin_addr.s_addr&0xFF0000)>>16);
+//    buffer[3] = (byte)((address->sin_addr.s_addr&0xFF000000)>>24);
+//    return buffer;
+}
+
 RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
     object = allocator(RSocket);
     if (object != nil) {
@@ -97,7 +113,7 @@ method(void, setPort, RSocket), uint16_t port) {
 }
 
 method(rbool, joinMulticastGroup, RSocket), const char * const address) {
-    struct ip_mreq multicastAddress;
+    MulticastAddress multicastAddress;
     multicastAddress.imr_multiaddr.s_addr = inet_addr(address);
     multicastAddress.imr_interface.s_addr = htonl(INADDR_ANY);
 
@@ -135,7 +151,7 @@ method(void, reuseAddress, RSocket)) {
 method(RSocket *, accept, RSocket)) {
     RSocket *result = allocator(RSocket);
     if(result != nil) {
-        flushAllToByte(&result->address, sizeof(result->address), 0);
+        flushAllToByte(result, sizeof(RSocket), 0);
         result->socket = accept(object->socket,
                                 (SocketAddress*) &result->address,
                                                  &result->addressLength);

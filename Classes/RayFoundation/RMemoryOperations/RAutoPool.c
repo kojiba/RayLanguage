@@ -236,9 +236,10 @@ method(void, free, RAutoPool), pointer ptr) {
                 if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
                     RError("RAutoPool. Bad pointers array index.", object);
                 }
-            } elseError(
-                    RError1("RAutoPool. Pointer - %p wasn't allocated on RAutoPool.", object, ptr)
-            );
+            } else {
+                RError1("RAutoPool. Pointer - %p wasn't allocated on RAutoPool.", object, ptr);
+                deallocator(ptr);
+            }
 #ifdef R_POOL_DETAILED
 
             ifError(free == object->selfFree,

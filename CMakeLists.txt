@@ -54,6 +54,7 @@ set(HEADER_FILES # Worker headers
                  # Strings
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString_Numbers.h
+                 Classes/RayFoundation/RCString/RString.h
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.h
@@ -92,6 +93,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Strings
                  Classes/RayFoundation/RCString/RCString.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
+                 Classes/RayFoundation/RCString/RString.c
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.c
@@ -184,7 +186,7 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
                                                  ${DEBUG_HEADERS})
 
 if(copyResources)
-    file(COPY Resources DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+    file(COPY Resources     DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 endif()
 
 if(NOT ${DebugFlag})

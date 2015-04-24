@@ -464,7 +464,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     RMutexUnlockArray();
 }
 
-byte RArrayStandartComparator(pointer first, pointer second) {
+byte RArrayDefaultComparator(pointer first, pointer second) {
     // pointer sort
     if (first > second) {
         return swap_objects;
@@ -510,7 +510,7 @@ method(void, sort, RArray)) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray sort of %p\n", object);
 #endif
-    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayStandartComparator);
+    $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayDefaultComparator);
 }
 
 #pragma mark Work

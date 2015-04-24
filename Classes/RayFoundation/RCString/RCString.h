@@ -45,7 +45,7 @@ constructor (RCString));
 destructor  (RCString);
 printer     (RCString);
 RCString *  stringWithFormat(char *format, ...); // uses vsnprintf, string must be deleted with deleter(obj, RCString)
-RCString *  RCStringInit(char *string, size_t size);
+RCString *  RCStringInit(pointer data, size_t size);
 void        stringDeleter(RCString *string); // call destructor and deallocates ptr
 
 method(void,                flush,                        RCString));                                         // deletes old string
@@ -56,6 +56,7 @@ method(RCString *,          setConstantString,            RCString),    char con
 // Replace
 method(void,                replaceCharacters,            RCString),    char characterToReplace, char replacer);
 method(void,                replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
+method(void,                replaceСSubstrings,           RCString),    char *toReplace, char *replacer);
 
 // Info
 constMethod(size_t,         numberOfCharacters,           RCString),    char character);
@@ -63,7 +64,9 @@ constMethod(size_t,         numberOfSubstrings,           RCString),    const RC
 static inline
 constMethod(rbool,          isContains,                   RCString),    char character);
 static inline
-constMethod(rbool,          isContainsSubsting,           RCString),    RCString *string);
+constMethod(rbool,          isContainsSubstring,          RCString),    RCString *string);
+extern
+constMethod(rbool,          isContainsCSubstring,         RCString),    char *string);
 extern
 constMethod(size_t,         numberOfLines,                RCString));
 
@@ -99,7 +102,7 @@ constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RC
 
 constMethod(RCString *,     copy,                         RCString));
 
-// Comparator
+// Comparator - all works on utf8 strings
 constMethod(RCompareFlags,  compareWith,                  RCString),    const RCString *checkString);
 constMethod(RCompareFlags,  compareWithStr,               RCString),    const char *const checkString);
 constMethod(rbool,          startsOnStr,                  RCString),    const char *const checkString);
@@ -107,18 +110,18 @@ constMethod(rbool,          startsOn,                     RCString),    const RC
 constMethod(rbool,          endsOnStr,                    RCString),    const char *const checkString);
 constMethod(rbool,          endsOn,                       RCString),    const RCString *const checkString);
 
-// Concatenate
+// Concatenate - all works on utf8 strings
 method(void,                concatenate,                  RCString),    const RCString *string);
 method(void,                appendString,                 RCString),    const char *string);
 method(void,                append,                       RCString),    const char character);
 
 // Conversions (only ASCII)
-method(RCString *,          toUpperCase,                 RCString));                                          // returns reference (not copy!)
-method(RCString *,          toLowerCase,                 RCString));                                          // returns reference (not copy!)
+method(RCString *,          toUpperCase,                  RCString));   // returns reference (not copy!)
+method(RCString *,          toLowerCase,                  RCString));   // returns reference (not copy!)
 
 // With file
 method(void,                appendToFile,                 RCString),    const char *filename);
-RCString *stringFromFile(const char *filename); // may not be 0-terminated, use it like a buffer with file content
+RCString *stringFromFile(const char *filename);
 
 /*
  * Example

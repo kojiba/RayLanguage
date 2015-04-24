@@ -124,7 +124,7 @@ constMethod(byte,          checkIfIndexIn,            RArray),    size_t index);
 method(struct RList *,     toRList,                   RArray));
 
 #pragma mark Standart comparator
-byte RArrayStandartComparator(pointer first, pointer second);
+byte RArrayDefaultComparator(pointer first, pointer second);
 
 #pragma mark Delegates
 extern
