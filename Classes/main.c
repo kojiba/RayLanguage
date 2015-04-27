@@ -19,9 +19,19 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
+rbool characters(RString checker, size_t iterator) {
+    printf("%lu - ", iterator);
+    p(RString)(&checker);
+    printf("\n");
+    return yes;
+}
+
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
+
+    $(RS("Привет мир!"), m(enumerate, RString)), characters);
+
 
 
     return endRay();

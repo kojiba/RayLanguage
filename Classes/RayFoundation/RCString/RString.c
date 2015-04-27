@@ -109,10 +109,10 @@ rbool utf8GetNextСharacter(const byte     *string,
             *isValid = no;
             position += 3;
         } else {
-            *codePoint = ((string[position] & (byte)0x7) << 18)
+            *codePoint =   ((string[position]     & (byte)0x7) << 18)
                          | ((string[position + 1] & (byte)0x3F) << 12)
                          | ((string[position + 2] & (byte)0x3F) << 6)
-                         | (string[position + 3] & (byte)0x3F);
+                         |  (string[position + 3] & (byte)0x3F);
             *isValid = yes;
             position += 4;
         }
@@ -126,12 +126,20 @@ rbool utf8GetNextСharacter(const byte     *string,
     return yes;
 }
 
+printer(RString) {
+    size_t iterator;
+    forAll(iterator, object->size) {
+        putchar(*(object->baseString + iterator));
+    }
+}
+
+
 inline
 method(size_t, length, RString)) {
     return utf8Length((byte *) object->baseString, object->size);
 }
 
-method(RFindResult, enumerate, RString), REnumerateDelegate *delegate) {
+method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
     size_t iterator = 0;
     uintptr_t position = 0;
     uintptr_t nextPosition = 0;
@@ -140,11 +148,15 @@ method(RFindResult, enumerate, RString), REnumerateDelegate *delegate) {
     RFindResult result;
     result.index = object->size;
     result.object = nil;
-    if(delegate->virtualCheckObject != nil) {
+    if(enumerator != nil) {
         while (utf8GetNextСharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid,
                                     &codePoint)) {
             if (isValid == yes) {
-                if (delegate->virtualCheckObject((pointer) (nextPosition - position), iterator) == no) {
+                RString string;
+                string.baseString = object->baseString + position;
+                string.size       = nextPosition - position;
+
+                if (enumerator(string, iterator) == no) {
                     result.index = iterator;
                     result.object = (pointer) (nextPosition - position);
                     break;

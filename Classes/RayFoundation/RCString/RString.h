@@ -29,9 +29,21 @@ size_t utf8Length(byte *string, size_t sizeInBytes);
 
 typedef RCString RString;
 
+printer(RString);
+
 extern
 method(size_t, length, RString));
 
-method(RFindResult, enumerate, RString), REnumerateDelegate *delegate);
+/*
+ * Example (print charaters with indexes)
+ *
+ * rbool characters(RString checker, size_t iterator) {
+ *      printf("%lu - ", iterator);
+ *      p(RString)(&checker);
+ *      printf("\n");
+ *      return yes;
+ * }
+ */
+method(RFindResult, enumerate, RString), rbool (*enumerator)(RString string, size_t iterator)); // RString is only static struct not \0 terminated use p(RString)
 
 #endif /*__R_STRING_H__*/

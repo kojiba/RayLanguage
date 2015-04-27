@@ -568,15 +568,17 @@ constMethod(RCString *, substringInRange, RCString), RRange range) {
     if(range.size != 0
             && ((range.start + range.size) <= object->size)) {
         char *cstring = arrayAllocator(char, range.size + 1);
-        RMemMove(cstring, object->baseString + range.start, range.size);
-        cstring[range.size] = 0;
+        if(cstring != nil) {
+            RMemCpy(cstring, object->baseString + range.start, range.size);
+            RCString *rcString   = $(nil, c(RCString)));
 
-        RCString *rcString   = $(nil, c(RCString)) );
-        rcString->size       = range.size;
-        rcString->baseString = cstring;
-
-        return rcString;
-
+            if(rcString != nil) {
+                rcString->size = range.size;
+                rcString->baseString = cstring;
+                cstring[range.size] = 0;
+                return rcString;
+            }
+        }
     } elseError(
         RError3(
             "RCString. substringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
