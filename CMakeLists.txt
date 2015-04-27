@@ -9,7 +9,7 @@ set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 # sub-sources flags
 set(RVM            NO)
 set(RayInterpreter NO)
-set(DebugFlag      YES) # NO - for build library
+set(DebugFlag      NO) # NO - for build library
 set(copyResources  NO)
 
 

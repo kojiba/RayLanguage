@@ -112,4 +112,11 @@ volatile Deallocator RFreePtr;
 #define RStringToDouble   atof
 #define RIntToString      itoa
 
+
+#ifdef __WIN32 // key delay for win
+    #define stopConsole() fgetchar()
+#else
+    #define stopConsole()
+#endif
+
 #endif /*__RAY_BASE_H__*/

@@ -1,3 +1,18 @@
+/**
+ * RString.h
+ * Realization of wrapper on '\0' - terminated utf8 strings.
+ * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * 04/23/2015 Ukraine Kharkiv
+ *  _         _ _ _
+ * | |       (_|_) |
+ * | | _____  _ _| |__   __ _
+ * | |/ / _ \| | | '_ \ / _` |
+ * |   < (_) | | | |_) | (_| |
+ * |_|\_\___/| |_|_.__/ \__,_|
+ *          _/ |
+ *         |__/
+ **/
+
 #include <RString.h>
 
 #define isTrail(c) (c > (byte)0x7F && c < (byte)0xC0)
@@ -19,19 +34,7 @@ size_t utf8Length(byte *string, size_t sizeInBytes) {
 }
 
 void iterateCharacters(unsigned char *str, size_t str_size) {
-    uintptr_t position = 0;
-    uintptr_t nextPosition = 0;
-    rbool     isValid = 0;
-    unsigned  codePoint = 0;
 
-    while (utf8GetNextСharacter(str, str_size, &nextPosition, &isValid, &codePoint) ) {
-        if (isValid == yes) {
-//            nextPosition - position
-        } elseWarning(
-            RWarning("iterateCharacters. Character is invalid.", str)
-        );
-        position = nextPosition;
-    }
 }
 
 rbool utf8GetNextСharacter(const byte     *string,
@@ -125,4 +128,35 @@ rbool utf8GetNextСharacter(const byte     *string,
 
     *cursor = position;
     return yes;
+}
+
+inline
+method(size_t, length, RString)) {
+    return utf8Length((byte *) object->baseString, object->size);
+}
+
+method(RFindResult, enumerate, RString), REnumerateDelegate *delegate) {
+    size_t iterator = 0;
+    uintptr_t position = 0;
+    uintptr_t nextPosition = 0;
+    rbool     isValid = 0;
+    unsigned  codePoint = 0;
+    RFindResult result;
+    result.index = object->size;
+    result.object = nil;
+
+    while (utf8GetNextСharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid, &codePoint) ) {
+        if (isValid == yes) {
+            if($(delegate, m(checkObject, REnumerateDelegate)), (pointer) (nextPosition - position), iterator) == no) {
+                result.index = iterator;
+                result.object = (pointer) (nextPosition - position);
+                break;
+            }
+        } elseWarning(
+                RWarning("iterateCharacters. Character is invalid.", object)
+        );
+        position = nextPosition;
+        ++iterator;
+    }
+    return result;
 }

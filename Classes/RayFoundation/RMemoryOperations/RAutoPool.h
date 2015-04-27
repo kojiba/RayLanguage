@@ -107,4 +107,6 @@ RAutoPool* name(void) { \
 
 #define RPool singletonCall(RAutoPool)
 
+int endRay();
+
 #endif /*__R_AUTO_POOL_H__*/

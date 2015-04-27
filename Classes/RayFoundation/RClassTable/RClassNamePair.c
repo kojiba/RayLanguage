@@ -38,7 +38,11 @@ void RClassNamePairDeleter(pointer ptr) {
 }
 
 printer(RClassNamePair) {
-    RPrintf("%lu : \'%s\'\n", object->idForClassName, master(object, RCString)->baseString);
+    if(master(object, RCString) != nil) {
+        RPrintf("\"%s\"\n", master(object, RCString)->baseString);
+    } else {
+        RPrintf("error nil\n");
+    }
 }
 
 constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPair) {

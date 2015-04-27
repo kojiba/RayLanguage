@@ -32,13 +32,13 @@ char       randomCharacter               (void);
 char *     cstringWithFormat             (const char *format, ...);
 char *     vcstringWithFormat            (const char *format, va_list list);
 
-struct RCString {//------------------------------------
+struct RCString { //------------------------------------
     size_t classId;
 
-    char *baseString; // 0-terminated c-string
+    char * baseString; // 0-terminated c-string
     size_t size;       // size without '\0' character
 
-}; //------------------------------------
+}; //---------------------------------------------------
 
 // Constructor - Destructor - Reallocation
 constructor (RCString));
@@ -46,7 +46,7 @@ destructor  (RCString);
 printer     (RCString);
 RCString *  stringWithFormat(char *format, ...); // uses vsnprintf, string must be deleted with deleter(obj, RCString)
 RCString *  RCStringInit(pointer data, size_t size);
-void        stringDeleter(RCString *string); // call destructor and deallocates ptr
+void        stringDeleter(RCString *string);     // call destructor and deallocates ptr
 
 method(void,                flush,                        RCString));                                         // deletes old string
 // Setters
@@ -58,7 +58,7 @@ method(void,                replaceCharacters,            RCString),    char cha
 method(void,                replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
 method(void,                replaceСSubstrings,           RCString),    char *toReplace, char *replacer);
 
-// Info
+// Info - universal encoding
 constMethod(size_t,         numberOfCharacters,           RCString),    char character);
 constMethod(size_t,         numberOfSubstrings,           RCString),    const RCString * const string);
 static inline
@@ -102,7 +102,7 @@ constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RC
 
 constMethod(RCString *,     copy,                         RCString));
 
-// Comparator - all works on utf8 strings
+// Comparator - universal encoding
 constMethod(RCompareFlags,  compareWith,                  RCString),    const RCString *checkString);
 constMethod(RCompareFlags,  compareWithStr,               RCString),    const char *const checkString);
 constMethod(rbool,          startsOnStr,                  RCString),    const char *const checkString);
@@ -110,7 +110,7 @@ constMethod(rbool,          startsOn,                     RCString),    const RC
 constMethod(rbool,          endsOnStr,                    RCString),    const char *const checkString);
 constMethod(rbool,          endsOn,                       RCString),    const RCString *const checkString);
 
-// Concatenate - all works on utf8 strings
+// Concatenate - universal encoding
 method(void,                concatenate,                  RCString),    const RCString *string);
 method(void,                appendString,                 RCString),    const char *string);
 method(void,                append,                       RCString),    const char character);

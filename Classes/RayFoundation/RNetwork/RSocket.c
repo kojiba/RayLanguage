@@ -30,20 +30,14 @@ const byte networkOperationSuccessConst = 1;
     #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
 #endif
 
-inline
 const char* addressToString(SocketAddressIn *address) {
-//#ifndef _WIN32
-//    char ipAddress[INET_ADDRSTRLEN];
-//    return inet_ntop(AF_INET, &(address->sin_addr), ipAddress, INET_ADDRSTRLEN);
-//#else
-    return inet_ntoa(address->sin_addr);
-//#endif
-//    char buffer[4];
-//    buffer[0] = (byte)( address->sin_addr.s_addr&0xFF);
-//    buffer[1] = (byte)((address->sin_addr.s_addr&0xFF00)>>8);
-//    buffer[2] = (byte)((address->sin_addr.s_addr&0xFF0000)>>16);
-//    buffer[3] = (byte)((address->sin_addr.s_addr&0xFF000000)>>24);
-//    return buffer;
+
+    char buffer[4];
+    buffer[0] = (byte)( address->sin_addr.s_addr & 0xFF);
+    buffer[1] = (byte)((address->sin_addr.s_addr & 0xFF00) >> 8);
+    buffer[2] = (byte)((address->sin_addr.s_addr & 0xFF0000) >> 16);
+    buffer[3] = (byte)((address->sin_addr.s_addr & 0xFF000000) >> 24);
+    return cstringWithFormat("%d.%d.%d.%d",buffer[0], buffer[1],  buffer[2], buffer[3]);
 }
 
 RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
@@ -184,6 +178,10 @@ method(byte, send, RSocket), const pointer buffer, size_t size) {
     }
 }
 
+inline method(byte, sendString, RSocket), const RCString *string) {
+    return $(object, m(send, RSocket)), string->baseString, string->size);
+}
+
 #pragma mark Main Method
 
 method(byte, receive, RSocket), pointer buffer, size_t size) {
@@ -210,7 +208,7 @@ method(byte, receive, RSocket), pointer buffer, size_t size) {
  * some samples, code to store
     char buffer[1500];
 
-    RCString *html = stringFromFile("hello.html");
+    RCString *html = stringFromFile("../Resources/hello.html");
 
     if(html == nil)
         goto exit;
@@ -229,7 +227,7 @@ method(byte, receive, RSocket), pointer buffer, size_t size) {
 
 
     if(content != nil) {
-        RSocket *socket = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
+        RSocket *socket = makeRSocket(nil, SOCK_STREAM, IPPROTO_IP);
         if($(socket, m(bindPort, RSocket)), 5000) == no) {
             goto exit;
         } // open on http port
@@ -240,14 +238,17 @@ method(byte, receive, RSocket), pointer buffer, size_t size) {
 
             if (child != nil) {
                 $(child, m(receive, RSocket)), &buffer, 1500);
+                const char *addr = addressToString(&child->address);
+                ushort port = ntohs(child->address.sin_port);
+                printf("%s:%u connected\n", addr, port);
 
                 printf("REQ ============\n"
                        "%s\n"
                        "REQ END ========\n", buffer);
 
                 $(child, m(setAddress, RSocket)), "127.0.0.1");
-                if($(child, m(send, RSocket)), content->baseString, content->size) == networkOperationSuccessConst) {
-                    printf("send sucess\n");
+                if($(child, m(sendString, RSocket)), content) == networkOperationSuccessConst) {
+                    printf("send success\n");
                 } else {
                     RError("Send data to socket", nil);
                     goto exit;

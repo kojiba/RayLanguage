@@ -1,5 +1,5 @@
 /**
- * RCString.h
+ * RString.h
  * Realization of wrapper on '\0' - terminated utf8 strings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 04/23/2015 Ukraine Kharkiv
@@ -28,5 +28,10 @@ rbool utf8GetNextСharacter(const byte     *string,
 size_t utf8Length(byte *string, size_t sizeInBytes);
 
 typedef RCString RString;
+
+extern
+method(size_t, length, RString));
+
+method(RFindResult, enumerate, RString), REnumerateDelegate *delegate);
 
 #endif /*__R_STRING_H__*/

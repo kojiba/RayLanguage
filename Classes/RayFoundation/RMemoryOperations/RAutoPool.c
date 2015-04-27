@@ -16,6 +16,7 @@
  **/
 
 #include <RAutoPool.h>
+#include <RClassTable.h>
 
 #if defined(RAY_POOL_THREAD_SAFE)
     #define poolMutex          &object->mutex
@@ -305,4 +306,12 @@ void disablePool(RAutoPool *object) {
     RMutexLockPool();
     toPoolPtrs();
     RMutexUnlockPool();
+}
+
+int endRay() {
+    deleter(RCTSingleton, RClassTable);
+    printerOfRAutoPool(RPool);
+    deleter(RPool, RAutoPool);
+    stopConsole();
+    return 0;
 }

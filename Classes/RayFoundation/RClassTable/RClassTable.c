@@ -30,7 +30,7 @@ constructor(RClassTable)) {
     // alloc RClassTable
     object = allocator(RClassTable);
 #ifdef RAY_SHORT_DEBUG
-    RPrintf("----- RCT constructor START of %p\n", object);
+    RPrintf("----- RClassTable constructor START of %p\n", object);
 #endif
     if (object != nil) {
 
@@ -57,7 +57,7 @@ constructor(RClassTable)) {
         }
     }
 #ifdef RAY_SHORT_DEBUG
-    RPrintf("----- RCT constructor END of %p\n", object);
+    RPrintf("----- RClassTable constructor END of %p\n", object);
 #endif
     return object;
 }
@@ -68,6 +68,8 @@ destructor(RClassTable) {
 #endif
     deleter(master(object, RArray), RArray);
     deallocator(master(object, RCompareDelegate));
+    master(object, RArray) = nil;
+    master(object, RCompareDelegate) = nil;
 }
 
 #pragma mark Private worker
@@ -177,7 +179,7 @@ singleton(RClassTable) {
 #endif
         instance = $(nil, c(RClassTable)));
         if(instance != nil) {
-            // register classes on that RClassTable was built (only our singleton)
+            // register classes static (only this singleton)
             $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
             $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));

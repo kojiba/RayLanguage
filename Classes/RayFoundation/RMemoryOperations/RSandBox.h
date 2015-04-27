@@ -78,7 +78,6 @@ constructor (RSandBox),    size_t sizeOfMemory,
                            size_t descriptorsCount);
 destructor  (RSandBox);
 printer     (RSandBox);
-singleton   (RSandBox);
 
 // Main methods
 method(pointer, malloc,         RSandBox),    size_t sizeInBytes);
