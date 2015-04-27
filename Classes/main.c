@@ -32,9 +32,9 @@ int main(int argc, const char *argv[]) {
 
     $(RS("Привет мир!"), m(enumerate, RString)), characters);
 
+    metaAlloc(10, "Hello, metaAlloc!");
 
-
-    return endRay();
+    endRay();
 }
 
 

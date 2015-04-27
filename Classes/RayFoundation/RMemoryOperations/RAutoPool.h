@@ -34,6 +34,9 @@ typedef struct RPoolDescriptor {
     RThreadId allocatorThread;
     pointer   ptr;
     size_t    size;
+#ifdef R_POOL_META_ALLOC
+    char     *tipString;
+#endif
 } RPoolDescriptor;
 #endif
 
@@ -63,6 +66,11 @@ printer     (RAutoPool);
 singleton   (RAutoPool);
 
 method(pointer, malloc,         RAutoPool),    size_t sizeInBytes);
+
+#ifdef R_POOL_META_ALLOC
+    method(pointer, metaAlloc,      RAutoPool),    size_t sizeInBytes, char *tipString);
+#endif
+
 method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
 method(pointer, calloc,         RAutoPool),    size_t blockCount, size_t blockSize);
 method(void,    free,           RAutoPool),    pointer ptr);
@@ -107,6 +115,10 @@ RAutoPool* name(void) { \
 
 #define RPool singletonCall(RAutoPool)
 
-int endRay();
+#ifdef R_POOL_META_ALLOC
+    #define metaAlloc(sizeInBytes, tipString) $(RPool, m(metaAlloc, RAutoPool)), sizeInBytes, tipString)
+#else
+    #define metaAlloc(sizeInBytes, tipString) malloc(sizeInBytes)
+#endif
 
 #endif /*__R_AUTO_POOL_H__*/

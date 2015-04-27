@@ -37,10 +37,10 @@ static const Reallocator RTrueRealloc = &realloc;
 static const Callocator  RTrueCalloc  = &calloc;
 static const Deallocator RTrueFree    = &free;
 
-volatile Allocator   RMallocPtr;
-volatile Callocator  RCallocPtr;
-volatile Reallocator RReallocPtr;
-volatile Deallocator RFreePtr;
+extern volatile Allocator   RMallocPtr;
+extern volatile Callocator  RCallocPtr;
+extern volatile Reallocator RReallocPtr;
+extern volatile Deallocator RFreePtr;
 
 #define getRMalloc()  RMallocPtr
 #define getRCalloc()  RCallocPtr

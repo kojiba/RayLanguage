@@ -55,11 +55,11 @@ extern "C" {
 #include <RThread.h>
 #include <RThreadPool.h>
 
-//#define endRay() deleter(RCTSingleton, RClassTable); \
-//                 printerOfRAutoPool(RPool); \
-//                 deleter(RPool, RAutoPool); \
-//                 stopConsole();\
-//                 return 0;
+#define endRay() deleter(RCTSingleton, RClassTable); \
+                 printerOfRAutoPool(RPool); \
+                 deleter(RPool, RAutoPool); \
+                 stopConsole();\
+                 return 0;
 
 #ifdef  __cplusplus
 }
