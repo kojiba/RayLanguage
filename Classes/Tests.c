@@ -136,10 +136,6 @@ int RBufferTest(void) {
     return 0;
 }
 
-class(RListFinder)
-    REnumerateDelegate master;
-
-endOf(RListFinder)
 
 rbool checkObjectRListFinder(pointer data, size_t index) {
     if(index == 2) {
@@ -150,9 +146,9 @@ rbool checkObjectRListFinder(pointer data, size_t index) {
 
 int RListTest(void) {
     size_t iterator;
-    RListFinder finder;
+    REnumerateDelegate finder;
     // link virtual
-    finder.master.virtualCheckObject = checkObjectRListFinder;
+    finder.virtualCheckObject = checkObjectRListFinder;
 
     RList *list = constructorOfRList(nil);
 
@@ -165,7 +161,7 @@ int RListTest(void) {
     RAY_TEST(!result, "RList. Bad sublist.", -2);
     RAY_TEST(result->count != 5, "RList. Bad sublist count.", -3);
 
-    RFindResult founded = $(result, m(enumerate, RList)), &finder.master, yes);
+    RFindResult founded = $(result, m(enumerate, RList)), &finder, yes);
 
     RAY_TEST(!founded.object, "RList. Bad founded object.", -4);
     RAY_TEST(founded.index == list->count, "RList. Bad finded index.", -5);

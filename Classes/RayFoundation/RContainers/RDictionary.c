@@ -31,7 +31,7 @@ constructor(RDictionary)) {
             object->keys->destructorDelegate   = nil;
             object->values->printerDelegate    = nil;
             object->keys->printerDelegate      = nil;
-            object->comparator                 = nil;
+            object->comparator                 = defaultComparator;
 
         } elseError(
                 RError("RDictionary. Allocation keys or values error.", nil)
@@ -77,7 +77,7 @@ constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
     delegate.etaloneObject = key;
     delegate.virtualCompareMethod = object->comparator;
 
-    RFindResult findResult= $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
+    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
 
     if(findResult.object != nil) {
         return $(object->values, m(elementAtIndex, RArray)), findResult.index);

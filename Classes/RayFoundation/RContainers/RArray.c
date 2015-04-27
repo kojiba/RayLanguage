@@ -319,30 +319,34 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p delete objects with predicate", object);
 #endif
-    RMutexLockArray();
-    if(object->destructorDelegate != nil) {
-        for(iterator = 0; iterator < object->count; ) {
-            if($(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
-                object->destructorDelegate(object->array[iterator]);
-                object->array[iterator] = object->array[object->count - 1];
-                incrementFreePlaces();
-                --iterator;
-            } else {
-                ++iterator;
+    if(delegate->virtualCheckObject != nil) {
+        RMutexLockArray();
+        if (object->destructorDelegate != nil) {
+            for (iterator = 0; iterator < object->count;) {
+                if (delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                    object->destructorDelegate(object->array[iterator]);
+                    object->array[iterator] = object->array[object->count - 1];
+                    incrementFreePlaces();
+                    --iterator;
+                } else {
+                    ++iterator;
+                }
+            }
+        } else {
+            for (iterator = 0; iterator < object->count;) {
+                if (delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                    object->array[iterator] = object->array[object->count - 1];
+                    incrementFreePlaces();
+                    --iterator;
+                } else {
+                    ++iterator;
+                }
             }
         }
-    } else {
-        for(iterator = 0; iterator < object->count; ) {
-            if($(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
-                object->array[iterator] = object->array[object->count - 1];
-                incrementFreePlaces();
-                --iterator;
-            } else {
-                ++iterator;
-            }
-        }
-    }
-    RMutexUnlockArray();
+        RMutexUnlockArray();
+    } elseWarning(
+            RWarning("RArray. deleteWithPredicate. Delegate virtual function is nil.", object)
+    );
 }
 
 #pragma mark Get - Find
@@ -354,20 +358,21 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray findObjectWithDelegate of %p\n", object);
 #endif
-    RMutexLockArray();
     result.index = object->count;
-    if(delegate != nil) {
+    if(delegate != nil
+            && delegate->virtualCompareMethod != nil) {
+        RMutexLockArray();
         forAll(iterator, object->count) {
-            if ($(delegate, m(checkObject, RCompareDelegate)), object->array[iterator]) == equals) {
+            if (delegate->virtualCompareMethod(delegate->etaloneObject, object->array[iterator]) == equals) {
                 result.index  = iterator;
                 result.object = object->array[iterator];
                 break;
             }
         }
+        RMutexUnlockArray();
     } elseWarning(
         RWarning("RArray. Delegate for searching is nil." , object);
     );
-    RMutexUnlockArray();
     return result;
 }
 
@@ -415,26 +420,31 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    RMutexLockArray();
-    if(isFromLeft) {
-        forAll(iterator, object->count) {
-            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator], iterator)) {
-                break;
+    if(delegate->virtualCheckObject != nil) {
+        RMutexLockArray();
+        if(isFromLeft) {
+            forAll(iterator, object->count) {
+                if(!delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                    break;
+                }
+            }
+        } else {
+            for(iterator = object->count; iterator != 0; --iterator) {
+                if(!delegate->virtualCheckObject(object->array[iterator - 1], iterator - 1)) {
+                    break;
+                }
             }
         }
-    } else {
-        for(iterator = object->count; iterator != 0; --iterator) {
-            if(!$(delegate, m(checkObject, REnumerateDelegate)), object->array[iterator - 1], iterator - 1)) {
-                break;
-            }
-        }
-    }
 
-    if(iterator != object->count) {
-        result.index = iterator;
-        result.object = object->array[iterator];
-    }
-    RMutexUnlockArray();
+        if(iterator != object->count) {
+            result.index = iterator;
+            result.object = object->array[iterator];
+        }
+        RMutexUnlockArray();
+    } elseWarning(
+            RWarning("RArray. enumerate. Delegate virtual function is nil.", object)
+    );
+
     return result;
 }
 

@@ -52,7 +52,7 @@ void privatePartFinder(finderArgument *argument) {
             argument->selfIterator = 0;
             return;
         }
-        if ($(argument->delegate, m(checkObject, RCompareDelegate)), argument->object->array[iterator]) == equals) {
+        if (argument->delegate->virtualCompareMethod(argument->delegate->etaloneObject, argument->object->array[iterator]) == equals) {
 
             argument->result.index  = iterator;
             argument->result.object = argument->object->array[iterator];

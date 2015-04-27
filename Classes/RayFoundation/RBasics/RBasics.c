@@ -96,23 +96,10 @@ inline rbool compareRBounds(RBounds first, RBounds second) {
     }
 }
 
-#pragma mark RCompareDelegate
-
-method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck){
-    if(object->virtualCompareMethod != nil) {
-        return object->virtualCompareMethod(object->etaloneObject, objectToCheck);
-    } else if(object->etaloneObject == objectToCheck) {
+inline RCompareFlags defaultComparator(pointer first, pointer second) {
+    if(first == second) {
         return equals;
-    }
-    return not_equals;
-}
-
-#pragma mark REnumerateDelegate
-
-method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index) {
-    if(object->virtualCheckObject != nil) {
-        return object->virtualCheckObject(data, index);
     } else {
-        return yes;
+        return not_equals;
     }
 }

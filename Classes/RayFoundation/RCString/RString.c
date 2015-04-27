@@ -33,10 +33,6 @@ size_t utf8Length(byte *string, size_t sizeInBytes) {
     return length;
 }
 
-void iterateCharacters(unsigned char *str, size_t str_size) {
-
-}
-
 rbool utf8GetNextСharacter(const byte     *string,
                                  size_t    stringSize,
                                  size_t   *cursor,
@@ -144,19 +140,23 @@ method(RFindResult, enumerate, RString), REnumerateDelegate *delegate) {
     RFindResult result;
     result.index = object->size;
     result.object = nil;
-
-    while (utf8GetNextСharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid, &codePoint) ) {
-        if (isValid == yes) {
-            if($(delegate, m(checkObject, REnumerateDelegate)), (pointer) (nextPosition - position), iterator) == no) {
-                result.index = iterator;
-                result.object = (pointer) (nextPosition - position);
-                break;
-            }
-        } elseWarning(
-                RWarning("iterateCharacters. Character is invalid.", object)
-        );
-        position = nextPosition;
-        ++iterator;
-    }
+    if(delegate->virtualCheckObject != nil) {
+        while (utf8GetNextСharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid,
+                                    &codePoint)) {
+            if (isValid == yes) {
+                if (delegate->virtualCheckObject((pointer) (nextPosition - position), iterator) == no) {
+                    result.index = iterator;
+                    result.object = (pointer) (nextPosition - position);
+                    break;
+                }
+            } elseWarning(
+                    RWarning("iterateCharacters. Character is invalid.", object)
+            );
+            position = nextPosition;
+            ++iterator;
+        }
+    } elseWarning(
+            RWarning("RString. enumerate. Delegate virtual function is nil.", object)
+    );
     return result;
 }

@@ -212,26 +212,31 @@ constMethod(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool 
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    RMutexLockList();
-    if(isFromLeft) {
-        for (numericIterator = 0; iterator != nil; iterator = iterator->next, ++numericIterator) {
-            if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
-                break;
+    if(delegate->virtualCheckObject != nil) {
+        RMutexLockList();
+        if (isFromLeft) {
+            for (numericIterator = 0; iterator != nil; iterator = iterator->next, ++numericIterator) {
+                if (!delegate->virtualCheckObject(iterator->data, numericIterator)) {
+                    break;
+                }
+            }
+        } else {
+            for (numericIterator = object->count - 1;
+                 iterator != nil; iterator = iterator->previous, --numericIterator) {
+                if (!delegate->virtualCheckObject(iterator->data, numericIterator)) {
+                    break;
+                }
             }
         }
-    } else {
-        for (numericIterator = object->count - 1; iterator != nil; iterator = iterator->previous, --numericIterator) {
-            if(!$(delegate, m(checkObject, REnumerateDelegate)), iterator->data, numericIterator)) {
-                break;
-            }
+        if (iterator != nil) {
+            result.index = numericIterator;
+            result.object = iterator->data;
         }
-    }
-    if(iterator != nil) {
-        result.index = numericIterator;
-        result.object = iterator->data;
-    }
 
-    RMutexUnlockList();
+        RMutexUnlockList();
+    } elseWarning(
+            RWarning("RList. enumerate. Delegate virtual function is nil.", object)
+    );
     return result;
 }
 

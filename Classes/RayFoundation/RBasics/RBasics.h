@@ -74,14 +74,12 @@ protocol(RCompareDelegate) //--------------------------------------------
     pointer            etaloneObject;
 endOf(RCompareDelegate) //-----------------------------------------------
 
-method(RCompareFlags, checkObject, RCompareDelegate), pointer objectToCheck);
+extern RCompareFlags defaultComparator(pointer first, pointer second);
 
 // -----------------------------------------------------------------------
 
 protocol(REnumerateDelegate) //--------------------------------------------
     EnumeretorDelegate virtualCheckObject;
 endOf(REnumerateDelegate)
-
-method(rbool, checkObject, REnumerateDelegate), pointer data, size_t index); // call virtualCheck for all while not no
 
 #endif

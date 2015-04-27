@@ -232,25 +232,29 @@ constMethod(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rboo
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    RMutexLockBuffer();
-    if(isFromLeft) {
-        forAll(iterator, object->count) {
-            if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
-                break;
+    if(delegate->virtualCheckObject != nil) {
+        RMutexLockBuffer();
+        if(isFromLeft) {
+            forAll(iterator, object->count) {
+                if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                    break;
+                }
+            }
+        } else {
+            for(iterator = object->count - 1; iterator != 0; --iterator) {
+                if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                    break;
+                }
             }
         }
-    } else {
-        for(iterator = object->count - 1; iterator != 0; --iterator) {
-            if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
-                break;
-            }
+        if(iterator != object->count) {
+            result.index = iterator;
+            result.object = master(object, RByteArray)->array + object->sizesArray[iterator].start;
         }
-    }
-    if(iterator != object->count) {
-        result.index = iterator;
-        result.object = master(object, RByteArray)->array + object->sizesArray[iterator].start;
-    }
-    RMutexUnlockBuffer();
+        RMutexUnlockBuffer();
+    } elseWarning(
+            RWarning("RBuffer. enumerate. Delegate virtual function is nil.", object)
+    );
     return result;
 }
 
