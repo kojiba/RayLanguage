@@ -185,6 +185,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             delegate->etaloneObject = ptr;
 #else
     #ifdef R_POOL_META_ALLOC
+            char *storedTip = nil;
             RPoolDescriptor* descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
     #else
             RPoolDescriptor* descriptor = descriptorWithInfo(0, ptr, 0);
@@ -200,6 +201,9 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 // not destruct it
                 object->pointersInWork->destructorDelegate = nil;
 #else
+    #ifdef R_POOL_META_ALLOC
+                storedTip = ((RPoolDescriptor*)result.object)->tipString;
+    #endif
                 // only free (must dealloc struct)
                 object->pointersInWork->destructorDelegate = object->innerFree;
 #endif
@@ -217,7 +221,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 // finally add new pointer
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(newSize, temp, currentTreadIdentifier(), ((RPoolDescriptor*)result.object)->tipString);
+                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(newSize, temp, currentTreadIdentifier(), storedTip);
     #else
                 RPoolDescriptor *descriptor2 = descriptorWithInfo(newSize, temp, currentTreadIdentifier());
     #endif

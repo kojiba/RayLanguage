@@ -19,20 +19,15 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-rbool characters(RString checker, size_t iterator) {
-    printf("%lu - ", iterator);
-    p(RString)(&checker);
-    printf("\n");
-    return yes;
-}
-
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    $(RS("Привет мир!"), m(enumerate, RString)), characters);
+    int *array = metaAlloc(arraySize(int, 10), "Int Array for storing some indexes");
 
-    metaAlloc(10, "Hello, metaAlloc!");
+    double *somePointer = metaAlloc(arraySize(double, 1), "Some double pointer");
+
+    somePointer = realloc(somePointer, arraySize(double, 5));
 
     endRay();
 }
