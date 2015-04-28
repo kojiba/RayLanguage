@@ -969,9 +969,9 @@ method(void, appendToFile, RCString), const char *filename) {
 }
 
 RCString * getInputString() {
-    RCString *result = makeRCString();
-    char *charBuff = arrayAllocator(char, 40);
-    size_t empty = 40;
+    RCString *result   = makeRCString();
+        char *charBuff = arrayAllocator(char, baseInputStringSize);
+      size_t  empty    = baseInputStringSize;
 
     if(result != nil
        && charBuff != nil) {

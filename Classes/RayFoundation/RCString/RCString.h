@@ -21,6 +21,8 @@
 
 typedef struct RCString RCString;
 
+#define baseInputStringSize 40 // defines default buffer for getInputString
+
 // basics
 size_t     indexOfFirstCharacterCString  (const char *string, size_t size, char character); // returns index, or size
 size_t     indexOfLastCharacterCString   (const char *string, size_t size, char character); // returns index, or size
@@ -127,11 +129,11 @@ RCString *stringFromFile(const char *filename);
  * Example
  *
  *  RPrintLn("Input some:");
- *  RCString *input = getInputString();
+ *  RCString *input = getInputString(); // all to '\n' symbol size is automatic
  *  p(RCString)(input);
  *  deleter(input, RCString);
 */
-RCString * getInputString(); // reads string from stdin, returns created RCString what must be destructed.
+RCString * getInputString(); // reads string from stdin, returns created RCString which must be destructed.
 
 //----------------------------------------------------------------------------------
 
