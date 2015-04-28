@@ -118,7 +118,7 @@ RAutoPool* name(void) { \
 #ifdef R_POOL_META_ALLOC
     #define metaAlloc(sizeInBytes, tipString) $(RPool, m(metaAlloc, RAutoPool)), sizeInBytes, tipString)
 #else
-    #define metaAlloc(sizeInBytes, tipString) malloc(sizeInBytes)
+    #define metaAlloc(sizeInBytes, tipString) RAlloc(sizeInBytes)
 #endif
 
 #endif /*__R_AUTO_POOL_H__*/

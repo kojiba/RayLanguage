@@ -189,8 +189,8 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
     #else
         RPoolDescriptor* descriptor = descriptorWithInfo(0, ptr, 0);
     #endif
-        delegate->etaloneObject = descriptor;
-        delegate->virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
+        delegate.etaloneObject = descriptor;
+        delegate.virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
 #endif
         // search if it not first realloc for ptr
         RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), &delegate);
