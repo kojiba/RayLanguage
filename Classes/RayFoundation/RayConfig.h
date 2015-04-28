@@ -40,7 +40,7 @@
     #warning Redefine RayBase.h DI macro and delete this warning
 #else
     #define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
-    #define R_POOL_META_ALLOC    // enable to store string tip for pointer like metaAlloc(sizeInBytes, "some memory alloc");
+//    #define R_POOL_META_ALLOC    // enable to store string tip for pointer like metaAlloc(sizeInBytes, "some memory alloc");
 
     #pragma mark Thread-Safety flags
 

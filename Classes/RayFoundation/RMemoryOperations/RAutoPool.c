@@ -178,73 +178,64 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         RMutexLockPool();
         storePtrs();
         toPoolPtrs();
-        RCompareDelegate *delegate = allocator(RCompareDelegate);
-        if(delegate != nil) {
+        RCompareDelegate delegate;
 #ifndef R_POOL_DETAILED
-            delegate->virtualCompareMethod = nil;
-            delegate->etaloneObject = ptr;
+        delegate.virtualCompareMethod = defaultComparator;
+        delegate.etaloneObject = ptr;
 #else
     #ifdef R_POOL_META_ALLOC
-            char *storedTip = nil;
-            RPoolDescriptor* descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
+        char *storedTip = nil;
+        RPoolDescriptor* descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
     #else
-            RPoolDescriptor* descriptor = descriptorWithInfo(0, ptr, 0);
+        RPoolDescriptor* descriptor = descriptorWithInfo(0, ptr, 0);
     #endif
-            delegate->etaloneObject = descriptor;
-            delegate->virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
+        delegate->etaloneObject = descriptor;
+        delegate->virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
 #endif
-            // search if it not first realloc for ptr
-            RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), delegate);
-            if(result.object != nil) {
-                RArrayFlags error;
+        // search if it not first realloc for ptr
+        RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), &delegate);
+        if(result.object != nil) {
+            RArrayFlags error;
 #ifndef R_POOL_DETAILED
-                // not destruct it
-                object->pointersInWork->destructorDelegate = nil;
+            // not destruct it
+            object->pointersInWork->destructorDelegate = nil;
 #else
     #ifdef R_POOL_META_ALLOC
-                storedTip = ((RPoolDescriptor*)result.object)->tipString;
+            storedTip = ((RPoolDescriptor*)result.object)->tipString;
     #endif
-                // only free (must dealloc struct)
-                object->pointersInWork->destructorDelegate = object->innerFree;
+            // only free (must dealloc struct)
+            object->pointersInWork->destructorDelegate = object->innerFree;
 #endif
-                error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
+            error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
 
-                ifError(error != no_error,
+            ifError(error != no_error,
                     RError("Bad pointers array index on delete (realloc).", object)
-                );
+            );
 
-                object->pointersInWork->destructorDelegate = innerFree;
-            }
+            object->pointersInWork->destructorDelegate = innerFree;
+        }
 
-            pointer temp = RReAlloc(ptr, newSize);
-            if(temp != nil) {
+        pointer temp = RReAlloc(ptr, newSize);
+        if(temp != nil) {
                 // finally add new pointer
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(newSize, temp, currentTreadIdentifier(), storedTip);
+            RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(newSize, temp, currentTreadIdentifier(), storedTip);
     #else
-                RPoolDescriptor *descriptor2 = descriptorWithInfo(newSize, temp, currentTreadIdentifier());
+            RPoolDescriptor *descriptor2 = descriptorWithInfo(newSize, temp, currentTreadIdentifier());
     #endif
-                $(object->pointersInWork, m(addObject, RArray)), descriptor2);
+            $(object->pointersInWork, m(addObject, RArray)), descriptor2);
 #else
-                $(object->pointersInWork, m(addObject, RArray)), temp);
+            $(object->pointersInWork, m(addObject, RArray)), temp);
 #endif
-            }
+        }
 
 #ifdef R_POOL_DETAILED
-            deallocator(descriptor);
+        deallocator(descriptor);
 #endif
-            deallocator(delegate);
-            backPtrs();
-            RMutexUnlockPool();
-            return temp;
-
-        } elseError(
-            RError("RAutoPool. Bad RCompareDelegate allocation (realloc).", object)
-        );
-
         backPtrs();
         RMutexUnlockPool();
+        return temp;
     }
     return nil;
 }
@@ -279,8 +270,8 @@ method(void, free, RAutoPool), pointer ptr) {
         toPoolPtrs();
         RCompareDelegate delegate;
 #ifndef R_POOL_DETAILED
-        delegate->virtualCompareMethod = nil;
-        delegate->etaloneObject = ptr;
+        delegate.virtualCompareMethod = defaultComparator;
+        delegate.etaloneObject = ptr;
 #else
     #ifdef R_POOL_META_ALLOC
         RPoolDescriptor *descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
