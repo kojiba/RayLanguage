@@ -1,6 +1,8 @@
 RayLanguage
 ===========
 
+**If You have some ideas, or found bugs - create issues here on github or email me.**
+
 firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
