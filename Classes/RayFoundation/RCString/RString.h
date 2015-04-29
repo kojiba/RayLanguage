@@ -19,7 +19,7 @@
 #include <RSyntax.h>
 #include <RCString.h>
 
-rbool utf8GetNextСharacter(const byte     *string,
+rbool utf8GetNextCharacter(const byte     *string,
                                  size_t    stringSize,
                                  size_t   *cursor,
                                  rbool    *isValid,

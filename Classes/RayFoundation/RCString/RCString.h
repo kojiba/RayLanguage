@@ -58,7 +58,7 @@ method(RCString *,          setConstantString,            RCString),    char con
 // Replace
 method(void,                replaceCharacters,            RCString),    char characterToReplace, char replacer);
 method(void,                replaceSubstrings,            RCString),    RCString *toReplace, RCString *replacer);
-method(void,                replaceСSubstrings,           RCString),    char *toReplace, char *replacer);
+method(void,                replaceCSubstrings,           RCString),    char *toReplace, char *replacer);
 
 // Info - universal encoding
 constMethod(size_t,         numberOfCharacters,           RCString),    char character);

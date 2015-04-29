@@ -23,7 +23,7 @@ size_t utf8Length(byte *string, size_t sizeInBytes) {
     size_t nextPosition = 0;
     unsigned codePoint = 0;
 
-    while (utf8GetNextСharacter(string, sizeInBytes, &nextPosition, &isValid, &codePoint)) {
+    while (utf8GetNextCharacter(string, sizeInBytes, &nextPosition, &isValid, &codePoint)) {
         ++length;
     }
     ifWarning(!isValid,
@@ -33,7 +33,7 @@ size_t utf8Length(byte *string, size_t sizeInBytes) {
     return length;
 }
 
-rbool utf8GetNextСharacter(const byte     *string,
+rbool utf8GetNextCharacter(const byte     *string,
                                  size_t    stringSize,
                                  size_t   *cursor,
                                  rbool    *isValid,
@@ -149,7 +149,7 @@ method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
     result.index = object->size;
     result.object = nil;
     if(enumerator != nil) {
-        while (utf8GetNextСharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid,
+        while (utf8GetNextCharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid,
                                     &codePoint)) {
             if (isValid == yes) {
                 RString string;

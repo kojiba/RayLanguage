@@ -284,7 +284,7 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
     );
 }
 
-method(void, replaceСSubstrings, RCString), char *toReplace, char *replacer) {
+method(void, replaceCSubstrings, RCString), char *toReplace, char *replacer) {
     RCString *toReplaceTemp = RString(toReplace);
     RCString *replacerTemp = RString(replacer);
     $(object, m(replaceSubstrings, RCString)), toReplaceTemp, replacerTemp);
@@ -366,7 +366,7 @@ constMethod(rbool, isContainsCSubstring, RCString), char *string) {
         deallocator(temp);
         return result;
     }
-    return nil;
+    return no;
 }
 
 inline constMethod(size_t, numberOfLines, RCString)) {
@@ -1001,7 +1001,7 @@ RCString * getInputString() {
         }
 
         if(empty > 0) {
-            charBuff = RReAlloc(charBuff, arraySize(char, result->size));
+            charBuff = RReAlloc(charBuff, arraySize(char, result->size + 1));
         }
 
         result->baseString = charBuff;
