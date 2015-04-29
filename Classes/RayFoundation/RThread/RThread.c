@@ -44,16 +44,15 @@ inline unsigned processorsCount() {
 #pragma mark Thread
 
 inline int RThreadCreate(RThread *thread,
-                  RThreadAttributes *attributes,
+                  RThreadAttributes attributes,
                   RThreadFunction function,
                   pointer argument ) {
 
 #ifndef __WIN32
     return pthread_create(thread, attributes, function, argument);
 #else
-    *thread = CreateThread(nil, 0, function, argument, 0, nil);
-    if(*thread != nil)
-        return 1;
+        *thread = CreateThread(attributes, 0, function, argument, 0, nil);
+        return *thread != nil;
 #endif
 }
 
@@ -99,7 +98,7 @@ inline int RMutexLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_lock(mutex);
 #else
-    return WaitForSingleObject(mutex, INFINITE);
+    return (int) WaitForSingleObject(mutex, INFINITE);
 #endif
 }
 

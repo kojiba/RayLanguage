@@ -194,12 +194,13 @@ pointer func1(pointer arg) {
 }
 
 int RThreadTest(void) {
-#if !defined(__WIN32) && !defined(RAY_EMBEDDED) && defined(RAY_ARRAY_THREAD_SAFE)
+#if !defined(RAY_EMBEDDED) && defined(RAY_ARRAY_THREAD_SAFE)
     storePtrs();
     arrayTest = makeRArray();
     int i;
     arrayTest->destructorDelegate = free;
     RThread thread1;
+    flushAllToByte(&thread1, sizeof(RThread), 0);
     RThreadCreate(&thread1, nil, (RThreadFunction) func1, "1 thread");
 
     forAll(i, TEST_COUNT) {

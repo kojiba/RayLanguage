@@ -23,7 +23,7 @@
 
     // types
     typedef pthread_t              RThread;
-    typedef pthread_attr_t         RThreadAttributes;
+    typedef pthread_attr_t*        RThreadAttributes;
 
     typedef pthread_mutex_t        RMutex;
     typedef pthread_mutexattr_t    RMutexAttributes;
@@ -50,7 +50,7 @@
 
     // types
     typedef HANDLE                    RThread;
-    typedef LPVOID                    RThreadAttributes;
+    typedef LPSECURITY_ATTRIBUTES     RThreadAttributes;
     typedef HANDLE                    RMutex;
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
     typedef DWORD            (WINAPI* RThreadFunction)(pointer);
@@ -74,7 +74,7 @@ extern unsigned  processorsCount();        // returns cores count
 #pragma mark Thread
 
 extern int  RThreadCreate (RThread *thread,
-                           RThreadAttributes *attributes,
+                           RThreadAttributes attributes,
                            RThreadFunction function,
                            pointer argument);
 

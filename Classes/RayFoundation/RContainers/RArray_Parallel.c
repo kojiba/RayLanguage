@@ -110,11 +110,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
                 } else {
                     arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore + additionalForLastCore);
                 }
-                #ifndef __WIN32
-                RThreadCreate(&descriptor, nil, (pointer (*)(pointer)) privatePartFinder, &arguments[iterator]);
-                #else
-                    #warning FIXME threads
-                #endif
+                RThreadCreate(&descriptor, nil, (RThreadFunction) privatePartFinder, &arguments[iterator]);
             }
 
             // wait while not found or all threads not found
@@ -197,11 +193,7 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
                 } else {
                     arguments[iterator].partRange = makeRRange(iterator * partForCore, partForCore + additionalForLastCore);
                 }
-#ifndef __WIN32
-                RThreadCreate(&descriptors[iterator], nil, (pointer (*)(pointer)) privatePartExecuter, &arguments[iterator]);
-#else
-                #warning FIXME threads
-#endif
+                RThreadCreate(&descriptors[iterator], nil, (RThreadFunction) privatePartExecuter, &arguments[iterator]);
             }
 
             // join all threads
