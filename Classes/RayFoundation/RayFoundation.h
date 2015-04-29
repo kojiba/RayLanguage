@@ -37,6 +37,7 @@ extern "C" {
 #include <RCString.h>
 #include <RCString_Numbers.h>
 #include <RString.h>
+#include <RString_Consts.h>
 
 // Memory operations
 #include <RByteOperations.h>
@@ -56,6 +57,7 @@ extern "C" {
 #include <RThreadPool.h>
 
 #define endRay() deleter(RCTSingleton, RClassTable); \
+                 deleter(stringConstantsTable(), RDictionary);\
                  printerOfRAutoPool(RPool); \
                  deleter(RPool, RAutoPool); \
                  stopConsole();\

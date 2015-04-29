@@ -19,15 +19,23 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
+#define Equals(rstring, rstring2) ($(rstring, m(compareWith, RCString)), rstring2) == equals)
+
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    int *array = metaAlloc(arraySize(int, 10), "Int Array for storing some indexes");
+    rbool exit = no;
 
-    double *somePointer = metaAlloc(arraySize(double, 1), "Some double pointer");
-
-    somePointer = realloc(somePointer, arraySize(double, 5));
+    while(!exit) {
+        RString *command = getInputString();
+        if(Equals(command, RS("exit"))) { // RS("exit") creates once
+            exit = yes;
+        } else if(Equals(command, RS("hello"))) { // RS("hello") creates once
+            RPrintLn("Hello to You, %%username%%\n");
+        }
+        deleter(command, RCString);
+    }
 
     endRay();
 }

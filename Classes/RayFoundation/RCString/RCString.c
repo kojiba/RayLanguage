@@ -55,7 +55,7 @@ char * copyOfCString(const char *string) {
 
 char * substringInRange(const char *string, RRange range) {
     char     *result = nil;
-    RCString *temp   = RS(string);
+    RCString *temp   = RString(string);
     if(temp != nil) {
         RCString *sub = $(temp, m(substringInRange, RCString)), range);
         if(sub != nil) {
@@ -183,12 +183,14 @@ RCString * stringWithFormat(char *string, ...) {
 }
 
 RCString * RCStringInit(pointer data, size_t size){
-    RCString *result = makeRCString();
-    if(result != nil) {
-        result->baseString = data;
-        result->size = size;
+    RCString * object = allocator(RCString);
+    if(object != nil) {
+        // 1 - it's for RCString
+        object->classId    = 1;
+        object->size       = size;
+        object->baseString = data;
     }
-    return result;
+    return object;
 }
 
 void stringDeleter(RCString *string) {
@@ -283,8 +285,8 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
 }
 
 method(void, replaceСSubstrings, RCString), char *toReplace, char *replacer) {
-    RCString *toReplaceTemp = RS(toReplace);
-    RCString *replacerTemp = RS(replacer);
+    RCString *toReplaceTemp = RString(toReplace);
+    RCString *replacerTemp = RString(replacer);
     $(object, m(replaceSubstrings, RCString)), toReplaceTemp, replacerTemp);
     deallocator(toReplaceTemp);
     deallocator(replacerTemp);
@@ -358,7 +360,7 @@ constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
 
 inline
 constMethod(rbool, isContainsCSubstring, RCString), char *string) {
-    RCString *temp = RS(string);
+    RCString *temp = RString(string);
     if(temp != nil) {
         rbool result = $(object, m(isContainsSubstring, RCString)), temp);
         deallocator(temp);
@@ -446,7 +448,7 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
 
 inline
 method(RCString *, deleteAllSubstringsCStr, RCString), const char *substring) {
-    RCString *temp = RS(substring);
+    RCString *temp = RString(substring);
     RCString *result = nil;
     if(temp != nil) {
         result = $(object, m(deleteAllSubstrings, RCString)), temp);
@@ -696,7 +698,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
 
 inline
 constMethod(RArray *, substringsSeparatedBySymCStr, RCString), const char * const separatorsString) {
-    RCString *temp = RS(separatorsString);
+    RCString *temp = RString(separatorsString);
     RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
     deallocator(temp);
     return result;
@@ -801,7 +803,7 @@ constMethod(RCompareFlags, compareWith, RCString), const RCString *checkString) 
 }
 
 constMethod(RCompareFlags, compareWithStr, RCString), const char *const checkString) {
-    RCString *temp = RS(checkString);
+    RCString *temp = RString(checkString);
     RCompareFlags result = $(object, m(compareWith, RCString)), temp);
     deallocator(temp);
     return result;
@@ -823,7 +825,7 @@ constMethod(rbool, startsOn, RCString), const RCString *const checkString) {
 }
 
 constMethod(rbool, endsOnStr, RCString), const char *const checkString) {
-    RCString *temp = RS(checkString);
+    RCString *temp = RString(checkString);
     rbool result = $(object, m(endsOn, RCString)), temp);
     deallocator(temp);
     return result;

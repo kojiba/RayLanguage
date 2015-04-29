@@ -55,6 +55,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString_Numbers.h
                  Classes/RayFoundation/RCString/RString.h
+                 Classes/RayFoundation/RCString/RString_Consts.h
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.h
@@ -94,6 +95,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RCString/RCString.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
                  Classes/RayFoundation/RCString/RString.c
+                 Classes/RayFoundation/RCString/RString_Consts.c
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.c

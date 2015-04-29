@@ -131,7 +131,8 @@ constMethod(RCString*, encodeBase64, RCString)) {
         }
 
     } elseError(
-            RError("RCString. Base64 encode. Bad allocation of result struct.", result) );
+            RError("RCString. Base64 encode. Bad allocation of result struct.", result)
+    );
     return nil;
 }
 
@@ -147,7 +148,8 @@ constMethod(RCString*, decodeBase64, RCString)) {
             return result;
         }
     } elseError(
-            RError("RCString. Base64 decode. Bad allocation of result struct.", result) );
+            RError("RCString. Base64 decode. Bad allocation of result struct.", result)
+    );
     return nil;
 }
 
@@ -164,7 +166,8 @@ constMethod(RByteArray*, decodeBase64ToBytes, RCString)) {
         }
 
     } elseError(
-            RError("RCString. Base64 decode. Bad allocation of result RByteArray struct.", result) );
+            RError("RCString. Base64 decode. Bad allocation of result RByteArray struct.", result)
+    );
     return nil;
 }
 

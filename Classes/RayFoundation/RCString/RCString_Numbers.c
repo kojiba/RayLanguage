@@ -14,6 +14,7 @@
  **/
 
 #include <RCString_Numbers.h>
+#include <RString_Consts.h>
 
 #pragma mark Basics
 

@@ -17,11 +17,14 @@
 #include <RClassTable.h>
 #include <stdarg.h>
 
+#define findKey(key) RCompareDelegate delegate; \
+                     delegate.etaloneObject = key; \
+                     delegate.virtualCompareMethod = object->comparator; \
+                     RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), &delegate)
+
 constructor(RDictionary)) {
     object = allocator(RDictionary);
     if(object != nil) {
-        // set up class ID
-        object->classId = registerClassOnce(toString(RDictionary));
         object->keys    = makeRArray();
         object->values  = makeRArray();
 
@@ -32,6 +35,9 @@ constructor(RDictionary)) {
             object->values->printerDelegate    = nil;
             object->keys->printerDelegate      = nil;
             object->comparator                 = defaultComparator;
+
+            // set up class ID
+            object->classId = registerClassOnce(toString(RDictionary));
 
         } elseError(
                 RError("RDictionary. Allocation keys or values error.", nil)
@@ -50,16 +56,20 @@ method(void, initDelegate, RDictionary), ComparatorDelegate comparator) {
 }
 
 method(void, setObjectForKey, RDictionary), pointer value, pointer key) {
-    RCompareDelegate delegate;
-    delegate.etaloneObject = key;
-    delegate.virtualCompareMethod = object->comparator;
-
-    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
+    findKey(key);
 
     // if object for key not exist
     if(findResult.object == nil){
-        $(object->keys,   m(addObject, RArray)), key);    // adding
-        $(object->values, m(addObject, RArray)), value);  // adding
+        if($(object->keys,   m(addObject, RArray)), key) == no_error) {       // adding
+            if($(object->values, m(addObject, RArray)), value) == no_error) { // adding
+
+            } else {
+                $(object->keys, m(deleteLast, RArray)));
+                RError2("RDictionary. Can't add value %p for key %p", object, value, key);
+            }
+        } elseError(
+                RError1("RDictionary. Can't add key %p for key array", object, key)
+        )
 
     // if key exist
     } else {
@@ -73,17 +83,12 @@ method(void, sizeToFit, RDictionary)) {
 }
 
 constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
-    RCompareDelegate delegate;
-    delegate.etaloneObject = key;
-    delegate.virtualCompareMethod = object->comparator;
-
-    RFindResult findResult = $(object->keys, m(findObjectWithDelegate, RArray)), &delegate);
+    findKey(key);
 
     if(findResult.object != nil) {
         return $(object->values, m(elementAtIndex, RArray)), findResult.index);
-    } else {
-        return nil;
     }
+    return nil;
 }
 
 printer(RDictionary){
@@ -93,9 +98,17 @@ printer(RDictionary){
     RPrintf(" Free  : %lu \n", object->keys->freePlaces);
     forAll(iterator, object->keys->count) {
         RPrintf("\t %lu - ", iterator);
-        object->keys->printerDelegate  ($(object->keys, m(elementAtIndex, RArray)),   iterator));
+        if(object->keys->printerDelegate != nil) {
+            object->keys->printerDelegate($(object->keys, m(elementAtIndex, RArray)),   iterator));
+        } else {
+            RPrintf("%p ", $(object->keys, m(elementAtIndex, RArray)),   iterator));
+        }
         RPrintf(" : ");
+        if(object->values->printerDelegate != nil) {
         object->values->printerDelegate($(object->values, m(elementAtIndex, RArray)), iterator));
+        } else {
+            RPrintf("%p ", $(object->keys, m(elementAtIndex, RArray)),   iterator));
+        }
         RPrintLn("");
     }
     RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
@@ -137,7 +150,7 @@ RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
             temp = va_arg(args, pointer);
         }
         ifError(keysCount != valuesCount,
-                RError2("dictionaryFromPairs. Bad keys and values count (%lu, %lu).", nil, keysCount, valuesCount)
+                RError2("RDictionary. dictionaryFromPairs. Bad keys and values count (%lu, %lu).", nil, keysCount, valuesCount)
         );
 
         va_end(args);

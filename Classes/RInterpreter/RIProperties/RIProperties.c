@@ -156,7 +156,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
 
         // next must be names separated
         RCString *tempCode = RCStringInit(codeIterator, codeSize);
-        RCString *tempSeparator = RS(property_names_separator_string);
+        RCString *tempSeparator = RString(property_names_separator_string);
 
         // parse names
         RArray *names = $(tempCode, m(substringsSeparatedByString, RCString)), tempSeparator);
@@ -196,7 +196,7 @@ error:
 
 inline
 RayProperty* ParsePropertyCString(char *code, RClassTable *delegate) {
-    RCString *source = RS(code);
+    RCString *source = RString(code);
     RayProperty *result = ParsePropertyString(source, delegate);
     deallocator(source);
     return result;

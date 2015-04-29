@@ -1,5 +1,6 @@
 #include <time.h>
 #include <RayFoundation.h>
+#include <RString_Consts.h>
 
 int RByteArrayTest(void) {
     size_t i;
@@ -187,7 +188,7 @@ RArray *arrayTest;
 pointer func1(pointer arg) {
     int i;
     forAll(i, TEST_COUNT) {
-        $(arrayTest, m(addObject, RArray)), RS((char*)arg));
+        $(arrayTest, m(addObject, RArray)), RString((char*)arg));
     }
     return 0;
 }
@@ -202,7 +203,7 @@ int RThreadTest(void) {
     RThreadCreate(&thread1, nil, (RThreadFunction) func1, "1 thread");
 
     forAll(i, TEST_COUNT) {
-        $(arrayTest, m(addObject, RArray)), RS("main"));
+        $(arrayTest, m(addObject, RArray)), RString("main"));
     }
 
     $(&thread1, RThreadJoin));

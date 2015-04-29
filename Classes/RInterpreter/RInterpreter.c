@@ -232,7 +232,7 @@ method(size_t, endOfProcessingString, RInterpreter)) {
 #pragma mark Main method
 
 method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
-    RCString *sourceName = RS(sourceFileName);
+    RCString *sourceName = RString(sourceFileName);
     RCString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), sourceName);
 
     if(resultName != nil) {
@@ -241,7 +241,7 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
         object->sourceFileString = RCStringFromFile(sourceFileName);
 
         rbool isBeginOfConst = no;
-        RCString *basicSeparatorString = RS(" \n");
+        RCString *basicSeparatorString = RString(" \n");
         while(object->sourceFileString != nil) {
 
             size_t    endOfProcessingSubstring;
