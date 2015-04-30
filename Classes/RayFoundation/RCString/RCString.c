@@ -307,24 +307,37 @@ constMethod(size_t, numberOfCharacters, RCString), char character) {
 }
 
 constMethod(size_t, numberOfSubstrings, RCString), const RCString * const string) {
-    if(string->size == 1) {
-        return $(object, m(numberOfCharacters, RCString)), string->baseString[0]);
-    } else if(object->size >= string->size) {
-        size_t iterator;
-        size_t count    = 0;
-        forAll(iterator, object->size) {
-            // search for first symbol
-            if(object->baseString[iterator] == string->baseString[0]) {
-                // compare others
-                if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
-                    ++count;
+    if(string != nil
+       && string->size != 0
+       && string->baseString != nil) {
+        if(string->size == 1) {
+            return $(object, m(numberOfCharacters, RCString)), string->baseString[0]);
+        } else if(object->size >= string->size) {
+            size_t iterator;
+            size_t count    = 0;
+            forAll(iterator, object->size - string->size + 1) {
+                // search for first symbol
+                if(object->baseString[iterator] == string->baseString[0]) {
+                    // compare others
+                    if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
+                        ++count;
+                    }
                 }
             }
+           return count;
         }
-       return count;
-    } else {
-        return 0;
-    }
+    } elseWarning(
+            RWarning("RCString. numberOfSubstrings. Bad string to check.", object)
+    )
+    return 0;
+}
+
+inline
+constMethod(size_t, numberOfCSubstrings, RCString), const char * string) {
+    RCString *temp = RString(string);
+      size_t  result = $(object, m(numberOfSubstrings, RCString)), temp);
+    deallocator(temp);
+    return result;
 }
 
 static inline
@@ -341,7 +354,9 @@ constMethod(rbool, isContains, RCString), char character) {
 static inline
 constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
     // search for first symbol
-    if(object->size >= string->size) {
+    if(string != nil
+       && string->baseString != nil
+       && object->size >= string->size) {
         size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
         if (iterator != string->size) {
             // compare others
@@ -354,6 +369,7 @@ constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
             return no;
         }
     } else {
+        RWarning("RCString. isContainsSubstring. Bad string to check", object);
         return no;
     }
 }
@@ -370,7 +386,27 @@ constMethod(rbool, isContainsCSubstring, RCString), char *string) {
 }
 
 inline constMethod(size_t, numberOfLines, RCString)) {
-    return $(object, m(numberOfCharacters, RCString)), '\n');
+    return $(object, m(numberOfCSubstrings, RCString)), "\n");
+}
+
+constMethod(size_t, indexOfSubstring, RCString), RCString *string) {
+    if(string != nil
+            && string->baseString != nil
+            && string->size <= object->size) {
+        size_t iterator;
+        forAll(iterator, object->size - string->size + 1) {
+            // search for first symbol
+            if(object->baseString[iterator] == string->baseString[0]) {
+                // compare others
+                if(RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
+                    return iterator;
+                }
+            }
+        }
+    } elseWarning(
+            RWarning("RCString. indexOfSubstring. Bad string to check", object)
+    );
+    return object->size;
 }
 
 #pragma mark Deletions
@@ -532,6 +568,13 @@ inline
 method(void, trimHead, RCString), size_t size) {
     $(object, m(deleteInRange, RCString)), makeRRange(0, size));
 }
+inline
+method(void,         trimAfterString,              RCString),    RCString *string) {
+    size_t index = $(object, m(indexOfSubstring, RCString)), string);
+    if(index != object->size) {
+        $(object, m(deleteInRange, RCString)), makeRRangeTo(index, object->size));
+    }
+}
 
 #pragma mark Subs and Copies
 
@@ -691,7 +734,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
             $(result, m(sizeToFit, RArray)) );
         }
     } elseWarning(
-            RWarning("RCString. Bad separator string size, or string size.", object)
+            RWarning("RCString. substringsSeparatedBySymbols. Bad separator string size, or string size.", object)
     );
     return result;
 }

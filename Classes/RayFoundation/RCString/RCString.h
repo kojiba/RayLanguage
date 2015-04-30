@@ -63,6 +63,8 @@ method(void,                replaceCSubstrings,           RCString),    char *to
 // Info - universal encoding
 constMethod(size_t,         numberOfCharacters,           RCString),    char character);
 constMethod(size_t,         numberOfSubstrings,           RCString),    const RCString * const string);
+extern
+constMethod(size_t,         numberOfCSubstrings,           RCString),    const char * string);
 static inline
 constMethod(rbool,          isContains,                   RCString),    char character);
 static inline
@@ -71,6 +73,7 @@ extern
 constMethod(rbool,          isContainsCSubstring,         RCString),    char *string);
 extern
 constMethod(size_t,         numberOfLines,                RCString));
+constMethod(size_t,         indexOfSubstring,             RCString),    RCString *string);
 
 // Deletions
 method(RCString *,          deleteAllCharacters,          RCString),    char character);                      // returns reference (not copy!)
@@ -88,6 +91,8 @@ extern
 method(void,                trimTail,                     RCString),    size_t size);                         // deletes start end
 extern
 method(void,                trimHead,                     RCString),    size_t size);                         // deletes start start
+extern
+method(void,                trimAfterString,              RCString),    RCString *string);
 
 // Subs and Copies
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char * const string);    // returns reference (not copy!)
