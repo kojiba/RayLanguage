@@ -21,6 +21,6 @@
 #include <RDictionary.h>
 
 RDictionary * stringConstantsTable();
-RCString *    constantString(char *string);
+RCString *    constantRString(char *string);
 
-#define RS(cstring) constantString(cstring)
+#define RS(cstring) constantRString(cstring)

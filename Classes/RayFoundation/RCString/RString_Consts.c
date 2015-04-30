@@ -34,7 +34,7 @@ RDictionary* stringConstantsTable() {
     return instance;
 }
 
-RCString * constantString(char *string) {
+RCString * constantRString(char *string) {
     // comparator for only compile-time constants
     RCompareDelegate delegate;
     delegate.virtualCompareMethod = defaultComparator;
