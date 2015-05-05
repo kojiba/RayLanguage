@@ -372,7 +372,7 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
         size_t result = sizeof(size_t);
         result = fwrite(&result, 1, 1, file);
 
-        ifError(result != 1, RError("RBuffer. Failed save init data to file. Breaking process.", object) );
+        ifError(result != 1, RError("RBuffer. Failed save init data to file. Breaking processLine.", object) );
 
         // create sizes array
         size_t *tempSizes = arrayAllocator(size_t, object->count);
@@ -429,7 +429,7 @@ constMethod(RBuffer *, serializeToBuffer, RByteArray), size_t *sizesArray) {
                 if(newSizesArray != nil) {
                     size_t sum = 0;
 
-                    // process size array into RRange array
+                    // processLine size array into RRange array
                     forAll(iterator, result->count) {
                         newSizesArray[iterator].start = sum;
                         newSizesArray[iterator].size = sizesArray[iterator];

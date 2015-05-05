@@ -57,7 +57,6 @@ extern "C" {
 #include <RThreadPool.h>
 
 #define endRay() deleter(RCTSingleton, RClassTable); \
-                 p(RDictionary)(stringConstantsTable());\
                  deleter(stringConstantsTable(), RDictionary);\
                  p(RAutoPool)(RPool); \
                  deleter(RPool, RAutoPool); \

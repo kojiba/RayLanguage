@@ -9,7 +9,7 @@ set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 # sub-sources flags
 set(RVM            NO)
 set(RayInterpreter NO)
-set(DebugFlag      NO) # NO - for build library
+set(DebugFlag      YES) # NO - for build library
 set(copyResources  NO)
 
 
@@ -33,6 +33,7 @@ include_directories(Classes/RayFoundation/RFloatingEnum)
 include_directories(Classes/RayFoundation/RMemoryOperations)
 include_directories(Classes/RayFoundation/RThread)
 include_directories(Classes/RayFoundation/RNetwork)
+include_directories(Classes/RayFoundation/Utils)
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayConfig.h
@@ -79,7 +80,7 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayFoundation.h
 
                  # Tests
-                 Classes/Tests.h)
+                 Classes/RayFoundation/Utils/Utils.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RBasics/RBasics.c
@@ -116,7 +117,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RNetwork/RSocket.c
 
                  # Tests
-                 Classes/Tests.c)
+                 Classes/RayFoundation/Utils/Utils.c)
 
 if(NOT ${DebugFlag})
     add_library(
@@ -180,7 +181,9 @@ else()
     set(RINTERPRETER_SOURCES)
 endif() # RInterpreter ---------------------------------------------------
 
-add_executable(${EXECUTABLE_NAME} Classes/main.c ${RVM_HEADERS}
+add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
+                                                 Classes/Tests.c
+                                                 ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}

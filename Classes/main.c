@@ -17,40 +17,21 @@
  **/
 
 #include <RayFoundation.h>
+#include <Utils/Utils.h>
 #include "Tests.h"
-
-rbool process(pointer string, size_t iterator) {
-    $(string, m(trimAfterString, RCString)), RS("//")); // trim comment
-    if(((RCString*)string)->size != 0) { // if not fully comment
-        RArray *keyValue = $(string, m(substringsSeparatedByString, RCString)), RS("="));
-        if(keyValue != nil) {
-            p(RArray)(keyValue);
-            deleter(keyValue, RArray);
-        }
-    } else {
-        RPrintf("String at index %lu is comment.\n", iterator);
-    }
-    return yes;
-}
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    REnumerateDelegate delegate;
-    delegate.virtualCheckObject = (EnumeretorDelegate) process;
+    RDictionary * dict = stringDictionaryFromFile("Localizable.strings");
+    if(dict != nil) {
+        RPrintf("Object for key \"authorizedperson.phone\" is ");
+        RCString * value = $(dict, m(getObjectForKey, RDictionary)), RS("authorizedperson.phone"));
+        p(RCString)(value);
 
-    RCString *locales = stringFromFile("Localizable.strings");
-    if(locales != nil) {
-        $(locales, m(removeRepetitionsOfString, RCString)), RS("\n"));                  // trim some
-        RArray *temp = $(locales, m(substringsSeparatedByString, RCString)), RS("\n")); // get lines
-
-        if(temp != nil) {
-            p(RArray)(temp);
-            $(temp, m(enumerate, RArray)), &delegate, yes);
-            deleter(temp, RArray);
-        }
-        deleter(locales, RCString);
+        p(RDictionary)(dict);
+        deleter(dict, RDictionary);
     }
 
     endRay();

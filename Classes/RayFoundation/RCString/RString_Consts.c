@@ -25,7 +25,6 @@ RDictionary* stringConstantsTable() {
         if(instance != nil) {
             $(instance->keys, m(setPrinterDelegate, RArray)), (PrinterDelegate) RPrintf);
 
-            $(instance->values, m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RString));
             $(instance->values, m(setDestructorDelegate, RArray)), RFree); // only dealloc
         } elseError(
             RError("Can't allocate array of RStrings constants", nil)

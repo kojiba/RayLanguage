@@ -38,7 +38,7 @@ printer(RDictionary);
 
 #pragma mark Init from scratch
 
-RDictionary* dictionaryFromPairs(pointer firstKey, ...); // dict from array of pointers of type key, value, last must be nil)
+RDictionary * dictionaryFromPairs(pointer firstKey, ...); // dict from array of pointers of type key, value, last must be nil)
 
 // some macros for shorter work
 #define makeRDictionary()       $(nil, c(RDictionary)) )

@@ -93,6 +93,8 @@ extern
 method(void,                trimHead,                     RCString),    size_t size);                         // deletes start start
 extern
 method(void,                trimAfterString,              RCString),    RCString *string);
+extern
+method(void,                trimToString,                 RCString),    RCString *string);
 
 // Subs and Copies
 method(RCString *,          setSubstringInRange,          RCString),    RRange range, const char * const string);    // returns reference (not copy!)
@@ -143,8 +145,9 @@ RCString * getInputString(); // reads string from stdin, returns created RCStrin
 //----------------------------------------------------------------------------------
 
 #define makeRCString()             $(nil, c(RCString)))
-#define RString(CString)           $(makeRCString(), m(setConstantString, RCString)), CString) // makes constant, ATTENTION need to be deallocated, but not destructed
+#define RCS(CString)               $(makeRCString(), m(setConstantString, RCString)), CString) // makes weak reference, need to be deallocated, but not destructed
 #define RSC(CString)               $(makeRCString(), m(setString, RCString)), CString)         // makes copy from cstring
-#define stringDelegates(array)     array->destructorDelegate = (DestructorDelegate) stringDeleter; \
-                                   array->printerDelegate = (PrinterDelegate) p(RCString)
+
+#define stringDelegates(array)     $(array, m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RCString)); \
+                                   $(array, m(setDestructorDelegate, RArray)), (DestructorDelegate) stringDeleter)
 #endif /*__R_C_STRING_H__*/

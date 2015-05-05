@@ -188,7 +188,7 @@ RArray *arrayTest;
 pointer func1(pointer arg) {
     int i;
     forAll(i, TEST_COUNT) {
-        $(arrayTest, m(addObject, RArray)), RString((char*)arg));
+        $(arrayTest, m(addObject, RArray)), RCS((char*)arg));
     }
     return 0;
 }
@@ -204,7 +204,7 @@ int RThreadTest(void) {
     RThreadCreate(&thread1, nil, (RThreadFunction) func1, "1 thread");
 
     forAll(i, TEST_COUNT) {
-        $(arrayTest, m(addObject, RArray)), RString("main"));
+        $(arrayTest, m(addObject, RArray)), RCS("main"));
     }
 
     $(&thread1, RThreadJoin));

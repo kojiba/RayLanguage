@@ -116,7 +116,7 @@ printer(RDictionary){
 
 #pragma mark Init from scratch
 
-RDictionary* dictionaryFromPairs(pointer firstKey, ...) {
+RDictionary * dictionaryFromPairs(pointer firstKey, ...) {
     RDictionary *result = makeRDictionary();
 #ifdef RAY_ERRORS_ON
     size_t keysCount   = 1,
