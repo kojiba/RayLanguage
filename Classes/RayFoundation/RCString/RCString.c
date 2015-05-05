@@ -975,7 +975,7 @@ RCString* stringFromFile(const char *filename) {
         fileSize = RFTell(file);
         if(fileSize > 0) {
             RRewind(file);
-            buffer = arrayAllocator(char, (fileSize/* + 1*/));
+            buffer = arrayAllocator(char, (fileSize + 1));
             if(buffer != nil) {
                 RFRead(buffer, sizeof(char), (size_t) fileSize, file);
                 RFClose(file);
