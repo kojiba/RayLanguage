@@ -16,7 +16,7 @@
 #include <Utils.h>
 #include <RString_Consts.h>
 
-static RDictionary *stored;
+static RDictionary *stored = nil;
 
 rbool processLine(pointer string, size_t iterator) {
     $(string, m(trimAfterString, RCString)), RS("//")); // trim comment

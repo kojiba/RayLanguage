@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation.h>
-#include <Utils/Utils.h>
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {

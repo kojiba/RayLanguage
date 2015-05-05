@@ -50,11 +50,13 @@ extern "C" {
 // Networking
 #include <RSocket.h>
 
-// Others
-#include <RClassTable.h>
-
+// Threads
 #include <RThread.h>
 #include <RThreadPool.h>
+
+// Others
+#include <RClassTable.h>
+#include <Utils.h>
 
 #define endRay() deleter(RCTSingleton, RClassTable); \
                  deleter(stringConstantsTable(), RDictionary);\
