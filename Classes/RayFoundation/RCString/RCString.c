@@ -15,6 +15,7 @@
 
 #include <RCString.h>
 #include <stdarg.h>
+#include <RCString_Char.h>
 
 #pragma mark Basics
 
@@ -284,14 +285,6 @@ method(void, replaceSubstrings, RCString), RCString *toReplace, RCString *replac
     );
 }
 
-method(void, replaceCSubstrings, RCString), char *toReplace, char *replacer) {
-    RCString *toReplaceTemp = RCS(toReplace);
-    RCString *replacerTemp = RCS(replacer);
-    $(object, m(replaceSubstrings, RCString)), toReplaceTemp, replacerTemp);
-    deallocator(toReplaceTemp);
-    deallocator(replacerTemp);
-}
-
 #pragma mark Info
 
 constMethod(size_t, numberOfCharacters, RCString), char character) {
@@ -332,16 +325,7 @@ constMethod(size_t, numberOfSubstrings, RCString), const RCString * const string
     return 0;
 }
 
-inline
-constMethod(size_t, numberOfCSubstrings, RCString), const char * string) {
-    RCString *temp = RCS(string);
-      size_t  result = $(object, m(numberOfSubstrings, RCString)), temp);
-    deallocator(temp);
-    return result;
-}
-
-static inline
-constMethod(rbool, isContains, RCString), char character) {
+inline constMethod(rbool, isContains, RCString), char character) {
     size_t iterator = 0;
     forAll(iterator, object->size) {
         if(object->baseString[iterator] == character) {
@@ -351,8 +335,7 @@ constMethod(rbool, isContains, RCString), char character) {
     return no;
 }
 
-static inline
-constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
+inline constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
     // search for first symbol
     if(string != nil
        && string->baseString != nil
@@ -372,17 +355,6 @@ constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
         RWarning("RCString. isContainsSubstring. Bad string to check", object);
         return no;
     }
-}
-
-inline
-constMethod(rbool, isContainsCSubstring, RCString), char *string) {
-    RCString *temp = RCS(string);
-    if(temp != nil) {
-        rbool result = $(object, m(isContainsSubstring, RCString)), temp);
-        deallocator(temp);
-        return result;
-    }
-    return no;
 }
 
 inline constMethod(size_t, numberOfLines, RCString)) {
@@ -480,17 +452,6 @@ method(RCString *, deleteAllSubstrings, RCString), const RCString *substring) {
     );
 
     return nil;
-}
-
-inline
-method(RCString *, deleteAllSubstringsCStr, RCString), const char *substring) {
-    RCString *temp = RCS(substring);
-    RCString *result = nil;
-    if(temp != nil) {
-        result = $(object, m(deleteAllSubstrings, RCString)), temp);
-        deallocator(temp);
-    }
-    return result;
 }
 
 method(void, removeRepetitionsOfString, RCString), const RCString *substring) {
@@ -748,14 +709,6 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
     return result;
 }
 
-inline
-constMethod(RArray *, substringsSeparatedBySymCStr, RCString), const char * const separatorsString) {
-    RCString *temp = RCS(separatorsString);
-    RArray *result = $(object, m(substringsSeparatedBySymbols, RCString)), temp);
-    deallocator(temp);
-    return result;
-}
-
 constMethod(RCString *, substringByBounds, RCString), RBounds bounds) {
     register RRange range;
     range.start = indexOfFirstCharacterCString(object->baseString, object->size, bounds.startSymbol) + 1;
@@ -854,33 +807,8 @@ constMethod(RCompareFlags, compareWith, RCString), const RCString *checkString) 
     }
 }
 
-constMethod(RCompareFlags, compareWithStr, RCString), const char *const checkString) {
-    RCString *temp = RCS(checkString);
-    RCompareFlags result = $(object, m(compareWith, RCString)), temp);
-    deallocator(temp);
-    return result;
-}
-
-constMethod(rbool, startsOnStr, RCString), const char *const checkString) {
-    size_t iterator = 0;
-    while(checkString[iterator]) {
-        if(object->baseString[iterator] != checkString[iterator]) {
-            return no;
-        }
-        ++iterator;
-    }
-    return yes;
-}
-
 constMethod(rbool, startsOn, RCString), const RCString *const checkString) {
-    return $(object, m(startsOnStr, RCString)), checkString->baseString);
-}
-
-constMethod(rbool, endsOnStr, RCString), const char *const checkString) {
-    RCString *temp = RCS(checkString);
-    rbool result = $(object, m(endsOn, RCString)), temp);
-    deallocator(temp);
-    return result;
+    return $(object, m(startsOnC, RCString)), checkString->baseString);
 }
 
 constMethod(rbool, endsOn, RCString), const RCString *const checkString) {
@@ -910,24 +838,6 @@ method(void, concatenate, RCString), const RCString *string) {
 
     } elseWarning(
             RWarning("RCString. concatenate. Bad concatenate string.", object)
-    );
-}
-
-method(void, appendString, RCString), const char *string) {
-    if(string != nil) {
-        size_t stringSize = RStringLength(string);
-        object->baseString = RReAlloc(object->baseString, arraySize(char, stringSize + object->size + 1));
-        if(object->baseString != nil) {
-            RMemMove(object->baseString + object->size, string, stringSize);
-            object->baseString[stringSize + object->size] = 0;
-            object->size += stringSize;
-
-        } elseError(
-                RError("RCS. appendString. realloc error.", object)
-        );
-
-    } elseWarning(
-            RWarning("RCString. appendString. Bad concatenate string.", object)
     );
 }
 

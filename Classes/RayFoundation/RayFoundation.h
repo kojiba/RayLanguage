@@ -35,6 +35,7 @@ extern "C" {
 
 // Strings
 #include <RCString.h>
+#include <RCString_Char.h>
 #include <RCString_Numbers.h>
 #include <RString.h>
 #include <RString_Consts.h>

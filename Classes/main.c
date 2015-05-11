@@ -20,6 +20,10 @@
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     enablePool(RPool);
     ComplexTest();
 

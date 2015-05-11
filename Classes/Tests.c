@@ -241,17 +241,17 @@ int RCStringTest(void) {
                     "Warcraft III: Reign of Chaos, released in 2002, used parts of Warcraft Adventures' characters and storyline and extended the gameplay used in Warcraft II."
     );
 
-    RArray *words = $(testString, m(substringsSeparatedBySymCStr, RCString)), ".,:; /-!@=+?\n\t&");
+    RArray *words = $(testString, m(substringsSeparatedBySymbols, RCString)), RS(".,:; /-!@=+?\n\t&"));
 
     RAY_TEST(words == nil, "RCString. Words array wasn't created.", -1);
     RAY_TEST(words->count != 393, "RCString. Bad text words count.", -2);
 
     deleter(words, RArray);
 
-    $(testString, m(deleteAllSubstringsCStr, RCString)), "\n");
+    $(testString, m(deleteAllCSubstrings, RCString)), "\n");
     $(testString, m(removeRepetitionsOf, RCString)), ' ');
 
-    RArray *sents = $(testString, m(substringsSeparatedBySymCStr, RCString)), ".");
+    RArray *sents = $(testString, m(substringsSeparatedByCSymbols, RCString)), ".");
     if(sents != nil) {
         RAY_TEST(sents->count != 15, "RCString. Bad text sentances count.", -2);
         deleter(sents, RArray);
