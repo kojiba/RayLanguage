@@ -22,7 +22,7 @@
             #error "Some of working defines of RayFoundation are already defined!"
         #elif defined(class) || defined(discipleOf) || defined(endOf) || defined(protocol)
             #error "Some of core defines of RayFoundation are already defined!"
-        #elif defined(method) || defined(staticMethod) || defined(virtualMethod) || defined(linkMethod)
+        #elif defined(method) || defined(staticMethod) || defined(virtualMethod) || defined(linkMethod) || defined(constMethod)
             #error "Some of declaration defines of RayFoundation are already defined!"
         #elif defined(c) || defined(d) || defined(p) || defined(m) || defined(sm) || defined(singletonCall)
             #error "Some of function-call defines of RayFoundation are already defined!"
