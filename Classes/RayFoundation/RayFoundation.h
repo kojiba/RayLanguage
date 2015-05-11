@@ -58,8 +58,8 @@ extern "C" {
 #include <RClassTable.h>
 #include <Utils.h>
 
-#define endRay() deleter(RCTSingleton, RClassTable); \
-                 deleter(stringConstantsTable(), RDictionary);\
+#define endRay() deleter(stringConstantsTable(), RDictionary);\
+                 deleter(RCTSingleton, RClassTable); \
                  p(RAutoPool)(RPool); \
                  deleter(RPool, RAutoPool); \
                  stopConsole();\
