@@ -138,7 +138,7 @@ int RBufferTest(void) {
 }
 
 
-rbool checkObjectRListFinder(pointer data, size_t index) {
+rbool checkObjectRListFinder(pointer context, pointer data, size_t index) {
     if(index == 2) {
         return no;
     }
@@ -149,7 +149,7 @@ int RListTest(void) {
     size_t iterator;
     REnumerateDelegate finder;
     // link virtual
-    finder.virtualCheckObject = checkObjectRListFinder;
+    finder.virtualEnumerator = checkObjectRListFinder;
 
     RList *list = constructorOfRList(nil);
 

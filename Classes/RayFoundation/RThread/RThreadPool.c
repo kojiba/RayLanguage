@@ -60,13 +60,13 @@ method(void, addWorker,  RThreadPool), RThread *worker) {
     $(object->threads, m(addObject, RArray)), worker);
 }
 
-rbool joinThreadCheck(pointer thread, size_t iterator) {
+rbool joinThreadCheck(pointer context, pointer thread, size_t iterator) {
     RThreadJoin(thread);
     return yes;
 }
 
 method(void, join, RThreadPool)) {
-    object->enumerator.virtualCheckObject = joinThreadCheck;
+    object->enumerator.virtualEnumerator = joinThreadCheck;
     $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
 }
 

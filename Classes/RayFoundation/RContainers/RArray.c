@@ -319,11 +319,11 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray %p delete objects with predicate", object);
 #endif
-    if(delegate->virtualCheckObject != nil) {
+    if(delegate->virtualEnumerator != nil) {
         RMutexLockArray();
         if (object->destructorDelegate != nil) {
             for (iterator = 0; iterator < object->count;) {
-                if (delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                if (delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
                     object->destructorDelegate(object->array[iterator]);
                     object->array[iterator] = object->array[object->count - 1];
                     incrementFreePlaces();
@@ -334,7 +334,7 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
             }
         } else {
             for (iterator = 0; iterator < object->count;) {
-                if (delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                if (delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
                     object->array[iterator] = object->array[object->count - 1];
                     incrementFreePlaces();
                     --iterator;
@@ -420,17 +420,17 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    if(delegate->virtualCheckObject != nil) {
+    if(delegate->virtualEnumerator != nil) {
         RMutexLockArray();
         if(isFromLeft) {
             forAll(iterator, object->count) {
-                if(!delegate->virtualCheckObject(object->array[iterator], iterator)) {
+                if(!delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
                     break;
                 }
             }
         } else {
             for(iterator = object->count; iterator != 0; --iterator) {
-                if(!delegate->virtualCheckObject(object->array[iterator - 1], iterator - 1)) {
+                if(!delegate->virtualEnumerator(delegate->context, object->array[iterator - 1], iterator - 1)) {
                     break;
                 }
             }

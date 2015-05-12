@@ -17,7 +17,9 @@
 #define __R_SYSTEM_H__
 
 // Bit architecture
-#if UINTPTR_MAX == 0xffffff
+#if UINTPTR_MAX == 0xffff
+    #define R16BIT
+#elif UINTPTR_MAX == 0xffffff
     #define R24BIT
     #define RSystemBitVersion "24-bit "
 #elif UINTPTR_MAX == 0xffffffff
@@ -88,8 +90,8 @@
     #define RPrintSystemInfo() RPrintCurrentSystem()
 #else
     #define RPrintSystemInfo() RPrintCurrentSystem();\
-                               RPrintf("Number of processors - %u \n", processorsCount());\
-                               RPrintf("Main tuid - %lu \n", currentTreadIdentifier())
+                               RPrintf("Number of processors - %u \n",      processorsCount());\
+                               RPrintf("Main tuid - %lu \n", (unsigned long)currentTreadIdentifier())
 #endif
 
 #endif /*__R_SYSTEM_H__*/

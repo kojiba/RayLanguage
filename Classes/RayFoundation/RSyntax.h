@@ -62,7 +62,8 @@ typedef byte    rbool;
 // declarations
 #define class(className)                                  typedef struct className { \
                                                           size_t classId;
-#define protocol(protocolName)                            typedef struct protocolName {
+#define protocol(protocolName)                            typedef struct protocolName { \
+                                                          pointer context;
 
 #define discipleOf(className)                             className *concatenate(master, concatenate(className, Object));
 #define endOf(className)                                  } className;

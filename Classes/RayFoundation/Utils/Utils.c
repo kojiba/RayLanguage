@@ -16,9 +16,7 @@
 #include <Utils.h>
 #include <RString_Consts.h>
 
-static RDictionary *stored = nil;
-
-rbool processLine(pointer string, size_t iterator) {
+rbool processLine(pointer context, pointer string, size_t iterator) {
     $(string, m(trimAfterString, RCString)), RS("//")); // trim comment
     if(((RCString*)string)->size != 0) { // if not fully comment
         RArray *keyValue = $(string, m(substringsSeparatedByString, RCString)), RS(" = "));
@@ -27,7 +25,7 @@ rbool processLine(pointer string, size_t iterator) {
             RCString *value = $(keyValue, m(lastObject, RArray)));
 
             // adding
-            $(stored, m(setObjectForKey, RDictionary)), value, key);
+            $(context, m(setObjectForKey, RDictionary)), value, key);
 
             $(keyValue, m(setDestructorDelegate, RArray)), nil);
             deleter(keyValue, RArray);
@@ -44,8 +42,8 @@ RDictionary * stringDictionaryFromFile(char *filename) {
         if(result != nil) {
             REnumerateDelegate delegate;
 
-            delegate.virtualCheckObject = (EnumeretorDelegate) processLine;
-            stored = result;
+            delegate.virtualEnumerator = processLine;
+            delegate.context = result;
             // delegates
             $(result, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RCString));
             $(result->keys,   m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RString));
@@ -59,7 +57,6 @@ RDictionary * stringDictionaryFromFile(char *filename) {
             if(temp != nil) {
                 $(temp, m(enumerate, RArray)), &delegate, yes);
                 deleter(temp, RArray);
-                stored = nil;
             }
             deleter(locales, RCString);
         }

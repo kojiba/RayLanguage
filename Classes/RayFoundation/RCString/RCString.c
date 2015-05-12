@@ -336,10 +336,10 @@ inline constMethod(rbool, isContains, RCString), char character) {
 }
 
 inline constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
-    // search for first symbol
     if(string != nil
        && string->baseString != nil
        && object->size >= string->size) {
+        // search for first symbol
         size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
         if (iterator != string->size) {
             // compare others
@@ -942,11 +942,11 @@ RCString * getInputString() {
         int symbol = ' ';
 
         while(symbol != '\n') {
-            #ifdef _WIN32
+        #ifdef _WIN32
             symbol = getchar();
-            #else
+        #else
             symbol = getchar_unlocked();
-            #endif
+        #endif
             if (symbol < 256 && symbol != '\n') {
                 charBuff[result->size] = (char) symbol;
                 ++result->size;

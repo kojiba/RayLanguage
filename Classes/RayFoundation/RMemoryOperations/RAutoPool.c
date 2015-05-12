@@ -308,11 +308,9 @@ method(void, free, RAutoPool), pointer ptr) {
 
 #ifdef R_POOL_DETAILED
 
-static RThreadId storedId = 0;
-
-rbool deleterEnumerator(pointer object, size_t iterator) {
+rbool deleterEnumerator(pointer context, pointer object, size_t iterator) {
     RPoolDescriptor *temp = object;
-    if(temp->allocatorThread == storedId) {
+    if(temp->allocatorThread == (RThreadId)context) {
         return yes;
     } else {
         return no;
@@ -329,8 +327,8 @@ method(void, drain, RAutoPool)) {
     $(object->pointersInWork, m(flush, RArray)));
 #else
     REnumerateDelegate delegate;
-    storedId = currentTreadIdentifier();
-    delegate.virtualCheckObject = deleterEnumerator;
+    delegate.context = (pointer) currentTreadIdentifier();
+    delegate.virtualEnumerator = deleterEnumerator;
     $(object->pointersInWork, m(deleteWithPredicate, RArray)), &delegate);
 #endif
     backPtrs();

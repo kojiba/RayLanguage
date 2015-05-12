@@ -162,7 +162,7 @@ typedef struct executerArgument {
 void privatePartExecuter(executerArgument *argument) {
     size_t iterator;
     inRange(iterator, argument->partRange) {
-        argument->delegate->virtualCheckObject(argument->object->array[iterator], iterator);
+        argument->delegate->virtualEnumerator(argument->delegate->context, argument->object->array[iterator], iterator);
     }
 }
 

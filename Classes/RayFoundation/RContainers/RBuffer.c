@@ -232,17 +232,17 @@ constMethod(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rboo
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    if(delegate->virtualCheckObject != nil) {
+    if(delegate->virtualEnumerator != nil) {
         RMutexLockBuffer();
         if(isFromLeft) {
             forAll(iterator, object->count) {
-                if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                if(delegate->virtualEnumerator(delegate->context, master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
                     break;
                 }
             }
         } else {
             for(iterator = object->count - 1; iterator != 0; --iterator) {
-                if(delegate->virtualCheckObject(master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
+                if(delegate->virtualEnumerator(delegate->context, master(object, RByteArray)->array + object->sizesArray[iterator].start, iterator) == yes) {
                     break;
                 }
             }

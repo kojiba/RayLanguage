@@ -212,18 +212,18 @@ constMethod(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool 
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
-    if(delegate->virtualCheckObject != nil) {
+    if(delegate->virtualEnumerator != nil) {
         RMutexLockList();
         if (isFromLeft) {
             for (numericIterator = 0; iterator != nil; iterator = iterator->next, ++numericIterator) {
-                if (!delegate->virtualCheckObject(iterator->data, numericIterator)) {
+                if (!delegate->virtualEnumerator(delegate->context, iterator->data, numericIterator)) {
                     break;
                 }
             }
         } else {
             for (numericIterator = object->count - 1;
                  iterator != nil; iterator = iterator->previous, --numericIterator) {
-                if (!delegate->virtualCheckObject(iterator->data, numericIterator)) {
+                if (!delegate->virtualEnumerator(delegate->context, iterator->data, numericIterator)) {
                     break;
                 }
             }
