@@ -20,22 +20,26 @@
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
-
+    size_t iterator;
     enablePool(RPool);
     ComplexTest();
 
-    RDictionary * dict = stringDictionaryFromFile("Localizable.strings");
-    if(dict != nil) {
-        RPrintf("Object for key \"authorizedperson.phone\" is ");
-        RCString * value = $(dict, m(getObjectForKey, RDictionary)), RS("authorizedperson.phone"));
-        p(RCString)(value);
+//    RCString *source = RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+//                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+//                                  " ------.--------.>+.>.");
+//
+//    // brainfuck hard(with [, ]) hello world on RVM
+//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+//
+//    executeRay(function);
+//
+//    deallocator(source);
+//
+//    deleter(function, RVirtualFunction);
+//    deleter(RVM, RVirtualMachine);
+//    deleter(RVC, RVirtualCompiler);
 
-        p(RDictionary)(dict);
-        deleter(dict, RDictionary);
-    }
+
 
     endRay();
 }
