@@ -21,7 +21,7 @@ destructor(RVirtualMachine) {
 method(void, setUpDataBlock, RVirtualMachine)) {
     if(object->functionExecuting != nil) {
         // set-up break flag
-        object->breakFlag     = 0;
+        object->breakFlag = no;
 
         object->memory->array = makeFlushedBytes(memorySizeOfRVM, 0x00);
         object->memory->size  = memorySizeOfRVM;
@@ -71,7 +71,7 @@ method(size_t, executeCode, RVirtualMachine)) {
         } break;
 // gets
         case r_get_char : {
-            *object->dataRegister = (byte) getchar();
+            *object->dataRegister = (byte) RGetChar();
             ++object->command;
         } break;
 
@@ -90,7 +90,7 @@ method(size_t, executeCode, RVirtualMachine)) {
 
         case r_goto_address : {
             // set pointer to command incremented pointers data, like JMP address, fixme when instruction in data
-            object->command = object->functionStartAddress + *(++object->command);
+            object->command = object->functionStartAddress + (*(++object->command) % object->memory->size); // testme mod size
         } break;
 
 // logical
@@ -113,6 +113,13 @@ method(size_t, executeCode, RVirtualMachine)) {
                 ++object->command;
             }
         } break;
+
+// debug
+        case r_break : {
+            object->breakFlag = yes;
+            RPrintf("\nEnd work of RVM.\n");
+            return 1;
+        }
 
 // work end
         case r_end : {
@@ -152,10 +159,14 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
 
     // execute first code, that starts processing
     // execute next code while not flag
-    while(object->breakFlag == 0 && result != 1) {
+    while(result != 1) {
         result = $(object, m(executeCode, RVirtualMachine)));
         // increment ticks
         ++object->tickCount;
+        // break
+        if(object->breakFlag) {
+            RPrintf("RVM break at %lu tick.", object->tickCount);
+        }
     }
 
     // at end of processing print analytics

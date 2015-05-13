@@ -86,6 +86,8 @@ extern volatile Deallocator RFreePtr;
 // I/O
 #define RPrintf           printf
 #define RScanf            scanf
+#define RGetChar          getchar
+#define RGetCharUn        getchar_unlocked
 #define RPError           perror
 
 // Files I/O

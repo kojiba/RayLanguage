@@ -12,7 +12,6 @@ typedef enum RVirtualCodes {
     r_function_begin,
     r_const_start,
     r_const_end,
-    r_ignore,               // code for ignoring, not byte-code
     r_error,
 
 // algebra operations (address 1, address 2)
@@ -33,11 +32,14 @@ typedef enum RVirtualCodes {
     r_no,
 
 // brain-fuck move ups
-    r_move_forward,
+    r_move_forward,        // nop analog
     r_move_backward,
 
 // jump to a difference
     r_goto_address,        // jump (address value) sets command register to address
+
+// debug
+    r_break,
 
 // io
     r_print_0_string,      // prints all to 0, cause errors
@@ -54,11 +56,13 @@ typedef enum RVirtualCodes {
     r_if_not,               // if_not (false_instruction , true_instruction) value != 0,
                             // then false_instruction, else true_instruction
 
+    r_ignore,               // code for ignoring, not byte-code
+
     r_virtual_codes_count   // last parameter, size of opcodes
 
 } RInstructions;
 
-static const size_t memorySizeOfRVM = 1024;
+static const size_t memorySizeOfRVM = 1024; // in bytes
 
 class(RVirtualMachine)
     RByteArray       *memory;               // memory 1 kB size
@@ -69,7 +73,7 @@ class(RVirtualMachine)
     byte             *functionStartAddress; // pointer to place, where function starts
 
     size_t          tickCount;
-    byte              breakFlag;            // for force quit
+    rbool           breakFlag;              // for stop
 
 endOf(RVirtualMachine)
 
@@ -81,7 +85,7 @@ singleton   (RVirtualMachine);
 method(void,     executeFunction, RVirtualMachine),    RVirtualFunction *function);
 
 // workings methods
-method(size_t, executeCode,     RVirtualMachine));
+method(size_t,   executeCode,     RVirtualMachine));
 method(void,     setUpDataBlock,  RVirtualMachine));
 
 #define RVM singletonCall(RVirtualMachine)

@@ -25,55 +25,47 @@ printer(RVirtualFunction) {
         switch (master(object, RByteArray)->array[iterator]) {
 
             case r_increment : {
-                RPrintf("incr");
-                RPrintf("\n");
+                RPrintLn("incr");
             } break;
 
             case r_decrement : {
-                RPrintf("decr");
-                RPrintf("\n");
+                RPrintLn("decr");
             } break;
 
             case r_move_forward : {
-                RPrintf("fwd");
-                RPrintf("\n");
+                RPrintLn("fwd");
             } break;
 
             case r_move_backward : {
-                RPrintf("bkwd");
-                RPrintf("\n");
+                RPrintLn("bkwd");
             } break;
 
             case r_print_char : {
-                RPrintf("p char");
-                RPrintf("\n");
+                RPrintLn("p char");
             } break;
 
             case r_if : {
-                RPrintf("if \n ");
-                RPrintf("\t\tfalse : goto %lu \n", master(object, RByteArray)->array[iterator += 2]);
-                RPrintf("\t\ttrue :");
+                RPrintLn("if");
+                RPrintf("\t\tfalse : goto %u \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintf("\t\ttrue : ");
             } break;
 
             case r_if_not : {
-                RPrintf("if NOT \n ");
-                RPrintf("\t\tfalse : goto %lu \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintLn("if NOT");
+                RPrintf("\t\tfalse : goto %u \n", master(object, RByteArray)->array[iterator += 2]);
                 RPrintf("\t\ttrue :");
             } break;
 
             case r_goto_address : {
-                RPrintf("goto %lu ", master(object, RByteArray)->array[++iterator]);
-                RPrintf("\n");
+                RPrintf("goto %u\n", master(object, RByteArray)->array[++iterator]);
             } break;
 
             case r_end : {
-                RPrintf("end");
-                RPrintf("\n");
+                RPrintLn("end");
             } break;
 
             default: {
-                RPrintf("%lu", master(object, RByteArray)->array[iterator]);
-                RPrintf("\n");
+                RPrintf("unknown - %u", master(object, RByteArray)->array[iterator]);
             } break;
         }
     }

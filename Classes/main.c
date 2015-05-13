@@ -18,26 +18,27 @@
 
 #include <RayFoundation.h>
 #include "Tests.h"
+#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
+#include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
     ComplexTest();
 
-//    RCString *source = RS(" Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
-//                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
-//                                  " ------.--------.>+.>.");
-//
-//    // brainfuck hard(with [, ]) hello world on RVM
-//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
-//
-//    executeRay(function);
-//
-//    deallocator(source);
-//
-//    deleter(function, RVirtualFunction);
-//    deleter(RVM, RVirtualMachine);
-//    deleter(RVC, RVirtualCompiler);
+    RCString *source = RS(" Multiply : ,>,< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >>");
+
+    // brainfuck hard(with [, ]) hello world on RVM
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+
+    p(RVirtualFunction)(function);
+
+    executeRay(function);
+
+    deleter(function, RVirtualFunction);
+    deleter(RVM, RVirtualMachine);
+    deleter(RVC, RVirtualCompiler);
 
 
 

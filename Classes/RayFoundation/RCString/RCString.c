@@ -943,9 +943,9 @@ RCString * getInputString() {
 
         while(symbol != '\n') {
         #ifdef _WIN32
-            symbol = getchar();
+            symbol = RGetChar();
         #else
-            symbol = getchar_unlocked();
+            symbol = RGetCharUn();
         #endif
             if (symbol < 256 && symbol != '\n') {
                 charBuff[result->size] = (char) symbol;
