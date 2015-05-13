@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RCString *source = RS(" Multiply : ,>,< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >>");
+    RCString *source = RS(" Cycles : +[>+]");
 
     // brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );

@@ -130,7 +130,8 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
         default: {
             byteCode = r_end;
-            RPrintf("Warning. RVirtualCompiler (BrainFuck). Undefined symbol on line: %lu, place: %lu !\n", object->lines, object->symbols);
+            RPrintf("Warning. RVirtualCompiler (BrainFuck). Undefined symbol on line: %lu, place: %lu !\n",
+                                                                            object->lines, object->symbols);
         }
     }
 

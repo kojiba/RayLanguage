@@ -68,9 +68,9 @@ class(RVirtualMachine)
     RByteArray       *memory;               // memory 1 kB size
     RVirtualFunction *functionExecuting;    // pointer to function
 
-    byte             *dataRegister;         // pointer to memory element
+    byte             *dataRegister;         // pointer to memory element (data segment)
     byte             *command;              // pointer to rasm byte-code
-    byte             *functionStartAddress; // pointer to place, where function starts
+    byte             *functionStartAddress; // pointer to place, where function starts (program segment)
 
     size_t          tickCount;
     rbool           breakFlag;              // for stop

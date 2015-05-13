@@ -79,18 +79,24 @@ method(size_t, executeCode, RVirtualMachine)) {
         case r_move_forward : {
             // increment pointer
             ++object->dataRegister;
+            if(object->dataRegister == (object->memory->array + object->memory->size)) {
+                object->dataRegister = object->memory->array;
+            }
             ++object->command;
         } break;
 
         case r_move_backward : {
             // decrement pointer
             --object->dataRegister;
+            if(object->dataRegister < object->memory->array) {
+                object->dataRegister = object->memory->array + object->memory->size;
+            }
             ++object->command;
         } break;
 
         case r_goto_address : {
             // set pointer to command incremented pointers data, like JMP address, fixme when instruction in data
-            object->command = object->functionStartAddress + (*(++object->command) % object->memory->size); // testme mod size
+            object->command = object->functionStartAddress + *(++object->command);
         } break;
 
 // logical
@@ -151,7 +157,7 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(object, m(setUpDataBlock, RVirtualMachine)) );
 
     // set data register as pointer to first element of memory
-    object->dataRegister = &object->memory->array[0];
+    object->dataRegister = object->memory->array;
 
     // set command to first byte of opcodes
     object->functionStartAddress = master(object->functionExecuting, RByteArray)->array;
