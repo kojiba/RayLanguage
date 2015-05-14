@@ -192,6 +192,11 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
                                                  ${DEBUG_SOURCES}
                                                  ${DEBUG_HEADERS})
 
+                                                 target_link_libraries(
+                                                         ${EXECUTABLE_NAME}
+                                                         curses              #fixme when unused
+                                                     )
+
 if(copyResources)
     file(COPY Resources     DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 endif()

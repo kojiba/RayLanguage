@@ -1,4 +1,6 @@
+#include <unistd.h>
 #include "RVirtualMachine.h"
+#include "ncurses.h"
 
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
@@ -123,7 +125,6 @@ method(size_t, executeCode, RVirtualMachine)) {
 // debug
         case r_break : {
             object->breakFlag = yes;
-            RPrintf("\nEnd work of RVM.\n");
             return 1;
         }
 
@@ -140,6 +141,36 @@ method(size_t, executeCode, RVirtualMachine)) {
         }
     }
     return 0;
+}
+
+method(void, visualize, RVirtualMachine), rbool end) {
+//    size_t sizeY, sizeX;
+    size_t iterator;
+    static WINDOW *outputWindow = nil;
+    static rbool initialized = no;
+    if(!initialized) {
+        initscr();
+        curs_set(yes);
+
+// get our maximum window dimensions
+//    getmaxyx(stdscr, sizeY, sizeX);
+        COLS = 64;
+        LINES = 64;
+
+        // set up initial windows
+        outputWindow = newwin(64, 64, 0, 0);
+        initialized = yes;
+    }
+    wmove(outputWindow, 0, 0);
+    forAll(iterator, object->memory->size) {
+        wprintw(outputWindow, "%02X", object->memory->array[iterator]);
+    }
+    wrefresh(outputWindow);
+    if(end) {
+        // cleanup
+        delwin(outputWindow);
+        endwin();
+    }
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
@@ -172,8 +203,13 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
         // break
         if(object->breakFlag) {
             RPrintf("RVM break at %lu tick.", object->tickCount);
+        } else {
+            $(object, m(visualize, RVirtualMachine)), no);
+            usleep(1 * 1000);
         }
     }
+
+    $(object, m(visualize, RVirtualMachine)), yes);
 
     // at end of processing print analytics
     RPrintf("\nRVM. End Executing Function \"%s\"\n", function->name->baseString);

@@ -84,10 +84,6 @@ singleton   (RVirtualMachine);
 // main method, to execute byte-code function
 method(void,     executeFunction, RVirtualMachine),    RVirtualFunction *function);
 
-// workings methods
-method(size_t,   executeCode,     RVirtualMachine));
-method(void,     setUpDataBlock,  RVirtualMachine));
-
 #define RVM singletonCall(RVirtualMachine)
 #define deleteRVM() $(RVM, d(RVirtualMachine)) ); \
                     deallocator(RVM)
