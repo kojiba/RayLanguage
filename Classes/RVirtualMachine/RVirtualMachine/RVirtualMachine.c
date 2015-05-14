@@ -2,6 +2,12 @@
 #include "RVirtualMachine.h"
 #include "ncurses.h"
 
+#define VISUALIZE
+#ifdef VISUALIZE
+#define COLORED
+#define msecDelay 0//50
+#endif
+
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
     if(object != nil) {
@@ -144,6 +150,7 @@ method(size_t, executeCode, RVirtualMachine)) {
 }
 
 method(void, visualize, RVirtualMachine), rbool end) {
+#ifdef VISUALIZE
 //    size_t sizeY, sizeX;
     size_t iterator;
     static WINDOW *outputWindow = nil;
@@ -152,25 +159,40 @@ method(void, visualize, RVirtualMachine), rbool end) {
         initscr();
         curs_set(yes);
 
-// get our maximum window dimensions
-//    getmaxyx(stdscr, sizeY, sizeX);
-        COLS = 64;
-        LINES = 64;
+    #ifdef COLORED
+        start_color();
+        use_default_colors();
+
+        forAll(iterator, COLORS) {
+            init_pair((short) (iterator + 1), (short) iterator, -1);
+        }
+    #endif
 
         // set up initial windows
-        outputWindow = newwin(64, 64, 0, 0);
+        outputWindow = newwin(32,64, 0, 0);
         initialized = yes;
     }
     wmove(outputWindow, 0, 0);
+
     forAll(iterator, object->memory->size) {
+    #ifdef COLORED
+        wattron(outputWindow, COLOR_PAIR(object->memory->array[iterator] + 1));
+        wprintw(outputWindow, "# ");
+    #else
         wprintw(outputWindow, "%02X", object->memory->array[iterator]);
+    #endif
     }
+#ifdef COLORED
+    wattron(outputWindow, COLOR_PAIR(1));
+#endif
+
     wrefresh(outputWindow);
     if(end) {
         // cleanup
         delwin(outputWindow);
         endwin();
     }
+#endif /*VISUALIZE*/
 }
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
@@ -205,7 +227,9 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
             RPrintf("RVM break at %lu tick.", object->tickCount);
         } else {
             $(object, m(visualize, RVirtualMachine)), no);
-            usleep(1 * 1000);
+        #if msecDelay != 0
+            usleep(msecDelay * 1000);
+        #endif
         }
     }
 

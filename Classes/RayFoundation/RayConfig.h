@@ -21,7 +21,7 @@
 #pragma mark Some config
 
 //#define RAY_SHORT_DEBUG  // short trace for array and classTable
-//#define RAY_CONSOLE_COLORS_ON // enable colored console messages
+#define RAY_CONSOLE_COLORS_ON // enable colored console messages
 
 #pragma mark Embedded Cut
 

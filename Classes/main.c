@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RCString *source = RS(" Cycles : +[>+]");
+    RCString *source = RS(" Hello : +[>+ >>++ >>>+++ >>>>++++ >>>>>+++++ >>>>>>++++++ >>>>>>>+++++++ >>>>>>>>++++++++]");
 
     // brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
