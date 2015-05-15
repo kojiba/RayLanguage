@@ -48,6 +48,7 @@ method(RCString *, getFunctionName, RVirtualCompiler)) {
 #pragma mark Brainfuck lang to rasm
 
 method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
+    static rbool isOpenedBracket = no;
     byte byteCode;
 
     switch (object->code->baseString[object->iterator]) {
@@ -77,15 +78,31 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case '[': {
+            isOpenedBracket = yes;
             // complicated case
-            size_t realPath;
+            size_t realPath, deltaToFirstBack,
+                    currSubSize  = object->code->size - object->deltaToNext,
+                   currSubStart = object->iterator + object->iteratorShift + 1;
 
-            object->deltaToNext = indexOfLastCharacterCString(&object->code->baseString[object->iterator + object->iteratorShift], object->code->size - object->deltaToNext, ']');
+            object->deltaToNext = indexOfLastCharacterCString(&object->code->baseString[currSubStart], currSubSize, ']');
+            deltaToFirstBack    = indexOfFirstCharacterCString(&object->code->baseString[currSubStart], currSubSize, ']');
+
+            if(deltaToFirstBack != currSubSize
+                    && deltaToFirstBack != object->deltaToNext) {
+                size_t deltaToFirstFront   = indexOfFirstCharacterCString(&object->code->baseString[currSubStart], currSubSize, '[');
+
+                // while we see code like - [ []  []  [] ]
+                if(deltaToFirstFront != currSubSize &&
+                        deltaToFirstFront > deltaToFirstBack) {
+                    object->deltaToNext = deltaToFirstBack;
+                }
+            }
+
             --object->forwardRepetitions;
             realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("%p Warning. RVirtualCompiler (BrainFuck). '[' Too long loop", object);
+                RPrintf("Warning. RVirtualCompiler (BrainFuck). '[' Too long loop %lu\n", realPath);
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if;
@@ -97,15 +114,22 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case ']': {
+
+            if(!isOpenedBracket) {
+                RPrintf("Warning. RVirtualCompiler (BrainFuck). ']' not opened\n");
+            }
+
             // complicated case
-            size_t realPath;
+            size_t currSubSize  = object->code->size - object->deltaToNext,
+                    currSubStart = object->iterator + object->iteratorShift + 1,
+                    realPath, deltaToFirstBack;
 
             object->toPrev = indexOfLastCharacterCString(object->code->baseString, object->toPrev ? object->toPrev : object->code->size, '[');
             --object->backwardRepetitions;
             realPath = object->toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
-                RPrintf("%p Warning. RVirtualCompiler (BrainFuck). ']' Too long loop", object);
+                RPrintf("Warning. RVirtualCompiler (BrainFuck). ']' Too long loop %lu\n", realPath);
             }
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if_not;

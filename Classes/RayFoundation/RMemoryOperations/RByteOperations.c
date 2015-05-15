@@ -67,7 +67,7 @@ byte* flushAllToByte(pointer array, size_t size, byte symbol) {
 void printByteArrayInHex(const byte *array, size_t size) {
     size_t iterator;
     forAll(iterator, size) {
-        if (iterator % 20 == 0 && iterator != 0) {
+        if (iterator % 32 == 0 && iterator != 0) {
             RPrintf("\n");
         }
         RPrintf("%02X ", array[iterator]);
