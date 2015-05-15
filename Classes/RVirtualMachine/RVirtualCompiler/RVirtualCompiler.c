@@ -98,8 +98,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
                 }
             }
 
-            --object->forwardRepetitions;
-            realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2;
+            realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2 + 2;
 
             if(realPath > 255) {
                 RPrintf("Warning. RVirtualCompiler (BrainFuck). '[' Too long loop %lu\n", realPath);
@@ -107,7 +106,10 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            object->body->array[object->iterator + object->iteratorShift + 2] = (byte) realPath;
+            object->body->array[object->iterator + object->iteratorShift + 2] = (byte)realPath;
+
+            --object->forwardRepetitions;
+
 
             object->iteratorShift += 2;
             byteCode = r_ignore;
