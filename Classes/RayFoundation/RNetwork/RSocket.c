@@ -94,7 +94,7 @@ method(rbool, bindPort, RSocket), uint16_t port) {
             WSAGetLastError();
         #else
         #endif
-        RError1("RSocket. Bind to port %u error.", nil, port);
+        RError1("RSocket. Bind to port %u error.", object, port);
         return no;
     }
 
@@ -104,6 +104,16 @@ method(rbool, bindPort, RSocket), uint16_t port) {
 
 method(void, setPort, RSocket), uint16_t port) {
     object->port = port;
+}
+
+method(rbool, enableBroadCast, RSocket), rbool enable) {
+    if (setsockopt(object->socket, SOL_SOCKET, SO_BROADCAST, (void *) &enable,
+                   sizeof(enable)) < 0) {
+        RError1("RSocket. Set broadcast to %d failed.", object, enable);
+        return no;
+    } else {
+        return yes;
+    }
 }
 
 method(rbool, joinMulticastGroup, RSocket), const char * const address) {

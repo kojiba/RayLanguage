@@ -69,6 +69,8 @@ printer     (RSocket);
 method(rbool, bindPort,           RSocket),    uint16_t port); // for receiver
 method(void,  setPort,            RSocket),    uint16_t port); // for sender
 
+method(rbool, enableBroadCast,    RSocket),    rbool enable);
+
 method(rbool, joinMulticastGroup, RSocket),    const char * const address);
 method(void,  setAddress,         RSocket),    const char * const address);
 method(void,  reuseAddress,       RSocket));
