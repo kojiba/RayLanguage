@@ -24,14 +24,19 @@
 #include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
 #include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
+#define LOCAL_MULTICAST "224.0.0.1"
+
 void receive(void) {
     size_t iterator;
     char buffer[1500];
     RSocket *receiver = c(RSocket)(nil);
     $(receiver, m(bindPort, RSocket)), 8888);
+
+    $(receiver, m(joinMulticastGroup, RSocket)), LOCAL_MULTICAST);
     forAll(iterator, 20) {
         $(receiver, m(receive, RSocket)), buffer, 1500);
-        printf("Received - %s from %u \n", buffer, receiver->address.sin_addr);
+        printf("Received - %s", buffer);
+        printf(" from %s\n", addressToString(&receiver->address));
     }
 
     deleter(receiver, RSocket);
@@ -46,14 +51,12 @@ int main(int argc, const char *argv[]) {
     RThreadCreate(&receiver, nil, (RThreadFunction) receive, nil);
 
     RSocket *socket = c(RSocket)(nil);
-//    sleep(1);
 
     $(socket, m(setPort,         RSocket)), 8888);
-//    $(socket, m(enableBroadCast, RSocket)), yes);
-    $(socket, m(setAddress,      RSocket)), "127.0.0.1");
+    $(socket, m(setAddress,      RSocket)), LOCAL_MULTICAST);
 
     forAll(iterator, 19) {
-        $(socket, m(sendString, RSocket)), RS("Hello to other planet! UDP works."));
+        $(socket, m(sendString, RSocket)), RS("Some udp multicast for hello bro"));
         sleep(1);
     }
     $(socket, m(sendString, RSocket)), RS("END CONNECTION"));

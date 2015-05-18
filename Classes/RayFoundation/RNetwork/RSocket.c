@@ -30,14 +30,8 @@ const byte networkOperationSuccessConst = 1;
     #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
 #endif
 
-const char* addressToString(SocketAddressIn *address) {
-
-    char buffer[4];
-    buffer[0] = (byte)( address->sin_addr.s_addr & 0xFF);
-    buffer[1] = (byte)((address->sin_addr.s_addr & 0xFF00) >> 8);
-    buffer[2] = (byte)((address->sin_addr.s_addr & 0xFF0000) >> 16);
-    buffer[3] = (byte)((address->sin_addr.s_addr & 0xFF000000) >> 24);
-    return cstringWithFormat("%d.%d.%d.%d",buffer[0], buffer[1],  buffer[2], buffer[3]);
+inline const char* addressToString(SocketAddressIn *address) {
+    return inet_ntoa(address->sin_addr);
 }
 
 RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
