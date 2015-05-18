@@ -1,5 +1,5 @@
 /**
- * RArray.h
+ * RBuffer.h
  * Realization of C dynamic memory buffer, in Ray additions.
  * May use like array of sized elements.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)

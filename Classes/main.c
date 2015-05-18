@@ -17,6 +17,7 @@
  **/
 
 #include <RayFoundation.h>
+#include <unistd.h>
 #include "Tests.h"
 #include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
 #include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
@@ -27,19 +28,31 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
 
-    RCString *source = RS(" Hello : >++++++++++>>+<+[[+++++[>++++++++<-]>.<++++++[>--------<-]+<<]>.>[->["
-                          "<++>-[<++>-[<++>-[<++>-[<-------->>[-]++<-[<++>-]]]]]]<[>+<-]+>>]<<] ");
+    RSocket *socket = c(RSocket)(nil);
 
-    // brainfuck hard(with [, ]) hello world on RVM
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+    $(socket, m(setPort,    RSocket)), 8888);
+    $(socket, m(setAddress, RSocket)), "8.8.8.8");
 
-    p(RVirtualFunction)(function);
+    forAll(iterator, 40) {
+        $(socket, m(sendString, RSocket)), RS("Hello to other planet! UDP works."));
+        sleep(1);
+    }
 
-    executeRay(function);
+    deleter(socket, RSocket);
 
-    deleter(function, RVirtualFunction);
-    deleter(RVM, RVirtualMachine);
-    deleter(RVC, RVirtualCompiler);
+//
+//    RCString *source = RS(" Hello : + [>-<-]");
+//
+//    // brainfuck hard(with [, ]) hello world on RVM
+//    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+//
+//    p(RVirtualFunction)(function);
+//
+//    executeRay(function);
+//
+//    deleter(function, RVirtualFunction);
+//    deleter(RVM, RVirtualMachine);
+//    deleter(RVC, RVirtualCompiler);
 
 
 

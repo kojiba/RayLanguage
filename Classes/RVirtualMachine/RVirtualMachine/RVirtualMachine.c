@@ -1,11 +1,15 @@
-#include <unistd.h>
 #include "RVirtualMachine.h"
-#include "ncurses.h"
 
-#define VISUALIZE
+//#define VISUALIZE
 #ifdef VISUALIZE
-#define COLORED
-#define msecDelay 0//50
+    #include "ncurses.h"
+
+    #define COLORED
+    #define msecDelay 0//50
+
+    #if msecDelay != 0
+        #include <unistd.h>
+    #endif
 #endif
 
 constructor(RVirtualMachine)) {
@@ -151,7 +155,6 @@ method(size_t, executeCode, RVirtualMachine)) {
 
 method(void, visualize, RVirtualMachine), rbool end) {
 #ifdef VISUALIZE
-//    size_t sizeY, sizeX;
     size_t iterator;
     static WINDOW *outputWindow = nil;
     static rbool initialized = no;
