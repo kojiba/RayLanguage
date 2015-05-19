@@ -25,7 +25,7 @@ class(RByteArray)
 endOf(RByteArray)
 
 // Memory operations
-void           Xor (      pointer data,          // buffered xor, operands not bytes, but size_t (architects speed-up)
+void           Xor (      pointer data,
                     const pointer key,
                           size_t  sizeOfData,
                           size_t  sizeOfKey);

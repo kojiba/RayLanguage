@@ -23,10 +23,7 @@ void Xor(      pointer data,
                size_t  sizeOfData,
                size_t  sizeOfKey) {
     size_t iterator;
-    forAll(iterator, sizeOfData / sizeof(size_t)) {
-        ((size_t*) data)[iterator] = ((size_t*) data)[iterator] ^ ((size_t*) key)[iterator % sizeOfKey];
-    }
-    for(iterator *= sizeof(size_t); iterator < sizeOfData; ++iterator){
+    forAll(iterator, sizeOfData) {
         ((byte*)data)[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
     }
 }

@@ -66,7 +66,6 @@ int main(int argc, const char *argv[]) {
     RThreadJoin(&receiver);
     endSockets();
 
-
 //
 //    // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
 //    RCString *source = RS(" Hello : + [>-<-]");
