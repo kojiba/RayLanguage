@@ -23,6 +23,9 @@ class(RVirtualCompiler)
     size_t      deltaToNext;
     size_t      toPrev;
 
+    // for store open brackets places
+    RArray     *brakets;
+
     RByteArray *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)

@@ -18,7 +18,7 @@ printer(RVirtualFunction) {
     size_t iterator;
     RPrintf("%s object - %p : \n", toString(RVirtualFunction), object);
     RPrintf("Name : \"%s\" \n", object->name->baseString);
-    RPrintf("Byte Code : \" \n");
+    RPrintf("Byte Code : \n");
 
     forAll(iterator, master(object, RByteArray)->size) {
         RPrintf("\t %lu - ",iterator);
@@ -69,5 +69,5 @@ printer(RVirtualFunction) {
             } break;
         }
     }
-    RPrintf("\" \n");
+    RPrintf("\n");
 }

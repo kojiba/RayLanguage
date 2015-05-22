@@ -4,16 +4,19 @@
 constructor(RVirtualCompiler)) {
     object = allocator(RVirtualCompiler);
     if(object != nil) {
-
-        object->classId = registerClassOnce(toString(RVirtualCompiler));
-        object->lines = 1;
-        object->symbols = 1;
-        object->numberOfLines = 0;
+        object->brakets = makeRArray();
+        if(object->brakets != nil) {
+            object->classId = registerClassOnce(toString(RVirtualCompiler));
+        } else {
+            deallocator(object);
+            return nil;
+        }
     }
     return object;
 }
 
 destructor(RVirtualCompiler) {
+    deleter(object->brakets, RArray);
 }
 
 singleton(RVirtualCompiler) {
@@ -97,6 +100,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
                     object->deltaToNext = deltaToFirstBack;
                 }
             }
+            $(object->brakets, m(addObject, RArray)), object->iterator);
 
             realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2 + 2;
 
@@ -116,19 +120,16 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
         } break;
 
         case ']': {
-
+            size_t realPath;
             if(!isOpenedBracket) {
                 RPrintf("Warning. RVirtualCompiler (BrainFuck). ']' not opened\n");
+                return r_ignore;
             }
 
-            // complicated case
-            size_t currSubSize  = object->code->size - object->deltaToNext,
-                    currSubStart = object->iterator + object->iteratorShift + 1,
-                    realPath, deltaToFirstBack;
+            realPath = $(object->brakets, m(lastObject, RArray)));
+            $(object->brakets, m(deleteLast, RArray)));
 
-            object->toPrev = indexOfLastCharacterCString(object->code->baseString, object->toPrev ? object->toPrev : object->code->size, '[');
             --object->backwardRepetitions;
-            realPath = object->toPrev + (object->forwardRepetitions + object->backwardRepetitions) * 2;
 
             if(realPath > 255) {
                 RPrintf("Warning. RVirtualCompiler (BrainFuck). ']' Too long loop %lu\n", realPath);
@@ -169,8 +170,6 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     RByteArray *body;
     byte        character;
     size_t      sizeOfByteCode;
-    object->iterator      = 0;
-    object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
 
     // delete spaces
     $(object->code, m(deleteAllCharacters, RCString)), ' ');
@@ -217,8 +216,11 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         object->code = $(sourceCode, m(copy, RCString)) );
 
         // init workings
-        object->deltaToNext = 0;
-        object->toPrev      = 0;
+        object->deltaToNext   = 0;
+        object->toPrev        = 0;
+        object->iterator      = 0;
+        object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
+        $(object->brakets, m(flush, RArray)));
 
         // set name and body
         function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
