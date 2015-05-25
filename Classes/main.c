@@ -28,9 +28,14 @@ int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
     ComplexTest();
-//
 //    // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
-    RCString *source = RS("+[>+[>+<-]<- +[>+<-] ]");
+    RCString *source = RS(" Hello : +>[+"
+                                  "[ > + <<<<<<<<< + >> + ] "
+                                  "[ >> + <<<<<<<< + >> + ] "
+                                  "[ >>> + <<<<<<< + >> + ] "
+                                  "[ >>>> + <<<<<< + >> + ] "
+                                  "[ >>>>> + <<<<< + >> + ] "
+                                  "]>]");
 
     // brainfuck hard(with [, ]) hello world on RVM
     RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );

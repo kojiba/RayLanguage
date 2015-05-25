@@ -89,7 +89,7 @@ RCString * randomRCString(void) {
         }
         cstring = arrayAllocator(char, size);
         if(cstring != nil) {
-            forAll(iterator, size - 2){
+            forAll(iterator, size - 1){
                 cstring[iterator] = randomCharacter();
             }
             cstring[++iterator] = 0;

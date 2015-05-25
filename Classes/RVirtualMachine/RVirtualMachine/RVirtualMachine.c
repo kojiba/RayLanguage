@@ -6,7 +6,6 @@
 
     #define COLORED
     #define msecDelay 0//50
-
     #if msecDelay != 0
         #include <unistd.h>
     #endif

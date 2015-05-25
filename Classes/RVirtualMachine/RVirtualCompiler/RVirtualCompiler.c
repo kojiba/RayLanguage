@@ -100,7 +100,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
                     object->deltaToNext = deltaToFirstBack;
                 }
             }
-            $(object->brakets, m(addObject, RArray)), object->iterator);
+            $(object->brakets, m(addObject, RArray)), (pointer) object->iterator);
 
             realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2 + 2;
 
@@ -126,7 +126,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
                 return r_ignore;
             }
 
-            realPath = $(object->brakets, m(lastObject, RArray)));
+            realPath = (size_t) $(object->brakets, m(lastObject, RArray)));
             $(object->brakets, m(deleteLast, RArray)));
 
             --object->backwardRepetitions;
@@ -219,6 +219,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         object->deltaToNext   = 0;
         object->toPrev        = 0;
         object->iterator      = 0;
+        object->lines         = 0;
         object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience
         $(object->brakets, m(flush, RArray)));
 
