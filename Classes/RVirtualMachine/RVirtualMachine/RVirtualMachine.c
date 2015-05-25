@@ -89,7 +89,7 @@ method(size_t, executeCode, RVirtualMachine)) {
         case r_move_forward : {
             // increment pointer
             ++object->dataRegister;
-            if(object->dataRegister == (object->memory->array + object->memory->size)) {
+            if(object->dataRegister == (object->memory->array + object->memory->size - 1)) {
                 object->dataRegister = object->memory->array;
             }
             ++object->command;
@@ -99,7 +99,7 @@ method(size_t, executeCode, RVirtualMachine)) {
             // decrement pointer
             --object->dataRegister;
             if(object->dataRegister < object->memory->array) {
-                object->dataRegister = object->memory->array + object->memory->size;
+                object->dataRegister = object->memory->array + object->memory->size - 1;
             }
             ++object->command;
         } break;

@@ -26,6 +26,7 @@
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
+    initRClock();
     enablePool(RPool);
     RCTSingleton;
     ComplexTest();
@@ -49,6 +50,8 @@ int main(int argc, const char *argv[]) {
 
     deleter(RVM, RVirtualMachine);
     deleter(RVC, RVirtualCompiler);
+
+    tickRClock();
 
     endRay();
 }
