@@ -17,41 +17,13 @@
  **/
 
 #include <RayFoundation.h>
-#include <unistd.h>
 #include "Tests.h"
-
-#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
-#include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
-#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
     initRClock();
     enablePool(RPool);
-    RCTSingleton;
     ComplexTest();
-//    // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
-    RCString *source = RS(" Hello : +[+["
-                                  "[ > + <<<<<<<<< + >> + ] "
-                                  "[ >> + <<<<<<<< + >> + ] "
-                                  "[ >>> + <<<<<<< + >> + ] "
-                                  "[ >>>> + <<<<<< + >> + ] "
-                                  "[ >>>>> + <<<<< + >> + ] "
-                                  "]>]");
-
-    // brainfuck hard(with [, ]) hello world on RVM
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source);
-
-    p(RVirtualFunction)(function);
-
-    executeRay(function);
-
-    deleter(function, RVirtualFunction);
-
-    deleter(RVM, RVirtualMachine);
-    deleter(RVC, RVirtualCompiler);
-
-    tickRClock();
 
     endRay();
 }

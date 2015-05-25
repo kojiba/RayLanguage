@@ -1,6 +1,6 @@
 #include "RVirtualMachine.h"
 
-//#define VISUALIZE
+#define VISUALIZE
 #ifdef VISUALIZE
     #include "ncurses.h"
 
@@ -196,13 +196,9 @@ method(void, visualize, RVirtualMachine), rbool end) {
 #endif /*VISUALIZE*/
 }
 
-method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
-    size_t result = 0;
+method(void, setUpFunction, RVirtualMachine), RVirtualFunction *function) {
     // copy pointer
     object->functionExecuting = function;
-
-    // function name label
-    RPrintf("RVM. Start Executing Function \"%s\"\n\n", function->name->baseString);
 
     // set tick size is 0
     object->tickCount = 0;
@@ -216,6 +212,15 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     // set command to first byte of opcodes
     object->functionStartAddress = master(object->functionExecuting, RByteArray)->array;
     object->command              = object->functionStartAddress;
+}
+
+method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
+    size_t result = 0;
+
+    $(object, m(setUpFunction, RVirtualMachine)), function);
+
+    // function name label
+    RPrintf("RVM. Start Executing Function \"%s\"\n\n", function->name->baseString);
 
     // execute first code, that starts processing
     // execute next code while not flag
