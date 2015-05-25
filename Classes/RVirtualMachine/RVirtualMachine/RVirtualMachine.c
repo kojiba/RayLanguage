@@ -24,7 +24,6 @@ constructor(RVirtualMachine)) {
 
 destructor(RVirtualMachine) {
     if(object != nil) {
-        $(object->memory, d(RByteArray)));
         deallocator(object->memory);
     }
 }
@@ -243,6 +242,9 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     RPrintf("Memory snapshot : {\n");
     $(object->memory, p(RByteArray)) );
     RPrintf("} end memory snapshot\n");
+
+    // cleanup
+    d(RByteArray)(object->memory);
 }
 
 singleton(RVirtualMachine) {

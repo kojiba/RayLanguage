@@ -27,9 +27,10 @@
 int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
+    RCTSingleton;
     ComplexTest();
 //    // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
-    RCString *source = RS(" Hello : +>[+"
+    RCString *source = RS(" Hello : +[+["
                                   "[ > + <<<<<<<<< + >> + ] "
                                   "[ >> + <<<<<<<< + >> + ] "
                                   "[ >>> + <<<<<<< + >> + ] "
@@ -38,13 +39,14 @@ int main(int argc, const char *argv[]) {
                                   "]>]");
 
     // brainfuck hard(with [, ]) hello world on RVM
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source);
 
     p(RVirtualFunction)(function);
 
     executeRay(function);
 
     deleter(function, RVirtualFunction);
+
     deleter(RVM, RVirtualMachine);
     deleter(RVC, RVirtualCompiler);
 

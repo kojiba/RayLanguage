@@ -87,12 +87,12 @@ RCString * randomRCString(void) {
         while(size < 10) {
             size = ((size_t)rand()) % 50;
         }
-        cstring = arrayAllocator(char, size);
+        cstring = arrayAllocator(char, size + 1);
         if(cstring != nil) {
-            forAll(iterator, size - 1){
+            forAll(iterator, size){
                 cstring[iterator] = randomCharacter();
             }
-            cstring[++iterator] = 0;
+            cstring[size] = 0;
             $(string, m(setConstantString, RCString)), cstring);
 
         } elseError(

@@ -78,6 +78,11 @@ void poolPrinter(pointer some) {
     RCompareFlags compareRPoolDescriptor(RPoolDescriptor *first, RPoolDescriptor *second) {
         return first->ptr == second->ptr ? equals : not_equals;
     }
+
+    rbool totalEnumerator(pointer context, pointer object, size_t iterator) {
+        *(size_t*)(context) += ((RPoolDescriptor*)object)->size;
+        return yes;
+    }
 #endif
 
 void innerFree(pointer some) {
@@ -122,10 +127,29 @@ destructor(RAutoPool) {
 }
 
 printer(RAutoPool) {
+#ifdef R_POOL_DETAILED
+    size_t *memTotal;
+    storePtrs();
+    toPoolPtrs();
     RMutexLockPool();
+    memTotal = allocator(size_t);
+    if(memTotal != nil) {
+        REnumerateDelegate delegate;
+        delegate.context = memTotal;
+        *memTotal = 0;
+        delegate.virtualEnumerator = totalEnumerator;
+        $(object->pointersInWork, m(enumerate, RArray)), &delegate, yes);
+    }
+    backPtrs();
+#else
+    RMutexLockPool();
+#endif
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
     RPrintf("\t Printer tuid : %lu\n", (unsigned long) currentTreadIdentifier());
+    if(memTotal != nil) {
+        RPrintf("\t Size total %lu bytes\n", *memTotal);
+    }
 #endif
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));

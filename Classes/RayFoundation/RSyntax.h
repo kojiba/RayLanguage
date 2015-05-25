@@ -100,8 +100,8 @@ typedef byte    rbool;
 #define $(object, methodName)                             methodName(object
 
 // cases/if/for ...
-#define forAll(iterator, count)                           for(iterator = 0; iterator < count; ++iterator)
-#define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < start + count; ++iterator)
+#define forAll(iterator, count)                           for(iterator = 0; iterator < (count); ++iterator)
+#define fromStartForAll(iterator, start, count)           for(iterator = start; iterator < (start) + (count); ++iterator)
 #define inRange(iterator, RRange)                         for(iterator = RRange.start; iterator < RRange.start + RRange.size; ++iterator)
 
 #endif /*__R_SYNTAX_H__*/

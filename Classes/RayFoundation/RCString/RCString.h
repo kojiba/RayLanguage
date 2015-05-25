@@ -28,8 +28,8 @@ size_t     indexOfFirstCharacterCString  (const char *string, size_t size, char 
 size_t     indexOfLastCharacterCString   (const char *string, size_t size, char character); // returns index, or size
 char *     copyOfCString                 (const char *string);
 char *     substringInRange              (const char *string, RRange range);
-RCString * randomRCString                (void);
-char       randomCharacter               (void);
+RCString * randomRCString                (void); // uses rand(), string [10; 50] length, uses randomCharacter
+char       randomCharacter               (void); // uses rand() [34; 125] ascii
 
 char *     cstringWithFormat             (const char *format, ...);
 char *     vcstringWithFormat            (const char *format, va_list list);
