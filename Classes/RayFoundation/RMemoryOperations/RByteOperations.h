@@ -41,8 +41,9 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
                              size_t  sizeOfKey);
 
 // Basics
-byte*          flushAllToByte             (      pointer array, size_t size, byte symbol); // returns reference
+byte*          flushAllToByte             (   pointer  array,   size_t size, byte symbol); // returns reference
 void           printByteArrayInHex        (const byte *array,   size_t size);
+void           printByteArrayInBin        (const byte *array,   size_t size);
 byte*          getByteArrayCopy           (const byte *array,   size_t size);
 byte*          getSubArray                (const byte *array,   RRange range );            // sub-array copy
 RByteArray*    getSubArrayToFirstSymbol   (const byte *array,   size_t size, byte symbol); // sub-array copy, or nil

@@ -16,6 +16,18 @@
 #include <RByteOperations.h>
 #include <RClassTable.h>
 
+#define byteToBinaryPatern "%d%d%d%d%d%d%d%d "
+
+#define byteToBinary(byte)  \
+  (byte & 0x80 ? 1 : 0), \
+  (byte & 0x40 ? 1 : 0), \
+  (byte & 0x20 ? 1 : 0), \
+  (byte & 0x10 ? 1 : 0), \
+  (byte & 0x08 ? 1 : 0), \
+  (byte & 0x04 ? 1 : 0), \
+  (byte & 0x02 ? 1 : 0), \
+  (byte & 0x01 ? 1 : 0)
+
 #pragma mark Memory Operations
 
 void Xor(      pointer data,
@@ -68,6 +80,17 @@ void printByteArrayInHex(const byte *array, size_t size) {
             RPrintf("\n");
         }
         RPrintf("%02X ", array[iterator]);
+    }
+    RPrintf("\n");
+}
+
+void printByteArrayInBin(const byte *array, size_t size) {
+    size_t iterator;
+    forAll(iterator, size) {
+        if (iterator % 8 == 0 && iterator != 0) {
+            RPrintf("\n");
+        }
+        RPrintf(byteToBinaryPatern, byteToBinary(array[size - iterator - 1]));
     }
     RPrintf("\n");
 }
