@@ -153,7 +153,7 @@ printer(RAutoPool) {
 #endif
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
-    RPrintf("---------------------- %p\n", object);
+    RPrintf("-------------------------- %p\n", object);
     RMutexUnlockPool();
 }
 

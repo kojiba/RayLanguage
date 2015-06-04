@@ -65,6 +65,7 @@ inline constructor(RSocket)) {
 
 destructor(RSocket) {
     shutdown(object->socket, 2);
+    close(object->socket);
 }
 
 printer(RSocket) {

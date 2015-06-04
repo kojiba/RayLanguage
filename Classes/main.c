@@ -19,8 +19,6 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-
-
 int main(int argc, const char *argv[]) {
     size_t iterator;
     initRClock();
