@@ -82,6 +82,9 @@ destructor(RSandBox) {
         deleter(object->memPart, RByteArray);
         deallocator(object->descriptorTable);
     }
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    RMutexDestroy(sandboxMutex);
+#endif
 }
 
 method(size_t, memoryPlaced, RSandBox)) {

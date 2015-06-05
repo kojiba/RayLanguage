@@ -45,6 +45,8 @@ int main(int argc, const char *argv[]) {
 
     $(pool, m(join, RThreadPool)));
 
+    p(RThreadPool)(pool);
+
     deleter(pool, RThreadPool);
     endRay();
 }

@@ -124,6 +124,9 @@ autoPoolNamed(singletonOfRAutoPool)
 destructor(RAutoPool) {
     disablePool(object);
     deleter(object->pointersInWork, RArray);
+#ifdef RAY_POOL_THREAD_SAFE
+    RMutexDestroy(poolMutex);
+#endif
 }
 
 printer(RAutoPool) {
