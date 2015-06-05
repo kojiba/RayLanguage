@@ -70,6 +70,9 @@ destructor(RClassTable) {
     deallocator(master(object, RCompareDelegate));
     master(object, RArray) = nil;
     master(object, RCompareDelegate) = nil;
+#ifdef RAY_CLASS_TABLE_THREAD_SAFE
+    RMutexDestroy(tableMutex);
+#endif
 }
 
 #pragma mark Private worker

@@ -70,6 +70,9 @@ destructor(RBuffer) {
     // kills sizes
     deallocator(object->sizesArray);
     RMutexUnlockBuffer();
+#ifdef RAY_BUFFER_THREAD_SAFE
+    RMutexDestroy(bufferMutex);
+#endif
 }
 
 printer(RBuffer) {

@@ -105,6 +105,9 @@ destructor(RArray) {
     // dealloc array pointer
     deallocator(object->array);
     RMutexUnlockArray();
+#ifdef RAY_ARRAY_THREAD_SAFE
+    RMutexDestroy(arrayMutex);
+#endif
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray destructor of %p\n", object);
 #endif

@@ -67,6 +67,9 @@ destructor(RList) {
         }
     }
     RMutexUnlockList();
+#ifdef RAY_LIST_THREAD_SAFE
+    RMutexDestroy(listMutex);
+#endif
 }
 
 printer(RList) {

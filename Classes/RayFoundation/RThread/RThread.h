@@ -88,6 +88,7 @@ extern void RThreadExit   (pointer data);
 extern int mutexWithType (RMutex *mutex, byte mutexType);
 extern int RMutexLock    (RMutex *mutex);
 extern int RMutexUnlock  (RMutex *mutex);
+extern int RMutexDestroy (RMutex *mutex);
 
 #endif
 
