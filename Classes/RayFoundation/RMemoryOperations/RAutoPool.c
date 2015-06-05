@@ -18,6 +18,10 @@
 #include <RAutoPool.h>
 #include <RClassTable.h>
 
+#ifndef _WIN32
+    #include <sys/errno.h>
+#endif
+
 #if defined(RAY_POOL_THREAD_SAFE)
     #define poolMutex          &object->mutex
     #define RMutexLockPool()   RMutexLock(poolMutex)
@@ -28,14 +32,13 @@
     #define RMutexUnlockPool()
 #endif
 
-
 #define toPoolPtrs() setRMalloc (object->innerMalloc);\
                      setRCalloc (object->innerCalloc);\
                      setRRealloc(object->innerRealloc);\
                      setRFree   (object->innerFree);
 
 #if defined(R_POOL_DETAILED) && !defined(R_POOL_META_ALLOC)
-    RPoolDescriptor * descriptorWithInfo(size_t size, pointer ptr, RThreadId threadId) {
+    RPoolDescriptor * descriptorWithInfo(RAutoPool *object, size_t size, pointer ptr, RThreadId threadId) {
         RPoolDescriptor *result = allocator(RPoolDescriptor);
         if(result != nil) {
             result->ptr = ptr;
@@ -47,7 +50,7 @@
 #endif
 
 #ifdef R_POOL_META_ALLOC
-    RPoolDescriptor * descriptorWithInfoMeta(size_t size, pointer ptr, RThreadId threadId, char *tipString) {
+    RPoolDescriptor * descriptorWithInfoMeta(RAutoPool *object, size_t size, pointer ptr, RThreadId threadId, char *tipString) {
         RPoolDescriptor *result = allocator(RPoolDescriptor);
         if(result != nil) {
             result->ptr = ptr;
@@ -108,7 +111,7 @@ constructor(RAutoPool)) {
             object->pointersInWork->printerDelegate = poolPrinter;
 
 #if defined(RAY_POOL_THREAD_SAFE)
-            mutexWithType(&object->mutex, RMutexNormal);
+            mutexWithType(&object->mutex, RMutexErrorCheck);
 #endif
         } elseError(
             RError("RAutoPool. Bad workers RArray allocation.", object)
@@ -132,8 +135,6 @@ destructor(RAutoPool) {
 printer(RAutoPool) {
 #ifdef R_POOL_DETAILED
     size_t *memTotal;
-    storePtrs();
-    toPoolPtrs();
     RMutexLockPool();
     memTotal = allocator(size_t);
     if(memTotal != nil) {
@@ -143,7 +144,6 @@ printer(RAutoPool) {
         delegate.virtualEnumerator = totalEnumerator;
         $(object->pointersInWork, m(enumerate, RArray)), &delegate, yes);
     }
-    backPtrs();
 #else
     RMutexLockPool();
 #endif
@@ -161,23 +161,25 @@ printer(RAutoPool) {
 }
 
 method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
-    RMutexLockPool();
-    storePtrs();
-    toPoolPtrs();
+#ifdef RAY_POOL_THREAD_SAFE
+    if(RMutexLockPool() == EDEADLK) {
+        return object->innerMalloc(sizeInBytes);
+    }
+#endif
+    
     pointer temp = RAlloc(sizeInBytes);
     if(temp != nil) {
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-        RPoolDescriptor *descriptor = descriptorWithInfoMeta(sizeInBytes, temp, currentTreadIdentifier(), nil);
+        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentTreadIdentifier(), nil);
     #else
-        RPoolDescriptor *descriptor = descriptorWithInfo(sizeInBytes, temp, currentTreadIdentifier());
+        RPoolDescriptor *descriptor = descriptorWithInfo(object, sizeInBytes, temp, currentTreadIdentifier());
     #endif
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);
 #endif
     }
-    backPtrs();
     RMutexUnlockPool();
     return temp;
 }
@@ -185,14 +187,14 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
 #ifdef R_POOL_META_ALLOC
     method(pointer, metaAlloc, RAutoPool), size_t sizeInBytes, char *tipString) {
         RMutexLockPool();
-        storePtrs();
+        
         toPoolPtrs();
         pointer temp = RAlloc(sizeInBytes);
         if(temp != nil) {
-            RPoolDescriptor *descriptor = descriptorWithInfoMeta(sizeInBytes, temp, currentTreadIdentifier(), tipString);
+            RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentTreadIdentifier(), tipString);
             $(object->pointersInWork, m(addObject, RArray)), descriptor);
         }
-        backPtrs();
+        
         RMutexUnlockPool();
         return temp;
     }
@@ -202,108 +204,112 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
     if(ptr == nil) {
         return $(object, m(malloc, RAutoPool)), newSize);
     } else {
-        RMutexLockPool();
-        storePtrs();
-        toPoolPtrs();
-        RCompareDelegate delegate;
-#ifndef R_POOL_DETAILED
-        delegate.virtualCompareMethod = defaultComparator;
-        delegate.etaloneObject = ptr;
-#else
-    #ifdef R_POOL_META_ALLOC
-        char *storedTip = nil;
-        RPoolDescriptor* descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
-    #else
-        RPoolDescriptor* descriptor = descriptorWithInfo(0, ptr, 0);
-    #endif
-        delegate.etaloneObject = descriptor;
-        delegate.virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
-#endif
-        // search if it not first realloc for ptr
-        RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), &delegate);
-        if(result.object != nil) {
-            RArrayFlags error;
-#ifndef R_POOL_DETAILED
-            // not destruct it
-            object->pointersInWork->destructorDelegate = nil;
-#else
-    #ifdef R_POOL_META_ALLOC
-            storedTip = ((RPoolDescriptor*)result.object)->tipString;
-    #endif
-            // only free (must dealloc struct)
-            object->pointersInWork->destructorDelegate = object->innerFree;
-#endif
-            error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
-
-            ifError(error != no_error,
-                    RError("Bad pointers array index on delete (realloc).", object)
-            );
-
-            object->pointersInWork->destructorDelegate = innerFree;
+#ifdef RAY_POOL_THREAD_SAFE
+        if(RMutexLockPool() == EDEADLK) {
+            return object->innerRealloc(ptr, newSize);
         }
-
-        pointer temp = RReAlloc(ptr, newSize);
-        if(temp != nil) {
-                // finally add new pointer
-#ifdef R_POOL_DETAILED
-    #ifdef R_POOL_META_ALLOC
-            RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(newSize, temp, currentTreadIdentifier(), storedTip);
+#endif
+            RCompareDelegate delegate;
+    #ifndef R_POOL_DETAILED
+            delegate.virtualCompareMethod = defaultComparator;
+            delegate.etaloneObject = ptr;
     #else
-            RPoolDescriptor *descriptor2 = descriptorWithInfo(newSize, temp, currentTreadIdentifier());
+        #ifdef R_POOL_META_ALLOC
+            char *storedTip = nil;
+            RPoolDescriptor* descriptor = descriptorWithInfoMeta(object, 0, ptr, 0, nil);
+        #else
+            RPoolDescriptor* descriptor = descriptorWithInfo(object, 0, ptr, 0);
+        #endif
+            delegate.etaloneObject = descriptor;
+            delegate.virtualCompareMethod = (ComparatorDelegate) compareRPoolDescriptor;
     #endif
-            $(object->pointersInWork, m(addObject, RArray)), descriptor2);
-#else
-            $(object->pointersInWork, m(addObject, RArray)), temp);
-#endif
-        }
+            // search if it not first realloc for ptr
+            RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), &delegate);
+            if(result.object != nil) {
+                RArrayFlags error;
+    #ifndef R_POOL_DETAILED
+                // not destruct it
+                object->pointersInWork->destructorDelegate = nil;
+    #else
+        #ifdef R_POOL_META_ALLOC
+                storedTip = ((RPoolDescriptor*)result.object)->tipString;
+        #endif
+                // only free (must dealloc struct)
+                object->pointersInWork->destructorDelegate = object->innerFree;
+    #endif
+                error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
 
-#ifdef R_POOL_DETAILED
-        deallocator(descriptor);
-#endif
-        backPtrs();
-        RMutexUnlockPool();
-        return temp;
+                ifError(error != no_error,
+                        RError("Bad pointers array index on delete (realloc).", object)
+                );
+
+                object->pointersInWork->destructorDelegate = innerFree;
+            }
+
+            pointer temp = RReAlloc(ptr, newSize);
+            if(temp != nil) {
+                    // finally add new pointer
+    #ifdef R_POOL_DETAILED
+        #ifdef R_POOL_META_ALLOC
+                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(object, newSize, temp, currentTreadIdentifier(), storedTip);
+        #else
+                RPoolDescriptor *descriptor2 = descriptorWithInfo(object, newSize, temp, currentTreadIdentifier());
+        #endif
+                $(object->pointersInWork, m(addObject, RArray)), descriptor2);
+    #else
+                $(object->pointersInWork, m(addObject, RArray)), temp);
+    #endif
+            }
+
+    #ifdef R_POOL_DETAILED
+            deallocator(descriptor);
+    #endif
+            RMutexUnlockPool();
+            return temp;
     }
     return nil;
 }
 
 method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
-    RMutexLockPool();
-    storePtrs();
-    toPoolPtrs();
+#ifdef RAY_POOL_THREAD_SAFE
+    if(RMutexLockPool() == EDEADLK) {
+        return object->innerCalloc(blockCount, blockSize);
+    }
+#endif
     // high lvl calloc
     pointer temp = RClearAlloc(blockCount, blockSize);
     if(temp != nil) {
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-        RPoolDescriptor *descriptor = descriptorWithInfoMeta(blockCount * blockSize, temp, currentTreadIdentifier(), nil);
+        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, blockCount * blockSize, temp, currentTreadIdentifier(), nil);
     #else
-        RPoolDescriptor *descriptor = descriptorWithInfo(blockCount * blockSize, temp, currentTreadIdentifier());
+        RPoolDescriptor *descriptor = descriptorWithInfo(object, blockCount * blockSize, temp, currentTreadIdentifier());
     #endif
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
         $(object->pointersInWork, m(addObject, RArray)), temp);
 #endif
     }
-    backPtrs();
     RMutexUnlockPool();
     return temp;
 }
 
 method(void, free, RAutoPool), pointer ptr) {
     if(ptr != nil) {
-        RMutexLockPool();
-        storePtrs();
-        toPoolPtrs();
+#ifdef RAY_POOL_THREAD_SAFE
+        if(RMutexLockPool() == EDEADLK) {
+            return object->innerFree(ptr);
+        }
+#endif
         RCompareDelegate delegate;
 #ifndef R_POOL_DETAILED
         delegate.virtualCompareMethod = defaultComparator;
         delegate.etaloneObject = ptr;
 #else
     #ifdef R_POOL_META_ALLOC
-        RPoolDescriptor *descriptor = descriptorWithInfoMeta(0, ptr, 0, nil);
+        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, 0, ptr, 0, nil);
     #else
-        RPoolDescriptor *descriptor = descriptorWithInfo(0, ptr, 0);
+        RPoolDescriptor *descriptor = descriptorWithInfo(object, 0, ptr, 0);
     #endif
         delegate.etaloneObject        = descriptor;
         delegate.virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareRPoolDescriptor;
@@ -319,14 +325,8 @@ method(void, free, RAutoPool), pointer ptr) {
             deallocator(ptr);
         }
 #ifdef R_POOL_DETAILED
-
-        ifError(free == object->selfFree,
-            RError("RAutoPool. Inner free is self free, bad bad bad!!!", object)
-        );
-
         deallocator(descriptor);
 #endif
-        backPtrs();
         RMutexUnlockPool();
     } else {
         RWarning("RAutoPool. Free nil.", object);
@@ -348,8 +348,6 @@ rbool deleterEnumerator(pointer context, pointer object, size_t iterator) {
 
 method(void, drain, RAutoPool)) {
     RMutexLockPool();
-    storePtrs();
-    toPoolPtrs();
 #ifndef R_POOL_DETAILED
     $(object->pointersInWork, m(flush, RArray)));
 #else
@@ -358,7 +356,6 @@ method(void, drain, RAutoPool)) {
     delegate.virtualEnumerator = deleterEnumerator;
     $(object->pointersInWork, m(deleteWithPredicate, RArray)), &delegate);
 #endif
-    backPtrs();
     RMutexUnlockPool();
 }
 

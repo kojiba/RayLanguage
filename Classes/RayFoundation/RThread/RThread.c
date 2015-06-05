@@ -102,6 +102,14 @@ inline int RMutexLock(RMutex *mutex) {
 #endif
 }
 
+inline int RMutexTryLock(RMutex *mutex) {
+#ifndef _WIN32
+    return pthread_mutex_trylock(mutex);
+#else
+    return (int) WaitForSingleObject(mutex, INFINITE);
+#endif
+}
+
 inline int RMutexUnlock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_unlock(mutex);
