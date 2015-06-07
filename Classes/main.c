@@ -32,7 +32,6 @@ pointer exec(pointer data) {
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
-    initRClock();
     enablePool(RPool);
     ComplexTest();
 

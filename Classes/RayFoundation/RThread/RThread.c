@@ -122,7 +122,7 @@ inline int RMutexDestroy(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_destroy(mutex);
 #else
-    #warnin fixme
+    return CloseHandle(mutex);
 #endif
 }
 
