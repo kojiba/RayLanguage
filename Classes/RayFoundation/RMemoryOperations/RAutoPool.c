@@ -189,10 +189,15 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
 
 #ifdef R_POOL_META_ALLOC
     method(pointer, metaAlloc, RAutoPool), size_t sizeInBytes, char *tipString) {
-        RMutexLockPool();
-        
-        toPoolPtrs();
-        pointer temp = RAlloc(sizeInBytes);
+#ifdef RAY_POOL_THREAD_SAFE
+        if(isMutexDeadLocked) {
+            RWarning("RAutoPool. DeadLock on metaAlloc, using high lvl malloc instead.", object);
+            return object->innerMalloc(sizeInBytes);
+        }
+#endif
+        pointer temp;
+
+        temp = RAlloc(sizeInBytes);
         if(temp != nil) {
             RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentTreadIdentifier(), tipString);
             $(object->pointersInWork, m(addObject, RArray)), descriptor);

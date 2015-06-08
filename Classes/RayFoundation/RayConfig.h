@@ -39,8 +39,8 @@
 #ifdef RAY_EMBEDDED
     #warning Redefine RayBase.h DI macro and delete this warning
 #else
-    #define R_POOL_DETAILED      // enable to storage allocator thread id and malloced size
-//    #define R_POOL_META_ALLOC    // enable to store string tip for pointer like metaAlloc(sizeInBytes, "some memory alloc");
+    #define R_POOL_DETAILED      // to storage allocator thread id and malloced size
+    #define R_POOL_META_ALLOC    // to store string tip for pointer like metaAlloc(sizeInBytes, "some memory alloc"), only for RPool
 
     #pragma mark Thread-Safety flags
 
@@ -57,11 +57,5 @@
 #define RAY_WARNINGS_ON // enable warnings defined in RSyntax.h, if this flag off - reduce bin/lib size
 #define RAY_ERRORS_ON   // --//-- errors
 //#define RAY_ASSERT_ON_ERRORS // enables assert on errors
-
-#ifdef RAY_ASSERT_ON_ERRORS
-    #include <assert.h>
-#endif
-
-#include <RSystem.h>
 
 #endif /*__RAY_CONFIG_H__*/

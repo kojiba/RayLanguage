@@ -60,10 +60,7 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker) {
     RMutexLock(threadPoolMutex);
     RThread *newOne = allocator(RThread);
     if(newOne != nil) {
-//        RPrintf("new worker %p\n", newOne);
         RThreadCreate(newOne, nil, object->delegateFunction, argumentForNewWorker);
-//        RPrintf("malloc ptr %p, RTrueMalloc %p, is equals = %d\n", RMallocPtr, RTrueMalloc, RMallocPtr == RTrueMalloc);
-//        assert(RMallocPtr != RTrueMalloc);
         $(object->threads, m(addObject, RArray)), newOne);
 
     } elseError( RError("RThreadPool. Add with arg bad worker allocation.", object) );

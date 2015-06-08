@@ -21,6 +21,10 @@
 
 #include <RayConfig.h>
 
+#ifdef RAY_ASSERT_ON_ERRORS
+    #include <assert.h>
+#endif
+
 #ifdef RAY_ERRORS_ON
     #ifdef RAY_ASSERT_ON_ERRORS
         #define endPrivateError                       ; assert(nil)

@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 // Workers
+#include <RSystem.h>
 #include <RSyntax.h>
 #include <RColors.h>
 #include <RBasics.h>

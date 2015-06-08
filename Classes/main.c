@@ -24,8 +24,8 @@ pointer exec(pointer data) {
     pointer ptr;
 
     forAll(iterator, 3) {
-        ptr = malloc((size_t) (rand() % 10) + 1);
-        free(ptr);
+        ptr = metaAlloc(10, "In tread 1");
+//        free(ptr);
     }
 
     return nil;
@@ -41,7 +41,7 @@ int main(int argc, const char *argv[]) {
     RThreadPool *pool = c(RThreadPool)(nil);
     $(pool, m(setDelegateFunction, RThreadPool)), exec);
 
-    forAll(iterator, 15000)
+    forAll(iterator, 1)
         $(pool, m(addWithArg, RThreadPool)), nil);
 
 
@@ -49,6 +49,8 @@ int main(int argc, const char *argv[]) {
 
 
     deleter(pool, RThreadPool);
+    pointer ptr = metaAlloc(20, "In main");
+
 
     tickRClock();
 

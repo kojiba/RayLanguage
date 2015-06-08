@@ -18,6 +18,7 @@
 #ifndef RAY_EMBEDDED
 
 #include <RClassTable.h>
+#include <unistd.h>
 
 const byte networkConnectionClosedConst = 0;
 const byte networkOperationErrorConst   = 254;
@@ -64,7 +65,7 @@ inline constructor(RSocket)) {
 }
 
 destructor(RSocket) {
-    shutdown(object->socket, 2);
+//    shutdown(object->socket, 2);
     close(object->socket);
 }
 

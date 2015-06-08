@@ -16,6 +16,8 @@
 #ifndef __R_SYSTEM_H__
 #define __R_SYSTEM_H__
 
+#include <RayConfig.h>
+
 // Bit architecture
 #if UINTPTR_MAX == 0xffff
     #define R16BIT
