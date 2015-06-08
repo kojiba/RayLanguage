@@ -18,14 +18,17 @@
 #include <RAutoPool.h>
 #include <RClassTable.h>
 
-#ifndef _WIN32
-    #include <sys/errno.h>
-#endif
-
 #if defined(RAY_POOL_THREAD_SAFE)
     #define poolMutex          &object->mutex
     #define RMutexLockPool()   RMutexLock(poolMutex)
     #define RMutexUnlockPool() RMutexUnlock(poolMutex)
+
+    #ifndef _WIN32
+        #include <sys/errno.h>
+        #define isMutexDeadLocked RMutexLockPool() == EDEADLK
+    #else
+        #define isMutexDeadLocked RMutexLockPool() != WAIT_OBJECT_0
+    #endif
 #else
     #define poolMutex
     #define RMutexLockPool()
@@ -162,7 +165,7 @@ printer(RAutoPool) {
 
 method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
 #ifdef RAY_POOL_THREAD_SAFE
-    if(RMutexLockPool() == EDEADLK) {
+    if(isMutexDeadLocked) {
         return object->innerMalloc(sizeInBytes);
     }
 #endif
@@ -205,7 +208,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         return $(object, m(malloc, RAutoPool)), newSize);
     } else {
 #ifdef RAY_POOL_THREAD_SAFE
-        if(RMutexLockPool() == EDEADLK) {
+        if(isMutexDeadLocked) {
             return object->innerRealloc(ptr, newSize);
         }
 #endif
@@ -272,7 +275,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
 
 method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 #ifdef RAY_POOL_THREAD_SAFE
-    if(RMutexLockPool() == EDEADLK) {
+    if(isMutexDeadLocked) {
         return object->innerCalloc(blockCount, blockSize);
     }
 #endif
@@ -297,7 +300,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 method(void, free, RAutoPool), pointer ptr) {
     if(ptr != nil) {
 #ifdef RAY_POOL_THREAD_SAFE
-        if(RMutexLockPool() == EDEADLK) {
+        if(isMutexDeadLocked) {
             return object->innerFree(ptr);
         }
 #endif

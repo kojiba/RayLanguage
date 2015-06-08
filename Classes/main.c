@@ -21,9 +21,11 @@
 
 pointer exec(pointer data) {
     size_t iterator;
+    pointer ptr;
 
     forAll(iterator, 3) {
-        malloc((size_t) (rand() % 10) + 1);
+        ptr = malloc((size_t) (rand() % 10) + 1);
+        free(ptr);
     }
 
     return nil;
@@ -32,20 +34,23 @@ pointer exec(pointer data) {
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
+    initRClock();
     enablePool(RPool);
     ComplexTest();
 
     RThreadPool *pool = c(RThreadPool)(nil);
     $(pool, m(setDelegateFunction, RThreadPool)), exec);
 
-    forAll(iterator, 20)
+    forAll(iterator, 15000)
         $(pool, m(addWithArg, RThreadPool)), nil);
 
 
     $(pool, m(join, RThreadPool)));
 
-    p(RThreadPool)(pool);
 
     deleter(pool, RThreadPool);
+
+    tickRClock();
+
     endRay();
 }
