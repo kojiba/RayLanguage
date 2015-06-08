@@ -19,40 +19,33 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-pointer exec(pointer data) {
-    size_t iterator;
-    pointer ptr;
+autoPoolNamed(somePool);
 
-    forAll(iterator, 3) {
-        ptr = metaAlloc(10, "In tread 1");
-//        free(ptr);
-    }
-
-    return nil;
-}
-
+autoPoolNamed(somePool2);
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
-    initRClock();
     enablePool(RPool);
     ComplexTest();
 
-    RThreadPool *pool = c(RThreadPool)(nil);
-    $(pool, m(setDelegateFunction, RThreadPool)), exec);
+    enablePool(somePool());
 
-    forAll(iterator, 1)
-        $(pool, m(addWithArg, RThreadPool)), nil);
+    forAll(iterator, 5) {
+        malloc(13);
+    }
 
+        enablePool(somePool2());
 
-    $(pool, m(join, RThreadPool)));
+        forAll(iterator, 5) {
+            malloc(7);
+        }
 
+        p(RAutoPool)(somePool());
+        p(RAutoPool)(somePool2());
+        deleter(somePool2(), RAutoPool);
 
-    deleter(pool, RThreadPool);
-    pointer ptr = metaAlloc(20, "In main");
-
-
-    tickRClock();
+    p(RAutoPool)(somePool());
+    deleter(somePool(), RAutoPool);
 
     endRay();
 }

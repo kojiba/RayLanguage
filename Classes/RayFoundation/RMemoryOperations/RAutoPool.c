@@ -160,6 +160,7 @@ printer(RAutoPool) {
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
     RPrintf("-------------------------- %p\n", object);
+    deallocator(memTotal);
     RMutexUnlockPool();
 }
 
