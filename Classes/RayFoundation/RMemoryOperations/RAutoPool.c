@@ -18,7 +18,19 @@
 #include <RAutoPool.h>
 #include <RClassTable.h>
 
+
+#define toPoolPtrs() setRMalloc (object->innerMalloc);\
+                     setRCalloc (object->innerCalloc);\
+                     setRRealloc(object->innerRealloc);\
+                     setRFree   (object->innerFree)
+
+
 #if defined(RAY_POOL_THREAD_SAFE)
+
+    #define storePoolPtrs()
+    #define backPoolPtrs()
+    #define toInnerPoolPtrs()
+
     #define poolMutex          &object->mutex
     #define RMutexLockPool()   RMutexLock(poolMutex)
     #define RMutexUnlockPool() RMutexUnlock(poolMutex)
@@ -30,15 +42,15 @@
         #define isMutexDeadLocked RMutexLockPool() != WAIT_OBJECT_0
     #endif
 #else
+
+    #define storePoolPtrs()   storePtrs()
+    #define backPoolPtrs()    backPtrs()
+    #define toInnerPoolPtrs() toPoolPtrs()
+
     #define poolMutex
     #define RMutexLockPool()
     #define RMutexUnlockPool()
 #endif
-
-#define toPoolPtrs() setRMalloc (object->innerMalloc);\
-                     setRCalloc (object->innerCalloc);\
-                     setRRealloc(object->innerRealloc);\
-                     setRFree   (object->innerFree);
 
 #if defined(R_POOL_DETAILED) && !defined(R_POOL_META_ALLOC)
     RPoolDescriptor * descriptorWithInfo(RAutoPool *object, size_t size, pointer ptr, RThreadId threadId) {
@@ -139,6 +151,8 @@ printer(RAutoPool) {
 #ifdef R_POOL_DETAILED
     size_t *memTotal;
     RMutexLockPool();
+    storePoolPtrs();
+    toInnerPoolPtrs();
     memTotal = allocator(size_t);
     if(memTotal != nil) {
         REnumerateDelegate delegate;
@@ -149,6 +163,8 @@ printer(RAutoPool) {
     }
 #else
     RMutexLockPool();
+    storePoolPtrs();
+    toInnerPoolPtrs()
 #endif
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
@@ -162,6 +178,7 @@ printer(RAutoPool) {
     RPrintf("-------------------------- %p\n", object);
     deallocator(memTotal);
     RMutexUnlockPool();
+    backPoolPtrs();
 }
 
 method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
@@ -170,7 +187,8 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
         return object->innerMalloc(sizeInBytes);
     }
 #endif
-    
+    storePoolPtrs();
+    toInnerPoolPtrs();
     pointer temp = RAlloc(sizeInBytes);
     if(temp != nil) {
 #ifdef R_POOL_DETAILED
@@ -185,6 +203,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
 #endif
     }
     RMutexUnlockPool();
+    backPoolPtrs();
     return temp;
 }
 
@@ -219,6 +238,10 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         }
 #endif
             RCompareDelegate delegate;
+
+        storePoolPtrs();
+        toInnerPoolPtrs();
+
     #ifndef R_POOL_DETAILED
             delegate.virtualCompareMethod = defaultComparator;
             delegate.etaloneObject = ptr;
@@ -274,6 +297,8 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             deallocator(descriptor);
     #endif
             RMutexUnlockPool();
+
+        backPoolPtrs();
             return temp;
     }
     return nil;
@@ -285,6 +310,10 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
         return object->innerCalloc(blockCount, blockSize);
     }
 #endif
+
+    storePoolPtrs();
+    toInnerPoolPtrs();
+
     // high lvl calloc
     pointer temp = RClearAlloc(blockCount, blockSize);
     if(temp != nil) {
@@ -300,6 +329,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
 #endif
     }
     RMutexUnlockPool();
+    backPoolPtrs();
     return temp;
 }
 
@@ -311,6 +341,8 @@ method(void, free, RAutoPool), pointer ptr) {
         }
 #endif
         RCompareDelegate delegate;
+        storePoolPtrs();
+        toInnerPoolPtrs();
 #ifndef R_POOL_DETAILED
         delegate.virtualCompareMethod = defaultComparator;
         delegate.etaloneObject = ptr;
@@ -337,6 +369,7 @@ method(void, free, RAutoPool), pointer ptr) {
         deallocator(descriptor);
 #endif
         RMutexUnlockPool();
+        backPoolPtrs();
     } else {
         RWarning("RAutoPool. Free nil.", object);
     }
@@ -357,6 +390,8 @@ rbool deleterEnumerator(pointer context, pointer object, size_t iterator) {
 
 method(void, drain, RAutoPool)) {
     RMutexLockPool();
+    storePoolPtrs();
+    toInnerPoolPtrs();
 #ifndef R_POOL_DETAILED
     $(object->pointersInWork, m(flush, RArray)));
 #else
@@ -366,6 +401,7 @@ method(void, drain, RAutoPool)) {
     $(object->pointersInWork, m(deleteWithPredicate, RArray)), &delegate);
 #endif
     RMutexUnlockPool();
+    backPoolPtrs();
 }
 
 void enablePool(RAutoPool *object) {
