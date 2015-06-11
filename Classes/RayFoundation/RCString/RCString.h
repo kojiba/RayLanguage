@@ -96,6 +96,7 @@ constMethod(RCString *,     substringByBounds,            RCString),    RBounds 
 constMethod(RArray *,       substringsSeparatedBySymbol,  RCString),    char symbol);                             // or nil, RArray is sizeToFit, subs are copies
 constMethod(RArray *,       substringsSeparatedBySymbols, RCString),    const RCString * const separatorsString); // or nil, RArray is sizeToFit, subs are copies
 constMethod(RArray *,       substringsSeparatedByString,  RCString),    const RCString * const separatorString);  // separatorString length > 1, not use for one symbol
+constMethod(RArray *,       separatedByStringWithShield,  RCString),    const RCString * const separatorString, const RCString * const shield);
 
 constMethod(RCString *,     copy,                         RCString));
 

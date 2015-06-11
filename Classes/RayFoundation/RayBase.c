@@ -20,6 +20,7 @@
 #undef calloc
 #undef free
 
+// stdlib functions by default
 volatile Allocator   RMallocPtr  = &malloc;
 volatile Callocator  RCallocPtr  = &calloc;
 volatile Reallocator RReallocPtr = &realloc;

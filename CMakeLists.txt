@@ -9,7 +9,8 @@ set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 # sub-sources flags
 set(RVM            NO)
 set(RayInterpreter NO)
-set(DebugFlag      YES) # NO - for build library
+set(RayStorage     NO)
+set(DebugFlag      NO) # NO - for build library
 set(copyResources  NO)
 
 
@@ -27,9 +28,7 @@ include_directories(Classes/RayFoundation/RBasics)
 include_directories(Classes/RayFoundation/RClassTable)
 include_directories(Classes/RayFoundation/RContainers)
 include_directories(Classes/RayFoundation/RCString)
-include_directories(Classes/RayFoundation/RCustomIO)
 include_directories(Classes/RayFoundation/REncoding)
-include_directories(Classes/RayFoundation/RFloatingEnum)
 include_directories(Classes/RayFoundation/RMemoryOperations)
 include_directories(Classes/RayFoundation/RThread)
 include_directories(Classes/RayFoundation/RNetwork)
@@ -183,12 +182,28 @@ else()
     set(RINTERPRETER_SOURCES)
 endif() # RInterpreter ---------------------------------------------------
 
+if(RayStorage) # RInterpreter ---------------------------------------------------
+    set(RSTORAGE_HEADERS Classes/RStorage/RStorage.h)
+    set(RSTORAGE_HEADERS Classes/RStorage/RStorage.c)
+
+    add_executable(RayStorage ${RSTORAGE_HEADERS} ${RSTORAGE_SOURCES})
+    target_link_libraries(
+        RayStorage
+        ${LIBRARY_NAME}
+    )
+else()
+    set(RSTORAGE_HEADERS)
+    set(RSTORAGE_SOURCES)
+endif() # RInterpreter ---------------------------------------------------
+
 add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
                                                  Classes/Tests.c
                                                  ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
+                                                 ${RSTORAGE_HEADERS}
+                                                 ${RSTORAGE_SOURCES}
                                                  ${DEBUG_SOURCES}
                                                  ${DEBUG_HEADERS})
 

@@ -721,7 +721,7 @@ constMethod(RArray *, substringsSeparatedByString, RCString), const RCString * c
     if(object->size >= separatorString->size) {
         register size_t iterator;
         register size_t startOfSubstring = 0;
-                 size_t inner;
+        register size_t inner;
                  RCString *substring = nil;
 
         forAll(iterator, object->size) {
@@ -750,6 +750,74 @@ constMethod(RArray *, substringsSeparatedByString, RCString), const RCString * c
                     }
                     $(result, m(addObject, RArray)), substring);
                     startOfSubstring = iterator + inner;
+                }
+                iterator += inner;
+            }
+        }
+
+        if(result != nil) {
+            // if last is not separator - add whole last word
+            if(startOfSubstring < object->size && iterator == object->size) {
+                // add last
+                substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
+                if(substring != nil) {
+                    addObjectToRA(result, substring);
+                }
+            }
+            $(result, m(sizeToFit, RArray)));
+        }
+    } elseWarning(
+            RWarning("RCString. Bad separator string size, or string size.", object)
+    );
+
+    return result;
+}
+
+constMethod(RArray *, separatedByStringWithShield, RCString), const RCString * const separatorString, const RCString * const shield) {
+    RArray *result = nil;
+    if(object->size >= separatorString->size) {
+        register size_t iterator;
+        register size_t startOfSubstring = 0;
+        register size_t inner;
+        RCString *substring = nil;
+
+        forAll(iterator, object->size) {
+            // check if separator
+            if(object->baseString[iterator] == separatorString->baseString[0]) {
+                // compare others
+                for(inner = 1; inner < separatorString->size; ++inner) {
+                    if(object->baseString[iterator + inner] != separatorString->baseString[inner]) {
+                        break;
+                    }
+                }
+                if(inner == separatorString->size
+                        && iterator >= shield->size) { // if separator than
+
+                    // check if shield behind
+                    for(inner = 0; inner < shield->size; ++inner) {
+                        if(object->baseString[iterator - inner - 1] != shield->baseString[shield->size - inner - 1]) {
+                            break;
+                        }
+                    }
+
+                    if(inner != shield->size) { // if there are no shield
+                        substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
+                        if(result == nil) {
+                            result = makeRArray();
+                            if(result != nil) {
+                                // set-up delegates
+                                result->printerDelegate = (void (*)(pointer)) p(RCString);
+                                result->destructorDelegate = (void (*)(pointer)) stringDeleter;
+
+                            // exit if allocation fails
+                            } else {
+                                RError("RCString. Bad array for substrings allocation.", object);
+                                return nil;
+                            }
+                        }
+                        $(result, m(addObject, RArray)), substring);
+                        startOfSubstring = iterator + separatorString->size;
+                    }
                 }
                 iterator += inner;
             }

@@ -19,33 +19,17 @@
 #include <RayFoundation.h>
 #include "Tests.h"
 
-autoPoolNamed(somePool);
-
-autoPoolNamed(somePool2);
-
 int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
     ComplexTest();
 
-    enablePool(somePool());
+    RArray *subs = $(RS("Hello\\|world\\|to |you|"), m(separatedByStringWithShield, RCString)), RS("|"), RS("\\"));
 
-    forAll(iterator, 5) {
-        malloc(13);
+    if(subs != nil) {
+        p(RArray)(subs);
+        deleter(subs, RArray);
     }
-
-        enablePool(somePool2());
-
-        forAll(iterator, 5) {
-            malloc(7);
-        }
-
-        p(RAutoPool)(somePool());
-        p(RAutoPool)(somePool2());
-        deleter(somePool2(), RAutoPool);
-
-    p(RAutoPool)(somePool());
-    deleter(somePool(), RAutoPool);
 
     endRay();
 }
