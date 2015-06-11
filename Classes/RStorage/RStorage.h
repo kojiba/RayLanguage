@@ -2,7 +2,7 @@
  * RStorage.h
  * Object-oriented DB.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 11/05/15 2015 Ukraine Kharkiv
+ * 06/11/15 2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
