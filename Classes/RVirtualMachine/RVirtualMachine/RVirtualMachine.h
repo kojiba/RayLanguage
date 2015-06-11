@@ -32,7 +32,7 @@ typedef enum RVirtualCodes {
     r_no,
 
 // brain-fuck move ups
-    r_move_forward,        // nop analog
+    r_move_forward,
     r_move_backward,
 
 // jump to a difference
