@@ -19,8 +19,16 @@
 #include <RContainers/RArray.h>
 #include <RCString/RString.h>
 
-typedef struct RStoragePool {
-    RArray *fields;
-} RStoragePool;
+typedef struct RStorageObject {
+    RArray  *fields; // RObjectField type
+    RString *name;
+} RStorageObject;
+
+constructor(RStorageObject));
+destructor(RStorageObject);
+void RStorageObjectDeleter(RStorageObject *object);
+
+RStorageObject * deserializeFromStringRStorageObject(RString *string);
+method(RString *, serializeToString, RStorageObject));
 
 #endif /*__R_STORAGE_OBJECT__*/

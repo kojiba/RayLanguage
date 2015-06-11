@@ -20,3 +20,20 @@ RObjectFieldDescriptor fieldWithNameAndType(RString *name, RString *type) {
     some.type = type;
     return some;
 }
+
+constMethod(RCompareFlags, compareWith, RObjectFieldDescriptor), RObjectFieldDescriptor *checkDescriptor) {
+    if(($(object->name, m(compareWith, RCString)), checkDescriptor->name) == equals)
+              && ($(object->type, m(compareWith, RCString)), checkDescriptor->type) == equals)) {
+        return equals;
+    } else {
+        return not_equals;
+    }
+}
+
+destructor(RObjectField) {
+    deleter(object->value, RCString);
+}
+
+void RObjectFieldDeleter(RObjectField *object) {
+    deleter(object, RObjectField);
+}

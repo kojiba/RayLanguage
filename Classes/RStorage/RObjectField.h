@@ -23,12 +23,15 @@ typedef struct RObjectFieldDescriptor {
 } RObjectFieldDescriptor;
 
 RObjectFieldDescriptor fieldWithNameAndType(RString *name, RString *type);
-constMethod(RCompareFlags, compareWith, RObjectFieldDescriptor), RObjectFieldDescriptor *checkPair);
+constMethod(RCompareFlags, compareWith, RObjectFieldDescriptor), RObjectFieldDescriptor *checkDescriptor);
 
 typedef struct RObjectField {
     RObjectFieldDescriptor fieldDescriptor; // type and name
     RString               *value; // used only like byte array
 } RObjectField;
+
+destructor(RObjectField);
+void RObjectFieldDeleter(RObjectField *object);
 
 RObjectField objectFieldWithNameTypeValue(RString *name, RString *type, RString *value);
 RObjectField objectFieldWithDescriptorAndValue(RObjectFieldDescriptor descriptor, RString *value);
