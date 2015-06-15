@@ -42,5 +42,6 @@ RDictionary * dictionaryFromPairs(pointer firstKey, ...); // dict from array of 
 
 // some macros for shorter work
 #define makeRDictionary()       $(nil, c(RDictionary)) )
+#define RD                      dictionaryFromPairs
 
 #endif /*__R_DICTIONARY_H__*/

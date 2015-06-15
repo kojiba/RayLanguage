@@ -24,12 +24,10 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RArray *subs = $(RS("Hello\\|world\\|to |you|"), m(separatedByStringWithShield, RCString)), RS("|"), RS("\\"));
+    RD(RA(RS("Hello")), RA(RS("containers")),
+       RA(RS("Some")),  RA(RS("More")),
+       RA(RS("And")),   RA(RS("more")),nil);
 
-    if(subs != nil) {
-        p(RArray)(subs);
-        deleter(subs, RArray);
-    }
 
     endRay();
 }
