@@ -40,6 +40,21 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
                              size_t  sizeOfData,
                              size_t  sizeOfKey);
 
+#define rotateLeftU(data,  shift, capasity) (((data) << shift) | ((data) >> (capasity - shift)))
+#define rotateRightU(data, shift, capasity) (((data) >> shift) | ((data) << (capasity - shift)))
+
+#define rotateLeft64(data,  shift) rotateLeftU(data, shift, 64)
+#define rotateRight64(data, shift) rotateRightU(data, shift, 64)
+
+#define rotateLeft32(data,  shift) rotateLeftU(data, shift, 32)
+#define rotateRight32(data, shift) rotateRightU(data, shift, 32)
+
+#define rotateLeft16(data,  shift) rotateLeftU(data, shift, 16)
+#define rotateRight16(data, shift) rotateRightU(data, shift, 16)
+
+#define rotateLeft8(data,  shift) rotateLeftU(data, shift, 8)
+#define rotateRight8(data, shift) rotateRightU(data, shift, 8)
+
 // Basics
 byte*          flushAllToByte             (   pointer  array,   size_t size, byte symbol); // returns reference
 void           printByteArrayInHex        (const byte *array,   size_t size);

@@ -24,10 +24,7 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RD(RA(RS("Hello")), RA(RS("containers")),
-       RA(RS("Some")),  RA(RS("More")),
-       RA(RS("And")),   RA(RS("more")),nil);
 
-
+    uint64_t data = rotateLeft64(1, 63);
     endRay();
 }
