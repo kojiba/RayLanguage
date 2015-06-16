@@ -96,6 +96,14 @@ typedef byte    rbool;
 #define deleter(object, className)                        $(object, d(className))); deallocator(object)
 #define nilDeleter(object, className)                     if(object != nil) { deleter(object, className); }                            // fast check if not nil -> delete
 
+#define setter(propertyName, propertyType, className)     method(void, concatenate(set_, propertyName), className), propertyType toSet)
+#define getter(propertyName, propertyType, className)     method(propertyType, concatenate(get_, propertyName), className))
+
+#define setterImpl(propertyName, propertyType, className) setter(propertyName, propertyType, className) { object->propertyName = toSet; }
+#define getterImpl(propertyName, propertyType, className) getter(propertyName, propertyType, className){ return object->propertyName; }
+
+#define setterImplMutex(propertyName, propertyType,\
+                        className, mutex)                setter(propertyName, propertyType, className) { RMutexLock(mutex); object->propertyName = toSet; RMutexUnlock(mutex);}
 
 #define $(object, methodName)                             methodName(object
 

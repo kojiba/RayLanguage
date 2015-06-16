@@ -75,6 +75,7 @@ set(HEADER_FILES # Worker headers
 
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.h
+                 Classes/RayFoundation/RNetwork/RTCPHandler.h
 
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
@@ -116,6 +117,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
 
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.c
+                 Classes/RayFoundation/RNetwork/RTCPHandler.c
 
                  # Tests
                  Classes/RayFoundation/Utils/Utils.c)

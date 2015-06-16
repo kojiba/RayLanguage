@@ -31,7 +31,6 @@
     typedef pthread_cond_t         RCondition;
     typedef uint64_t               RThreadId;
     typedef pointer             (* RThreadFunction)(pointer);
-    typedef pointer                RThreadFunctionSig(pointer data);
 
     #define RMutexAttributeInit              pthread_mutexattr_init
     #define RMutexAttributeSetType           pthread_mutexattr_settype

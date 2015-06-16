@@ -17,14 +17,43 @@
  **/
 
 #include <RayFoundation.h>
+#include <unistd.h>
 #include "Tests.h"
+
+pointer exec(pointer data) {
+    size_t iterator;
+    pointer ptr;
+
+    forAll(iterator, 3) {
+        ptr = malloc((size_t) (rand() % 10) + 1);
+        free(ptr);
+    }
+
+    return nil;
+}
+
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
+    initRClock();
     enablePool(RPool);
     ComplexTest();
 
+    RThreadPool *pool = c(RThreadPool)(nil);
+    $(pool, m(setDelegateFunction, RThreadPool)), exec);
 
-    uint64_t data = rotateLeft64(1, 63);
+    forAll(iterator, 5000)
+        $(pool, m(addWithArg, RThreadPool)), nil, yes);
+
+
+    $(pool, m(joinSelfDeletes, RThreadPool)));
+//    sleep(2);
+
+
+
+    deleter(pool, RThreadPool);
+
+    tickRClock();
+
     endRay();
 }

@@ -37,6 +37,7 @@ RDictionary* stringConstantsTable() {
 }
 
 RCString * constantRString(char *string) {
+    RCString *resultString = nil;
     // comparator for only compile-time constants
     RCompareDelegate delegate;
     RMutexLock(&mutex);
@@ -53,26 +54,21 @@ RCString * constantRString(char *string) {
             if($(stringConstantsTable()->keys, m(addObject, RArray)), string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
                     RMutexUnlock(&mutex);
-                    return constant;
+                    resultString = constant;
                 } else {
                     $(stringConstantsTable()->keys, m(deleteLast, RArray)));
                     RError1("RString_Consts. Can't add constant \"%s\" to table.", nil, string);
-                    RMutexUnlock(&mutex);
-                    return nil;
                 }
             } else {
                 RError1("RString_Consts. Can't add key \"%s\"", stringConstantsTable(), string);
-                RMutexUnlock(&mutex);
-                return nil;
             }
         } else {
             RError1("RString_Consts. Can't allocate constant RString for string \"%s\"", nil, string);
-            RMutexUnlock(&mutex);
-            return nil;
         }
     } else {
-        RMutexUnlock(&mutex);
-        return  $(stringConstantsTable()->values, m(elementAtIndex, RArray)), result.index);
+        resultString = $(stringConstantsTable()->values, m(elementAtIndex, RArray)), result.index);
     }
+    RMutexUnlock(&mutex);
+    return resultString;
 }
 

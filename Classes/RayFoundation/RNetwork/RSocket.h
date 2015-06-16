@@ -76,14 +76,15 @@ method(rbool, joinMulticastGroup, RSocket),    const char * const address);
 method(void,  setAddress,         RSocket),    const char * const address);
 method(void,  reuseAddress,       RSocket));
 
-method(RSocket *,  accept,        RSocket));
+method(void,      listen,         RSocket),    int queueCount);
+method(RSocket *, accept,         RSocket));
 
 // Main methods
-method(byte,  send,               RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
+method(byte, send,               RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
 extern
-method(byte,  sendString,         RSocket),    const RCString *string);  // sends to receiver size bytes
+method(byte, sendString,         RSocket),    const RCString *string);  // sends to receiver size bytes
 
-method(byte,  receive,            RSocket),    pointer buffer, size_t size);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
+method(byte, receive,            RSocket),    pointer buffer, size_t size);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
 #endif
 

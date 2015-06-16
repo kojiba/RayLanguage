@@ -148,6 +148,10 @@ method(void, reuseAddress, RSocket)) {
     }
 }
 
+method(void, listen, RSocket), int queueCount) {
+    $(object->socket, listen), queueCount);
+}
+
 method(RSocket *, accept, RSocket)) {
     RSocket *result = allocator(RSocket);
     if(result != nil) {
