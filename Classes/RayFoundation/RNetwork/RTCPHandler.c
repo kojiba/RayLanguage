@@ -28,13 +28,12 @@ constructor(RTCPHandler)) {
 }
 
 destructor(RTCPHandler) {
-
+    deleter(object->listener, RSocket);
+    deleter(object->threads, RThreadPool);
 }
 
 getterImpl(delegate, RThreadFunction, RTCPHandler)
-
 setterImpl(delegate, RThreadFunction, RTCPHandler)
-
 
 method(void, start, RTCPHandler), pointer context) {
 
@@ -54,6 +53,7 @@ method(void, start, RTCPHandler), pointer context) {
         );
     }
 }
+
 method(void, terminate,  RTCPHandler)) {
     object->terminateFlag = yes;
     $(object->threads, m(cancel, RThreadPool)));

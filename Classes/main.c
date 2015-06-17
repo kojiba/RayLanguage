@@ -18,17 +18,25 @@
 
 #include <RayFoundation.h>
 #include <unistd.h>
+
+#include <RTCPHandler.h>
 #include "Tests.h"
 
-pointer exec(pointer data) {
-    size_t iterator;
-    pointer ptr;
+pointer exec(RTCPDataStruct *data) {
+    RPrintLn("Some connected");
+    char buffer[1000];
 
-    forAll(iterator, 3) {
-        ptr = malloc((size_t) (rand() % 10) + 1);
-        free(ptr);
+    $(data->socket, m(sendString, RSocket)), RS("Hello world!\n"));
+
+    byte resultFlag =  $(data->socket, m(receive, RSocket)), buffer, 1000);
+
+    while(resultFlag != networkConnectionClosedConst) {
+        RPrintf("%s", buffer);
+        resultFlag =  $(data->socket, m(receive, RSocket)), buffer, 1000);
     }
 
+    deleter(data->socket, RSocket);
+    deallocator(data);
     return nil;
 }
 
@@ -39,21 +47,11 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RThreadPool *pool = c(RThreadPool)(nil);
-    $(pool, m(setDelegateFunction, RThreadPool)), exec);
-
-    forAll(iterator, 5000)
-        $(pool, m(addWithArg, RThreadPool)), nil, yes);
-
-
-    $(pool, m(joinSelfDeletes, RThreadPool)));
-//    sleep(2);
-
-
-
-    deleter(pool, RThreadPool);
+    RTCPHandler *server = c(RTCPHandler)(nil);
+    $(server->listener, m(bindPort, RSocket)), 7777);
+    $(server, m(set_delegate, RTCPHandler)), (RThreadFunction) exec);
+    $(server, m(start, RTCPHandler)), server);
 
     tickRClock();
-
     endRay();
 }
