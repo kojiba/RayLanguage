@@ -56,6 +56,6 @@ method(void, start, RTCPHandler), pointer context) {
 }
 
 method(void, terminate,  RTCPHandler)) {
-    RThreadKill(&object->runningThread);
+    RThreadCancel(&object->runningThread);
     $(object->threads, m(cancel, RThreadPool)));
 }

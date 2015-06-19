@@ -73,10 +73,12 @@ RSocket * socketBindedToPort(int socketType, int protocolType, uint16_t port) {
 
 RSocket * openListenerOnPort(uint16_t port, int queueCount) {
     RSocket *result = socketBindedToPort(SOCK_STREAM, IPPROTO_TCP, port);
-    if($(result, m(listen, RSocket)), queueCount) < 0) {
-        RError("RSocket. Error open listening socket.", result);
-        deleter(result, RSocket);
-        result = nil;
+    if(result != nil) {
+        if($(result, m(listen, RSocket)), queueCount) < 0) {
+            RError("RSocket. Error open listening socket.", result);
+            deleter(result, RSocket);
+            result = nil;
+        }
     }
     return result;
 }
