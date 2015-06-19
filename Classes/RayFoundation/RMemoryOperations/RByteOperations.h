@@ -55,6 +55,9 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
 #define rotateLeft8(data,  shift) rotateLeftU(data, shift, 8)
 #define rotateRight8(data, shift) rotateRightU(data, shift, 8)
 
+#define isMemEqual(one, another, size) (RMemCmp(one, another, size) == 0)
+#define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
+
 // Basics
 byte*          flushAllToByte             (   pointer  array,   size_t size, byte symbol); // returns reference
 void           printByteArrayInHex        (const byte *array,   size_t size);

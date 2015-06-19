@@ -60,6 +60,27 @@ RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
     return object;
 }
 
+RSocket * socketBindedToPort(int socketType, int protocolType, uint16_t port) {
+    RSocket *result = makeRSocket(nil, socketType, protocolType);
+    if(result != nil) {
+        if($(result, m(bindPort, RSocket)), port) == no) {
+            deallocator(result);
+            result = nil;
+        }
+    }
+    return result;
+}
+
+RSocket * openListenerOnPort(uint16_t port, int queueCount) {
+    RSocket *result = socketBindedToPort(SOCK_STREAM, IPPROTO_TCP, port);
+    if($(result, m(listen, RSocket)), queueCount) < 0) {
+        RError("RSocket. Error open listening socket.", result);
+        deleter(result, RSocket);
+        result = nil;
+    }
+    return result;
+}
+
 inline constructor(RSocket)) {
     return makeRSocket(object, SOCK_DGRAM, IPPROTO_IP);
 }
@@ -148,8 +169,8 @@ method(void, reuseAddress, RSocket)) {
     }
 }
 
-method(void, listen, RSocket), int queueCount) {
-    $(object->socket, listen), queueCount);
+method(int, listen, RSocket), int queueCount) {
+    return $(object->socket, listen), queueCount);
 }
 
 method(RSocket *, accept, RSocket)) {

@@ -60,7 +60,10 @@ class(RSocket)
 
 endOf(RSocket)
 
-RSocket * makeRSocket(RSocket *object, int socketType, int protocolType);
+RSocket * makeRSocket       (RSocket *object, int socketType,   int protocolType);
+RSocket * socketBindedToPort(int socketType,  int protocolType, uint16_t port);
+RSocket * openListenerOnPort(uint16_t port,   int queueCount);
+
 extern
 constructor (RSocket));
 destructor  (RSocket);
@@ -76,7 +79,7 @@ method(rbool, joinMulticastGroup, RSocket),    const char * const address);
 method(void,  setAddress,         RSocket),    const char * const address);
 method(void,  reuseAddress,       RSocket));
 
-method(void,      listen,         RSocket),    int queueCount);
+method(int,       listen,         RSocket),    int queueCount);
 method(RSocket *, accept,         RSocket));
 
 // Main methods

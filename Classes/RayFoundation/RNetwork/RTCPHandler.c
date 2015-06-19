@@ -39,7 +39,7 @@ method(void, start, RTCPHandler), pointer context) {
 
     object->terminateFlag = no;
     $(object->threads, m(setDelegateFunction, RThreadPool)), object->delegate);
-    $(object->listener, m(listen, RSocket)), 10);
+    $(object->listener, m(listen, RSocket)), 50);
 
     while(!object->terminateFlag) {
         RTCPDataStruct *argument = allocator(RTCPDataStruct);
