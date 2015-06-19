@@ -93,7 +93,7 @@
 #else
     #define RPrintSystemInfo() RPrintCurrentSystem();\
                                RPrintf("Number of processors - %u \n",      processorsCount());\
-                               RPrintf("Main tuid - %lu \n", (unsigned long)currentTreadIdentifier())
+                               RPrintf("Main tuid - %lu \n", (unsigned long)currentThreadIdentifier())
 #endif
 
 #endif /*__R_SYSTEM_H__*/

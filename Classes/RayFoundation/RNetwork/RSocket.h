@@ -84,6 +84,8 @@ method(RSocket *, accept,         RSocket));
 
 // Main methods
 method(byte, send,               RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
+method(byte, sendTo,             RSocket),    const pointer buffer, size_t size);
+
 extern
 method(byte, sendString,         RSocket),    const RCString *string);  // sends to receiver size bytes
 

@@ -26,6 +26,8 @@ endOf(RTCPDataStruct)
 
 
 class(RTCPHandler)
+    RThread              runningThread;
+
     RThreadFunction      delegate;
     RSocket             *listener;
     rbool                terminateFlag;

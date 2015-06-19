@@ -168,7 +168,7 @@ printer(RAutoPool) {
 #endif
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
-    RPrintf("\t Printer tuid : %lu\n", (unsigned long) currentTreadIdentifier());
+    RPrintf("\t Printer tuid : %lu\n", (unsigned long) currentThreadIdentifier());
     if(memTotal != nil) {
         RPrintf("\t Size total %lu bytes\n", *memTotal);
     }
@@ -193,7 +193,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
     if(temp != nil) {
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentTreadIdentifier(), nil);
+        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentThreadIdentifier(), nil);
     #else
         RPoolDescriptor *descriptor = descriptorWithInfo(object, sizeInBytes, temp, currentTreadIdentifier());
     #endif
@@ -219,7 +219,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
 
         temp = RAlloc(sizeInBytes);
         if(temp != nil) {
-            RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentTreadIdentifier(), tipString);
+            RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentThreadIdentifier(), tipString);
             $(object->pointersInWork, m(addObject, RArray)), descriptor);
         }
         
@@ -283,7 +283,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                     // finally add new pointer
     #ifdef R_POOL_DETAILED
         #ifdef R_POOL_META_ALLOC
-                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(object, newSize, temp, currentTreadIdentifier(), storedTip);
+                RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(object, newSize, temp, currentThreadIdentifier(), storedTip);
         #else
                 RPoolDescriptor *descriptor2 = descriptorWithInfo(object, newSize, temp, currentTreadIdentifier());
         #endif
@@ -319,7 +319,8 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
     if(temp != nil) {
 #ifdef R_POOL_DETAILED
     #ifdef R_POOL_META_ALLOC
-        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, blockCount * blockSize, temp, currentTreadIdentifier(), nil);
+        RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, blockCount * blockSize, temp,
+                                                             currentThreadIdentifier(), nil);
     #else
         RPoolDescriptor *descriptor = descriptorWithInfo(object, blockCount * blockSize, temp, currentTreadIdentifier());
     #endif
@@ -396,7 +397,7 @@ method(void, drain, RAutoPool)) {
     $(object->pointersInWork, m(flush, RArray)));
 #else
     REnumerateDelegate delegate;
-    delegate.context = (pointer) currentTreadIdentifier();
+    delegate.context = (pointer) currentThreadIdentifier();
     delegate.virtualEnumerator = deleterEnumerator;
     $(object->pointersInWork, m(deleteWithPredicate, RArray)), &delegate);
 #endif

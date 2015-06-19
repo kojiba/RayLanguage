@@ -87,8 +87,8 @@ method(RThreadFunction, delegateFunction, RThreadPool)) {
 }
 
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfDeletes) {
+    RMutexLock(threadPoolMutex);
     if(object->delegateFunction != nil) {
-        RMutexLock(threadPoolMutex);
         RThread *newOne = allocator(RThread);
         if(newOne != nil) {
             if(selfDeletes) {
@@ -103,13 +103,17 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                     RThreadCreate(newOne, nil, privateThreadExecutor, arg);
                     $(object->threads, m(addObject, RArray)), newOne);
 
-                } elseError( RError("RThreadPool. Add with arg bad arg allocation.", object) );
+                } elseError(
+                        RError("RThreadPool. Add with arg bad arg allocation.", object)
+                );
             } else {
                 RThreadCreate(newOne, nil, object->delegateFunction, argumentForNewWorker);
             }
-        } elseError( RError("RThreadPool. Add with arg bad worker allocation.", object) );
-        RMutexUnlock(threadPoolMutex);
+        } elseError(
+                RError("RThreadPool. Add with arg bad worker allocation.", object)
+        );
     }
+    RMutexUnlock(threadPoolMutex);
 }
 
 method(void, addWorker,  RThreadPool), RThread *worker) {

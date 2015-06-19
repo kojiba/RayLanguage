@@ -86,7 +86,6 @@ inline constructor(RSocket)) {
 }
 
 destructor(RSocket) {
-//    shutdown(object->socket, 2);
     close(object->socket);
 }
 
@@ -192,12 +191,10 @@ method(RSocket *, accept, RSocket)) {
 #pragma mark Main Method
 
 method(byte, send, RSocket), const pointer buffer, size_t size) {
-    ssize_t messageLength = sendto(object->socket,
-                                   buffer,
-                                   size,
-                                   0,
-                                   (SocketAddress *) &object->address,
-                                                      object->addressLength);
+    ssize_t messageLength = send(object->socket,
+                                 buffer,
+                                 size,
+                                 0);
 
     if (messageLength < 0) {
         return networkOperationErrorConst;
@@ -208,6 +205,25 @@ method(byte, send, RSocket), const pointer buffer, size_t size) {
         return networkConnectionClosedConst;
     }
 }
+
+method(byte, sendTo, RSocket), const pointer buffer, size_t size) {
+    ssize_t messageLength = sendto(object->socket,
+                                   buffer,
+                                   size,
+                                   0,
+                                   (SocketAddress *) &object->address,
+                                   object->addressLength);
+
+    if (messageLength < 0) {
+        return networkOperationErrorConst;
+    } else if (messageLength != 0) {
+        ++object->packetCounter;
+        return networkOperationSuccessConst;
+    } else {
+        return networkConnectionClosedConst;
+    }
+}
+
 
 inline method(byte, sendString, RSocket), const RCString *string) {
     return $(object, m(send, RSocket)), string->baseString, string->size);

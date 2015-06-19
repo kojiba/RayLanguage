@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation.h>
-#include <unistd.h>
 
 #include <RTCPHandler.h>
 #include "Tests.h"
@@ -50,9 +49,9 @@ RTCPHandler *server;
 
 void serverFunc(void) {
     server = c(RTCPHandler)(nil);
-    $(server->listener, m(bindPort, RSocket)), 4000);
-    $(server, m(set_delegate, RTCPHandler)), (RThreadFunction) exec);
-    $(server, m(start, RTCPHandler)), server);
+    $(server->listener, m(bindPort,     RSocket)),     4000);
+    $(server,           m(set_delegate, RTCPHandler)), (RThreadFunction) exec);
+    $(server,           m(start,        RTCPHandler)), server); // blocks thread until m(terminate, RTCPHandler)
 }
 
 void startServer(void) {
@@ -75,6 +74,7 @@ int main(int argc, const char *argv[]) {
     startServer();
 
     configurator = openListenerOnPort(4001, 10);
+    if(configurator == nil) goto exit;
 
     while(!closeAll) {
         RSocket *current = $(configurator, m(accept, RSocket)));
@@ -90,24 +90,28 @@ int main(int argc, const char *argv[]) {
                 ifMemEqual(buffer, "secretkey", 9) {
 
                     ifMemEqual(buffer + 10, "shutdown", 8) {
-                        closeAll = yes;
-                        $(server, m(terminate, RTCPHandler)));
-                    }
+                        $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
+                        RPrintf("Will terminate with command from %s:%u\n", address, port);
 
+                        closeAll = yes;
+                    }
                 } else {
                     RPrintf("[E] Bad user key on %s:%u\n", address, port);
                 }
                 connectionState = networkConnectionClosedConst;
-                deleter(current, RSocket);
             } else if (connectionState == networkOperationErrorConst) {
                 RError2("Receive on configurator connection, from %s:%u", current, address, port);
             }
         }
+
+        deleter(current, RSocket);
     }
 
-    deleter(server, RTCPHandler);
+    deleter(configurator, RSocket);
+    $(server, m(terminate, RTCPHandler)));
+    deleter(server,        RTCPHandler);
 
+exit:
     endSockets();
-
     endRay();
 }

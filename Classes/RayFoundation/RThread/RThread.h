@@ -68,8 +68,9 @@
 
 #pragma mark Info
 
-extern RThreadId currentTreadIdentifier(); // returns caller thread unique identifier
-extern unsigned  processorsCount();        // returns cores count
+extern RThread   currentThread();
+extern RThreadId currentThreadIdentifier(); // returns caller thread unique identifier
+extern unsigned  processorsCount();         // returns cores count
 
 #pragma mark Thread
 
@@ -79,6 +80,7 @@ extern int  RThreadCreate (RThread *thread,
                            pointer argument);
 
 extern int  RThreadCancel (RThread *thread);
+extern int  RThreadKill   (RThread *thread);
 extern int  RThreadJoin   (RThread *thread);
 extern void RThreadExit   (pointer data);
 

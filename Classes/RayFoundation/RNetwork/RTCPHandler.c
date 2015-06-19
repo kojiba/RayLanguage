@@ -29,24 +29,25 @@ constructor(RTCPHandler)) {
 
 destructor(RTCPHandler) {
     deleter(object->listener, RSocket);
-    deleter(object->threads, RThreadPool);
+    deleter(object->threads,  RThreadPool);
 }
 
 getterImpl(delegate, RThreadFunction, RTCPHandler)
 setterImpl(delegate, RThreadFunction, RTCPHandler)
 
 method(void, start, RTCPHandler), pointer context) {
+    object->runningThread = currentThread();
 
     object->terminateFlag = no;
-    $(object->threads, m(setDelegateFunction, RThreadPool)), object->delegate);
-    $(object->listener, m(listen, RSocket)), 50);
+    $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate);
+    $(object->listener, m(listen,              RSocket)),     50);
 
     while(!object->terminateFlag) {
         RTCPDataStruct *argument = allocator(RTCPDataStruct);
 
         if(argument != nil) {
             argument->context = context;
-            argument->socket = $(object->listener, m(accept, RSocket)));
+            argument->socket  = $(object->listener, m(accept, RSocket)));
             $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
         } elseError(
                 RError("RTCPHandler. Can't allocate thread argument.", object)
@@ -55,6 +56,6 @@ method(void, start, RTCPHandler), pointer context) {
 }
 
 method(void, terminate,  RTCPHandler)) {
-    object->terminateFlag = yes;
+    RThreadKill(&object->runningThread);
     $(object->threads, m(cancel, RThreadPool)));
 }

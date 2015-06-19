@@ -21,7 +21,15 @@
 
 #pragma mark Info
 
-inline RThreadId currentTreadIdentifier() {
+inline RThread currentThread() {
+#ifndef __WIN32
+    return pthread_self();
+#else
+    return GetCurrentThread();
+#endif
+}
+
+inline RThreadId currentThreadIdentifier() {
 #ifndef __WIN32
     RThreadId threadId = 0;
     pthread_threadid_np(pthread_self(), &threadId);
@@ -59,6 +67,14 @@ inline int RThreadCreate(RThread *thread,
 inline int RThreadCancel(RThread *thread) {
 #ifndef __WIN32
     return pthread_cancel(*thread);
+#else
+    return (int)TerminateThread(thread, 0);
+#endif
+}
+
+inline int RThreadKill(RThread *thread) {
+#ifndef __WIN32
+    return pthread_kill(*thread, SIGKILL);
 #else
     return (int)TerminateThread(thread, 0);
 #endif
