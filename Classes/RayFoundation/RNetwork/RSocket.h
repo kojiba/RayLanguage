@@ -61,7 +61,7 @@ class(RSocket)
 endOf(RSocket)
 
 RSocket * makeRSocket       (RSocket *object, int socketType,   int protocolType);
-RSocket * socketBindedToPort(int socketType,  int protocolType, uint16_t port);
+RSocket * socketBindToPort  (int socketType,  int protocolType, uint16_t port);
 RSocket * openListenerOnPort(uint16_t port,   int queueCount);
 
 extern

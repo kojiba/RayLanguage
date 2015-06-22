@@ -32,27 +32,33 @@ destructor(RTCPHandler) {
     deleter(object->threads,  RThreadPool);
 }
 
-getterImpl(delegate, RThreadFunction, RTCPHandler)
-setterImpl(delegate, RThreadFunction, RTCPHandler)
+getterImpl(delegate, RTCPDelegate *, RTCPHandler)
+setterImpl(delegate, RTCPDelegate *, RTCPHandler)
 
 method(void, start, RTCPHandler), pointer context) {
-    object->runningThread = currentThread();
+    if(object->delegate != nil
+            && object->delegate->delegateFunction) {
+        object->runningThread = currentThread();
 
-    object->terminateFlag = no;
-    $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate);
-    $(object->listener, m(listen,              RSocket)),     50);
+        object->terminateFlag = no;
+        $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
+        $(object->listener, m(listen,              RSocket)),     RTCPHandlerListenerQueueSize);
 
-    while(!object->terminateFlag) {
-        RTCPDataStruct *argument = allocator(RTCPDataStruct);
+        while(!object->terminateFlag) {
+            RTCPDataStruct *argument = allocator(RTCPDataStruct);
 
-        if(argument != nil) {
-            argument->context = context;
-            argument->socket  = $(object->listener, m(accept, RSocket)));
-            $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
-        } elseError(
-                RError("RTCPHandler. Can't allocate thread argument.", object)
-        );
-    }
+            if(argument != nil) {
+                argument->delegate = object->delegate;
+                argument->context  = context;
+                argument->socket   = $(object->listener, m(accept, RSocket)));
+                $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+            } elseError(
+                    RError("RTCPHandler. Can't allocate thread argument.", object)
+            );
+        }
+    } elseWarning(
+            RWarning("RTCPHandler. Delegate or delgate function is nil. What do you want to start?!", object)
+    );
 }
 
 method(void, terminate,  RTCPHandler)) {

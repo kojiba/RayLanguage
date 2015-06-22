@@ -19,8 +19,18 @@
 #include <RSocket.h>
 #include <RThreadPool.h>
 
+
+#define RTCPHandlerListenerQueueSize  50
+
+protocol(RTCPDelegate)
+    RThreadFunction delegateFunction;
+endOf(RTCPDelegate)
+
+
+
 protocol(RTCPDataStruct)
-    RSocket *socket;
+    RSocket       *socket;
+    RTCPDelegate *delegate;
 endOf(RTCPDataStruct)
 
 
@@ -28,7 +38,7 @@ endOf(RTCPDataStruct)
 class(RTCPHandler)
     RThread              runningThread;
 
-    RThreadFunction      delegate;
+    RTCPDelegate        *delegate;
     RSocket             *listener;
     rbool                terminateFlag;
     RThreadPool         *threads;
@@ -39,8 +49,8 @@ destructor(RTCPHandler);
 
 printer(RTCPHandler);
 
-getter(delegate, RThreadFunction, RTCPHandler);
-setter(delegate, RThreadFunction, RTCPHandler);
+getter(delegate, RTCPDelegate *, RTCPHandler);
+setter(delegate, RTCPDelegate *, RTCPHandler);
 
 method(void, start,      RTCPHandler),    pointer context);
 method(void, terminate,  RTCPHandler));

@@ -60,7 +60,7 @@ RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
     return object;
 }
 
-RSocket * socketBindedToPort(int socketType, int protocolType, uint16_t port) {
+RSocket * socketBindToPort(int socketType, int protocolType, uint16_t port) {
     RSocket *result = makeRSocket(nil, socketType, protocolType);
     if(result != nil) {
         if($(result, m(bindPort, RSocket)), port) == no) {
@@ -72,7 +72,7 @@ RSocket * socketBindedToPort(int socketType, int protocolType, uint16_t port) {
 }
 
 RSocket * openListenerOnPort(uint16_t port, int queueCount) {
-    RSocket *result = socketBindedToPort(SOCK_STREAM, IPPROTO_TCP, port);
+    RSocket *result = socketBindToPort(SOCK_STREAM, IPPROTO_TCP, port);
     if(result != nil) {
         if($(result, m(listen, RSocket)), queueCount) < 0) {
             RError("RSocket. Error open listening socket.", result);

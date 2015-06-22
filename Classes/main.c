@@ -55,8 +55,11 @@ void serverFunc(void) {
     if(server != nil) {
         RPrintf("RTCPHandler %p in %u thread\n", server, (unsigned int) currentThreadIdentifier());
 
+        RTCPDelegate delegate;
+        delegate.delegateFunction = (RThreadFunction) exec;
+        delegate.context = &delegate;
         if($(server->listener, m(bindPort, RSocket)), 4000) == yes) {
-            $(server,  m(set_delegate, RTCPHandler)), (RThreadFunction) exec);
+            $(server,  m(set_delegate, RTCPHandler)), &delegate);
             $(server,  m(start,        RTCPHandler)), server); // blocks thread until m(terminate, RTCPHandler)
         }
     }
