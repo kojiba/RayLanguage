@@ -190,7 +190,7 @@ method(RSocket *, accept, RSocket)) {
     return result;
 }
 
-#pragma mark Main Method
+#pragma mark Main Methods
 
 method(byte, send, RSocket), const pointer buffer, size_t size) {
     ssize_t messageLength = send(object->socket,
@@ -231,9 +231,23 @@ inline method(byte, sendString, RSocket), const RCString *string) {
     return $(object, m(send, RSocket)), string->baseString, string->size);
 }
 
-#pragma mark Main Method
-
 method(byte, receive, RSocket), pointer buffer, size_t size) {
+    ssize_t messageLength = recv(object->socket,
+                                     buffer,
+                                     size,
+                                     0);
+
+    if (messageLength < 0) {
+        return networkOperationErrorConst;
+    } else if(messageLength != 0) {
+        ++object->packetCounter;
+        return networkOperationSuccessConst;
+    } else {
+        return networkConnectionClosedConst;
+    }
+}
+
+method(byte, receiveFrom, RSocket), pointer buffer, size_t size) {
     ssize_t messageLength = recvfrom(object->socket,
                                      buffer,
                                      size,

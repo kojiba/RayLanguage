@@ -102,7 +102,7 @@ int main(int argc, const char *argv[]) {
 
                     ifMemEqual(buffer + 10, "shutdown", 8) {
                         $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
-                        RPrintf("Will terminate with command from %s:%u\n", address, port);
+                        RPrintf("Will terminate with command from %s:%u\n\n", address, port);
 
                         closeAll = yes;
                     }
