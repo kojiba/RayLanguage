@@ -323,8 +323,8 @@ RBuffer* RBufferFromFile(const char *filename) {
                     uint32_t *tempRef = (uint32_t *) (buffer + 1);
                     sizesArray = (uint64_t *) tempRef;
 
-                } else if(buffer[0] == 8
-                        && sizeof(size_t) == 8) {
+                } else if((buffer[0] == 8)
+                        && (sizeof(size_t) == 8)) {
                     sizesArray = (uint64_t *) (buffer + 1);
 
                 } elseError( RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %lu", nil, buffer[0], sizeof(size_t)) );

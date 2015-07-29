@@ -9,7 +9,6 @@ set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 # sub-sources flags
 set(RVM            NO)
 set(RayInterpreter NO)
-set(RayStorage     NO)
 set(DebugFlag      NO) # NO - for build library
 set(copyResources  NO)
 
@@ -184,35 +183,12 @@ else()
     set(RINTERPRETER_SOURCES)
 endif() # RInterpreter ---------------------------------------------------
 
-if(RayStorage) # RStorage ------------------------------------------------
-    set(RSTORAGE_HEADERS Classes/RStorage/RObjectField.h
-                         Classes/RStorage/RStorageObject.h
-                         Classes/RStorage/RStoragePool.h
-                         Classes/RStorage/RStorage.h)
-
-    set(RSTORAGE_HEADERS Classes/RStorage/RObjectField.c
-                         Classes/RStorage/RStorageObject.c
-                         Classes/RStorage/RStoragePool.c
-                         Classes/RStorage/RStorage.c)
-
-    add_executable(RayStorage ${RSTORAGE_HEADERS} ${RSTORAGE_SOURCES})
-    target_link_libraries(
-        RayStorage
-        ${LIBRARY_NAME}
-    )
-else()
-    set(RSTORAGE_HEADERS)
-    set(RSTORAGE_SOURCES)
-endif() # RStorage -------------------------------------------------------
-
 add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
                                                  Classes/Tests.c
                                                  ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}
                                                  ${RINTERPRETER_SOURCES}
-                                                 ${RSTORAGE_HEADERS}
-                                                 ${RSTORAGE_SOURCES}
                                                  ${DEBUG_SOURCES}
                                                  ${DEBUG_HEADERS})
 

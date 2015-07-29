@@ -18,7 +18,6 @@
 
 #include <RayFoundation.h>
 
-#include <RTCPHandler.h>
 #include "Tests.h"
 
 #define BUFFER_SIZE 1500

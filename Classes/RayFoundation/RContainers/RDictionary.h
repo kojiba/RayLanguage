@@ -18,6 +18,7 @@
 
 #include <RArray.h>
 
+
 class(RDictionary) //--------------------------
     ComparatorDelegate comparator;
 
@@ -25,6 +26,8 @@ class(RDictionary) //--------------------------
     RArray *values;
 
 endOf(RDictionary) //--------------------------
+
+
 
 constructor (RDictionary));
 destructor  (RDictionary);

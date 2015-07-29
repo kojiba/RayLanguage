@@ -28,6 +28,7 @@
 #define sizeMultiplierOfRBufferDefault 2
 #define sizeOfObjectsOfRBufferDefault  128  // 128 sizes stores
 
+
 class(RBuffer) // -------------------
     discipleOf(RByteArray)
 
@@ -43,6 +44,8 @@ class(RBuffer) // -------------------
     RMutexDescriptor mutex;
 #endif
 endOf(RBuffer) // -------------------
+
+
 
 extern inline
 RBuffer* makeRBufferOptions (size_t startSize, size_t objectCount);
@@ -84,7 +87,7 @@ constMethod(void,         saveToFile,         RBuffer),    const char* filename)
 constMethod(RBuffer *,    serializeToBuffer,  RByteArray),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
 
 // Additions to RArray
-constMethod(RBuffer *,    serializeToBuffer,      RArray),    size_t size);              // if all object one sized
-constMethod(RBuffer *,    serializeToBufferSizes, RArray),    size_t *sizesArray);       // return created RBuffer, sizesArray must ends on 0
+constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);                  // if all object one sized
+constMethod(RBuffer *,    serializeToBufferSizes,    RArray),    size_t *sizesArray);           // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

@@ -51,6 +51,7 @@ extern "C" {
 
 // Networking
 #include <RSocket.h>
+#include <RTCPHandler.h>
 
 // Threads
 #include <RThread.h>
