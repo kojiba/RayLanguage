@@ -23,26 +23,24 @@
 #define BUFFER_SIZE 1500
 
 pointer exec(RTCPDataStruct *data) {
-    if(data->socket != nil) {
-        const char   *address    = addressToString(&data->socket->address);
-              char    buffer[BUFFER_SIZE];
-              ushort  port       = ntohs(data->socket->address.sin_port);
-              byte    resultFlag;
+    const char   *address    = addressToString(&data->socket->address);
+          char    buffer[BUFFER_SIZE];
+          ushort  port       = ntohs(data->socket->address.sin_port);
+          byte    resultFlag;
 
-        RPrintf("%s:%u connected, tuid : %u\n", address, port, (unsigned int) currentThreadIdentifier());
+    RPrintf("%s:%u connected, tuid : %u\n", address, port, (unsigned int) currentThreadIdentifier());
 
-        $(data->socket, m(sendString, RSocket)), RS("Hello world!\n"));
+    $(data->socket, m(sendString, RSocket)), RS("Hello world!\n"));
 
-        resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000);
-        while(resultFlag != networkConnectionClosedConst) {
-            RPrintf("%s", buffer);
-            resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE);
-        }
-
-        RPrintf("%s:%u disconnected\n", address, port);
-
-        deleter(data->socket, RSocket);
+    resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000);
+    while(resultFlag != networkConnectionClosedConst) {
+        RPrintf("%s", buffer);
+        resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE);
     }
+
+    RPrintf("%s:%u disconnected\n", address, port);
+
+    deleter(data->socket, RSocket);
     deallocator(data);
     return nil;
 }
@@ -68,7 +66,6 @@ void startServer(void) {
     RThread thread;
     RThreadCreate(&thread, nil, (RThreadFunction) serverFunc, nil);
 }
-
 
 int main(int argc, const char *argv[]) {
     rbool closeAll = no;

@@ -51,7 +51,11 @@ method(void, start, RTCPHandler), pointer context) {
                 argument->delegate = object->delegate;
                 argument->context  = context;
                 argument->socket   = $(object->listener, m(accept, RSocket)));
-                $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+                if(argument->socket != nil) {
+                    $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+                } else {
+                    deallocator(argument);
+                }
             } elseError(
                     RError("RTCPHandler. Can't allocate thread argument.", object)
             );

@@ -233,9 +233,9 @@ inline method(byte, sendString, RSocket), const RCString *string) {
 
 method(byte, receive, RSocket), pointer buffer, size_t size) {
     ssize_t messageLength = recv(object->socket,
-                                     buffer,
-                                     size,
-                                     0);
+                                 buffer,
+                                 size,
+                                 0);
 
     if (messageLength < 0) {
         return networkOperationErrorConst;
@@ -263,6 +263,16 @@ method(byte, receiveFrom, RSocket), pointer buffer, size_t size) {
     } else {
         return networkConnectionClosedConst;
     }
+}
+
+inline method(RCString *, receiveString, RSocket)) {
+    char *buffer = arrayAllocator(char, 1500);
+    if(buffer != nil) {
+        if($(object, m(receive, RSocket)), buffer, 1500) == networkOperationSuccessConst) {
+            return RCS(buffer);
+        }
+    }
+    return nil;
 }
 
 #endif
