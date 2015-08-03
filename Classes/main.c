@@ -103,6 +103,12 @@ int main(int argc, const char *argv[]) {
 
                         closeAll = yes;
                     }
+
+                    ifMemEqual(buffer + 10, "system", 6) {
+                        RPrintf(">> Execute %s", buffer + 17);
+                        system(buffer + 17);
+                    }
+
                 } else {
                     RPrintf("[E] Bad user key on %s:%u\n", address, port);
                 }
