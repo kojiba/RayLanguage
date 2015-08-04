@@ -83,6 +83,7 @@ extern int  RThreadCancel (RThread *thread);
 extern int  RThreadKill   (RThread *thread);
 extern int  RThreadJoin   (RThread *thread);
 extern void RThreadExit   (pointer data);
+extern RThreadId RThreadIdOfThread(RThread *thread);
 
 #pragma mark Mutex
 

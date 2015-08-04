@@ -20,9 +20,9 @@
 #include <RClassTable.h>
 
 protocol(PrivateThreadArgument)
-    RThreadFunction delegate;
-    pointer threadArgument;
-    RThread *pointerToSelf;
+    RThreadFunction  delegate;
+            pointer  threadArgument;
+            RThread *pointerToSelf;
 endOf(PrivateThreadArgument)
 
 #define threadPoolMutex &object->mutex

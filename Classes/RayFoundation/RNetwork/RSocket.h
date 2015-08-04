@@ -89,8 +89,8 @@ method(byte, sendTo,              RSocket),    const pointer buffer, size_t size
 extern
 method(byte, sendString,          RSocket),    const RCString *string);  // sends to receiver size bytes
 
-method(byte, receive,             RSocket),    pointer buffer, size_t size);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
-method(byte, receiveFrom,         RSocket),    pointer buffer, size_t size);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
+method(byte, receive,             RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
+method(byte, receiveFrom,         RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
 extern
 method(RCString *, receiveString, RSocket));  // receives string must be destroyed, buff up to 1500

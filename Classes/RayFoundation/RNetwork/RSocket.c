@@ -231,26 +231,27 @@ inline method(byte, sendString, RSocket), const RCString *string) {
     return $(object, m(send, RSocket)), string->baseString, string->size);
 }
 
-method(byte, receive, RSocket), pointer buffer, size_t size) {
+method(byte, receive, RSocket), pointer buffer, size_t bufferSize, size_t *receivedSize) {
     ssize_t messageLength = recv(object->socket,
                                  buffer,
-                                 size,
+                                 bufferSize,
                                  0);
 
     if (messageLength < 0) {
         return networkOperationErrorConst;
     } else if(messageLength != 0) {
         ++object->packetCounter;
+        *receivedSize = (size_t) messageLength;
         return networkOperationSuccessConst;
     } else {
         return networkConnectionClosedConst;
     }
 }
 
-method(byte, receiveFrom, RSocket), pointer buffer, size_t size) {
+method(byte, receiveFrom, RSocket), pointer buffer, size_t bufferSize, size_t *receivedSize) {
     ssize_t messageLength = recvfrom(object->socket,
                                      buffer,
-                                     size,
+                                     bufferSize,
                                      0,
                                      (SocketAddress*) &object->address,
                                                       &object->addressLength);
@@ -259,6 +260,7 @@ method(byte, receiveFrom, RSocket), pointer buffer, size_t size) {
         return networkOperationErrorConst;
     } else if(messageLength != 0) {
         ++object->packetCounter;
+        *receivedSize = (size_t) messageLength;
         return networkOperationSuccessConst;
     } else {
         return networkConnectionClosedConst;
@@ -267,8 +269,9 @@ method(byte, receiveFrom, RSocket), pointer buffer, size_t size) {
 
 inline method(RCString *, receiveString, RSocket)) {
     char *buffer = arrayAllocator(char, 1500);
+    size_t size;
     if(buffer != nil) {
-        if($(object, m(receive, RSocket)), buffer, 1500) == networkOperationSuccessConst) {
+        if($(object, m(receive, RSocket)), buffer, 1500, &size) == networkOperationSuccessConst) {
             return RCS(buffer);
         }
     }

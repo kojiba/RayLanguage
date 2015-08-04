@@ -96,6 +96,16 @@ inline void RThreadExit(pointer data) {
 #endif
 }
 
+extern RThreadId RThreadIdOfThread(RThread *thread) {
+#ifndef _WIN32
+    RThreadId result;
+    pthread_threadid_np(*thread, &result);
+    return result;
+#else
+    return GetThreadId(*thread);
+#endif
+}
+
 #pragma mark Mutex
 
 inline int mutexWithType(RMutex *mutex, byte mutexType) {

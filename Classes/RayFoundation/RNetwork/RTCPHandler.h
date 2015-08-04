@@ -29,7 +29,7 @@ endOf(RTCPDelegate)
 
 
 protocol(RTCPDataStruct)
-    RSocket       *socket;
+    RSocket      *socket;
     RTCPDelegate *delegate;
 endOf(RTCPDataStruct)
 

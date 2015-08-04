@@ -35,9 +35,16 @@ destructor(RTCPHandler) {
 getterImpl(delegate, RTCPDelegate *, RTCPHandler)
 setterImpl(delegate, RTCPDelegate *, RTCPHandler)
 
+printer(RTCPHandler) {
+    RPrintf("RTCPHandler %p -----------\n", object);
+    RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(&object->runningThread));
+    p(RThreadPool)(object->threads);
+    RPrintf("RTCPHandler %p -----------\n\n", object);
+}
+
 method(void, start, RTCPHandler), pointer context) {
     if(object->delegate != nil
-            && object->delegate->delegateFunction) {
+            && object->delegate->delegateFunction != nil) {
         object->runningThread = currentThread();
 
         object->terminateFlag = no;
@@ -46,11 +53,14 @@ method(void, start, RTCPHandler), pointer context) {
 
         while(!object->terminateFlag) {
             RTCPDataStruct *argument = allocator(RTCPDataStruct);
-
             if(argument != nil) {
+//                RPrintf("RTCPDataStruct %p\n", argument);
+
                 argument->delegate = object->delegate;
                 argument->context  = context;
                 argument->socket   = $(object->listener, m(accept, RSocket)));
+//                RPrintf("RSocket %p\n", argument->socket);
+
                 if(argument->socket != nil) {
                     $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
                 } else {
