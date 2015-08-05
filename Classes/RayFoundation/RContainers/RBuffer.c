@@ -133,8 +133,21 @@ method(void, flush, RBuffer)) {
 method(RBuffer*, sizeToFit, RBuffer)) {
     RMutexLockBuffer();
     master(object, RByteArray)->array = RReAlloc(master(object, RByteArray)->array, object->totalPlaced);
-    object->sizesArray = RReAlloc(object->sizesArray, object->count * sizeof(size_t));
-    object->freePlaces = 0;
+    if(master(object, RByteArray)->array != nil) {
+        master(object, RByteArray)->size = object->totalPlaced;
+        object->sizesArray = RReAlloc(object->sizesArray, arraySize(RRange, object->count));
+        if(object->sizesArray != nil) {
+            object->freePlaces = 0;
+        } elseError(
+            RError("RBuffer. Bad sizes reallocation on sizeToFit.", object)
+        );
+    } else {
+        RError("RBuffer. Bad reallocation on sizeToFit.", object);
+        deallocator(object->sizesArray);
+        deallocator(object);
+        object = nil;
+    }
+
     RMutexUnlockBuffer();
     return object;
 }
@@ -462,8 +475,9 @@ constMethod(RBuffer *, serializeToBuffer, RArray), size_t size) {
             $(result, m(addData, RBuffer)),
                     $(object, m(elementAtIndex, RArray)), iterator), size);
         }
+        return $(result, m(sizeToFit, RBuffer)));
     }
-    return result;
+    return nil;
 }
 
 constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
@@ -475,6 +489,30 @@ constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
             $(result, m(addData, RBuffer)),
                     $(object, m(elementAtIndex, RArray)), iterator), sizesArray[iterator]);
         }
+        return $(result, m(sizeToFit, RBuffer)));
     }
-    return result;
+    return nil;
+}
+
+constMethod(RBuffer *, serializeToBufferDelegate, RArray), REnumerateDelegate *delegate) {
+    size_t    iterator = 0,
+           currentSize;
+    pointer prtToSized;
+
+    RBuffer *result = $(nil, c(RBuffer)));
+    if(result != nil) {
+        forAll(iterator, object->count) {
+            if(delegate->virtualEnumerator(delegate, object->array[iterator], iterator) ) {
+                currentSize = ((SerializerData *)delegate->context)->size;
+                prtToSized = ((SerializerData *)delegate->context)->serializePtrStart;
+                if(currentSize != 0 && prtToSized != nil) {
+                    $(result, m(addData, RBuffer)), prtToSized, currentSize);
+                }
+            } else {
+                break;
+            }
+        }
+        return $(result, m(sizeToFit, RBuffer)));
+    }
+    return nil;
 }

@@ -82,4 +82,9 @@ protocol(REnumerateDelegate) //--------------------------------------------
     EnumeretorDelegate virtualEnumerator;
 endOf(REnumerateDelegate)
 
+typedef struct SerializerData { // worker struct for serializers
+    size_t  size;
+    pointer serializePtrStart;
+} SerializerData;
+
 #endif

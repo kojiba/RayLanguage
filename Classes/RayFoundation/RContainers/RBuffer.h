@@ -90,4 +90,7 @@ constMethod(RBuffer *,    serializeToBuffer,  RByteArray),    size_t *sizesArray
 constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);                  // if all object one sized
 constMethod(RBuffer *,    serializeToBufferSizes,    RArray),    size_t *sizesArray);           // return created RBuffer, sizesArray must ends on 0
 
+// not thread safe
+constMethod(RBuffer *,    serializeToBufferDelegate, RArray),    REnumerateDelegate *delegate);  // enumeration can be stopped, if size 0 than ignore, in context of enumerator must be size
+
 #endif /*__R_BUFFER_H__*/
