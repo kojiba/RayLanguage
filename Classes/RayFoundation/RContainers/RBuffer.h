@@ -80,7 +80,7 @@ constMethod(RArray *,     toRArray,           RBuffer)); // copy, delete delegat
 
 // file i/o
 RBuffer* RBufferFromFile (const char *filename); // will be size-to-fit
-constMethod(void,         saveToFile,         RBuffer),    const char* filename);
+constMethod(void,         saveToFile,         RBuffer),    const char* filename); // rewrite file
 
 
 // Additions to RByteArray
@@ -89,8 +89,5 @@ constMethod(RBuffer *,    serializeToBuffer,  RByteArray),    size_t *sizesArray
 // Additions to RArray
 constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);                  // if all object one sized
 constMethod(RBuffer *,    serializeToBufferSizes,    RArray),    size_t *sizesArray);           // return created RBuffer, sizesArray must ends on 0
-
-// not thread safe
-constMethod(RBuffer *,    serializeToBufferDelegate, RArray),    REnumerateDelegate *delegate);  // enumeration can be stopped, if size 0 than ignore, in context of enumerator must be size
 
 #endif /*__R_BUFFER_H__*/

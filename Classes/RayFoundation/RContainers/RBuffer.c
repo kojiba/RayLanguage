@@ -493,26 +493,3 @@ constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
     }
     return nil;
 }
-
-constMethod(RBuffer *, serializeToBufferDelegate, RArray), REnumerateDelegate *delegate) {
-    size_t    iterator = 0,
-           currentSize;
-    pointer prtToSized;
-
-    RBuffer *result = $(nil, c(RBuffer)));
-    if(result != nil) {
-        forAll(iterator, object->count) {
-            if(delegate->virtualEnumerator(delegate, object->array[iterator], iterator) ) {
-                currentSize = ((SerializerData *)delegate->context)->size;
-                prtToSized = ((SerializerData *)delegate->context)->serializePtrStart;
-                if(currentSize != 0 && prtToSized != nil) {
-                    $(result, m(addData, RBuffer)), prtToSized, currentSize);
-                }
-            } else {
-                break;
-            }
-        }
-        return $(result, m(sizeToFit, RBuffer)));
-    }
-    return nil;
-}

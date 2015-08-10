@@ -83,8 +83,9 @@ protocol(REnumerateDelegate) //--------------------------------------------
 endOf(REnumerateDelegate)
 
 typedef struct SerializerData { // worker struct for serializers
-    size_t  size;
-    pointer serializePtrStart;
+                   size_t  size;
+                  pointer  serializePtrStart;
+    struct SerializerData *next;
 } SerializerData;
 
 #endif

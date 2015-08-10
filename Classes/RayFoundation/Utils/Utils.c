@@ -64,3 +64,34 @@ RDictionary * stringDictionaryFromFile(char *filename) {
     }
     return nil;
 }
+
+constMethod(RBuffer *, serializeToBufferDelegate, RArray), REnumerateDelegate *delegate) {
+    size_t          iterator = 0,
+                    currentSize;
+    pointer         prtToSized;
+    SerializerData *nextComplexPart;
+
+    RBuffer *result = $(nil, c(RBuffer)));
+    if(result != nil) {
+        forAll(iterator, object->count) {
+
+            if(delegate->virtualEnumerator(delegate, object->array[iterator], iterator) ) {
+                nextComplexPart = delegate->context;
+
+                while(nextComplexPart != nil) {
+                    currentSize     = nextComplexPart->size;
+                    prtToSized      = nextComplexPart->serializePtrStart;
+
+                    if(currentSize != 0 && prtToSized != nil) {
+                        $(result, m(addData, RBuffer)), prtToSized, currentSize);
+                    }
+                    nextComplexPart = ((SerializerData *)delegate->context)->next;
+                }
+            } else {
+                break;
+            }
+        }
+        return $(result, m(sizeToFit, RBuffer)));
+    }
+    return nil;
+}

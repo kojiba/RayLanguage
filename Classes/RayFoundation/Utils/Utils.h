@@ -14,5 +14,9 @@
  **/
 
 #include <RDictionary.h>
+#include <RBuffer.h>
 
 RDictionary * stringDictionaryFromFile(char *filename); // reads from file key-value (pairs like some.key = some.value)
+
+// not thread safe
+constMethod(RBuffer *, serializeToBufferDelegate, RArray), REnumerateDelegate *delegate);  // enumeration can be stopped, if size 0 than ignore, in context of enumerator must be size
