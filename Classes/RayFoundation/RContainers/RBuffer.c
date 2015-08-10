@@ -311,61 +311,47 @@ constMethod(RArray *, toRArray, RBuffer)) {
 
 RBuffer* RBufferFromFile(const char *filename) {
     ssize_t  fileSize;
-    byte    *buffer;
-    FILE    *file   = RFOpen(filename, "rb");
-    RBuffer *result = nil;
+    RByteArray *buffer  = contentOfFile(filename);
+    RBuffer    *result = nil;
 
-    if(file != nil) {
-        RFSeek(file, 0, SEEK_END);
-        fileSize = RFTell(file);
-        if(fileSize > 0) {
-            RRewind(file);
-            buffer = arrayAllocator(byte, fileSize);
-            if(buffer != nil) {
-                // create variables
-                uint64_t *sizesArray = nil;
-                uint64_t  iterator   = 0;
-                uint64_t  sumBytes  = 0;
-                // read all
-                RFRead(buffer, sizeof(byte), (size_t) fileSize, file);
-                RFClose(file);
+    if(array != nil) {
+        // create variables
+        uint64_t *sizesArray = nil;
+        uint64_t  iterator   = 0;
+        uint64_t  sumBytes  = 0;
 
-                // begin parse raw bytes
-                if(buffer[0] == 4) {
-                    //fixme custom 32-to-64
-                    uint32_t *tempRef = (uint32_t *) (buffer + 1);
-                    sizesArray = (uint64_t *) tempRef;
+        // begin parse raw bytes
+        if(array->array[0] == 4) {
+            //fixme custom 32-to-64
+            uint32_t *tempRef = (uint32_t *) (buffer->array + 1);
+            sizesArray = (uint64_t *) tempRef;
 
-                } else if((buffer[0] == 8)
-                        && (sizeof(size_t) == 8)) {
-                    sizesArray = (uint64_t *) (buffer + 1);
+        } else if((buffer->array[0] == 8)
+                  && (sizeof(size_t) == 8)) {
+            sizesArray = (uint64_t *) (buffer->array + 1);
 
-                } elseError( RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %lu", nil, buffer[0], sizeof(size_t)) );
+        } elseError( RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %lu", nil, buffer[0], sizeof(size_t)) );
 
-                if(sizesArray != nil) {
-                    // find terminating '\0' size
-                    sumBytes += sizesArray[0];
-                    while (sizesArray[iterator] != 0) {
-                        ++iterator;
-                        sumBytes += sizesArray[iterator];
-                    }
-                    RByteArray *array = allocator(RByteArray);
-                    if (array != nil) {
-                        array->size  = sumBytes;
-                        array->array = buffer + 1 + (buffer[0] * (iterator + 1));
+        if(sizesArray != nil) {
+            // find terminating '\0' size
+            sumBytes += sizesArray[0];
+            while (sizesArray[iterator] != 0) {
+                ++iterator;
+                sumBytes += sizesArray[iterator];
+            }
+            RByteArray *array = allocator(RByteArray);
+            if (array != nil) {
+                array->size  = sumBytes;
+                array->array = buffer->array + 1 + (buffer->array[0] * (iterator + 1));
 
-                        // processing
-                        result = $(array, m(serializeToBuffer, RByteArray)), (size_t*)sizesArray);
+                // processing
+                result = $(array, m(serializeToBuffer, RByteArray)), (size_t*)sizesArray);
 
-                        // cleanup
-                        deallocator(array);
-                        deallocator(buffer);
-
-                    }
-                }
-            } elseError( RError2("RBufferFromFile. Bad allocation buffer for file \'%s\' of size %lu.\n", nil, filename, fileSize) );
-
-        } elseError( RError1("RBufferFromFile. Error read file \'%s\'.\n", nil, filename) );
+                // cleanup
+                deallocator(array);
+                deleter(buffer, RByteArray);
+            }
+        }
 
     } elseError( RError1("RBufferFromFile. Cannot open file \'%s\'.\n", nil, filename) );
 
