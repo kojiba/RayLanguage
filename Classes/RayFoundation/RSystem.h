@@ -83,15 +83,27 @@
     #define RPosixSupport
 #endif
 
+#ifdef BUILD_RELEASE
+    #define DebugDetailsString "Release "
+#else
+    #define DebugDetailsString "Debug "
+#endif
+
+#ifndef DebugDetailsString
+    #define DebugDetailsString "Unknown build type"
+#endif
 
 #define RSystemType RSystemBitVersion RSystemString RSystemDetails RPosixSupport
+
+#define RLibName "Ray library " DebugDetailsString "build "
 
 #define RPrintCurrentSystem() RPrintLn("System : " RSystemType)
 
 #ifdef RAY_EMBEDDED
     #define RPrintSystemInfo() RPrintCurrentSystem()
 #else
-    #define RPrintSystemInfo() RPrintCurrentSystem();\
+    #define RPrintSystemInfo() RPrintf(RLibName"\n");\
+                               RPrintCurrentSystem();\
                                RPrintf("Number of processors - %u \n",      processorsCount());\
                                RPrintf("Main tuid - %lu \n", (unsigned long)currentThreadIdentifier())
 #endif
