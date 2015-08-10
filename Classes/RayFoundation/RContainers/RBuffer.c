@@ -32,7 +32,7 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
     RBuffer *object = allocator(RBuffer);
     if(object != nil) {
         // allocation of buffer
-        master(object, RByteArray) = makeRByteArray(startSize);
+        master(object, RByteArray) = c(RByteArray)(nil, startSize);
         if(master(object, RByteArray) != nil) {
 
             // allocation of sizes array

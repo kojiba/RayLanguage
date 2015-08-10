@@ -53,6 +53,7 @@ set(HEADER_FILES # Worker headers
                  # Strings
                  Classes/RayFoundation/RCString/RCString.h
                  Classes/RayFoundation/RCString/RCString_Char.h
+                 Classes/RayFoundation/RCString/RCString_File.h
                  Classes/RayFoundation/RCString/RCString_Numbers.h
                  Classes/RayFoundation/RCString/RString.h
                  Classes/RayFoundation/RCString/RString_Consts.h
@@ -95,6 +96,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Strings
                  Classes/RayFoundation/RCString/RCString.c
                  Classes/RayFoundation/RCString/RCString_Char.c
+                 Classes/RayFoundation/RCString/RCString_File.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
                  Classes/RayFoundation/RCString/RString.c
                  Classes/RayFoundation/RCString/RString_Consts.c

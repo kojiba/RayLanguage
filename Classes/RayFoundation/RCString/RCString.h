@@ -113,23 +113,6 @@ method(void,                append,                       RCString),    const ch
 method(RCString *,          toUpperCase,                  RCString)); // returns reference (not copy!)
 method(RCString *,          toLowerCase,                  RCString)); // returns reference (not copy!)
 
-// With file
-method(void,                appendToFile,                 RCString),    const char *filename);
-RCString *stringFromFile(const char *filename);
-
-/*
- * Example
- *
- *  RPrintLn("Input some:");
- *  RCString *input = getInputString(); // all to '\n' symbol size is automatic
- *  p(RCString)(input);
- *  deleter(input, RCString);
- *
- *  Note: Reads string from stdin,
- *  returns created RCString which must be destructed.
-*/
-RCString * getInputString();
-
 //----------------------------------------------------------------------------------
 
 #define makeRCString()             $(nil, c(RCString)))

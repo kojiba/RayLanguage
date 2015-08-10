@@ -6,7 +6,7 @@ int RByteArrayTest(void) {
     size_t i;
     size_t j;
     for(i = 0; i < 32; ++i) {
-        RByteArray *array = makeRByteArray(i);
+        RByteArray *array = c(RByteArray)(nil, i);
         if(i == 31) {
             for(j = 0; j < 31; ++j) {
                 array->array[j] = (byte) j;

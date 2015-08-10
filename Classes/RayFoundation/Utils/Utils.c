@@ -15,6 +15,7 @@
 
 #include <Utils.h>
 #include <RString_Consts.h>
+#include <RCString_File.h>
 
 rbool processLine(pointer context, pointer string, size_t iterator) {
     $(string, m(trimAfterString, RCString)), RS("//")); // trim comment

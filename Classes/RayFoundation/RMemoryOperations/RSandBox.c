@@ -37,7 +37,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
         object->descriptorTable = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
-        object->memPart         = makeRByteArray(sizeOfMemory);
+        object->memPart         = c(RByteArray)(nil, sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
             object->classId               = 4;

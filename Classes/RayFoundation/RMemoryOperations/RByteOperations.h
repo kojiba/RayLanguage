@@ -68,6 +68,8 @@ RByteArray*    getSubArrayToFirstSymbol   (const byte *array,   size_t size, byt
 RArray*        getArraysSeparatedBySymbol (const byte *array,   size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nil
 
 // RByteArray
+RByteArray* makeRByteArray(byte *array, size_t size);
+extern
 constructor (RByteArray), size_t size);
 destructor  (RByteArray);
 printer     (RByteArray);
@@ -76,8 +78,8 @@ method(RByteArray*,      flushAllToByte, RByteArray),    byte symbol);
 constMethod(RByteArray*, copy,           RByteArray));
 method(RByteArray*,      fromRCString,   RByteArray),    RCString *string); // not sets size, only copy bytes, returns self
 
+RByteArray* contentOfFile(const char *filename);
 
-#define makeRByteArray(size)           $(nil, c(RByteArray)), size)
 #define makeFlushedBytes(size, symbol) flushAllToByte(RAlloc(size), size, symbol)
 #define RBfromRCS(string)              $(makeRByteArray(string->size), m(fromRCString, RByteArray)), string)
 

@@ -23,8 +23,8 @@
 rbool stringSerializer(pointer context, pointer object, size_t iterator) {
     SerializerData* temp = ((REnumerateDelegate*)context)->context;
 
-    temp->size              = ((RCString*)object)->size;
-    temp->serializePtrStart = ((RCString*)object)->baseString;
+    temp->size              = ((RString*)object)->size;
+    temp->serializePtrStart = ((RString*)object)->baseString;
     temp->next = nil;
     return yes;
 }

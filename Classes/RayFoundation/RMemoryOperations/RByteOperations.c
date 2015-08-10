@@ -14,7 +14,6 @@
  **/
 
 #include <RByteOperations.h>
-#include <RClassTable.h>
 
 #define byteToBinaryPatern "%d%d%d%d%d%d%d%d "
 
@@ -153,19 +152,24 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
 
 #pragma mark RByteArray
 
-constructor(RByteArray), size_t size) {
-    object = allocator(RByteArray);
+RByteArray* makeRByteArray(byte *array, size_t size) {
+    RByteArray* object = allocator(RByteArray);
     if(object != nil) {
-        object->array = RAlloc(size);
-        if(object->array != nil) {
-            object->classId = 7;//registerClassOnce(toString(RByteArray));
-            object->size    = size;
-
-        } elseError(
-                RError("RBA. Array allocation failed", object)
-        );
+        object->array   = array;
+        object->classId = 7;
+        object->size    = size;
     }
     return object;
+}
+
+inline constructor(RByteArray), size_t size) {
+    byte *array = RAlloc(size);
+    if(array != nil) {
+        return makeRByteArray(array, size);
+    } elseError(
+            RError("RByteArray. Array allocation failed", object)
+    );
+    return nil;
 }
 
 destructor(RByteArray) {
@@ -196,5 +200,42 @@ method(RByteArray*, fromRCString, RByteArray), RCString *string) {
         RMemCpy(object->array, string->baseString, string->size);
         return object;
     }
+    return nil;
+}
+
+RByteArray* contentOfFile(const char *filename) {
+    FILE *file = RFOpen(filename, "rb");
+    byte *buffer;
+    ssize_t fileSize;
+
+    if(file != nil) {
+        RFSeek(file, 0, SEEK_END);
+        fileSize = RFTell(file);
+        if(fileSize > 0) {
+            RRewind(file);
+            buffer = arrayAllocator(byte, (fileSize + 1));
+            if(buffer != nil) {
+                if(RFRead(buffer, sizeof(byte), (size_t) fileSize, file) > 0) {
+                    RFClose(file);
+                    return  makeRByteArray(buffer, (size_t) fileSize);
+                } else {
+                    RError2("contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
+                            nil, filename, fileSize);
+                    RFClose(file);
+                }
+
+            } elseError(
+                    RError2("contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
+                    nil, filename, fileSize
+            ));
+
+        } elseError(
+                RError1("contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
+        );
+
+    } elseError(
+            RError1( "contentOfFile. Cannot open file \"%s\".\n", nil, filename)
+    );
+
     return nil;
 }

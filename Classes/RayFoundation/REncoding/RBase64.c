@@ -155,7 +155,7 @@ constMethod(RCString*, decodeBase64, RCString)) {
 
 constMethod(RByteArray*, decodeBase64ToBytes, RCString)) {
     size_t length = base64decodeLength(object->baseString);
-    RByteArray *result = makeRByteArray(length);
+    RByteArray *result = c(RByteArray)(nil, length);
     if(result != nil) {
         char  *string = RAlloc(length);
         if(string != nil) {
