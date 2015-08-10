@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RClassTable.h>
+#include "RClassTable.h"
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE)
     #define tableMutex          &object->mutex

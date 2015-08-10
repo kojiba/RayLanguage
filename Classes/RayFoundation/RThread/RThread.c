@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RThread.h>
+#include "RThread.h"
 
 #ifndef RAY_EMBEDDED
 

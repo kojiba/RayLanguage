@@ -17,8 +17,8 @@
 #define copyDelegatesToResult() result->destructorDelegate = object->destructorDelegate; \
                                 result->printerDelegate    = object->printerDelegate
 
-#include <RList.h>
-#include <RClassTable.h>
+#include "RList.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 
 #ifdef RAY_LIST_THREAD_SAFE
     #define listMutex &object->mutex

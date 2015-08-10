@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RCString.h>
+#include "RCString.h"
 
 extern      method(void,          replaceCSubstrings,            RCString),    char *toReplace, char *replacer);
 

@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include <RDictionary.h>
-#include <RBuffer.h>
+#include "RayFoundation/RContainers/RDictionary.h"
+#include "RayFoundation/RContainers/RBuffer.h"
 
 RDictionary * stringDictionaryFromFile(char *filename); // reads from file key-value (pairs like some.key = some.value)
 

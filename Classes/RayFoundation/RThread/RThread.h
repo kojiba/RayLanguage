@@ -16,7 +16,8 @@
 #ifndef __R_THREAD_H__
 #define __R_THREAD_H__
 
-#include <RSyntax.h>
+#include "RayFoundation/RSyntax.h"
+
 #ifndef RAY_EMBEDDED
 #ifndef __WIN32
     #include <pthread.h>

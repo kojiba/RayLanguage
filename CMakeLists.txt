@@ -3,7 +3,6 @@ project(RayLanguage)
 
 # Configure project
 set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
-set(BINARY_DIR             ${RayLanguage_SOURCE_DIR}/bin)
 
 
 # sub-sources flags
@@ -22,16 +21,7 @@ endif()
 
 set(EXECUTABLE_NAME RayLanguage)
 
-include_directories(Classes/RayFoundation)
-include_directories(Classes/RayFoundation/RBasics)
-include_directories(Classes/RayFoundation/RClassTable)
-include_directories(Classes/RayFoundation/RContainers)
-include_directories(Classes/RayFoundation/RCString)
-include_directories(Classes/RayFoundation/REncoding)
-include_directories(Classes/RayFoundation/RMemoryOperations)
-include_directories(Classes/RayFoundation/RThread)
-include_directories(Classes/RayFoundation/RNetwork)
-include_directories(Classes/RayFoundation/Utils)
+include_directories(Classes)
 
 set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RayConfig.h
@@ -204,7 +194,7 @@ if(copyResources)
 endif()
 
 if(NOT ${DebugFlag})
-    file(COPY ${HEADER_FILES} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/RayFoundation)
+    file(COPY ${RayLanguage_SOURCE_DIR}/Classes/RayFoundation DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
     target_link_libraries(
         ${EXECUTABLE_NAME}
@@ -216,6 +206,7 @@ if(NOT ${DebugFlag})
     endif()
 
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
+
     install( TARGETS ${EXECUTABLE_NAME}
              RUNTIME DESTINATION bin COMPONENT libraries
              LIBRARY DESTINATION lib COMPONENT libraries

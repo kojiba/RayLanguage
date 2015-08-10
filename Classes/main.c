@@ -16,7 +16,7 @@
  *
  **/
 
-#include <RayFoundation.h>
+#include <RayFoundation/RayFoundation.h>
 
 #include "Tests.h"
 

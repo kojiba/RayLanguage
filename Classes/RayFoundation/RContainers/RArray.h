@@ -17,11 +17,11 @@
 #ifndef __R_ARRAY_H__
 #define __R_ARRAY_H__
 
-#include <RBasics.h>
-#include <RList.h>
+#include "RayFoundation/RBasics/RBasics.h"
+#include "RList.h"
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    #include <RThread.h>
+    #include "RayFoundation/RThread/RThread.h"
 #endif
 
 struct RArray;

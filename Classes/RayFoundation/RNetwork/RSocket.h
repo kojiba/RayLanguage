@@ -16,12 +16,12 @@
 #ifndef __R_SOCKET_H__
 #define __R_SOCKET_H__
 
-#include <RayConfig.h>
+#include "RayFoundation/RayConfig.h"
 
 #ifndef RAY_EMBEDDED
 
-#include <RCString.h>
-#include <RByteOperations.h>
+#include  "RayFoundation/RCString/RCString.h"
+#include  "RayFoundation/RMemoryOperations/RByteOperations.h"
 
 #ifndef __WIN32
     #include <sys/socket.h>

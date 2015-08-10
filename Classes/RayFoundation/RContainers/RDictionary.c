@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#include <RDictionary.h>
-#include <RClassTable.h>
+#include "RDictionary.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 #include <stdarg.h>
 
 #define findKey(key) RCompareDelegate delegate; \

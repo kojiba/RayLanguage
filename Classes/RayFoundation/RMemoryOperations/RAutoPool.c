@@ -15,8 +15,7 @@
  *         |__/
  **/
 
-#include <RAutoPool.h>
-#include <RClassTable.h>
+#include "RAutoPool.h"
 
 
 #define toPoolPtrs() setRMalloc (object->innerMalloc);\

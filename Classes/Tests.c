@@ -1,6 +1,5 @@
 #include <time.h>
-#include <RayFoundation.h>
-#include <RString_Consts.h>
+#include <RayFoundation/RayFoundation.h>
 
 int RByteArrayTest(void) {
     size_t i;

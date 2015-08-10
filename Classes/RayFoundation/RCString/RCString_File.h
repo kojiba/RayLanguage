@@ -16,7 +16,7 @@
 #ifndef __R_C_STRING_FILE_H__
 #define __R_C_STRING_FILE_H__
 
-#include <RCString.h>
+#include "RCString.h"
 
 method(void, appendToFile, RCString), const char *filename);
 RCString* stringFromFile(const char *filename);

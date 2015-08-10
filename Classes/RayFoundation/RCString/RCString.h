@@ -16,8 +16,8 @@
 #ifndef __R_C_STRING_H__
 #define __R_C_STRING_H__
 
-#include <RBasics.h>
-#include <RArray.h>
+#include "RayFoundation/RBasics/RBasics.h"
+#include "RayFoundation/RContainers/RArray.h"
 
 typedef struct RCString RCString;
 

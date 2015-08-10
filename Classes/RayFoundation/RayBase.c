@@ -12,8 +12,7 @@
  *         |__/
  **/
  
-#include <RayBase.h>
-#include <RThread.h>
+#include "RayBase.h"
 
 #undef malloc
 #undef realloc

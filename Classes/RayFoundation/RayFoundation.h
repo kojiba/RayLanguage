@@ -9,7 +9,7 @@
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
  * | |/ / _ \| | | '_ \ / _` |
- * |   < (_) | | | |_) | (_| |
+ * |   " (_) | | | |_) | (_| |
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
@@ -23,43 +23,43 @@ extern "C" {
 #endif
 
 // Workers
-#include <RSystem.h>
-#include <RSyntax.h>
-#include <RColors.h>
-#include <RBasics.h>
+#include "RSystem.h"
+#include "RSyntax.h"
+#include "RColors.h"
+#include "RBasics/RBasics.h"
 
 // Containers
-#include <RArray.h>
-#include <RList.h>
-#include <RBuffer.h>
-#include <RDictionary.h>
+#include "RContainers/RArray.h"
+#include "RContainers/RList.h"
+#include "RContainers/RBuffer.h"
+#include "RContainers/RDictionary.h"
 
 // Strings
-#include <RCString.h>
-#include <RCString_Char.h>
-#include <RCString_Numbers.h>
-#include <RString.h>
-#include <RString_Consts.h>
+#include "RCString/RCString.h"
+#include "RCString/RCString_Char.h"
+#include "RCString/RCString_Numbers.h"
+#include "RCString/RString.h"
+#include "RCString/RString_Consts.h"
 
 // Memory operations
-#include <RByteOperations.h>
-#include <RSandBox.h>
-#include <RAutoPool.h>
+#include "RMemoryOperations/RByteOperations.h"
+#include "RMemoryOperations/RSandBox.h"
+#include "RMemoryOperations/RAutoPool.h"
 
 // Encoding
-#include <RBase64.h>
+#include "REncoding/RBase64.h"
 
 // Networking
-#include <RSocket.h>
-#include <RTCPHandler.h>
+#include "RNetwork/RSocket.h"
+#include "RNetwork/RTCPHandler.h"
 
 // Threads
-#include <RThread.h>
-#include <RThreadPool.h>
+#include "RThread/RThread.h"
+#include "RThread/RThreadPool.h"
 
 // Others
-#include <RClassTable.h>
-#include <Utils.h>
+#include "RClassTable/RClassTable.h"
+#include "Utils/Utils.h"
 
 #define endRay() deleter(stringConstantsTable(), RDictionary);\
                  deleter(RCTSingleton, RClassTable); \

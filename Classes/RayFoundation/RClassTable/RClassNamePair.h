@@ -16,7 +16,7 @@
 #ifndef __R_CLASS_NAME_PAIR_H__
 #define __R_CLASS_NAME_PAIR_H__
 
-#include <RCString.h>
+#include "RayFoundation/RCString/RCString.h"
 
 class(RClassNamePair)
     discipleOf(RCString)

@@ -13,7 +13,7 @@
  **/
 
 #include "RCString_File.h"
-#include <RByteOperations.h>
+#include "RayFoundation/RMemoryOperations/RByteOperations.h"
 
 RCString* stringFromFile(const char *filename) {
     RByteArray *content = contentOfFile(filename);

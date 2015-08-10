@@ -13,11 +13,11 @@
  *         |__/
  **/
 
-#include <RThreadPool.h>
+#include "RThreadPool.h"
 
 #ifndef RAY_EMBEDDED
 
-#include <RClassTable.h>
+#include "RayFoundation/RClassTable/RClassTable.h"
 
 protocol(PrivateThreadArgument)
     RThreadFunction  delegate;

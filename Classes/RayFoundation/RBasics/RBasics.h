@@ -16,7 +16,7 @@
 #ifndef __R_BASICS_H__
 #define __R_BASICS_H__
 
-#include <RSyntax.h>
+#include "RayFoundation/RSyntax.h"
 
 typedef enum RCompareFlags{
     not_equals = 0,

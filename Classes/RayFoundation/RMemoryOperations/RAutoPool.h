@@ -18,16 +18,15 @@
 #ifndef __R_AUTO_POOL_H__
 #define __R_AUTO_POOL_H__
 
-#include <RSyntax.h>
-#include <RArray.h>
+#include "RayFoundation/RContainers/RArray.h"
 
 #if defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-    #include <RThread.h>
+    #include "RayFoundation/RThread/RThread.h"
 #endif
 
 #ifdef R_POOL_DETAILED
     #if !defined(RAY_POOL_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-        #include <RThread.h>
+        #include "RayFoundation/RThread/RThread.h"
     #endif
 
 typedef struct RPoolDescriptor {

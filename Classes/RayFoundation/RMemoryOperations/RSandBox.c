@@ -16,7 +16,7 @@
  *         |__/
  **/
 
-#include <RSandBox.h>
+#include "RSandBox.h"
 
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     #define sandboxMutex &object->mutex

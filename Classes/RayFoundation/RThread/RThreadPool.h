@@ -16,12 +16,12 @@
 #ifndef __R_THREAD_POOL_H__
 #define __R_THREAD_POOL_H__
 
-#include <RSyntax.h>
+#include "RayFoundation/RSyntax.h"
 #ifndef RAY_EMBEDDED
-#include <RArray.h>
+#include "RayFoundation/RContainers/RArray.h"
 
 #ifndef RAY_ARRAY_THREAD_SAFE
-    #include <RThread.h>
+    #include "RThread.h"
 #endif
 
 typedef struct RThreadPool RThreadPool;

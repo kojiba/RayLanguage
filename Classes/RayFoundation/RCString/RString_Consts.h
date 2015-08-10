@@ -17,8 +17,8 @@
  *         |__/
  **/
 
-#include <RString.h>
-#include <RDictionary.h>
+#include "RString.h"
+#include "RayFoundation/RContainers/RDictionary.h"
 
 RDictionary * stringConstantsTable();
 RCString *    constantRString(char *string);

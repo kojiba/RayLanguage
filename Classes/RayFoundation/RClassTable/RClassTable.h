@@ -16,9 +16,8 @@
 #ifndef __CLASS_TABLE_H__
 #define __CLASS_TABLE_H__
 
-#include <RSyntax.h>
-#include <RClassNamePair.h>
-#include <RArray.h>
+#include "RClassNamePair.h"
+#include "RayFoundation/RContainers/RArray.h"
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
     #include <RThread.h>

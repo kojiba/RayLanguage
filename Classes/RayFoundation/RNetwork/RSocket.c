@@ -13,11 +13,11 @@
  *         |__/
  **/
 
-#include <RSocket.h>
+#include "RSocket.h"
 
 #ifndef RAY_EMBEDDED
 
-#include <RClassTable.h>
+#include "RayFoundation/RClassTable/RClassTable.h"
 #include <unistd.h>
 
 const byte networkConnectionClosedConst = 0;

@@ -17,7 +17,7 @@
 #ifndef __R_COLORS_H__
 #define __R_COLORS_H__
 
-#include <RayConfig.h>
+#include "RayConfig.h"
 
 #ifdef RAY_CONSOLE_COLORS_ON
     #define RRed    "\e[0;31m"

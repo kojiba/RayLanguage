@@ -19,7 +19,7 @@
 #ifndef __R_ERRORS_H
 #define __R_ERRORS_H
 
-#include <RayConfig.h>
+#include "RayConfig.h"
 
 #ifdef RAY_ASSERT_ON_ERRORS
     #include <assert.h>

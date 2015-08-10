@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RString.h>
+#include "RString.h"
 
 #define isTrail(c) (c > (byte)0x7F && c < (byte)0xC0)
 

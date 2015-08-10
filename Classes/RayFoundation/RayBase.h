@@ -17,7 +17,7 @@
 #ifndef __RAY_BASE_H__
 #define __RAY_BASE_H__
 
-#include <RayConfig.h>
+#include "RayConfig.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

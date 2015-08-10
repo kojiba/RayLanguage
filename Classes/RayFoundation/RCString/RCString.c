@@ -13,9 +13,9 @@
  *         |__/
  **/
 
-#include <RCString.h>
+#include "RCString.h"
+#include "RCString_Char.h"
 #include <stdarg.h>
-#include <RCString_Char.h>
 
 #pragma mark Basics
 

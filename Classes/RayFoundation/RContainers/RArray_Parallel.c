@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RArray_Parallel.h>
+#include "RArray_Parallel.h"
 
 #ifndef RAY_EMBEDDED
 
@@ -22,7 +22,7 @@
     #define RMutexLockArray() RMutexLock(arrayMutex)
     #define RMutexUnlockArray() RMutexUnlock(arrayMutex)
 #else
-    #include <RThread.h>
+    #include "RayFoundation/RThread/RThread.h"
     // sets empty
     #define arrayMutex
     #define RMutexLockArray(some)

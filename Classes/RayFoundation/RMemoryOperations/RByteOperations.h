@@ -16,8 +16,8 @@
 #ifndef __R_BYTE_OPERATIONS_H__
 #define __R_BYTE_OPERATIONS_H__
 
-#include <RArray.h>
-#include <RCString.h>
+#include "RayFoundation/RContainers/RArray.h"
+#include "RayFoundation/RCString/RCString.h"
 
 class(RByteArray)
     byte   *array;

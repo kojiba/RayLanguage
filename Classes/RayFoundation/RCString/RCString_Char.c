@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RCString_Char.h>
+#include "RCString_Char.h"
 
 inline method(void, replaceCSubstrings, RCString), char *toReplace, char *replacer) {
     RCString *toReplaceTemp = RCS(toReplace);

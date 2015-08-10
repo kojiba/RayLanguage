@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include <RArray.h>
+#include "RArray.h"
 #include <stdarg.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE

@@ -17,11 +17,11 @@
 #ifndef __R_BUFFER_H__
 #define __R_BUFFER_H__
 
-#include <RSyntax.h>
-#include <RByteOperations.h>
+#include "RayFoundation/RSyntax.h"
+#include "RayFoundation/RMemoryOperations/RByteOperations.h"
 
 #ifdef RAY_BUFFER_THREAD_SAFE
-    #include <RThread.h>
+    #include "RayFoundation/RThread/RThread.h"
 #endif
 
 #define startSizeOfRBufferDefault      1024 // 1kb of place

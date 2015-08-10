@@ -17,10 +17,10 @@
 #ifndef __R_ARRAY_PARALLEL_H__
 #define __R_ARRAY_PARALLEL_H__
 
-#include <RBasics.h>
+#include "RayFoundation/RBasics/RBasics.h"
 
 #ifndef RAY_EMBEDDED
-#include <RArray.h>
+#include "RArray.h"
 
 method(RFindResult, findObjectParallel, RArray),    RCompareDelegate   *delegate);
 method(void,        executeParallel,    RArray),    REnumerateDelegate *delegate);
