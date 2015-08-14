@@ -1,6 +1,6 @@
 #include "RVirtualMachine.h"
 
-#define VISUALIZE
+//#define VISUALIZE
 #ifdef VISUALIZE
     #include "ncurses.h"
 
@@ -59,7 +59,7 @@ method(size_t, executeCode, RVirtualMachine)) {
 // prints
         case r_print_0_string : {
             RPrintf("%s\n", object->dataRegister);
-            while(*object->dataRegister != 0) {
+            while(*(size_t*)object->dataRegister != 0) {
                 ++object->dataRegister;
                 ++object->tickCount;
             }
@@ -70,12 +70,12 @@ method(size_t, executeCode, RVirtualMachine)) {
             if(*object->dataRegister == '\n'
                     || *object->dataRegister == '\r'
                     || *object->dataRegister == '\t') {
-                RPrintf("%c", *object->dataRegister);
+                RPrintf("%c", (byte) *object->dataRegister);
             } else if(*object->dataRegister < 32
                     || *object->dataRegister > 127) {
-                RPrintf("%02x ", *object->dataRegister);
+                RPrintf("%02x ", (byte) *object->dataRegister);
             } else {
-                RPrintf("%c", *object->dataRegister);
+                RPrintf("%c", (byte) *object->dataRegister);
             }
             ++object->command;
         } break;
@@ -106,14 +106,16 @@ method(size_t, executeCode, RVirtualMachine)) {
 
         case r_goto_address : {
             // set pointer to command incremented pointers data, like JMP address, fixme when instruction in data
-            object->command = object->functionStartAddress + *(++object->command);
+            size_t absoluteAddress;
+            memcpy(&absoluteAddress, ++object->command, sizeof(size_t));
+            object->command = object->functionStartAddress + absoluteAddress;
         } break;
 
 // logical
         case r_if : {
             if((*object->dataRegister) != 0) {
                 // true instruction
-                object->command += 3; // 3 - cause of goto arg byte
+                object->command += 2 + sizeof(size_t); // cause of goto arg byte
             } else {
                 // false instruction
                 ++object->command;
@@ -123,7 +125,7 @@ method(size_t, executeCode, RVirtualMachine)) {
         case r_if_not : {
             if((*object->dataRegister) == 0) {
                 // true instruction
-                object->command += 3; // 3 - cause of goto arg byte
+                object->command += 2 + sizeof(size_t); // cause of goto arg byte
             } else {
                 // false instruction
                 ++object->command;
@@ -144,7 +146,7 @@ method(size_t, executeCode, RVirtualMachine)) {
 
 // bad situation
         default: {
-            RPrintf("RVM. Warning, default case, unhalted result\n");
+            RPrintf("EROOR. RVM. Warning, default case, unhalted result\n");
             return 1;
         }
     }

@@ -17,43 +17,34 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-
 #include "Tests.h"
 
-rbool stringSerializer(pointer context, pointer object, size_t iterator) {
-    SerializerData* temp = ((REnumerateDelegate*)context)->context;
-
-    temp->size              = ((RString*)object)->size;
-    temp->serializePtrStart = ((RString*)object)->baseString;
-    temp->next = nil;
-    return yes;
-}
+#include "RVirtualMachine/RVirtualFunction/RVirtualFunction.h"
+#include "RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h"
+#include "RVirtualMachine/RVirtualMachine/RVirtualMachine.h"
 
 int main(int argc, const char *argv[]) {
     size_t iterator;
     enablePool(RPool);
     ComplexTest();
+//
+//    // [ ] ,  [ [ [ ] ] ],  [ [ ] [] [ ] ]
+    RCString *source = RS(" ++++++++++ [ >+++++++>++++++++++>+++>+<<<<- ] >++\n"
+                                  " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                                  " ------.--------.>+.>.");
 
-    initRClock();
-    REnumerateDelegate delegate;
-    SerializerData *tempSizeData = allocator(SerializerData);
-    delegate.context           = tempSizeData;
-    delegate.virtualEnumerator = stringSerializer;
+    // brainfuck hard(with [, ]) hello world on RVM
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
 
-    RArray *array = makeRArray();
-    stringDelegates(array);
+    p(RVirtualFunction)(function);
 
-    forAll(iterator, 10000) {
-        $(array, m(addObject, RArray)), randomRCString());
-    }
+    executeRay(function);
 
-    RBuffer *buffer = $(array, m(serializeToBufferDelegate, RArray)), &delegate);
-    tickRClock();
-
-    deleter(buffer, RBuffer);
-    deleter(array, RArray);
-    deallocator(tempSizeData);
-    tickRClock();
+    deleter(function, RVirtualFunction);
+    deleter(RVM, RVirtualMachine);
+    deleter(RVC, RVirtualCompiler);
 
     endRay();
 }
+
+

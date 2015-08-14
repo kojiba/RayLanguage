@@ -1,7 +1,7 @@
 #ifndef __R_VIRTUAL_COMPILER_H__
 #define __R_VIRTUAL_COMPILER_H__
 
-#include "../../RayFoundation/RayFoundation.h"
+#include <RayFoundation/RayFoundation.h>
 #include "../RVirtualFunction/RVirtualFunction.h"
 
 class(RVirtualCompiler)
@@ -21,7 +21,6 @@ class(RVirtualCompiler)
 
     // workers
     size_t      deltaToNext;
-    size_t      toPrev;
 
     // for store open brackets places
     RArray     *brakets;

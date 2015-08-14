@@ -85,7 +85,7 @@ endOf(REnumerateDelegate)
 typedef struct SerializerData { // worker struct for serializers
                    size_t  size;
                   pointer  serializePtrStart;
-    struct SerializerData *next;
+    struct SerializerData *next; // for multiple-serialize
 } SerializerData;
 
 #endif

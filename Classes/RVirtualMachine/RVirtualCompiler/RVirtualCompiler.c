@@ -102,20 +102,16 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
             }
             $(object->brakets, m(addObject, RArray)), (pointer) object->iterator);
 
-            realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * 2 + 2;
-
-            if(realPath > 255) {
-                RPrintf("Warning. RVirtualCompiler (BrainFuck). '[' Too long loop %lu\n", realPath);
-            }
+            realPath = object->iterator + object->iteratorShift + object->deltaToNext + (object->forwardRepetitions + object->backwardRepetitions) * (1 + sizeof(size_t)) + 2;
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            object->body->array[object->iterator + object->iteratorShift + 2] = (byte)realPath;
+            memcpy(object->body->array + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
 
             --object->forwardRepetitions;
 
 
-            object->iteratorShift += 2;
+            object->iteratorShift += 1 + sizeof(size_t);
             byteCode = r_ignore;
         } break;
 
@@ -137,9 +133,9 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
             object->body->array[object->iterator + object->iteratorShift]     = r_if_not;
             object->body->array[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            object->body->array[object->iterator + object->iteratorShift + 2] = (byte) realPath;
+            memcpy(object->body->array + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
 
-            object->iteratorShift += 2;
+            object->iteratorShift += 1 + sizeof(size_t);
             byteCode = r_ignore;
         } break;
 
@@ -185,9 +181,9 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     }
 
     // removing all '\n' start byte-code, +1 to r_end
-    sizeOfByteCode = object->code->size - object->numberOfLines + 1 + 2 * (object->forwardRepetitions + object->backwardRepetitions);
+    sizeOfByteCode = object->code->size - object->numberOfLines + 1 + (1 + sizeof(size_t)) * (object->forwardRepetitions + object->backwardRepetitions);
 
-    body = makeRByteArray(sizeOfByteCode);
+    body = c(RByteArray)(nil, sizeOfByteCode);
 
     // set pointer to body
     object->body = body;
@@ -217,7 +213,6 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
 
         // init workings
         object->deltaToNext   = 0;
-        object->toPrev        = 0;
         object->iterator      = 0;
         object->lines         = 0;
         object->iteratorShift = 0; // shift cause '[' and ']' 3x multiplience

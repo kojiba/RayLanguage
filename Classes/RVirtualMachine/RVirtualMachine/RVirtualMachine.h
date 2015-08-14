@@ -1,7 +1,7 @@
 #ifndef __R_VIRTUAL_MACHINE_H__
 #define __R_VIRTUAL_MACHINE_H__
 
-#include "../../RayFoundation/RayFoundation.h"
+#include <RayFoundation/RayFoundation.h>
 #include "../RVirtualFunction/RVirtualFunction.h"
 
 // rasm - ray assembler for RVM
@@ -68,9 +68,9 @@ class(RVirtualMachine)
     RByteArray       *memory;               // memory 1 kB size
     RVirtualFunction *functionExecuting;    // pointer to function
 
-    byte             *dataRegister;         // pointer to memory element (data segment)
-    byte             *command;              // pointer to rasm byte-code
-    byte             *functionStartAddress; // pointer to place, where function starts (program segment)
+    byte           *dataRegister;         // pointer to memory element               (data    segment)
+    byte           *command;              // pointer to rasm byte-code               (command segment)
+    byte           *functionStartAddress; // pointer to place, where function starts (program segment)
 
     size_t          tickCount;
     rbool           breakFlag;              // for stop

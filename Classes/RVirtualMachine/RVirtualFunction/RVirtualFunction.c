@@ -44,16 +44,25 @@ printer(RVirtualFunction) {
                 RPrintLn("p char");
             } break;
 
+
             case r_if : {
+                size_t whereGoTo;
+                memcpy(&whereGoTo, &master(object, RByteArray)->array[iterator += 2], sizeof(size_t));
+
                 RPrintLn("if");
-                RPrintf("\t\tfalse : goto %u \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
                 RPrintf("\t\ttrue : ");
+                iterator += sizeof(size_t) - 1;
             } break;
 
             case r_if_not : {
+                size_t whereGoTo;
+                memcpy(&whereGoTo, &master(object, RByteArray)->array[iterator += 2], sizeof(size_t));
+
                 RPrintLn("if NOT");
-                RPrintf("\t\tfalse : goto %u \n", master(object, RByteArray)->array[iterator += 2]);
+                RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
                 RPrintf("\t\ttrue :");
+                iterator += sizeof(size_t) - 1;
             } break;
 
             case r_goto_address : {
