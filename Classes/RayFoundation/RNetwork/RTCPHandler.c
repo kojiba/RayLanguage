@@ -22,6 +22,15 @@ rbool inactiveContextDeleter(pointer context, pointer object, size_t iterator) {
     return no;
 }
 
+void PrivateArgPrinter(pointer object){
+    RPrintf("%p : socket : %p\n", object, ((RTCPDataStruct*)object)->socket);
+}
+
+void PrivateArgDeleter(RTCPDataStruct* object) {
+    nilDeleter(object->socket, RSocket);
+    RFree(object);
+}
+
 constructor(RTCPHandler)) {
     object = allocator(RTCPHandler);
     if(object != nil) {
@@ -33,7 +42,8 @@ constructor(RTCPHandler)) {
                 object->arguments = makeRArray();
                 if(object->arguments != nil) {
 
-                    $(object->arguments, m(setDestructorDelegate, RArray)), RFree);
+                    $(object->arguments, m(setPrinterDelegate,    RArray)), PrivateArgPrinter);
+                    $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
                     // init predicate
                     object->predicate.virtualEnumerator = inactiveContextDeleter;
                     object->predicate.context           = object;
@@ -57,6 +67,9 @@ printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n", object);
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(&object->runningThread));
     p(RThreadPool)(object->threads);
+    RPrintf("------ Arguments ------");
+    p(RArray)(object->arguments);
+    RPrintf("------ Arguments ------\n");
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }
 
@@ -72,6 +85,7 @@ method(void, start, RTCPHandler), pointer context) {
         while(!object->terminateFlag) {
             RTCPDataStruct *argument = allocator(RTCPDataStruct);
             if(argument != nil) {
+                RPrintf("%p arg\n", argument);
 
                 argument->handler  = object;
                 argument->delegate = object->delegate;

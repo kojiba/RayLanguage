@@ -23,13 +23,14 @@
 #define BUFFER_SIZE 1500
 
 pointer exec(RTCPDataStruct *data) {
-    const char   *address    = addressToString(&data->socket->address);
     char    buffer[BUFFER_SIZE];
-    ushort  port       = ntohs(data->socket->address.sin_port);
-    byte    resultFlag;
-    size_t  receivedSize;
+    const char    *address = addressToString(&data->socket->address);
+    ushort            port = ntohs(data->socket->address.sin_port);
+    unsigned currentThread =  (unsigned int) currentThreadIdentifier();
+    byte     resultFlag;
+    size_t   receivedSize;
 
-    RPrintf("[I] %s:%u connected, tuid : %u\n", address, port, (unsigned int) currentThreadIdentifier());
+    RPrintf("[I] %s:%u connected, tuid : %u\n", address, port, currentThread);
 
     $(data->socket, m(sendString, RSocket)), RS("Hello world!\n"));
 
@@ -37,6 +38,7 @@ pointer exec(RTCPDataStruct *data) {
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
         RPrintf("%s:%u > %s", address, port, buffer);
+        $(data->socket, m(send, RSocket)), buffer, receivedSize);
         resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
 
@@ -79,7 +81,8 @@ int main(int argc, const char *argv[]) {
     size_t  receivedSize;
 
     enablePool(RPool);
-    ComplexTest();
+
+    ComplexTest(); // lib test
 
     startServer();
 

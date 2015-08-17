@@ -182,7 +182,7 @@ method(RSocket *, accept, RSocket)) {
                                 (SocketAddress*) &result->address,
                                                  &result->addressLength);
         if(result->socket < 0) {
-            RError("RSocket. Accept socket error.", object);
+            // did not display error here
             deallocator(result);
             result = nil;
         }

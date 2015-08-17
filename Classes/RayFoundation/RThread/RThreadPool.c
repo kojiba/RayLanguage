@@ -50,7 +50,7 @@ constructor(RThreadPool)) {
     if(object != nil) {
         object->threads = makeRArray();
         if(object->threads != nil) {
-            object->threads->destructorDelegate = getRFree();
+            $(object->threads, m(setDestructorDelegate, RArray)), getRFree());
             object->classId = registerClassOnce(toString(RThreadPool));
             mutexWithType(threadPoolMutex, RMutexNormal);
         } else {
@@ -166,6 +166,7 @@ method(void, cancel, RThreadPool)) {
     RMutexLock(threadPoolMutex);
     object->enumerator.virtualEnumerator = cancelThreadCheck;
     $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
+    $(object->threads, m(flush,     RArray)));
     RMutexUnlock(threadPoolMutex);
 }
 
