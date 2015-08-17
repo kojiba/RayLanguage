@@ -21,6 +21,9 @@
 
 
 #define RTCPHandlerListenerQueueSize  50
+#define RTCPHandlerCheckCleanupAfter  20
+
+struct RTCPHandler;
 
 protocol(RTCPDelegate)
     RThreadFunction delegateFunction;
@@ -29,19 +32,22 @@ endOf(RTCPDelegate)
 
 
 protocol(RTCPDataStruct)
-    RSocket      *socket;
-    RTCPDelegate *delegate;
+    RSocket             *socket;
+    RTCPDelegate        *delegate;
+    struct RTCPHandler  *handler;
 endOf(RTCPDataStruct)
 
 
 
 class(RTCPHandler)
+    REnumerateDelegate   predicate;
     RThread              runningThread;
 
     RTCPDelegate        *delegate;
     RSocket             *listener;
     rbool                terminateFlag;
     RThreadPool         *threads;
+    RArray              *arguments;
 endOf(RTCPHandler)
 
 constructor(RTCPHandler));

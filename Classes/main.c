@@ -43,7 +43,7 @@ pointer exec(RTCPDataStruct *data) {
     RPrintf("[I] %s:%u disconnected\n", address, port);
 
     deleter(data->socket, RSocket);
-    deallocator(data);
+    data->socket = nil; // for auto-cleaning
     return nil;
 }
 

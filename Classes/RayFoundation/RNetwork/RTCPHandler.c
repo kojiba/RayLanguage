@@ -15,6 +15,13 @@
 
 #include "RTCPHandler.h"
 
+rbool inactiveContextDeleter(pointer context, pointer object, size_t iterator) {
+    if(((RTCPDataStruct*)object)->socket == nil) {
+        return yes;
+    }
+    return no;
+}
+
 constructor(RTCPHandler)) {
     object = allocator(RTCPHandler);
     if(object != nil) {
@@ -22,14 +29,25 @@ constructor(RTCPHandler)) {
         object->listener = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
         if(object->listener != nil) {
             object->threads = c(RThreadPool)(nil);
+            if(object->threads != nil) {
+                object->arguments = makeRArray();
+                if(object->arguments != nil) {
+
+                    $(object->arguments, m(setDestructorDelegate, RArray)), RFree);
+                    // init predicate
+                    object->predicate.virtualEnumerator = inactiveContextDeleter;
+                    object->predicate.context           = object;
+                }
+            }
         }
     }
     return object;
 }
 
 destructor(RTCPHandler) {
-    deleter(object->listener, RSocket);
-    deleter(object->threads,  RThreadPool);
+    deleter(object->listener,  RSocket);
+    deleter(object->threads,   RThreadPool);
+    deleter(object->arguments, RArray);
 }
 
 getterImpl(delegate, RTCPDelegate *, RTCPHandler)
@@ -54,15 +72,20 @@ method(void, start, RTCPHandler), pointer context) {
         while(!object->terminateFlag) {
             RTCPDataStruct *argument = allocator(RTCPDataStruct);
             if(argument != nil) {
-//                RPrintf("RTCPDataStruct %p\n", argument);
 
+                argument->handler  = object;
                 argument->delegate = object->delegate;
                 argument->context  = context;
                 argument->socket   = $(object->listener, m(accept, RSocket)));
-//                RPrintf("RSocket %p\n", argument->socket);
 
                 if(argument->socket != nil) {
-                    $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+                    $(object->arguments, m(addObject,  RArray)),      argument);
+
+                    if(object->arguments->count != 0
+                       && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
+                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->predicate);
+                    }
+                    $(object->threads,   m(addWithArg, RThreadPool)), argument, yes);
                 } else {
                     deallocator(argument);
                 }
@@ -78,4 +101,5 @@ method(void, start, RTCPHandler), pointer context) {
 method(void, terminate,  RTCPHandler)) {
     RThreadCancel(&object->runningThread);
     $(object->threads, m(cancel, RThreadPool)));
+    $(object->arguments, m(flush, RArray)));
 }
