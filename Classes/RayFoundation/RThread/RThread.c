@@ -115,8 +115,17 @@ inline int mutexWithType(RMutex *mutex, byte mutexType) {
     pthread_mutexattr_settype(&Attr, mutexType);
     return pthread_mutex_init(mutex,  &Attr);
 #else
-    *mutex = CreateMutex(nil, no, nil);
-    return 0;
+    if(mutexType == RMutexRecursive) {
+        *mutex = CreateMutex(nil, no, nil);
+        return 0;
+    } else if(mutexType == RMutexNormal) {
+        *mutex = CreateSemaphore( nil, // default security attributes
+                                  0,   // initial count
+                                  0,   // maximum count
+                                  nil);
+
+        return (int)*mutex;
+    }
 #endif
 }
 
@@ -124,7 +133,7 @@ inline int RMutexLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_lock(mutex);
 #else
-    return (int) WaitForSingleObject(mutex, INFINITE);
+    return (int) WaitForSingleObject(*mutex, INFINITE);
 #endif
 }
 
@@ -132,7 +141,7 @@ inline int RMutexTryLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_trylock(mutex);
 #else
-    return (int) WaitForSingleObject(mutex, INFINITE);
+    return (int) WaitForSingleObject(*mutex, INFINITE);
 #endif
 }
 
@@ -140,7 +149,7 @@ inline int RMutexUnlock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_unlock(mutex);
 #else
-    return ReleaseMutex(mutex);
+    return ReleaseMutex(*mutex);
 #endif
 }
 
@@ -148,7 +157,7 @@ inline int RMutexDestroy(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_destroy(mutex);
 #else
-    return CloseHandle(mutex);
+    return CloseHandle(*mutex);
 #endif
 }
 
