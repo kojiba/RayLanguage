@@ -65,7 +65,9 @@ setterImpl(delegate, RTCPDelegate *, RTCPHandler)
 
 printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n", object);
+#ifndef _WIN32
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(&object->runningThread));
+#endif
     p(RThreadPool)(object->threads);
     RPrintf("------ Arguments ------");
     p(RArray)(object->arguments);
@@ -73,51 +75,56 @@ printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }
 
-method(void, startOnPort, RTCPHandler), uint16_t port, pointer context) {
-    if(object->delegate != nil
-            && object->delegate->delegateFunction != nil) {
-        if($(object->listener, m(bindPort, RSocket)), port) == yes) {
+method(void, privateStartOnPort, RTCPHandler)) {
+    if($(object->listener, m(bindPort, RSocket)), object->listener->port) == yes) {
 
-            object->runningThread = currentThread();
-            object->terminateFlag = no;
-            $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
-            $(object->listener, m(listen,              RSocket)),     RTCPHandlerListenerQueueSize);
+        object->terminateFlag = no;
+        $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
+        $(object->listener, m(listen,              RSocket)),     RTCPHandlerListenerQueueSize);
 
-            while(!object->terminateFlag) {
+        while(!object->terminateFlag) {
+            RSocket *socket = $(object->listener, m(accept, RSocket)));
+            if(socket != nil) {
                 RTCPDataStruct *argument = allocator(RTCPDataStruct);
+                RPrintf("%p arg\n", argument);
                 if(argument != nil) {
-
                     argument->handler  = object;
                     argument->delegate = object->delegate;
-                    argument->context  = context;
-                    argument->socket   = $(object->listener, m(accept, RSocket)));
+                    argument->context  = object->delegate->context;
+                    argument->socket   = socket;
+                    $(object->arguments, m(addObject,  RArray)),      argument);
 
-                    if(argument->socket != nil) {
-                        RPrintf("%p arg\n", argument);
-                        $(object->arguments, m(addObject,  RArray)),      argument);
-
-                        if(object->arguments->count != 0
-                           && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
-                            $(object->arguments, m(deleteWithPredicate, RArray)), &object->predicate);
-                        }
-                        $(object->threads,   m(addWithArg, RThreadPool)), argument, yes);
-                    } else {
-                        deallocator(argument);
+                    // delete inactive worker arguments
+                    if(object->arguments->count != 0
+                       && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
+                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->predicate);
                     }
+
+                    // finally, add new worker with auto-cleanup
+                    $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
                 } elseError(
                         RError("RTCPHandler. Can't allocate thread argument.", object)
                 );
             }
-        } elseError(
-            RError1("RTCPHandler. startOnPort. Bind error, port %u", object, port)
-        );
+        }
+    } elseError(
+            RError1("RTCPHandler. startOnPort. Bind error, port %u", object, object->listener->port)
+    );
+}
+
+method(void, startOnPort, RTCPHandler), uint16_t port) {
+    if(object->delegate != nil
+            && object->delegate->delegateFunction != nil) {
+        $(object->listener, m(setPort, RSocket)), port);
+        RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartOnPort, RTCPHandler), object);
     } elseWarning(
             RWarning("RTCPHandler. startOnPort. Delegate or delgate function is nil. What do you want to start?!", object)
     );
 }
 
 method(void, terminate,  RTCPHandler)) {
-    RThreadCancel(&object->runningThread);
-    $(object->threads, m(cancel, RThreadPool)));
+    object->terminateFlag = yes;
+//    RThreadCancel(&object->runningThread);
+    $(object->threads,   m(cancel, RThreadPool)));
     $(object->arguments, m(flush, RArray)));
 }

@@ -23,7 +23,9 @@
 #define RTCPHandlerListenerQueueSize  50
 #define RTCPHandlerCheckCleanupAfter  20
 
+
 struct RTCPHandler;
+
 
 protocol(RTCPDelegate)
     RThreadFunction delegateFunction;
@@ -59,7 +61,7 @@ printer(RTCPHandler);
 getter(delegate, RTCPDelegate *, RTCPHandler);
 setter(delegate, RTCPDelegate *, RTCPHandler);
 
-method(void, startOnPort, RTCPHandler),    uint16_t port, pointer context);
+method(void, startOnPort, RTCPHandler),    uint16_t port);
 method(void, terminate,   RTCPHandler));
 
 #endif /*__R_TCP_HANDLER__*/

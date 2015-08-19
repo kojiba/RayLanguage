@@ -30,7 +30,6 @@ pointer exec(RTCPDataStruct *data) {
     byte     resultFlag;
     size_t   receivedSize;
 
-    RPrintf("%p address\n", address);
     RPrintf("[I] %s:%u connected [tuid : %u]\n", address, port, currentThread);
 
     $(data->socket, m(sendString, RSocket)), RS("Hello from RServer.\n"));
@@ -38,7 +37,7 @@ pointer exec(RTCPDataStruct *data) {
     resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000, &receivedSize);
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
-        RPrintf("%s:%u > %s", address, port, buffer);
+        RPrintf("%s:%u[%u] > %s", address, port, currentThread, buffer);
         $(data->socket, m(send, RSocket)), buffer, receivedSize);
         resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
@@ -50,23 +49,21 @@ pointer exec(RTCPDataStruct *data) {
     return nil;
 }
 
-RTCPHandler *server = nil;
-
-void serverFunc(void) {
-    server = c(RTCPHandler)(nil);
-    if(server != nil) {
-        RTCPDelegate delegate;
-        delegate.delegateFunction = (RThreadFunction) exec;
-        delegate.context = &delegate;
-        $(server,  m(set_delegate, RTCPHandler)), &delegate);
-        RPrintf("RTCPHandler starting %p in %u thread\n", server, (unsigned int) currentThreadIdentifier());
-        $(server,  m(startOnPort, RTCPHandler)), 4000, nil); // blocks thread until m(terminate, RTCPHandler)
-    }
-}
+RTCPHandler  *server   = nil;
+RTCPDelegate *delegate = nil;
 
 void startServer(void) {
-    RThread thread;
-    RThreadCreate(&thread, nil, (RThreadFunction) serverFunc, nil);
+    server = c(RTCPHandler)(nil);
+    if(server != nil) {
+        delegate = allocator(delegate);
+        if(delegate != nil) {
+            delegate->delegateFunction = (RThreadFunction) exec;
+            delegate->context          = server;
+            $(server,  m(set_delegate, RTCPHandler)), delegate);
+            RPrintf("RTCPHandler starting %p\n", server);
+            $(server,  m(startOnPort, RTCPHandler)), 4000);
+        }
+    }
 }
 
 int main(int argc, const char *argv[]) {
@@ -79,7 +76,6 @@ int main(int argc, const char *argv[]) {
     size_t  receivedSize;
 
     enablePool(RPool);
-
     ComplexTest(); // lib test
 
     startServer();
@@ -128,9 +124,10 @@ int main(int argc, const char *argv[]) {
         deleter(current, RSocket);
     }
 
-    p(RTCPHandler)(server);
-
     deleter(configurator, RSocket);
+
+    deallocator(delegate);
+    p(RTCPHandler)(server);
     $(server, m(terminate, RTCPHandler)));
     deleter(server,        RTCPHandler);
 

@@ -331,7 +331,7 @@ RBuffer* RBufferFromFile(const char *filename) {
             sizesArray = (uint64_t *) (buffer->array + 1);
 
         } elseError(
-                RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %u", nil, buffer[0], sizeof(size_t))
+                RError2("RBufferFromFile. Bad size_t size - %u for current size_t - %u", nil, (unsigned)buffer->array[0], (unsigned)sizeof(size_t))
         );
 
         if(sizesArray != nil) {

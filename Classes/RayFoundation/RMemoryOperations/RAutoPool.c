@@ -63,7 +63,7 @@
     }
 #endif
 
-#ifdef R_POOL_META_ALLOC
+#if defined(R_POOL_DETAILED) && defined(R_POOL_META_ALLOC)
     RPoolDescriptor * descriptorWithInfoMeta(RAutoPool *object, size_t size, pointer ptr, RThreadId threadId, char *tipString) {
         RPoolDescriptor *result = allocator(RPoolDescriptor);
         if(result != nil) {
@@ -175,7 +175,9 @@ printer(RAutoPool) {
     RPrintf("Pointers array: ");
     $(object->pointersInWork, p(RArray)));
     RPrintf("-------------------------- %p\n", object);
+#ifdef R_POOL_DETAILED
     deallocator(memTotal);
+#endif
     RMutexUnlockPool();
     backPoolPtrs();
 }
@@ -194,7 +196,7 @@ method(pointer, malloc, RAutoPool), size_t sizeInBytes) {
     #ifdef R_POOL_META_ALLOC
         RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, sizeInBytes, temp, currentThreadIdentifier(), nil);
     #else
-        RPoolDescriptor *descriptor = descriptorWithInfo(object, sizeInBytes, temp, currentTreadIdentifier());
+        RPoolDescriptor *descriptor = descriptorWithInfo(object, sizeInBytes, temp, currentThreadIdentifier());
     #endif
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
@@ -284,7 +286,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
         #ifdef R_POOL_META_ALLOC
                 RPoolDescriptor *descriptor2 = descriptorWithInfoMeta(object, newSize, temp, currentThreadIdentifier(), storedTip);
         #else
-                RPoolDescriptor *descriptor2 = descriptorWithInfo(object, newSize, temp, currentTreadIdentifier());
+                RPoolDescriptor *descriptor2 = descriptorWithInfo(object, newSize, temp, currentThreadIdentifier());
         #endif
                 $(object->pointersInWork, m(addObject, RArray)), descriptor2);
     #else
@@ -321,7 +323,7 @@ method(pointer, calloc, RAutoPool), size_t blockCount, size_t blockSize) {
         RPoolDescriptor *descriptor = descriptorWithInfoMeta(object, blockCount * blockSize, temp,
                                                              currentThreadIdentifier(), nil);
     #else
-        RPoolDescriptor *descriptor = descriptorWithInfo(object, blockCount * blockSize, temp, currentTreadIdentifier());
+        RPoolDescriptor *descriptor = descriptorWithInfo(object, blockCount * blockSize, temp, currentThreadIdentifier());
     #endif
         $(object->pointersInWork, m(addObject, RArray)), descriptor);
 #else
