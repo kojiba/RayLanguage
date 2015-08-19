@@ -86,7 +86,6 @@ method(void, privateStartOnPort, RTCPHandler)) {
             RSocket *socket = $(object->listener, m(accept, RSocket)));
             if(socket != nil) {
                 RTCPDataStruct *argument = allocator(RTCPDataStruct);
-                RPrintf("%p arg\n", argument);
                 if(argument != nil) {
                     argument->handler  = object;
                     argument->delegate = object->delegate;
