@@ -22,6 +22,14 @@
 
 #define BUFFER_SIZE 1500
 
+rbool sendToArgument(pointer context, pointer object, size_t iterator) {
+    RTCPDataStruct *data = object;
+    if(data->socket != nil) {
+        $(data->socket, m(sendString, RSocket)), context);
+    }
+    return yes;
+}
+
 pointer exec(RTCPDataStruct *data) {
     char    buffer[BUFFER_SIZE];
     const char    *address = addressToString(&data->socket->address);
@@ -29,6 +37,8 @@ pointer exec(RTCPDataStruct *data) {
     unsigned currentThread =  (unsigned int) currentThreadIdentifier();
     byte     resultFlag;
     size_t   receivedSize;
+    REnumerateDelegate executor;
+    executor.virtualEnumerator = sendToArgument;
 
     RPrintf("[I] %s:%u connected [tuid : %u]\n", address, port, currentThread);
 
@@ -38,7 +48,12 @@ pointer exec(RTCPDataStruct *data) {
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
         RPrintf("%s:%u[%u] > %s", address, port, currentThread, buffer);
-        $(data->socket, m(send, RSocket)), buffer, receivedSize);
+
+        executor.context = RCStringInit(buffer, receivedSize);
+
+        $(((RTCPHandler*)data->context)->arguments, m(enumerate, RArray)), &executor, yes);
+        deallocator(executor.context);
+
         resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
 
