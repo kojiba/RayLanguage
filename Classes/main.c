@@ -30,9 +30,10 @@ pointer exec(RTCPDataStruct *data) {
     byte     resultFlag;
     size_t   receivedSize;
 
-    RPrintf("[I] %s:%u connected, tuid : %u\n", address, port, currentThread);
+    RPrintf("%p address\n", address);
+    RPrintf("[I] %s:%u connected [tuid : %u]\n", address, port, currentThread);
 
-    $(data->socket, m(sendString, RSocket)), RS("Hello world!\n"));
+    $(data->socket, m(sendString, RSocket)), RS("Hello from RServer.\n"));
 
     resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000, &receivedSize);
     while(resultFlag != networkConnectionClosedConst) {
@@ -42,7 +43,7 @@ pointer exec(RTCPDataStruct *data) {
         resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
 
-    RPrintf("[I] %s:%u disconnected\n", address, port);
+    RPrintf("[I] %s:%u disconnected [tuid : %u]\n", address, port, currentThread);
 
     deleter(data->socket, RSocket);
     data->socket = nil; // for auto-cleaning
@@ -54,15 +55,12 @@ RTCPHandler *server = nil;
 void serverFunc(void) {
     server = c(RTCPHandler)(nil);
     if(server != nil) {
-        RPrintf("RTCPHandler %p in %u thread\n", server, (unsigned int) currentThreadIdentifier());
-
         RTCPDelegate delegate;
         delegate.delegateFunction = (RThreadFunction) exec;
         delegate.context = &delegate;
-        if($(server->listener, m(bindPort, RSocket)), 4000) == yes) {
-            $(server,  m(set_delegate, RTCPHandler)), &delegate);
-            $(server,  m(start,        RTCPHandler)), server); // blocks thread until m(terminate, RTCPHandler)
-        }
+        $(server,  m(set_delegate, RTCPHandler)), &delegate);
+        RPrintf("RTCPHandler starting %p in %u thread\n", server, (unsigned int) currentThreadIdentifier());
+        $(server,  m(startOnPort, RTCPHandler)), 4000, nil); // blocks thread until m(terminate, RTCPHandler)
     }
 }
 
@@ -110,8 +108,6 @@ int main(int argc, const char *argv[]) {
                             RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
 
                             closeAll = yes;
-
-                            p(RTCPHandler)(server);
                         }
 
                         ifMemEqual(buffer + 10, "system", 6) {
@@ -131,6 +127,8 @@ int main(int argc, const char *argv[]) {
 
         deleter(current, RSocket);
     }
+
+    p(RTCPHandler)(server);
 
     deleter(configurator, RSocket);
     $(server, m(terminate, RTCPHandler)));

@@ -34,7 +34,7 @@
 
     #define RPrivateErrStr                            RFPrintf(stderr, RRed "%p ERROR. "
 
-    #define RError(string, object)                    RPrivateErrStr string "\n" RNC, object) endPrivateError
+    #define  RError(string, object)                    RPrivateErrStr string "\n" RNC, object) endPrivateError
     #define RError1(string, object, arg1)             RPrivateErrStr string "\n" RNC, object, arg1) endPrivateError
     #define RError2(string, object, arg1, arg2)       RPrivateErrStr string "\n" RNC, object, arg1, arg2) endPrivateError
     #define RError3(string, object, arg1, arg2, arg3) RPrivateErrStr string "\n" RNC, object, arg1, arg2, arg3) endPrivateError
@@ -55,11 +55,12 @@
 
 
 #ifdef RAY_WARNINGS_ON
-    #define RPleaseRemoveString            " Please, remove function call, or fix it!\n"
-    #define RWarning(string, object)       RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object)
+    #define RPleaseRemoveString                " Please, remove function call, or fix it!\n"
+    #define  RWarning(string, object)          RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object)
+    #define RWarning1(string, object, arg1)    RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object, arg1)
 
-    #define ifWarning(condition, warning)  if(condition) { warning; }
-    #define elseWarning(warning)           else { warning; }
+    #define ifWarning(condition, warning)      if(condition) { warning; }
+    #define elseWarning(warning)               else { warning; }
 #else
     #define RWarning(string, object)
 

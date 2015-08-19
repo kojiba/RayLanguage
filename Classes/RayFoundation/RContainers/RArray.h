@@ -94,6 +94,7 @@ method(void,               deleteObjects,             RArray),    RRange range);
 method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
 method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
 
+method(void,               deleteObject,              RArray),    pointer toDelete);
 method(void,               deleteWithPredicate,       RArray),    REnumerateDelegate *delegate);      // if delegate returns yes -> deletes object like fastDeleteObject
 
 #pragma mark Get - Find

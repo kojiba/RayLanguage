@@ -22,7 +22,7 @@
 protocol(PrivateThreadArgument)
     RThreadFunction  delegate;
             pointer  threadArgument;
-            RThread *pointerToSelf;
+            RThread *selfThread;
 endOf(PrivateThreadArgument)
 
 #define threadPoolMutex &object->mutex
@@ -33,6 +33,7 @@ struct RThreadPool {
     REnumerateDelegate enumerator;
     RThreadFunction    delegateFunction;
     RArray            *threads;
+    RArray            *arguments;
     RMutex             mutex;
 };
 
@@ -40,17 +41,24 @@ pointer privateThreadExecutor(pointer arg) {
     PrivateThreadArgument *temp = arg;
     pointer result = temp->delegate(temp->threadArgument);
 
-    $(temp->context, m(deleteWorker, RThreadPool)), temp->pointerToSelf);
-    deallocator(arg);
+
+    $(temp->context, m(deleteWorker, RThreadPool)), temp->selfThread);
+    $(((RThreadPool*)temp->context)->arguments, m(deleteObject, RArray)), temp);
     return result;
 }
 
 constructor(RThreadPool)) {
     object = allocator(RThreadPool);
     if(object != nil) {
-        object->threads = makeRArray();
-        if(object->threads != nil) {
-            $(object->threads, m(setDestructorDelegate, RArray)), getRFree());
+
+        object->threads   = makeRArray();
+        object->arguments = makeRArray();
+
+        if(object->threads != nil && object->arguments != nil) {
+
+            $(object->threads,   m(setDestructorDelegate, RArray)), getRFree());
+            $(object->arguments, m(setDestructorDelegate, RArray)), getRFree());
+
             object->classId = registerClassOnce(toString(RThreadPool));
             mutexWithType(threadPoolMutex, RMutexNormal);
         } else {
@@ -63,7 +71,8 @@ constructor(RThreadPool)) {
 
 destructor(RThreadPool) {
     RMutexLock(threadPoolMutex);
-    deleter(object->threads, RArray);
+    deleter(object->threads,   RArray);
+    deleter(object->arguments, RArray);
     RMutexUnlock(threadPoolMutex);
     RMutexDestroy(threadPoolMutex);
 }
@@ -98,10 +107,11 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                     arg->threadArgument = argumentForNewWorker;
                     arg->delegate       = object->delegateFunction;
                     arg->context        = object;
-                    arg->pointerToSelf  = newOne;
+                    arg->selfThread     = newOne;
 
                     RThreadCreate(newOne, nil, privateThreadExecutor, arg);
-                    $(object->threads, m(addObject, RArray)), newOne);
+                    $(object->threads,   m(addObject, RArray)), newOne);
+                    $(object->arguments, m(addObject, RArray)), arg);
 
                 } elseError(
                         RError("RThreadPool. Add with arg bad arg allocation.", object)
@@ -123,21 +133,8 @@ method(void, addWorker,  RThreadPool), RThread *worker) {
 }
 
 method(void, deleteWorker, RThreadPool), RThread *worker) {
-    RCompareDelegate compareDelegate;
-    RFindResult findResult;
-    compareDelegate.virtualCompareMethod = defaultComparator;
-    compareDelegate.etaloneObject = worker;
-
     RMutexLock(threadPoolMutex);
-
-    findResult = $(object->threads, m(findObjectWithDelegate, RArray)), &compareDelegate);
-    if(findResult.index != object->threads->count
-        && findResult.object != nil) {
-        $(object->threads, m(deleteObjectAtIndex, RArray)), findResult.index);
-    } elseError(
-            RError1("RThreadPool. Can't find worker %p in pool.", object, worker)
-    );
-
+    $(object->threads, m(deleteObject, RArray)), worker);
     RMutexUnlock(threadPoolMutex);
 }
 
@@ -165,8 +162,9 @@ rbool cancelThreadCheck(pointer context, pointer thread, size_t iterator) {
 method(void, cancel, RThreadPool)) {
     RMutexLock(threadPoolMutex);
     object->enumerator.virtualEnumerator = cancelThreadCheck;
-    $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
-    $(object->threads, m(flush,     RArray)));
+    $(object->threads,   m(enumerate, RArray)), &object->enumerator, yes);
+    $(object->threads,   m(flush,     RArray)));
+    $(object->arguments, m(flush,     RArray)));
     RMutexUnlock(threadPoolMutex);
 }
 

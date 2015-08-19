@@ -43,6 +43,10 @@
 #define incrementFreePlaces() --object->count; \
                               ++object->freePlaces
 
+#define unsafeDeleteObjectAtIndex(index) destroyElementAtIndex(index);\
+                                         object->array[index] = object->array[object->count - 1];\
+                                         incrementFreePlaces()\
+
 #pragma mark More Flexible
 
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error) {
@@ -262,7 +266,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 #ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray deleteObjectAtIndex of %p\n", object);
+    RPrintf("RArray deleteObjectAtIndex of %p at index %lu\n", object, index);
 #endif
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         RMutexLockArray();
@@ -277,15 +281,14 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
     }
 }
 
+
 method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 #ifdef RAY_SHORT_DEBUG
     RPrintf("RArray fastDeleteObjectAtIndex of %p\n", object);
 #endif
     RMutexLockArray();
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
-        destroyElementAtIndex(index);
-        object->array[index] = object->array[object->count - 1];
-        incrementFreePlaces();
+        unsafeDeleteObjectAtIndex(index);
         RMutexUnlockArray();
         return no_error;
 
@@ -317,10 +320,33 @@ method(void, deleteLast, RArray)){
     RMutexUnlockArray();
 }
 
+method(void, deleteObject, RArray), pointer toDelete) {
+    if(toDelete != nil) {
+        size_t iterator;
+        RMutexLockArray();
+#ifdef RAY_SHORT_DEBUG
+        RPrintf("RArray %p deleteObject %p\n", object, toDelete);
+#endif
+        forAll(iterator, object->count) {
+            if(object->array[iterator] == toDelete) {
+                break;
+            }
+        }
+        ifWarning(iterator == object->count,
+                  RWarning1("RArray. deleteObject. There are no object %p in array.", object, toDelete)
+        )
+        unsafeDeleteObjectAtIndex(iterator);
+
+        RMutexUnlockArray();
+    } elseWarning(
+            RWarning("RArray. deleteObject. Argument pointer is nil.", object)
+    );
+}
+
 method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
     size_t iterator;
 #ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray %p delete objects with predicate", object);
+    RPrintf("RArray %p delete objects with predicate\n", object);
 #endif
     if(delegate->virtualEnumerator != nil) {
         RMutexLockArray();
@@ -664,7 +690,3 @@ method(void, setDestructorDelegate, RArray), DestructorDelegate delegate) {
     object->destructorDelegate = delegate;
     RMutexUnlockArray();
 }
-
-
-
-

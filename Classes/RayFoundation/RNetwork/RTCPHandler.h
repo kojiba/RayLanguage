@@ -43,9 +43,10 @@ class(RTCPHandler)
     REnumerateDelegate   predicate;
     RThread              runningThread;
 
+    rbool                terminateFlag;
+
     RTCPDelegate        *delegate;
     RSocket             *listener;
-    rbool                terminateFlag;
     RThreadPool         *threads;
     RArray              *arguments;
 endOf(RTCPHandler)
@@ -58,7 +59,7 @@ printer(RTCPHandler);
 getter(delegate, RTCPDelegate *, RTCPHandler);
 setter(delegate, RTCPDelegate *, RTCPHandler);
 
-method(void, start,      RTCPHandler),    pointer context);
-method(void, terminate,  RTCPHandler));
+method(void, startOnPort, RTCPHandler),    uint16_t port, pointer context);
+method(void, terminate,   RTCPHandler));
 
 #endif /*__R_TCP_HANDLER__*/
