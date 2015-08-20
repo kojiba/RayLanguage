@@ -461,7 +461,7 @@ constMethod(RBuffer *, serializeToBuffer, RArray), size_t size) {
     if(result != nil) {
         forAll(iterator, object->count) {
             $(result, m(addData, RBuffer)),
-                    $(object, m(elementAtIndex, RArray)), iterator), size);
+                    $(object, m(objectAtIndex, RArray)), iterator), size);
         }
         return $(result, m(sizeToFit, RBuffer)));
     }
@@ -475,7 +475,7 @@ constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
         // while size not 0
         for(;sizesArray[iterator] != 0; ++iterator) {
             $(result, m(addData, RBuffer)),
-                    $(object, m(elementAtIndex, RArray)), iterator), sizesArray[iterator]);
+                    $(object, m(objectAtIndex, RArray)), iterator), sizesArray[iterator]);
         }
         return $(result, m(sizeToFit, RBuffer)));
     }

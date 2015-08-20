@@ -22,8 +22,20 @@
 
 #define BUFFER_SIZE 1500
 
-rbool sendToArgument(pointer context, pointer object, size_t iterator) {
-    RTCPDataStruct *data = object;
+//void processCommandString(RString *command, RTCPDataStruct *data) {
+//    if ($(command, m(startsOn, RCString)), RS("--nickname")) ) {
+//        $(command, m(trimHead, RCString)), RS("--nickname")->size);
+//        $(command, m(deleteAllSubstrings, RCString)), RS("\n"));
+//        $(command, m(deleteAllSubstrings, RCString)), RS("\t"));
+//        $(command, m(deleteAllSubstrings, RCString)), RS(" "));
+//        setNickName(command);
+//
+//    } else if($(command, m(startsOn, RCString)), RS("--nickname"))) {
+//
+//    }
+//}
+
+rbool sendToArgument(pointer context, RTCPDataStruct *data, size_t iterator) {
     if(data->socket != nil) {
         $(data->socket, m(sendString, RSocket)), context);
     }
@@ -38,7 +50,7 @@ pointer exec(RTCPDataStruct *data) {
     byte     resultFlag;
     size_t   receivedSize;
     REnumerateDelegate executor;
-    executor.virtualEnumerator = sendToArgument;
+    executor.virtualEnumerator = (EnumeretorDelegate) sendToArgument;
 
     RPrintf("[I] %s:%u connected [tuid : %u]\n", address, port, currentThread);
 
@@ -126,6 +138,10 @@ int main(int argc, const char *argv[]) {
                             system(buffer + 17);
                         }
 
+                        ifMemEqual(buffer + 10, "print", 5) {
+                            p(RTCPHandler)(server);
+                        }
+
                     } else {
                         RPrintf("[E] Bad user key on %s:%u\n", address, port);
                     }
@@ -142,7 +158,6 @@ int main(int argc, const char *argv[]) {
     deleter(configurator, RSocket);
 
     deallocator(delegate);
-    p(RTCPHandler)(server);
     $(server, m(terminate, RTCPHandler)));
     deleter(server,        RTCPHandler);
 

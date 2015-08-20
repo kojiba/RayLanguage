@@ -270,7 +270,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
                 // only free (must dealloc struct)
                 object->pointersInWork->destructorDelegate = object->innerFree;
     #endif
-                error = $(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index);
+                error = $(object->pointersInWork, m(deleteObjectAtIndexFast, RArray)), result.index);
 
                 ifError(error != no_error,
                         RError("Bad pointers array index on delete (realloc).", object)
@@ -360,7 +360,7 @@ method(void, free, RAutoPool), pointer ptr) {
         // search ptr
         RFindResult result = $(object->pointersInWork, m(findObjectWithDelegate, RArray)), &delegate);
         if(result.object != nil) {
-            if($(object->pointersInWork, m(fastDeleteObjectAtIndexIn, RArray)), result.index) != no_error) {
+            if($(object->pointersInWork, m(deleteObjectAtIndexFast, RArray)), result.index) != no_error) {
                 RError1("RAutoPool. Bad pointers array index %lu.", object, result.index);
             }
         } else {

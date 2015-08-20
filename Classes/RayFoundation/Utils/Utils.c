@@ -22,7 +22,7 @@ rbool processLine(pointer context, pointer string, size_t iterator) {
     if(((RCString*)string)->size != 0) { // if not fully comment
         RArray *keyValue = $(string, m(separatedByStringWithShield, RCString)), RS(" = "), RS("\\"));
         if(keyValue != nil) {
-            RCString *key   = $(keyValue, m(elementAtIndex, RArray)), 0);
+            RCString *key   = $(keyValue, m(objectAtIndex, RArray)), 0);
             RCString *value = $(keyValue, m(lastObject, RArray)));
 
             // adding

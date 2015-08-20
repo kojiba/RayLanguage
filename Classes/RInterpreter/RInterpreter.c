@@ -112,10 +112,10 @@ method(void, parseClass, RInterpreter), size_t iterator) {
     RayClass *rayClass = c(RayClass)(nil);
 
     // add name
-    rayClass->name = copyRCString($(object->rayTokens, m(elementAtIndex, RArray)), iterator - 1));
+    rayClass->name = copyRCString($(object->rayTokens, m(objectAtIndex, RArray)), iterator - 1));
 
     for(inner = iterator; inner <  object->rayTokens->count; ++inner) {
-        RCString *token = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+        RCString *token = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
         switch(token->baseString[0]) {
             case 'p' : {
                 // properties begin
@@ -149,7 +149,7 @@ method(void, parseTokens, RInterpreter)) {
         size_t iterator;
         // for all rayTokens
         forAll(iterator, object->rayTokens->count) {
-            RCString *token = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), iterator);
+            RCString *token = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), iterator);
             switch(token->baseString[0]) {
                 case '#': {
                     if(RMemCmp(token->baseString + 1, "include", token->size - 1) == 0) {
@@ -157,7 +157,7 @@ method(void, parseTokens, RInterpreter)) {
                         $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
 
                         // add include name
-                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
                         $(object->codeTokens, m(addObject, RArray)), $(name, m(copy, RCString))) );
 
                     } else if (RMemCmp(token->baseString + 1, "define", token->size - 1) == 0) {
@@ -173,7 +173,7 @@ method(void, parseTokens, RInterpreter)) {
                 case 'c' : {
                     if(RMemCmp(token->baseString + 1, "lass", token->size - 1) == 0) {
                         // register new class
-                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {
@@ -191,7 +191,7 @@ method(void, parseTokens, RInterpreter)) {
                 case 't' : {
                     if(RMemCmp(token->baseString + 1, "ypedef", token->size - 1) == 0) {
                         // register new type
-                        RCString *name = (RCString*) $(object->rayTokens, m(elementAtIndex, RArray)), ++iterator);
+                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {

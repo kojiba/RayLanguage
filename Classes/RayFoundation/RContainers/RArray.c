@@ -52,10 +52,7 @@
 RArray* makeRArrayOptions(size_t startSize, size_t multiplier, RArrayFlags *error) {
     RArray *object = allocator(RArray);
 
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray constructor of %p with size %lu, multiplier %lu \n", object, startSize, multiplier);
-#endif
-
+    printDebugTrace2("Size %lu, multiplier %lu", startSize, multiplier);
     if (object == nil) {
         if(error != nil) {
             *error = allocation_error;
@@ -112,9 +109,7 @@ destructor(RArray) {
 #ifdef RAY_ARRAY_THREAD_SAFE
     RMutexDestroy(arrayMutex);
 #endif
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray destructor of %p\n", object);
-#endif
+    printDebugTrace();
 }
 
 printer(RArray) {
@@ -138,9 +133,7 @@ printer(RArray) {
 
 method(RArrayFlags, addSize, RArray), size_t newSize) {
     RMutexLockArray();
-#ifdef RAY_SHORT_DEBUG
-        RPrintf("RArray %p ADD_SIZE\n", object);
-#endif
+    printDebugTrace();
     if(newSize > object->count) {
 #ifdef RAY_SHORT_DEBUG
         RPrintf("\t Old array - %p\n", object->array);
@@ -167,6 +160,7 @@ method(RArrayFlags, addSize, RArray), size_t newSize) {
 method(void, flush, RArray)) {
     size_t iterator;
     RMutexLockArray();
+    printDebugTrace();
     if (object->array != nil) {
         // call destructors for all of objects in array or do nothing
         if(object->destructorDelegate != nil) {
@@ -177,18 +171,12 @@ method(void, flush, RArray)) {
         object->freePlaces += object->count;
         object->count = 0;
     }
-
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray FLUSH of %p\n", object);
-#endif
     RMutexUnlockArray();
 }
 
 method(byte, sizeToFit, RArray)){
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray %p SIZE_TO_FIT\n", object);
-#endif
     RMutexLockArray();
+    printDebugTrace();
     object->array = RReAlloc(object->array, object->count * sizeof(pointer));
     if (object->array == nil) {
         RMutexUnlockArray();
@@ -206,21 +194,14 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     RArrayFlags errors;
     RMutexLockArray();
     errors = no_error;
-
+    printDebugTrace();
     // needs additional allocation of memory
     if (object->freePlaces == 0) {
 #ifdef RAY_SHORT_DEBUG
-        RPrintf("RArray %p needs additional allocation\n", object);
+        RPrintf("Needs additional allocation\n", object);
 #endif
         errors = $(object, m(addSize, RArray)), object->count * object->sizeMultiplier);
     }
-
-    // not need additional allocation
-#ifdef RAY_SHORT_DEBUG
-    else {
-        RPrintf("RArray %p addObject without additional allocation\n", object);
-    }
-#endif
 
     // if no error on additional allocation
     if (errors == no_error) {
@@ -238,10 +219,8 @@ inline method(void, addObjectUnsafe, RArray), pointer src) {
 }
 
 method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
-#ifdef RAY_SHORT_DEBUG
-        RPrintf("RArray %p setObject atIndex = %lu \n", object, index);
-#endif
     RMutexLockArray();
+    printDebugTrace1("Index %lu", index);
     // if at that index exist some object
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         destroyElementAtIndex(index);
@@ -264,10 +243,61 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
     RMutexUnlockArray();
 }
 
+method(void, deleteObject, RArray), pointer toDelete) {
+    if(toDelete != nil) {
+        size_t iterator;
+        RMutexLockArray();
+        printDebugTrace1("Object %p", toDelete);
+        forAll(iterator, object->count) {
+            if(object->array[iterator] == toDelete) {
+                destroyElementAtIndex(iterator);
+                $(object, m(shift, RArray)), yes, makeRRange(iterator, 1));
+                break;
+            }
+        }
+        ifWarning(iterator != object->count
+                  && object->count != 0,
+                RWarning1("RArray. deleteObject. There are no object %p in array.", object, toDelete)
+        )
+
+        RMutexUnlockArray();
+    } elseWarning(
+            RWarning("RArray. deleteObject. Argument pointer is nil.", object)
+    );
+}
+
+method(void, deleteObjectFast, RArray), pointer toDelete) {
+    if(toDelete != nil) {
+        size_t iterator;
+        RMutexLockArray();
+        printDebugTrace1("Object %p", toDelete);
+        forAll(iterator, object->count) {
+            if(object->array[iterator] == toDelete) {
+                unsafeDeleteObjectAtIndex(iterator);
+                break;
+            }
+        }
+        ifWarning(iterator == object->count
+                  && object->count != 0,
+                  RWarning1("RArray. deleteObjectFast. There are no object %p in array.", object, toDelete)
+        )
+
+        RMutexUnlockArray();
+    } elseWarning(
+            RWarning("RArray. deleteObjectFast. Argument pointer is nil.", object)
+    );
+}
+
+method(void, deleteLast, RArray)){
+    RMutexLockArray();
+    printDebugTrace();
+    destroyElementAtIndex(object->count - 1);
+    incrementFreePlaces();
+    RMutexUnlockArray();
+}
+
 method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray deleteObjectAtIndex of %p at index %lu\n", object, index);
-#endif
+    printDebugTrace1("Index %lu", index);
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         RMutexLockArray();
         destroyElementAtIndex(index);
@@ -282,11 +312,9 @@ method(RArrayFlags, deleteObjectAtIndex, RArray), size_t index){
 }
 
 
-method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray fastDeleteObjectAtIndex of %p\n", object);
-#endif
+method(RArrayFlags, deleteObjectAtIndexFast, RArray), size_t index){
     RMutexLockArray();
+    printDebugTrace1("Index %lu", index);
     if ($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         unsafeDeleteObjectAtIndex(index);
         RMutexUnlockArray();
@@ -300,10 +328,8 @@ method(RArrayFlags, fastDeleteObjectAtIndexIn, RArray), size_t index){
 
 method(void, deleteObjects, RArray), RRange range){
     size_t iterator;
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray %p delete objects in range [%lu : %lu]\n", object, range.start, range.size);
-#endif
     RMutexLockArray();
+    printDebugTrace2("Range [%lu : %lu]", range.start, range.size);
     if(object->destructorDelegate != nil) {
         inRange(iterator, range) {
             object->destructorDelegate(object->array[iterator]);
@@ -313,41 +339,9 @@ method(void, deleteObjects, RArray), RRange range){
     $(object, m(shift, RArray)), yes, range);
 }
 
-method(void, deleteLast, RArray)){
-    RMutexLockArray();
-    destroyElementAtIndex(object->count - 1);
-    incrementFreePlaces();
-    RMutexUnlockArray();
-}
-
-method(void, deleteObject, RArray), pointer toDelete) {
-    if(toDelete != nil) {
-        size_t iterator;
-        RMutexLockArray();
-#ifdef RAY_SHORT_DEBUG
-        RPrintf("RArray %p deleteObject %p\n", object, toDelete);
-#endif
-        forAll(iterator, object->count) {
-            if(object->array[iterator] == toDelete) {
-                break;
-            }
-        }
-        ifWarning(iterator == object->count,
-                  RWarning1("RArray. deleteObject. There are no object %p in array.", object, toDelete)
-        )
-        unsafeDeleteObjectAtIndex(iterator);
-
-        RMutexUnlockArray();
-    } elseWarning(
-            RWarning("RArray. deleteObject. Argument pointer is nil.", object)
-    );
-}
-
 method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
     size_t iterator;
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray %p delete objects with predicate\n", object);
-#endif
+    printDebugTrace();
     if(delegate->virtualEnumerator != nil) {
         RMutexLockArray();
         if (object->destructorDelegate != nil) {
@@ -384,10 +378,8 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     size_t      iterator;
     RFindResult result;
     result.object = nil;
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray findObjectWithDelegate of %p\n", object);
-#endif
     result.index = object->count;
+    printDebugTrace();
     if(delegate != nil
             && delegate->virtualCompareMethod != nil) {
         RMutexLockArray();
@@ -405,10 +397,8 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     return result;
 }
 
-inline constMethod(pointer, elementAtIndex, RArray), size_t index) {
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray elementAtIndex of %p\n", object);
-#endif
+inline constMethod(pointer, objectAtIndex, RArray), size_t index) {
+    printDebugTrace();
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         return object->array[index];
     } elseWarning(
@@ -422,9 +412,7 @@ method(RArray *, getSubarray, RArray), RRange range) {
             && range.start < object->count) {
         RMutexLockArray();
         RArray *result = makeRArrayOptions(range.size, object->sizeMultiplier, nil);
-#ifdef RAY_SHORT_DEBUG
-        RPrintf("RArray getSubarray of %p\n", object);
-#endif
+        printDebugTrace2("Range [%lu : %lu]", range.start, range.size);
         if (result != nil) {
             size_t iterator;
             // set up subArray delegates
@@ -449,6 +437,7 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
     RFindResult result;
     result.index  = object->count;
     result.object = nil;
+    printDebugTrace();
     if(delegate->virtualEnumerator != nil) {
         RMutexLockArray();
         if(isFromLeft) {
@@ -485,12 +474,10 @@ method(RArray *, copy, RArray)) {
 #pragma mark Sort
 
 method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointer)) {
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray bubbleSortWithDelegate of %p\n", object);
-#endif
     register size_t inner;
     register size_t outer;
     RMutexLockArray();
+    printDebugTrace();
 
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
@@ -546,9 +533,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
 }
 
 method(void, sort, RArray)) {
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RArray sort of %p\n", object);
-#endif
+    printDebugTrace();
     $(object, m(quickSortWithDelegate, RArray)), 0, object->count, RArrayDefaultComparator);
 }
 

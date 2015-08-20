@@ -43,7 +43,7 @@ pointer privateThreadExecutor(pointer arg) {
 
 
     $(temp->context, m(deleteWorker, RThreadPool)), temp->selfThread);
-    $(((RThreadPool*)temp->context)->arguments, m(deleteObject, RArray)), temp);
+    $(((RThreadPool*)temp->context)->arguments, m(deleteObjectFast, RArray)), temp);
     return result;
 }
 
@@ -134,7 +134,7 @@ method(void, addWorker,  RThreadPool), RThread *worker) {
 
 method(void, deleteWorker, RThreadPool), RThread *worker) {
     RMutexLock(threadPoolMutex);
-    $(object->threads, m(deleteObject, RArray)), worker);
+    $(object->threads, m(deleteObjectFast, RArray)), worker);
     RMutexUnlock(threadPoolMutex);
 }
 

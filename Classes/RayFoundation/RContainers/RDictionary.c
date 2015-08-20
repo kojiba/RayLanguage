@@ -86,7 +86,7 @@ constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
     findKey(key);
 
     if(findResult.object != nil) {
-        return $(object->values, m(elementAtIndex, RArray)), findResult.index);
+        return $(object->values, m(objectAtIndex, RArray)), findResult.index);
     }
     return nil;
 }
@@ -99,15 +99,15 @@ printer(RDictionary){
     forAll(iterator, object->keys->count) {
         RPrintf("\t %lu - ", iterator);
         if(object->keys->printerDelegate != nil) {
-            object->keys->printerDelegate($(object->keys, m(elementAtIndex, RArray)),   iterator));
+            object->keys->printerDelegate($(object->keys, m(objectAtIndex, RArray)),   iterator));
         } else {
-            RPrintf("%p ", $(object->keys, m(elementAtIndex, RArray)),   iterator));
+            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
         }
         RPrintf(" : ");
         if(object->values->printerDelegate != nil) {
-        object->values->printerDelegate($(object->values, m(elementAtIndex, RArray)), iterator));
+        object->values->printerDelegate($(object->values, m(objectAtIndex, RArray)), iterator));
         } else {
-            RPrintf("%p ", $(object->keys, m(elementAtIndex, RArray)),   iterator));
+            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
         }
         RPrintLn("");
     }

@@ -68,4 +68,14 @@
     #define elseWarning(warning)
 #endif
 
+#ifdef RAY_SHORT_DEBUG
+    #define printDebugTrace()                              RPrintf("[T] %s %p\n",  __FUNCTION__ , object);
+    #define printDebugTrace1(string, argument)             RPrintf("[T] %s %p. " string "\n", __FUNCTION__,  object, argument)
+    #define printDebugTrace2(string, argument1, argument2) RPrintf("[T] %s %p. " string "\n", __FUNCTION__,  object, argument1, argument2)
+#else
+    #define printDebugTrace()
+    #define printDebugTrace1(string, argument)
+    #define printDebugTrace2(string, argument1, argument2)
+#endif
+
 #endif /*__R_ERRORS_H*/

@@ -66,7 +66,7 @@ RCString * constantRString(char *string) {
             RError1("RString_Consts. Can't allocate constant RString for string \"%s\"", nil, string);
         }
     } else {
-        resultString = $(stringConstantsTable()->values, m(elementAtIndex, RArray)), result.index);
+        resultString = $(stringConstantsTable()->values, m(objectAtIndex, RArray)), result.index);
     }
     RMutexUnlock(&mutex);
     return resultString;

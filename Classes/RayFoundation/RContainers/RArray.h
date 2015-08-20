@@ -89,12 +89,12 @@ extern
 method(void,               addObjectUnsafe,           RArray),    pointer src);                       // not checking size, and not self-longs, but locks mutex
 method(void,               setObjectAtIndex,          RArray),    pointer newObject, size_t index);   // be aware with this, addObject cause memory leak with this
 
-method(void,               deleteLast,                RArray));                                       // pop_back analog
-method(void,               deleteObjects,             RArray),    RRange range);                      // delete with shift
-method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
-method(RArrayFlags,        fastDeleteObjectAtIndexIn, RArray),    size_t index);                      // delete, and the last object will be on its place
-
 method(void,               deleteObject,              RArray),    pointer toDelete);
+method(void,               deleteObjectFast,          RArray),    pointer toDelete);
+method(void,               deleteLast,                RArray));                                       // pop_back analog
+method(RArrayFlags,        deleteObjectAtIndex,       RArray),    size_t index);                      // delete with shift
+method(RArrayFlags,        deleteObjectAtIndexFast,   RArray),    size_t index);                      // delete, and the last object will be on its place
+method(void,               deleteObjects,             RArray),    RRange range);                      // delete with shift
 method(void,               deleteWithPredicate,       RArray),    REnumerateDelegate *delegate);      // if delegate returns yes -> deletes object like fastDeleteObject
 
 #pragma mark Get - Find
@@ -103,7 +103,7 @@ method(RArray *,           getSubarray,               RArray),    RRange range);
 method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 extern
-constMethod(pointer,       elementAtIndex,            RArray),    size_t index);
+constMethod(pointer,       objectAtIndex,            RArray),    size_t index);
 extern
 constMethod(pointer,       lastObject,                RArray));
 extern
@@ -194,7 +194,7 @@ RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointer
 #define printRA(dynamicArray)                 $(dynamicArray, p(RArray)))
 #define addObjectToRA(dynamicArray, object)   $(dynamicArray, m(addObject, RArray)), object)
 #define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))
-#define elementAtIndexRA(dynamicArray, index) $(dynamicArray, m(elementAtIndex, RArray)), index)
+#define objectAtIndexRA(dynamicArray, index) $(dynamicArray, m(objectAtIndex, RArray)), index)
 #define sizeToFitRA(dynamicArray)             $(dynamicArray, m(sizeToFit, RArray)) )
 #define RA                                    arrayFromArray
 

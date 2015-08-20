@@ -37,6 +37,7 @@ protocol(RTCPDataStruct)
     RSocket             *socket;
     RTCPDelegate        *delegate;
     struct RTCPHandler  *handler;
+    size_t               identifier;
 endOf(RTCPDataStruct)
 
 

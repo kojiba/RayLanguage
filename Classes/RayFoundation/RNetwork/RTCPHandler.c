@@ -22,8 +22,8 @@ rbool RTCPHandlerInactiveContextDeleter(pointer context, pointer object, size_t 
     return no;
 }
 
-void PrivateArgPrinter(pointer object){
-    RPrintf("%p : socket : %p\n", object, ((RTCPDataStruct*)object)->socket);
+void PrivateArgPrinter(RTCPDataStruct* object){
+    RPrintf("%p socket : %p, id : %lu\n", object, object->socket, object->identifier);
 }
 
 void PrivateArgDeleter(RTCPDataStruct* object) {
@@ -42,7 +42,7 @@ constructor(RTCPHandler)) {
                 object->arguments = makeRArray();
                 if(object->arguments != nil) {
 
-                    $(object->arguments, m(setPrinterDelegate,    RArray)), PrivateArgPrinter);
+                    $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
                     $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
                     // init predicate
                     object->predicate.virtualEnumerator = RTCPHandlerInactiveContextDeleter;
@@ -68,10 +68,8 @@ printer(RTCPHandler) {
 #ifndef _WIN32
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(&object->runningThread));
 #endif
-    p(RThreadPool)(object->threads);
     RPrintf("------ Arguments ------");
     p(RArray)(object->arguments);
-    RPrintf("------ Arguments ------\n");
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }
 
@@ -87,10 +85,12 @@ method(void, privateStartOnPort, RTCPHandler)) {
             if(socket != nil) {
                 RTCPDataStruct *argument = allocator(RTCPDataStruct);
                 if(argument != nil) {
-                    argument->handler  = object;
-                    argument->delegate = object->delegate;
-                    argument->context  = object->delegate->context;
-                    argument->socket   = socket;
+                    argument->handler    = object;
+                    argument->delegate   = object->delegate;
+                    argument->context    = object->delegate->context;
+                    argument->socket     = socket;
+                    argument->identifier = object->arguments->count;
+
                     $(object->arguments, m(addObject,  RArray)),      argument);
 
                     // delete inactive worker arguments

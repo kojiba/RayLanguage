@@ -29,9 +29,7 @@
 constructor(RClassTable)) {
     // alloc RClassTable
     object = allocator(RClassTable);
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("----- RClassTable constructor START of %p\n", object);
-#endif
+    printDebugTrace();
     if (object != nil) {
 
         // alloc RArray
@@ -56,16 +54,11 @@ constructor(RClassTable)) {
             );
         }
     }
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("----- RClassTable constructor END of %p\n", object);
-#endif
     return object;
 }
 
 destructor(RClassTable) {
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("RCT destructor of %p\n", object);
-#endif
+    printDebugTrace();
     deleter(master(object, RArray), RArray);
     deallocator(master(object, RCompareDelegate));
     master(object, RArray) = nil;
@@ -79,6 +72,7 @@ destructor(RClassTable) {
 
 constMethod(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
     RClassNamePair *pair = $(nil, c(RClassNamePair)));
+    printDebugTrace();
     if(pair != nil) {
         $(master(pair, RCString), m(setConstantString, RCString)), name);
         master(object, RCompareDelegate)->etaloneObject = pair;
@@ -103,9 +97,7 @@ constMethod(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
 #pragma mark Public
 
 method(size_t, registerClassWithName, RClassTable), char *name) {
-#ifdef RAY_SHORT_DEBUG
-    RPrintf("--- RCT Register Class with name:\"%s\" of %p\n", name, object);
-#endif
+    printDebugTrace1("Name %s", name);
     if(name != nil) {
         size_t result;
         RMutexLockTable();
@@ -118,9 +110,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
 
                 // successfully register new class
                 if ($(master(object, RArray), m(addObject, RArray)), pair) == no_error) {
-#ifdef RAY_SHORT_DEBUG
-                        RPrintf("--- RCT Register Class SUCCESS on %p\n\n", object);
-#endif
+                    printDebugTrace1("SUCCESS %s", name);
                     RMutexUnlockTable();
                     return pair->idForClassName;
                 } else {
@@ -165,7 +155,7 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
 method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
     RMutexLockTable();
     if(id <= master(object, RArray)->count) {
-        RClassNamePair *temp = $(master(object, RArray), m(elementAtIndex, RArray)), id);
+        RClassNamePair *temp = $(master(object, RArray), m(objectAtIndex, RArray)), id);
         RMutexUnlockTable();
         return master(temp, RCString);
     } else {
