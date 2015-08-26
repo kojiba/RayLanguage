@@ -96,13 +96,17 @@ void printByteArrayInBin(const byte *array, size_t size) {
 
 byte* getByteArrayCopy(const byte *array, size_t size) {
     byte *arrayCopy = RAlloc(size);
-    RMemMove(arrayCopy, array, size);
+    if(arrayCopy != nil) {
+        RMemMove(arrayCopy, array, size);
+    }
     return arrayCopy;
 }
 
 byte* getSubArray(const byte *array, RRange range) {
     byte *subArray = RAlloc(range.size);
-    RMemMove(subArray, array + range.start, range.size);
+    if(subArray != nil) {
+        RMemMove(subArray, array + range.start, range.size);
+    }
     return subArray;
 }
 

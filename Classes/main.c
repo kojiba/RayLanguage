@@ -170,13 +170,21 @@ int main(int argc, const char *argv[]) {
 //    exit:
 //    endSockets();
 
-    RString *result2, *result = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), $(RS("Ley"), m(evasionHashBase64, RString))) );
+    RString *keyHash = $(RS("Ley"), m(evasionHashBase64, RString)));
+    RString *keyHash1 = $(RS("Key"), m(evasionHashBase64, RString)));
+
+    RString  *result = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash );
     p(RCString)(result);
-    result2 = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), $(RS("Key"), m(evasionHashBase64, RString))) );
+
+    RString *result2 = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash1 );
+
     p(RCString)(result2);
 
     deleter(result, RString);
     deleter(result2, RString);
+
+    deleter(keyHash, RString);
+    deleter(keyHash1, RString);
 
 
     endRay();
