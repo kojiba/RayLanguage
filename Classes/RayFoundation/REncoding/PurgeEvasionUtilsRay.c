@@ -17,18 +17,20 @@
 #include "PurgeEvasionUtils.h"
 #include "RBase64.h"
 
-method(RString *, encryptPurgeEvasionBase64, RString), const RString *key) {
+constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key) {
     RString *temp, *result = makeRCString();
     uint64_t resultSize;
-    byte tempKey[purgeBytesCount] = {}; // 512 bits of zeros
+    byte tempKey[purgeBytesCount]; // 512 bits
 
-    memcpy(&tempKey, key->baseString, key->size); // fixme not crypto-safe
+    // memset and memcpy must have one calculating speed
+    memcpy(&tempKey, key->baseString, key->size);
+    memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
     if(result != nil) {
         result->baseString = encryptPurgeEvasion(object->baseString, object->size,
                                                  (uint64_t *) &tempKey, &resultSize);
         if(resultSize > UINT32_MAX
                 && sizeof(size_t) == 4) {
-            RError("encryptPurgeEvasionBase64RString. Lose data at 32-bit system and very long encryption.\n"
+            RError("RString. encryptPurgeEvasionBase64. Lose data at 32-bit system and very long encryption.\n"
                            "Return pure not base64 array to store data.", result);
             return result;
         }
@@ -40,6 +42,34 @@ method(RString *, encryptPurgeEvasionBase64, RString), const RString *key) {
             result = temp;
             return result;
         }
+    }
+    return nil;
+}
+
+constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key) {
+    RString *result;
+    char    *temp;
+    uint64_t resultSize;
+    byte tempKey[purgeBytesCount]; // 512 bits
+
+    memcpy(&tempKey, key->baseString, key->size);
+    memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+
+    result = $(object, m(decodeBase64, RString)));
+
+    if(result != nil) {
+        temp = decryptPurgeEvasion(result->baseString, result->size,
+                                                 (uint64_t *) &tempKey, &resultSize);
+        d(RString)(result);
+
+        if(resultSize > UINT32_MAX
+           && sizeof(size_t) == 4) {
+            RError("RString. decryptPurgeEvasionBase64. Lose data at 32-bit system and very long encryption.\n"
+                           "Return pure not base64 array to store data.", result);
+        }
+        result->baseString = temp;
+        result->size = resultSize;
+        return result;
     }
     return nil;
 }

@@ -18,6 +18,7 @@
 
 #include "RayFoundation/RCString/RString.h"
 
-method(RString *, encryptPurgeEvasionBase64, RString), const RString *key); // Key size more than 512 bit, use first 512.
+constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key); // Key size more than 512 bit, use first 512, result will be base64'zed
+constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key); // Key size more than 512 bit, use first 512, firstly - deBase64, than decrypt
 
 #endif /*__PURGE_EVASION_UTILS_RAY__*/
