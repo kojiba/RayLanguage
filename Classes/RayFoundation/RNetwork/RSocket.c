@@ -197,7 +197,7 @@ method(byte, send, RSocket), const pointer buffer, size_t size) {
                                  buffer,
                                  size,
                                  0);
-
+//    RPrintf("Sent size %lu\n", messageLength);
     if (messageLength < 0) {
         return networkOperationErrorConst;
     } else if (messageLength != 0) {
@@ -228,6 +228,7 @@ method(byte, sendTo, RSocket), const pointer buffer, size_t size) {
 
 
 inline method(byte, sendString, RSocket), const RCString *string) {
+//    RPrintf("Send string size %lu\n", string->size);
     return $(object, m(send, RSocket)), string->baseString, string->size);
 }
 

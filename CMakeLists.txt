@@ -55,6 +55,9 @@ set(HEADER_FILES # Worker headers
 
                  # Encoding
                  Classes/RayFoundation/REncoding/RBase64.h
+                 Classes/RayFoundation/REncoding/purge.h
+                 Classes/RayFoundation/REncoding/evasion.h
+                 Classes/RayFoundation/REncoding/PurgeEvasionUtils.h
 
                  # Others
                  Classes/RayFoundation/RClassTable/RClassTable.h
@@ -98,6 +101,9 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
 
                  # Encoding
                  Classes/RayFoundation/REncoding/RBase64.c
+                 Classes/RayFoundation/REncoding/purge.c
+                 Classes/RayFoundation/REncoding/evasion.c
+                 Classes/RayFoundation/REncoding/PurgeEvasionUtils.c
 
                  # Others
                  Classes/RayFoundation/RClassTable/RClassTable.c
