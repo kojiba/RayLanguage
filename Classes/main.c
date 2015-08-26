@@ -170,10 +170,9 @@ int main(int argc, const char *argv[]) {
 //    exit:
 //    endSockets();
 
-    RString *result2, *result = $(RS("message"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
+    RString *result2, *result = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), $(RS("Ley"), m(evasionHashBase64, RString))) );
     p(RCString)(result);
-
-    result2 = $(result, m(decryptPurgeEvasionBase64, RString)), RS("key"));
+    result2 = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), $(RS("Key"), m(evasionHashBase64, RString))) );
     p(RCString)(result2);
 
     deleter(result, RString);

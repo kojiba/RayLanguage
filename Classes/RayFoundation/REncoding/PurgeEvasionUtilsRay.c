@@ -22,9 +22,13 @@ constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key) 
     uint64_t resultSize;
     byte tempKey[purgeBytesCount]; // 512 bits
 
-    // memset and memcpy must have one calculating speed
-    memcpy(&tempKey, key->baseString, key->size);
-    memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+    if(key->size > purgeBytesCount) {
+        memcpy(&tempKey, key->baseString, purgeBytesCount);
+    } else {
+        // memset and memcpy must have one calculating speed
+        memcpy(&tempKey, key->baseString, key->size);
+        memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+    }
     if(result != nil) {
         result->baseString = encryptPurgeEvasion(object->baseString, object->size,
                                                  (uint64_t *) &tempKey, &resultSize);
@@ -52,8 +56,12 @@ constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key) 
     uint64_t resultSize;
     byte tempKey[purgeBytesCount]; // 512 bits
 
-    memcpy(&tempKey, key->baseString, key->size);
-    memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+    if(key->size > purgeBytesCount) {
+        memcpy(&tempKey, key->baseString, purgeBytesCount);
+    } else {
+        memcpy(&tempKey, key->baseString, key->size);
+        memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+    }
 
     result = $(object, m(decodeBase64, RString)));
 
@@ -72,4 +80,17 @@ constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key) 
         return result;
     }
     return nil;
+}
+
+constMethod(RString *, evasionHashBase64, RString)) {
+    RString *temp = makeRCString(), *result = nil;
+    if(temp != nil) {
+        uint64_t hash[8];
+        evasionHashData(object->baseString, object->size, hash);
+        temp->baseString = (char *) hash;
+        temp->size = evasionBytesCount;
+        result = $(temp, m(encodeBase64, RString)));
+        deallocator(temp);
+    }
+    return result;
 }

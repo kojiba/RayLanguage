@@ -21,6 +21,8 @@
 #include "purge.h"
 #include "evasion.h"
 
+#define MAX_SIZE_FOR_DECRYPT UINT32_MAX
+
 void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize);   // return value is nil or dynamic allocated
 void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *encryptedSize); // return value is nil or dynamic allocated
 

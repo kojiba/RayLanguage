@@ -90,6 +90,10 @@ void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
 
         // get size
         memcpy((uint8_t*) &sizeOfText, textTemp, sizeof(uint64_t));
+        if(sizeOfText > MAX_SIZE_FOR_DECRYPT) {
+            RError1("decryptPurgeEvasion. Can't decrypt, must be bad size %lu", text, sizeOfText);
+            return nil;
+        }
         plainText = RAlloc(sizeOfText);
         if(plainText != nil) {
             memcpy(plainText, textTemp + sizeof(uint64_t), sizeOfText);

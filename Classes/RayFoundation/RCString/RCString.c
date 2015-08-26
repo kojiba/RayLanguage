@@ -155,7 +155,8 @@ destructor(RCString) {
 }
 
 printer(RCString) {
-    if(object != nil) {
+    if(object != nil
+       && object->baseString != nil) {
         RPrintf("%s\n", object->baseString);
     } else {
         RPrintf("nil\n");
