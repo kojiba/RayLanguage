@@ -17,23 +17,11 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <RayFoundation/REncoding/PurgeEvasionUtilsRay.h>
 
 #include "Tests.h"
 
 #define BUFFER_SIZE 1500
-
-//void processCommandString(RString *command, RTCPDataStruct *data) {
-//    if ($(command, m(startsOn, RCString)), RS("--nickname")) ) {
-//        $(command, m(trimHead, RCString)), RS("--nickname")->size);
-//        $(command, m(deleteAllSubstrings, RCString)), RS("\n"));
-//        $(command, m(deleteAllSubstrings, RCString)), RS("\t"));
-//        $(command, m(deleteAllSubstrings, RCString)), RS(" "));
-//        setNickName(command);
-//
-//    } else if($(command, m(startsOn, RCString)), RS("--nickname"))) {
-//
-//    }
-//}
 
 rbool sendToArgument(pointer context, RTCPDataStruct *data, size_t iterator) {
     if(data->socket != nil) {
@@ -122,64 +110,72 @@ int main(int argc, const char *argv[]) {
 
     enablePool(RPool);
     ComplexTest(); // lib test
+//
+//    startServer();
+//
+//    configurator = openListenerOnPort(4001, 10);
+//    if(configurator == nil) goto exit;
+//
+//    while(!closeAll) {
+//        RSocket *current = $(configurator, m(accept, RSocket)));
+//
+//        address = addressToString(&current->address);
+//        port    = ntohs(current->address.sin_port);
+//
+//        RPrintf("[I] Configurator %s:%u connected\n", address, port);
+//        connectionState = networkOperationSuccessConst;
+//
+//        while(connectionState != networkConnectionClosedConst) {
+//            connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+//            if(connectionState == networkOperationSuccessConst) {
+//                if(receivedSize > 8) {
+//                    buffer[receivedSize] = 0;
+//                    ifMemEqual(buffer, "secretkey", 9) {
+//
+//                        ifMemEqual(buffer + 10, "shutdown", 8) {
+//                            $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
+//                            RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
+//
+//                            closeAll = yes;
+//                        }
+//
+//                        ifMemEqual(buffer + 10, "system", 6) {
+//                            RPrintf(">> Execute %s", buffer + 17);
+//                            system(buffer + 17);
+//                        }
+//
+//                        ifMemEqual(buffer + 10, "print", 5) {
+//                            p(RTCPHandler)(server);
+//                        }
+//
+//                    } else {
+//                        RPrintf("[E] Bad user key on %s:%u\n", address, port);
+//                    }
+//                }
+//                connectionState = networkConnectionClosedConst;
+//            } else if (connectionState == networkOperationErrorConst) {
+//                RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
+//            }
+//        }
+//
+//        deleter(current, RSocket);
+//    }
+//
+//    deleter(configurator, RSocket);
+//
+//    deallocator(delegate);
+//    $(server, m(terminate, RTCPHandler)));
+//    deleter(server,        RTCPHandler);
+//
+//    exit:
+//    endSockets();
 
-    startServer();
+    RString *result = $(RS("message"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
+    p(RCString)(result);
+    result = $(RS("message1"), m(encryptPurgeEvasionBase64, RString)), RS("key1"));
+    p(RCString)(result);
+    result = $(RS("hello wery logn crypto word =((("), m(encryptPurgeEvasionBase64, RString)), RS("key"));
+    p(RCString)(result);
 
-    configurator = openListenerOnPort(4001, 10);
-    if(configurator == nil) goto exit;
-
-    while(!closeAll) {
-        RSocket *current = $(configurator, m(accept, RSocket)));
-
-        address = addressToString(&current->address);
-        port    = ntohs(current->address.sin_port);
-
-        RPrintf("[I] Configurator %s:%u connected\n", address, port);
-        connectionState = networkOperationSuccessConst;
-
-        while(connectionState != networkConnectionClosedConst) {
-            connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
-            if(connectionState == networkOperationSuccessConst) {
-                if(receivedSize > 8) {
-                    buffer[receivedSize] = 0;
-                    ifMemEqual(buffer, "secretkey", 9) {
-
-                        ifMemEqual(buffer + 10, "shutdown", 8) {
-                            $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
-                            RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
-
-                            closeAll = yes;
-                        }
-
-                        ifMemEqual(buffer + 10, "system", 6) {
-                            RPrintf(">> Execute %s", buffer + 17);
-                            system(buffer + 17);
-                        }
-
-                        ifMemEqual(buffer + 10, "print", 5) {
-                            p(RTCPHandler)(server);
-                        }
-
-                    } else {
-                        RPrintf("[E] Bad user key on %s:%u\n", address, port);
-                    }
-                }
-                connectionState = networkConnectionClosedConst;
-            } else if (connectionState == networkOperationErrorConst) {
-                RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
-            }
-        }
-
-        deleter(current, RSocket);
-    }
-
-    deleter(configurator, RSocket);
-
-    deallocator(delegate);
-    $(server, m(terminate, RTCPHandler)));
-    deleter(server,        RTCPHandler);
-
-    exit:
-    endSockets();
     endRay();
 }

@@ -16,9 +16,7 @@
  **/
 
 #include "PurgeEvasionUtils.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "RayFoundation/RSyntax.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -41,7 +39,7 @@ void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
         ++cipherCount;
     }
 
-    textTemp = malloc(totalSize);
+    textTemp = RAlloc(totalSize);
 
     if(textTemp != nil) {
         *cryptedSize = 0;
@@ -77,7 +75,7 @@ void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
         return nil;
     }
 
-    textTemp = malloc(size);
+    textTemp = RAlloc(size);
 
     if(textTemp != nil) {
         *encryptedSize = 0;
@@ -92,12 +90,12 @@ void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
 
         // get size
         memcpy((uint8_t*) &sizeOfText, textTemp, sizeof(uint64_t));
-        plainText = malloc(sizeOfText);
+        plainText = RAlloc(sizeOfText);
         if(plainText != nil) {
             memcpy(plainText, textTemp + sizeof(uint64_t), sizeOfText);
             *encryptedSize = sizeOfText; // store
         }
-        free(textTemp);
+        deallocator(textTemp);
     }
     return plainText;
 }

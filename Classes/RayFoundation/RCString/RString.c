@@ -126,6 +126,11 @@ rbool utf8GetNextCharacter(const byte     *string,
     return yes;
 }
 
+destructor(RString) {
+    deallocator(object->baseString);
+    object->size = 0;
+}
+
 printer(RString) {
     size_t iterator;
     forAll(iterator, object->size) {
