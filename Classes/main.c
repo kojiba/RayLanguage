@@ -174,11 +174,11 @@ int main(int argc, const char *argv[]) {
     RString *keyHash1 = $(RS("Key"), m(evasionHashBase64, RString)));
 
     RString  *result = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash );
-    p(RCString)(result);
+    p(RCString)(result); // jP/WabfHRrJKjVT0uxslnML6vjQcPonDU5VBoQ1/nc6l9P7pgx+gNxAIUMZARVVWmFtRMmRXskYIppIZ62yy8A==
 
     RString *result2 = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash1 );
 
-    p(RCString)(result2);
+    p(RCString)(result2); // PbgkkCzrM8VToEgcDcCSfQdw5p1IaoRHiBu5d21XGv92c0fKmJUo3XoxFqtdN5tOzmRY5PrSQti6uKFOZTatQQ==
 
     deleter(result, RString);
     deleter(result2, RString);
