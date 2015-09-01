@@ -35,6 +35,13 @@ void PrivateArgDeleter(RTCPDataStruct* object) {
     RFree(object);
 }
 
+rbool RTCPHandlerMulticastEnumerator(RString *context, RTCPDataStruct *data, size_t iterator) {
+    if(data->socket != nil) {
+        $(data->socket, m(sendString, RSocket)), context);
+    }
+    return yes;
+}
+
 constructor(RTCPHandler)) {
     object = allocator(RTCPHandler);
     if(object != nil) {
@@ -48,9 +55,11 @@ constructor(RTCPHandler)) {
 
                     $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
                     $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
-                    // init predicate
-                    object->predicate.virtualEnumerator = RTCPHandlerInactiveContextDeleter;
-                    object->predicate.context           = object;
+
+                    // init destructorPredicate and enumerator
+                    object->destructorPredicate.virtualEnumerator = RTCPHandlerInactiveContextDeleter;
+                    object->destructorPredicate.context           = object;
+                    object->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerMulticastEnumerator;
                 }
             }
         }
@@ -100,7 +109,7 @@ method(void, privateStartOnPort, RTCPHandler)) {
                     // delete inactive worker arguments
                     if(object->arguments->count != 0
                        && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
-                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->predicate);
+                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->destructorPredicate);
                     }
 
                     // finally, add new worker with auto-cleanup
@@ -130,4 +139,21 @@ method(void, terminate,  RTCPHandler)) {
 //    RThreadCancel(&object->runningThread);
     $(object->threads,   m(cancel, RThreadPool)));
     $(object->arguments, m(flush, RArray)));
+}
+
+method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const pointer buffer, size_t size) {
+    RArray *resultGroup = object->arguments;  // broadcast
+    if(predicate != nil && predicate->virtualEnumerator != nil) { // multicast
+        resultGroup = $(object->arguments, m(subarrayWithPredicate, RArray)), predicate);
+    }
+    object->multicastEnumerator.context = RCStringInit(buffer, size);
+    $(resultGroup, m(enumerate, RArray)), &object->multicastEnumerator, yes);
+
+    deallocator(object->multicastEnumerator.context);
+    object->multicastEnumerator.context = nil;
+}
+
+inline
+method(void, broadcast, RTCPHandler), RString *string) {
+    $(object, m(multicast, RTCPHandler)), nil, string->baseString, string->size);
 }

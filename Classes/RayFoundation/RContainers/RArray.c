@@ -45,7 +45,9 @@
 
 #define unsafeDeleteObjectAtIndex(index) destroyElementAtIndex(index);\
                                          object->array[index] = object->array[object->count - 1];\
-                                         incrementFreePlaces()\
+                                         incrementFreePlaces()
+
+#define virtualEnumeratorCall delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)
 
 #pragma mark More Flexible
 
@@ -346,7 +348,7 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
         RMutexLockArray();
         if (object->destructorDelegate != nil) {
             for (iterator = 0; iterator < object->count;) {
-                if (delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
+                if (virtualEnumeratorCall) {
                     object->destructorDelegate(object->array[iterator]);
                     object->array[iterator] = object->array[object->count - 1];
                     incrementFreePlaces();
@@ -357,7 +359,7 @@ method(void, deleteWithPredicate, RArray), REnumerateDelegate *delegate) {
             }
         } else {
             for (iterator = 0; iterator < object->count;) {
-                if (delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
+                if (virtualEnumeratorCall) {
                     object->array[iterator] = object->array[object->count - 1];
                     incrementFreePlaces();
                     --iterator;
@@ -392,7 +394,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
         }
         RMutexUnlockArray();
     } elseWarning(
-        RWarning("RArray. Delegate for searching is nil." , object);
+        RWarning("RArray. findObjectWithDelegate. Delegate for searching is nil." , object);
     );
     return result;
 }
@@ -402,7 +404,7 @@ inline constMethod(pointer, objectAtIndex, RArray), size_t index) {
     if($(object, m(checkIfIndexIn, RArray)), index) == index_exists) {
         return object->array[index];
     } elseWarning(
-        RWarning("RArray. Index not exist!", object);
+        RWarning("RArray. objectAtIndex. Index not exist!", object);
     );
     return nil;
 }
@@ -428,11 +430,40 @@ method(RArray *, getSubarray, RArray), RRange range) {
     return nil;
 }
 
+method(RArray *, subarrayWithPredicate, RArray), REnumerateDelegate *delegate) {
+    size_t  iterator;
+    RArray *result = nil;
+    printDebugTrace();
+    if(delegate != nil
+       && delegate->virtualEnumerator != nil) {
+        result = makeRArray();
+        if(result != nil) {
+            result->destructorDelegate = object->destructorDelegate;
+            result->printerDelegate    = object->printerDelegate;
+
+            RMutexLockArray();
+            forAll(iterator, object->count) {
+                if (virtualEnumeratorCall) {
+                    $(result, m(addObject, RArray)), object->array[iterator]);
+                }
+            }
+            RMutexUnlockArray();
+            $(result, m(sizeToFit, RArray)));
+        } elseError(
+                RError("RArray. subarrayWithPredicate. Cant allocate result array." , object);
+        );
+    } elseWarning(
+            RWarning("RArray. subarrayWithPredicate. Delegate for searching is nil." , object);
+    );
+    return result;
+}
+
+
 inline constMethod(pointer, lastObject, RArray)) {
     return object->array[object->count - 1];
 }
 
-method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool isFromLeft){
+method(RFindResult, enumerate, RArray), REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
     RFindResult result;
     result.index  = object->count;
@@ -442,7 +473,7 @@ method(RFindResult, enumerate, RArray),    REnumerateDelegate *delegate, rbool i
         RMutexLockArray();
         if(isFromLeft) {
             forAll(iterator, object->count) {
-                if(!delegate->virtualEnumerator(delegate->context, object->array[iterator], iterator)) {
+                if(!virtualEnumeratorCall) {
                     break;
                 }
             }

@@ -99,7 +99,8 @@ method(void,               deleteWithPredicate,       RArray),    REnumerateDele
 
 #pragma mark Get - Find
 method(RFindResult,        findObjectWithDelegate,    RArray),    RCompareDelegate *delegate);        // returns reference (object != nil, or if not found index == count)
-method(RArray *,           getSubarray,               RArray),    RRange range);
+method(RArray *,           getSubarray,               RArray),    RRange range);                      // delegates copy
+method(RArray *,           subarrayWithPredicate,     RArray),    REnumerateDelegate *delegate);
 method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 extern

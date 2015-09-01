@@ -43,7 +43,8 @@ endOf(RTCPDataStruct)
 
 
 class(RTCPHandler)
-    REnumerateDelegate   predicate;
+    REnumerateDelegate   destructorPredicate,
+                         multicastEnumerator;
     DestructorDelegate   dataStructContextDestructor; // RTCPDataStruct->context destructor
     RThread              runningThread;
 
@@ -65,5 +66,9 @@ setter(delegate, RTCPDelegate *, RTCPHandler);
 
 method(void, startOnPort, RTCPHandler),    uint16_t port);
 method(void, terminate,   RTCPHandler));
+method(void, multicast,   RTCPHandler), REnumerateDelegate *predicate, const pointer buffer, size_t size);
+
+extern
+method(void, broadcast,   RTCPHandler), RString *string);
 
 #endif /*__R_TCP_HANDLER__*/

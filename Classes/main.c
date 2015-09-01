@@ -46,15 +46,27 @@ void ChatDataDeleter(ChatData *object) {
     deleter(object, ChatData);
 }
 
-void processCommandString(const RString *command, ChatData *context) {
+void processCommandString(const RString *command, ChatData *context, RTCPDataStruct *data) {
     if($(command, m(startsOn, RCString)), RS("set nickname "))) {
         rbool success = yes;
 
         // todo search duplicates
 
         if(success) {
+            RString *newNickName = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+
+            RString *messageString = $(context->nickname, m(copy, RCString)));
+            $(messageString, m(concatenate, RCString)), RS(" changed nickname to "));
+            $(messageString, m(concatenate, RCString)), newNickName);
+            $(messageString, m(concatenate, RCString)), RS("\n"));
+
+            // todo multicast current chatroom
+            $(data->handler, m(broadcast, RTCPHandler)), messageString);
+
+            deleter(messageString, RString);
             nilDeleter(context->nickname, RString);
-            context->nickname = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+
+            context->nickname = newNickName;
         }
     }
 
@@ -77,7 +89,7 @@ pointer exec(RTCPDataStruct *data) {
     size_t   receivedSize;
     REnumerateDelegate executor;
     ChatData *chatData;
-    executor.virtualEnumerator = (EnumeretorDelegate) sendToArgument;
+    executor.virtualEnumerator = (EnumeratorDelegate) sendToArgument;
     RCString temp;
 
     RPrintf("[I] %s:%u[%u] connected\n", address, port, currentThread);
@@ -114,7 +126,7 @@ pointer exec(RTCPDataStruct *data) {
             } else {
                 temp.baseString += 2; // remove --
                 temp.size -= 3;       // remove \n
-                processCommandString(&temp, chatData);
+                processCommandString(&temp, chatData, data);
             }
         }
         resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);

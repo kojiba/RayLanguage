@@ -65,7 +65,7 @@ typedef void (* DestructorDelegate)(pointer);
 typedef void (* PrinterDelegate)(pointer);
 
 typedef RCompareFlags (* ComparatorDelegate)(pointer first, pointer second);
-typedef rbool         (* EnumeretorDelegate)(pointer context, pointer object, size_t iterator);  // if return yes - continue enumerating, else stops it
+typedef rbool         (* EnumeratorDelegate)(pointer context, pointer object, size_t iterator);  // if return yes - continue enumerating, else stops it
 
 // -----------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ extern RCompareFlags defaultComparator(pointer first, pointer second);
 // -----------------------------------------------------------------------
 
 protocol(REnumerateDelegate) //--------------------------------------------
-    EnumeretorDelegate virtualEnumerator;
+    EnumeratorDelegate virtualEnumerator;
 endOf(REnumerateDelegate)
 
 typedef struct SerializerData { // worker struct for serializers
