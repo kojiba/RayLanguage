@@ -53,6 +53,13 @@ rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator)
     return yes;
 }
 
+rbool ChatRoomPredicate(RString *context, RTCPDataStruct *object, size_t iterator) {
+    if($(((ChatData*)object->context)->chatRoom, m(isEqualTo, RCString)), context)) {
+       return yes;
+    }
+    return no;
+}
+
 destructor(ChatData) {
     nilDeleter(object->nickname, RString);
     nilDeleter(object->chatRoom, RString);
@@ -63,6 +70,9 @@ void ChatDataDeleter(ChatData *object) {
 }
 
 void processCommandString(const RString *command, ChatData *context, RTCPDataStruct *data) {
+    REnumerateDelegate chatRoomPredicate;
+    chatRoomPredicate.virtualEnumerator = (EnumeratorDelegate) ChatRoomPredicate;
+
     if($(command, m(startsOn, RCString)), RS("set nickname "))) {
         REnumerateDelegate nickNameEnumerator;
         RFindResult result;
@@ -73,6 +83,8 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
         nickNameEnumerator.virtualEnumerator = (EnumeratorDelegate) nickNameFinder;
         nickNameEnumerator.context = forCompare;
 
+        chatRoomPredicate.context = context->chatRoom;
+
         result = $(data->handler->arguments, m(enumerate, RArray)), &nickNameEnumerator, yes); // search duplicates in current chat room
 
         if(result.object == nil) {
@@ -82,8 +94,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
             $(messageString, m(concatenate, RCString)), newNickName);
             $(messageString, m(concatenate, RCString)), RS("\n"));
 
-            // todo multicast current chatroom
-            $(data->handler, m(broadcast, RTCPHandler)), messageString);
+            $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size);
 
             deleter(messageString, RString);
             nilDeleter(context->nickname, RString);
@@ -96,16 +107,30 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
         }
 
         deleter(forCompare, ChatData);
-    }
 
-    // todo change chatroom
-}
+    } else if($(command, m(startsOn, RCString)), RS("change chatroom "))) {
 
-rbool sendToArgument(pointer context, RTCPDataStruct *data, size_t iterator) {
-    if(data->socket != nil) {
-        $(data->socket, m(sendString, RSocket)), context);
+        RString *newChatRoom = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        RString *messageString = $(context->nickname, m(copy, RCString)));
+
+
+
+        $(messageString, m(concatenate, RCString)), RS(" leave room\n"));
+
+        chatRoomPredicate.context = context->chatRoom;
+        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size); // old chat room
+
+        $(messageString, m(trimTail, RCString)), RS(" leave room\n")->size); // remove old message, store nickname
+        $(messageString, m(concatenate, RCString)), RS(" enter room\n"));
+
+        chatRoomPredicate.context = newChatRoom;
+        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size); // new chat room
+
+           deleter(messageString,     RString);
+        nilDeleter(context->chatRoom, RString);
+
+        context->chatRoom = newChatRoom;
     }
-    return yes;
 }
 
 pointer exec(RTCPDataStruct *data) {
@@ -115,9 +140,9 @@ pointer exec(RTCPDataStruct *data) {
     unsigned currentThread =  (unsigned int) currentThreadIdentifier();
     byte     resultFlag;
     size_t   receivedSize;
-    REnumerateDelegate executor;
+    REnumerateDelegate chatRoomPredicate;
     ChatData *chatData;
-    executor.virtualEnumerator = (EnumeratorDelegate) sendToArgument;
+    chatRoomPredicate.virtualEnumerator = (EnumeratorDelegate) ChatRoomPredicate;
     RCString temp;
 
     RPrintf("[I] %s:%u[%u] connected\n", address, port, currentThread);
@@ -146,9 +171,9 @@ pointer exec(RTCPDataStruct *data) {
                 $(stringToSend, m(concatenate, RCString)), RS(" : "));
                 $(stringToSend, m(concatenate, RCString)), &temp);
 
-                executor.context = stringToSend;
+                chatRoomPredicate.context = chatData->chatRoom;
 
-                $(data->handler->arguments, m(enumerate, RArray)), &executor, yes);
+                $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, stringToSend->baseString, stringToSend->size);
 
                 deleter(stringToSend, RString);
             } else {

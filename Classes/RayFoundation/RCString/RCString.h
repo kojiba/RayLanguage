@@ -78,9 +78,9 @@ method(void,                removeRepetitionsOfString,    RCString),    const RC
 method(RCString *,          deleteCharacterAt,            RCString),    size_t index);              // returns reference (not copy!)
 method(void,                deleteInRange,                RCString),    RRange range);              // shifts string, main method
 extern
-method(void,                trimTail,                     RCString),    size_t size);               // deletes start end
+method(void,                trimTail,                     RCString),    size_t size);
 extern
-method(void,                trimHead,                     RCString),    size_t size);               // deletes start start
+method(void,                trimHead,                     RCString),    size_t size);
 extern
 method(void,                trimAfterString,              RCString),    RCString *string);
 extern
