@@ -32,7 +32,7 @@ typedef struct ChatData {
 
 ChatData *createEmpty(size_t count) {
     ChatData *result = allocator(ChatData);
-    result->nickname = stringWithFormat("Anon-#%lu", count);
+    result->nickname = stringWithFormat("Anon#%lu", count);
     result->chatRoom = RSC("default");
     return result;
 }
@@ -164,8 +164,11 @@ pointer exec(RTCPDataStruct *data) {
         temp.size = receivedSize;
 
         if(!$(&temp, m(startsOn, RCString)), RS("\n"))) { // empty msg
-            RPrintf("    %s:%u[%u] > %s", address, port, currentThread, buffer);
+
+            RPrintf("    %s:%u[%u] %s:%s > %s", address, port, currentThread, chatData->chatRoom->baseString, chatData->nickname->baseString, buffer); // log
+
             if(!$(&temp, m(startsOn, RCString)), RS("--"))) {
+
                 RString *stringToSend = RSC("");
                 $(stringToSend, m(concatenate, RCString)), ((ChatData *)data->context)->nickname);
                 $(stringToSend, m(concatenate, RCString)), RS(" : "));

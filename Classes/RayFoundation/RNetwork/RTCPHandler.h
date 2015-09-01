@@ -54,6 +54,8 @@ class(RTCPHandler)
     RSocket             *listener;
     RThreadPool         *threads;
     RArray              *arguments;
+
+    RMutex              mutex;
 endOf(RTCPHandler)
 
 constructor(RTCPHandler));

@@ -53,6 +53,8 @@ constructor(RTCPHandler)) {
                 object->arguments = makeRArray();
                 if(object->arguments != nil) {
 
+                    mutexWithType(&object->mutex, RMutexNormal);
+
                     $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
                     $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
 
@@ -142,6 +144,7 @@ method(void, terminate,  RTCPHandler)) {
 }
 
 method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const pointer buffer, size_t size) {
+    RMutexLock(&object->mutex);
     RArray *resultGroup = object->arguments;  // broadcast
     if(predicate != nil && predicate->virtualEnumerator != nil) { // multicast
         resultGroup = $(object->arguments, m(subarrayWithPredicate, RArray)), predicate);
@@ -151,6 +154,7 @@ method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const point
 
     deallocator(object->multicastEnumerator.context);
     object->multicastEnumerator.context = nil;
+    RMutexUnlock(&object->mutex);
 }
 
 inline
