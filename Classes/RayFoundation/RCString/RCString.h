@@ -102,6 +102,8 @@ constMethod(RCString *,     copy,                         RCString));
 
 // Comparator - universal encoding
 constMethod(RCompareFlags,  compareWith,                  RCString),    const RCString *checkString);
+extern
+constMethod(rbool,          isEqualTo,                    RCString),    const RCString *checkString);
 constMethod(rbool,          startsOn,                     RCString),    const RCString *const checkString);
 constMethod(rbool,          endsOn,                       RCString),    const RCString *const checkString);
 

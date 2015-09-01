@@ -37,6 +37,22 @@ ChatData *createEmpty(size_t count) {
     return result;
 }
 
+ChatData *createWithNickname(RString *nick, RString *chatRoom) {
+    ChatData *result = allocator(ChatData);
+    result->nickname = nick;
+    result->chatRoom = chatRoom;
+    return result;
+}
+
+rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator) {
+    if($(((ChatData*)object->context)->chatRoom, m(isEqualTo, RCString)), context->chatRoom)) {
+        if($(((ChatData*)object->context)->nickname, m(isEqualTo, RCString)), context->nickname)) {
+            return no;
+        }
+    }
+    return yes;
+}
+
 destructor(ChatData) {
     nilDeleter(object->nickname, RString);
     nilDeleter(object->chatRoom, RString);
@@ -48,12 +64,18 @@ void ChatDataDeleter(ChatData *object) {
 
 void processCommandString(const RString *command, ChatData *context, RTCPDataStruct *data) {
     if($(command, m(startsOn, RCString)), RS("set nickname "))) {
-        rbool success = yes;
+        REnumerateDelegate nickNameEnumerator;
+        RFindResult result;
 
-        // todo search duplicates
+        RString  *newNickName = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        ChatData *forCompare = createWithNickname(newNickName, RSC("default"));
 
-        if(success) {
-            RString *newNickName = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        nickNameEnumerator.virtualEnumerator = (EnumeratorDelegate) nickNameFinder;
+        nickNameEnumerator.context = forCompare;
+
+        result = $(data->handler->arguments, m(enumerate, RArray)), &nickNameEnumerator, yes); // search duplicates in current chat room
+
+        if(result.object == nil) {
 
             RString *messageString = $(context->nickname, m(copy, RCString)));
             $(messageString, m(concatenate, RCString)), RS(" changed nickname to "));
@@ -67,7 +89,13 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
             nilDeleter(context->nickname, RString);
 
             context->nickname = newNickName;
+
+            forCompare->nickname = nil; // not delete
+        } else {
+            $(data->socket, m(sendString, RSocket)), RS("Nickname already exist, please, choose another one.\n"));
         }
+
+        deleter(forCompare, ChatData);
     }
 
     // todo change chatroom

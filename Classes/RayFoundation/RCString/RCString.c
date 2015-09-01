@@ -876,6 +876,11 @@ constMethod(RCompareFlags, compareWith, RCString), const RCString *checkString) 
     }
 }
 
+extern
+constMethod(rbool, isEqualTo, RCString), const RCString *checkString) {
+    return (rbool)($(object, m(compareWith, RCString)), checkString) == equals);
+}
+
 constMethod(rbool, startsOn, RCString), const RCString *const checkString) {
     return $(object, m(startsOnC, RCString)), checkString->baseString);
 }
