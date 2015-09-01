@@ -23,6 +23,7 @@
 #define BUFFER_SIZE 1500
 
 #define server_port 4000
+#define configurator_port server_port + 1
 
 typedef struct ChatData {
     RString *nickname;
@@ -32,8 +33,17 @@ typedef struct ChatData {
 ChatData *createEmpty(size_t count) {
     ChatData *result = allocator(ChatData);
     result->nickname = stringWithFormat("Anon-#%lu", count);
-    result->chatRoom = RS("default");
+    result->chatRoom = RSC("default");
     return result;
+}
+
+destructor(ChatData) {
+    nilDeleter(object->nickname, RString);
+    nilDeleter(object->chatRoom, RString);
+}
+
+void ChatDataDeleter(ChatData *object) {
+    deleter(object, ChatData);
 }
 
 void processCommandString(const RString *command, ChatData *context) {
@@ -82,7 +92,7 @@ pointer exec(RTCPDataStruct *data) {
     $(data->socket, m(sendString, RSocket)), welcome);
     deleter(welcome, RString);
 
-    resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000, &receivedSize);
+    resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
         RPrintf("    %s:%u[%u] > %s", address, port, currentThread, buffer);
@@ -121,6 +131,7 @@ RTCPDelegate *delegate = nil;
 void startServer(void) {
     server = c(RTCPHandler)(nil);
     if(server != nil) {
+        server->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
         delegate = allocator(delegate);
         if(delegate != nil) {
             delegate->delegateFunction = (RThreadFunction) exec;
@@ -146,10 +157,12 @@ int main(int argc, const char *argv[]) {
 
     startServer();
 
-    configurator = openListenerOnPort(server_port + 1, 10);
+    configurator = openListenerOnPort(configurator_port, 10);
     if(configurator == nil) goto exit;
+    RPrintf("Configurator started %p on port %u\n", configurator, configurator_port);
 
     while(!closeAll) {
+
         RSocket *current = $(configurator, m(accept, RSocket)));
 
         address = addressToString(&current->address);

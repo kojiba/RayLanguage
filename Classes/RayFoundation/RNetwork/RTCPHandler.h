@@ -44,6 +44,7 @@ endOf(RTCPDataStruct)
 
 class(RTCPHandler)
     REnumerateDelegate   predicate;
+    DestructorDelegate   dataStructContextDestructor; // RTCPDataStruct->context destructor
     RThread              runningThread;
 
     rbool                terminateFlag;

@@ -27,6 +27,10 @@ void PrivateArgPrinter(RTCPDataStruct* object){
 }
 
 void PrivateArgDeleter(RTCPDataStruct* object) {
+    if(object->handler->dataStructContextDestructor != nil
+          && object->context != nil) {
+        object->handler->dataStructContextDestructor(object->context); // delete user-data
+    }
     nilDeleter(object->socket, RSocket);
     RFree(object);
 }
