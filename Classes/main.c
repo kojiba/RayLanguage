@@ -110,7 +110,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
     } else if($(command, m(startsOn, RCString)), RS("change chatroom "))) {
 
-        RString *newChatRoom = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        RString *newChatRoom = $(command, m(substringInRange, RCString)), makeRRange(RS("change chatroom ")->size, command->size - RS("change chatroom ")->size));
         RString *messageString = $(context->nickname, m(copy, RCString)));
 
 
