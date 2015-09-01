@@ -71,7 +71,7 @@ void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
     uint8_t keyTemp[purgeBytesCount];
 
     if(size % purgeBytesCount) {
-        perror("Bad data size. Must be multiple of 64. Data size in bytes\n");
+        RError("decryptPurgeEvasion. Bad data size. Must be multiple of 64. Data size in bytes\n", nil);
         return nil;
     }
 
@@ -91,7 +91,7 @@ void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
         // get size
         memcpy((uint8_t*) &sizeOfText, textTemp, sizeof(uint64_t));
         if(sizeOfText > MAX_SIZE_FOR_DECRYPT) {
-            RError1("decryptPurgeEvasion. Can't decrypt, must be bad size %lu", text, sizeOfText);
+            RError1("decryptPurgeEvasion. Can't decrypt, must be bad size %llu", text, sizeOfText);
             return nil;
         }
         plainText = RAlloc(sizeOfText);

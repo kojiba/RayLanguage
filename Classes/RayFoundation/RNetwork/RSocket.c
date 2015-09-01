@@ -227,8 +227,7 @@ method(byte, sendTo, RSocket), const pointer buffer, size_t size) {
 }
 
 
-inline method(byte, sendString, RSocket), const RCString *string) {
-//    RPrintf("Send string size %lu\n", string->size);
+inline method(byte, sendString, RSocket), const RString *string) {
     return $(object, m(send, RSocket)), string->baseString, string->size);
 }
 

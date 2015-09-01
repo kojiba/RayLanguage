@@ -17,11 +17,39 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <RayFoundation/REncoding/PurgeEvasionUtilsRay.h>
 
 #include "Tests.h"
 
 #define BUFFER_SIZE 1500
+
+#define server_port 4000
+
+typedef struct ChatData {
+    RString *nickname;
+    RString *chatRoom;
+} ChatData;
+
+ChatData *createEmpty(size_t count) {
+    ChatData *result = allocator(ChatData);
+    result->nickname = stringWithFormat("Anon-#%lu", count);
+    result->chatRoom = RS("default");
+    return result;
+}
+
+void processCommandString(const RString *command, ChatData *context) {
+    if($(command, m(startsOn, RCString)), RS("set nickname "))) {
+        rbool success = yes;
+
+        // todo search duplicates
+
+        if(success) {
+            nilDeleter(context->nickname, RString);
+            context->nickname = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        }
+    }
+
+    // todo change chatroom
+}
 
 rbool sendToArgument(pointer context, RTCPDataStruct *data, size_t iterator) {
     if(data->socket != nil) {
@@ -38,44 +66,49 @@ pointer exec(RTCPDataStruct *data) {
     byte     resultFlag;
     size_t   receivedSize;
     REnumerateDelegate executor;
+    ChatData *chatData;
     executor.virtualEnumerator = (EnumeretorDelegate) sendToArgument;
+    RCString temp;
 
-    RPrintf("[I] %s:%u connected [tuid : %u]\n", address, port, currentThread);
+    RPrintf("[I] %s:%u[%u] connected\n", address, port, currentThread);
 
-    $(data->socket, m(sendString, RSocket)), RS("1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 12345678901234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "123456789012345678901234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 12345678901234567890 1234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890123456789012345678901234567890"
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-                                                        "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-                                                        " \n")); // sizetest
+    chatData = createEmpty(data->identifier);
+    data->context = chatData;
+
+    RString *welcome = stringWithFormat("Welcome %s\n"
+                                        "You enter default chatroom, to change type \'--change chatroom name\'\n"
+                                        "To change nickname \'--set nickname name\'\n", chatData->nickname->baseString);
+
+    $(data->socket, m(sendString, RSocket)), welcome);
+    deleter(welcome, RString);
 
     resultFlag = $(data->socket, m(receive, RSocket)), buffer, 1000, &receivedSize);
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
-        RPrintf("%s:%u[%u] > %s", address, port, currentThread, buffer);
+        RPrintf("    %s:%u[%u] > %s", address, port, currentThread, buffer);
+        temp.baseString = buffer;
+        temp.size = receivedSize;
 
-        executor.context = RCStringInit(buffer, receivedSize);
+        if(!$(&temp, m(startsOn, RCString)), RS("--"))) {
+            RString *stringToSend = RSC("");
+            $(stringToSend, m(concatenate, RCString)), ((ChatData *)data->context)->nickname);
+            $(stringToSend, m(concatenate, RCString)), RS(" : "));
+            $(stringToSend, m(concatenate, RCString)), &temp);
 
-        $(((RTCPHandler*)data->context)->arguments, m(enumerate, RArray)), &executor, yes);
-        deallocator(executor.context);
+            executor.context = stringToSend;
 
-        resultFlag =  $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+            $(data->handler->arguments, m(enumerate, RArray)), &executor, yes);
+
+            deleter(stringToSend, RString);
+        } else {
+            temp.baseString += 2; // remove --
+            temp.size -= 3;       // remove \n
+            processCommandString(&temp, chatData);
+        }
+        resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
 
-    RPrintf("[I] %s:%u disconnected [tuid : %u]\n", address, port, currentThread);
+    RPrintf("[I] %s:%u[%u] disconnected\n", address, port, currentThread);
 
     deleter(data->socket, RSocket);
     data->socket = nil; // for auto-cleaning
@@ -93,8 +126,8 @@ void startServer(void) {
             delegate->delegateFunction = (RThreadFunction) exec;
             delegate->context          = server;
             $(server,  m(set_delegate, RTCPHandler)), delegate);
-            RPrintf("RTCPHandler starting %p\n", server);
-            $(server,  m(startOnPort, RTCPHandler)), 4000);
+            $(server,  m(startOnPort, RTCPHandler)), server_port);
+            RPrintf("RTCPHandler starting %p on port %u\n", server, server_port);
         }
     }
 }
@@ -110,81 +143,65 @@ int main(int argc, const char *argv[]) {
 
     enablePool(RPool);
     ComplexTest(); // lib test
-//
-//    startServer();
-//
-//    configurator = openListenerOnPort(4001, 10);
-//    if(configurator == nil) goto exit;
-//
-//    while(!closeAll) {
-//        RSocket *current = $(configurator, m(accept, RSocket)));
-//
-//        address = addressToString(&current->address);
-//        port    = ntohs(current->address.sin_port);
-//
-//        RPrintf("[I] Configurator %s:%u connected\n", address, port);
-//        connectionState = networkOperationSuccessConst;
-//
-//        while(connectionState != networkConnectionClosedConst) {
-//            connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
-//            if(connectionState == networkOperationSuccessConst) {
-//                if(receivedSize > 8) {
-//                    buffer[receivedSize] = 0;
-//                    ifMemEqual(buffer, "secretkey", 9) {
-//
-//                        ifMemEqual(buffer + 10, "shutdown", 8) {
-//                            $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
-//                            RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
-//
-//                            closeAll = yes;
-//                        }
-//
-//                        ifMemEqual(buffer + 10, "system", 6) {
-//                            RPrintf(">> Execute %s", buffer + 17);
-//                            system(buffer + 17);
-//                        }
-//
-//                        ifMemEqual(buffer + 10, "print", 5) {
-//                            p(RTCPHandler)(server);
-//                        }
-//
-//                    } else {
-//                        RPrintf("[E] Bad user key on %s:%u\n", address, port);
-//                    }
-//                }
-//                connectionState = networkConnectionClosedConst;
-//            } else if (connectionState == networkOperationErrorConst) {
-//                RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
-//            }
-//        }
-//
-//        deleter(current, RSocket);
-//    }
-//
-//    deleter(configurator, RSocket);
-//
-//    deallocator(delegate);
-//    $(server, m(terminate, RTCPHandler)));
-//    deleter(server,        RTCPHandler);
-//
-//    exit:
-//    endSockets();
 
-    RString *keyHash = $(RS("Ley"), m(evasionHashBase64, RString)));
-    RString *keyHash1 = $(RS("Key"), m(evasionHashBase64, RString)));
+    startServer();
 
-    RString  *result = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash );
-    p(RCString)(result); // jP/WabfHRrJKjVT0uxslnML6vjQcPonDU5VBoQ1/nc6l9P7pgx+gNxAIUMZARVVWmFtRMmRXskYIppIZ62yy8A==
+    configurator = openListenerOnPort(server_port + 1, 10);
+    if(configurator == nil) goto exit;
 
-    RString *result2 = $(RS("Hello world!"), m(encryptPurgeEvasionBase64, RString)), keyHash1 );
+    while(!closeAll) {
+        RSocket *current = $(configurator, m(accept, RSocket)));
 
-    p(RCString)(result2); // PbgkkCzrM8VToEgcDcCSfQdw5p1IaoRHiBu5d21XGv92c0fKmJUo3XoxFqtdN5tOzmRY5PrSQti6uKFOZTatQQ==
+        address = addressToString(&current->address);
+        port    = ntohs(current->address.sin_port);
 
-    deleter(result, RString);
-    deleter(result2, RString);
+        RPrintf("[I] Configurator %s:%u connected\n", address, port);
+        connectionState = networkOperationSuccessConst;
 
-    deleter(keyHash, RString);
-    deleter(keyHash1, RString);
+        while(connectionState != networkConnectionClosedConst) {
+            connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+            if(connectionState == networkOperationSuccessConst) {
+                if(receivedSize > 8) {
+                    buffer[receivedSize] = 0;
+                    ifMemEqual(buffer, "secretkey", 9) {
+
+                        ifMemEqual(buffer + 10, "shutdown", 8) {
+                            $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
+                            RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
+
+                            closeAll = yes;
+                        }
+
+                        ifMemEqual(buffer + 10, "system", 6) {
+                            RPrintf(" >> Execute %s", buffer + 17);
+                            system(buffer + 17);
+                        }
+
+                        ifMemEqual(buffer + 10, "print", 5) {
+                            p(RTCPHandler)(server);
+                        }
+
+                    } else {
+                        RPrintf("[E] Bad user key on %s:%u\n", address, port);
+                    }
+                }
+                connectionState = networkConnectionClosedConst;
+            } else if (connectionState == networkOperationErrorConst) {
+                RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
+            }
+        }
+
+        deleter(current, RSocket);
+    }
+
+    deleter(configurator, RSocket);
+
+    deallocator(delegate);
+    $(server, m(terminate, RTCPHandler)));
+    deleter(server,        RTCPHandler);
+
+    exit:
+    endSockets();
 
 
     endRay();
