@@ -95,25 +95,27 @@ pointer exec(RTCPDataStruct *data) {
     resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     while(resultFlag != networkConnectionClosedConst) {
         buffer[receivedSize] = 0;
-        RPrintf("    %s:%u[%u] > %s", address, port, currentThread, buffer);
         temp.baseString = buffer;
         temp.size = receivedSize;
 
-        if(!$(&temp, m(startsOn, RCString)), RS("--"))) {
-            RString *stringToSend = RSC("");
-            $(stringToSend, m(concatenate, RCString)), ((ChatData *)data->context)->nickname);
-            $(stringToSend, m(concatenate, RCString)), RS(" : "));
-            $(stringToSend, m(concatenate, RCString)), &temp);
+        if(!$(&temp, m(startsOn, RCString)), RS("\n"))) { // empty msg
+            RPrintf("    %s:%u[%u] > %s", address, port, currentThread, buffer);
+            if(!$(&temp, m(startsOn, RCString)), RS("--"))) {
+                RString *stringToSend = RSC("");
+                $(stringToSend, m(concatenate, RCString)), ((ChatData *)data->context)->nickname);
+                $(stringToSend, m(concatenate, RCString)), RS(" : "));
+                $(stringToSend, m(concatenate, RCString)), &temp);
 
-            executor.context = stringToSend;
+                executor.context = stringToSend;
 
-            $(data->handler->arguments, m(enumerate, RArray)), &executor, yes);
+                $(data->handler->arguments, m(enumerate, RArray)), &executor, yes);
 
-            deleter(stringToSend, RString);
-        } else {
-            temp.baseString += 2; // remove --
-            temp.size -= 3;       // remove \n
-            processCommandString(&temp, chatData);
+                deleter(stringToSend, RString);
+            } else {
+                temp.baseString += 2; // remove --
+                temp.size -= 3;       // remove \n
+                processCommandString(&temp, chatData);
+            }
         }
         resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
     }
