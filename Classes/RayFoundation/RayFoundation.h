@@ -40,6 +40,7 @@ extern "C" {
 #include "RCString/RCString_Numbers.h"
 #include "RCString/RString.h"
 #include "RCString/RString_Consts.h"
+#include "RCString/RCString_File.h"
 
 // Memory operations
 #include "RMemoryOperations/RByteOperations.h"

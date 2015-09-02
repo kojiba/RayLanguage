@@ -17,6 +17,7 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <RayFoundation/RCString/RCString_File.h>
 
 #include "Tests.h"
 
@@ -232,6 +233,14 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
+    RPrintf("Please, input server secretkey to admin on %u port\n", configurator_port);
+    RString *password = getInputString();
+
+    while(password->size <= 12) {
+        RPrintf("Please, reenter a secretkey at least 12 bytes\n");
+        password = getInputString();
+    }
+
     startServer();
 
     configurator = openListenerOnPort(configurator_port, 10);
@@ -253,21 +262,21 @@ int main(int argc, const char *argv[]) {
             if(connectionState == networkOperationSuccessConst) {
                 if(receivedSize > 8) {
                     buffer[receivedSize] = 0;
-                    ifMemEqual(buffer, "secretkey", 9) {
+                    ifMemEqual(buffer, password->baseString, password->size) {
 
-                        ifMemEqual(buffer + 10, "shutdown", 8) {
+                        ifMemEqual(buffer + password->size + 1, "shutdown", 8) {
                             $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
                             RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
 
                             closeAll = yes;
                         }
 
-                        ifMemEqual(buffer + 10, "system", 6) {
+                        ifMemEqual(buffer + password->size + 1, "system", 6) {
                             RPrintf(" >> Execute %s", buffer + 17);
                             system(buffer + 17);
                         }
 
-                        ifMemEqual(buffer + 10, "print", 5) {
+                        ifMemEqual(buffer + password->size + 1, "print", 5) {
                             p(RTCPHandler)(server);
                         }
 
@@ -291,6 +300,7 @@ int main(int argc, const char *argv[]) {
     deleter(server,        RTCPHandler);
 
     exit:
+    deleter(password, RString);
     endSockets();
 
 
