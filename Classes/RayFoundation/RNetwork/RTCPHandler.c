@@ -152,6 +152,11 @@ method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const point
     object->multicastEnumerator.context = RCStringInit(buffer, size);
     $(resultGroup, m(enumerate, RArray)), &object->multicastEnumerator, yes);
 
+    if(resultGroup != object->arguments) {
+        resultGroup->destructorDelegate = nil; // do not delete data
+        deleter(resultGroup, RArray);
+    }
+
     deallocator(object->multicastEnumerator.context);
     object->multicastEnumerator.context = nil;
     RMutexUnlock(&object->mutex);
