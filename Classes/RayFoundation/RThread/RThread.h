@@ -50,7 +50,7 @@
     #include <windows.h>
 
     // types
-    typedef HANDLE                    RThread;
+    typedef RThreadImpl               RThread;
     typedef LPSECURITY_ATTRIBUTES     RThreadAttributes;
     typedef HANDLE                    RMutex;
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;

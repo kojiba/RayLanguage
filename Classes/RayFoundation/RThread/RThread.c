@@ -19,6 +19,13 @@
 
 #include <unistd.h>
 
+#ifdef __WIN32
+    typedef struct RThreadImpl {
+        byte   mutexType;
+        HANDLE handle;
+    }RThreadImpl;
+#endif
+
 #pragma mark Info
 
 inline RThread currentThread() {
@@ -116,16 +123,16 @@ inline int mutexWithType(RMutex *mutex, byte mutexType) {
     return pthread_mutex_init(mutex,  &Attr);
 #else
     if(mutexType == RMutexRecursive) {
-        *mutex = CreateMutex(nil, no, nil);
-        return 0;
-    } else if(mutexType == RMutexNormal) {
-        *mutex = CreateSemaphore( nil, // default security attributes
-                                  0,   // initial count
-                                  0,   // maximum count
-                                  nil);
+        mutex->handle = CreateMutex(nil, no, nil);
 
-        return (int)*mutex;
+    } else if(mutexType == RMutexNormal) {
+        mutex->handle = CreateSemaphore( nil, // default security attributes
+                                  0,          // initial count
+                                  1,          // maximum count
+                                  nil);
     }
+    mutex->type = mutexType;
+    return 0;
 #endif
 }
 
@@ -133,7 +140,7 @@ inline int RMutexLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_lock(mutex);
 #else
-    return (int) WaitForSingleObject(*mutex, INFINITE);
+    return (int) WaitForSingleObject(mutex->handle, INFINITE);
 #endif
 }
 
@@ -141,7 +148,7 @@ inline int RMutexTryLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_trylock(mutex);
 #else
-    return (int) WaitForSingleObject(*mutex, INFINITE);
+    return (int) WaitForSingleObject(mutex->handle, INFINITE);
 #endif
 }
 
@@ -149,7 +156,11 @@ inline int RMutexUnlock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_unlock(mutex);
 #else
-    return ReleaseMutex(*mutex);
+    if(mutex->type == RMutexNormal) {
+        return ReleaseSemaphore(mutex->handle, 1,NULL);
+    } else if (mutex->type == RMutexRecursive) {
+        return ReleaseMutex(mutex->handle);
+    }
 #endif
 }
 
@@ -157,7 +168,7 @@ inline int RMutexDestroy(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_destroy(mutex);
 #else
-    return CloseHandle(*mutex);
+    return CloseHandle(mutex->handle);
 #endif
 }
 
