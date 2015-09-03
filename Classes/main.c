@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <RayFoundation/RCString/RCString_File.h>
 
 #include "Tests.h"
 

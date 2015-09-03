@@ -1,5 +1,6 @@
 /**
  * RCString_File.c
+ * File i/o for strings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 8/10/15 Ukraine Kharkiv
  *  _         _ _ _
@@ -44,8 +45,8 @@ method(void, appendToFile, RCString), const char *filename) {
 
 RCString * getInputString() {
     RCString *result   = makeRCString();
-    char *charBuff = arrayAllocator(char, baseInputStringSize);
-    size_t  empty    = baseInputStringSize;
+    char     *charBuff = arrayAllocator(char, baseInputStringSize);
+    size_t    empty    = baseInputStringSize;
 
     if(result != nil
        && charBuff != nil) {
