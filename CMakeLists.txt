@@ -194,7 +194,7 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
 
                                                  target_link_libraries(
                                                          ${EXECUTABLE_NAME}
-                                                         curses              #fixme when unused
+#                                                         curses              #fixme when unused
                                                      )
 
 if(copyResources)

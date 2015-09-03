@@ -35,7 +35,7 @@ static const uint64_t purgePalindromeMaskReverse = 0x55555555AAAAAAAA;
 static const uint64_t purgeMask = 0x8888888888888888;
 static const uint64_t purgeMaskReverse = 0x1111111111111111;
 
-static const uint64_t purgeKeyАmplificationConstans[8] = {
+static const uint64_t purgeKeyAmplificationConstans[8] = {
     0x2232242252262272,
     0x0223224225226227,
     0x0022322422522623,

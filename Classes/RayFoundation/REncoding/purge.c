@@ -102,14 +102,14 @@ void roundKeyForStep(uint64_t key[8], uint8_t step) {
         key[4] = substitute(key[4], purgeSubstitutionBlock);
         key[6] = substitute(key[6], purgeSubstitutionBlock);
 
-        key[0] += purgeKeyАmplificationConstans[0];
-        key[1] += purgeKeyАmplificationConstans[1];
-        key[2] += purgeKeyАmplificationConstans[2];
-        key[3] += purgeKeyАmplificationConstans[3];
-        key[4] += purgeKeyАmplificationConstans[4];
-        key[5] += purgeKeyАmplificationConstans[5];
-        key[6] += purgeKeyАmplificationConstans[6];
-        key[7] += purgeKeyАmplificationConstans[7];
+        key[0] += purgeKeyAmplificationConstans[0];
+        key[1] += purgeKeyAmplificationConstans[1];
+        key[2] += purgeKeyAmplificationConstans[2];
+        key[3] += purgeKeyAmplificationConstans[3];
+        key[4] += purgeKeyAmplificationConstans[4];
+        key[5] += purgeKeyAmplificationConstans[5];
+        key[6] += purgeKeyAmplificationConstans[6];
+        key[7] += purgeKeyAmplificationConstans[7];
 
         rotateBytes((byte *) key, (byte) (iterator % (purgeBytesCount / 2) + 1));
     }
@@ -122,14 +122,14 @@ void decryptRoundKey(uint64_t key[8], uint8_t step) {
     for(iterator = (byte) (step - 1); iterator != 255; --iterator) {
         reverseRotateBytes((byte *) key, (byte) (iterator % (purgeBytesCount / 2) + 1));
 
-        key[0] -= purgeKeyАmplificationConstans[0];
-        key[1] -= purgeKeyАmplificationConstans[1];
-        key[2] -= purgeKeyАmplificationConstans[2];
-        key[3] -= purgeKeyАmplificationConstans[3];
-        key[4] -= purgeKeyАmplificationConstans[4];
-        key[5] -= purgeKeyАmplificationConstans[5];
-        key[6] -= purgeKeyАmplificationConstans[6];
-        key[7] -= purgeKeyАmplificationConstans[7];
+        key[0] -= purgeKeyAmplificationConstans[0];
+        key[1] -= purgeKeyAmplificationConstans[1];
+        key[2] -= purgeKeyAmplificationConstans[2];
+        key[3] -= purgeKeyAmplificationConstans[3];
+        key[4] -= purgeKeyAmplificationConstans[4];
+        key[5] -= purgeKeyAmplificationConstans[5];
+        key[6] -= purgeKeyAmplificationConstans[6];
+        key[7] -= purgeKeyAmplificationConstans[7];
 
         key[1] = substitute(key[1], purgeReverseSubstitutionBlock);
         key[3] = substitute(key[3], purgeReverseSubstitutionBlock);

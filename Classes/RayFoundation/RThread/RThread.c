@@ -20,10 +20,7 @@
 #include <unistd.h>
 
 #ifdef __WIN32
-    typedef struct RThreadImpl {
-        byte   mutexType;
-        HANDLE handle;
-    }RThreadImpl;
+
 #endif
 
 #pragma mark Info
@@ -109,7 +106,7 @@ extern RThreadId RThreadIdOfThread(RThread *thread) {
     pthread_threadid_np(*thread, &result);
     return result;
 #else
-    return GetThreadId(*thread);
+    return 0;//GetThreadId(*thread);
 #endif
 }
 

@@ -147,7 +147,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 pointer exec(RTCPDataStruct *data) {
     char    buffer[BUFFER_SIZE];
     const char    *address = addressToString(&data->socket->address);
-    ushort            port = ntohs(data->socket->address.sin_port);
+    unsigned short port = ntohs(data->socket->address.sin_port);
     unsigned currentThread =  (unsigned int) currentThreadIdentifier();
     byte     resultFlag;
     size_t   receivedSize;
@@ -229,7 +229,7 @@ int main(int argc, const char *argv[]) {
     byte connectionState;
     char buffer[BUFFER_SIZE];
     const char *address;
-    ushort port;
+    unsigned short port;
     RSocket *configurator;
     size_t  receivedSize;
 

@@ -48,11 +48,17 @@
     #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
 #else
     #include <windows.h>
+    #include <winbase.h>
+
+    struct RMutexImpl {
+        byte   type;
+        HANDLE handle;
+    };
 
     // types
-    typedef RThreadImpl               RThread;
+    typedef HANDLE                    RThread;
     typedef LPSECURITY_ATTRIBUTES     RThreadAttributes;
-    typedef HANDLE                    RMutex;
+    typedef struct RMutexImpl         RMutex;
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
     typedef DWORD            (WINAPI* RThreadFunction)(pointer);
     typedef DWORD                     RThreadId;
