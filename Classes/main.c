@@ -17,6 +17,7 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <setjmp.h>
 
 #include "Tests.h"
 
@@ -137,6 +138,9 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
         nilDeleter(context->chatRoom, RString);
 
         context->chatRoom = newChatRoom;
+    } else if($(command, m(startsOn, RCString)), RS("help"))) {
+        $(data->socket, m(sendString, RSocket)), RS("To change chatroom type \'--change chatroom %s\'\n"
+                                                    "To change nickname      \'--set nickname %s\'\n"));
     }
 }
 
