@@ -39,6 +39,8 @@
 #ifdef RAY_EMBEDDED
     #warning Redefine RayBase.h DI macro and delete this warning
 #else
+
+    #define RAY_LIBRARY_PRELOAD_ALLOCATOR // not work in windows
     #define R_POOL_DETAILED      // to storage allocator thread id and malloced size
 //    #define R_POOL_META_ALLOC    // POOL_DETAILED MUST BE ENABLED, to store string tip for pointer like metaAlloc(sizeInBytes, "some memory alloc"), only for RPool!
 

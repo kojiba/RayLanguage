@@ -10,6 +10,7 @@ set(RVM            NO)
 set(RayInterpreter NO)
 set(DebugFlag      NO) # NO - for build library
 set(copyResources  NO)
+set(RayPreloadFlag NO) # lib must be compiled with RAY_LIBRARY_PRELOAD_ALLOCATOR in RayConfig
 
 
 if(NOT ${DebugFlag})
@@ -203,6 +204,10 @@ endif()
 
 if(NOT ${DebugFlag})
 #    file(COPY ${RayLanguage_SOURCE_DIR}/Classes/RayFoundation DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+
+    if(${RayPreloadFlag})
+        SET( ENV{LD_PRELOAD}   ${LIBRARY_OUTPUT_PATH}/${LIBRARY_NAME})
+    endif()
 
     target_link_libraries(
         ${EXECUTABLE_NAME}

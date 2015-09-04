@@ -32,10 +32,7 @@ typedef void  (*Deallocator)(void*);
 
 // constant pointers to stdlib (OS) functions
 
-static const Allocator   RTrueMalloc  = &malloc;
-static const Reallocator RTrueRealloc = &realloc;
-static const Callocator  RTrueCalloc  = &calloc;
-static const Deallocator RTrueFree    = &free;
+// Wrapper to save original libc functions to global var
 
 extern volatile Allocator   RMallocPtr;
 extern volatile Callocator  RCallocPtr;
@@ -52,10 +49,27 @@ extern volatile Deallocator RFreePtr;
 #define setRCalloc(function)  RCallocPtr  = function;
 #define setRFree(function)    RFreePtr    = function;
 
-#define malloc  RMallocPtr
-#define realloc RReallocPtr
-#define calloc  RCallocPtr
-#define free    RFreePtr
+#ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR
+    static Allocator   RTrueMalloc  = 0;
+    static Reallocator RTrueRealloc = 0;
+    static Callocator  RTrueCalloc  = 0;
+    static Deallocator RTrueFree    = 0;
+
+    void* malloc (size_t);
+    void* calloc(size_t, size_t);
+    void* realloc(void*, size_t);
+    void  free(void*);
+#else
+    static const Allocator   RTrueMalloc  = &malloc;
+    static const Reallocator RTrueRealloc = &realloc;
+    static const Callocator  RTrueCalloc  = &calloc;
+    static const Deallocator RTrueFree    = &free;
+
+    #define malloc  RMallocPtr
+    #define realloc RReallocPtr
+    #define calloc  RCallocPtr
+    #define free    RFreePtr
+#endif
 
 // universal
 

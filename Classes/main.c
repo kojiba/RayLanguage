@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <setjmp.h>
 
 #include "Tests.h"
 
@@ -120,8 +119,6 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
         RString *newChatRoom = $(command, m(substringInRange, RCString)), makeRRange(RS("change chatroom ")->size, command->size - RS("change chatroom ")->size));
         RString *messageString = $(context->nickname, m(copy, RCString)));
-
-
 
         $(messageString, m(concatenate, RCString)), RS(" leave room\n"));
 
