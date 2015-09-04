@@ -29,14 +29,14 @@
         #include "RayFoundation/RThread/RThread.h"
     #endif
 
-typedef struct RPoolDescriptor {
-    RThreadId allocatorThread;
-    pointer   ptr;
-    size_t    size;
-#ifdef R_POOL_META_ALLOC
-    char     *tipString;
-#endif
-} RPoolDescriptor;
+    typedef struct RPoolDescriptor {
+        RThreadId allocatorThread;
+        pointer   ptr;
+        size_t    size;
+    #ifdef R_POOL_META_ALLOC
+        char     *tipString;
+    #endif
+    } RPoolDescriptor;
 #endif
 
 class(RAutoPool)

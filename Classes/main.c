@@ -17,6 +17,7 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <signal.h>
 
 #include "Tests.h"
 

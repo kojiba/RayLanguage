@@ -17,6 +17,7 @@
 #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR // ---------------------------------------
 
     #include <dlfcn.h>
+    #include "RayFoundation/RMemoryOperations/RAutoPool.h"
 
     #define saveStdLibFunction(var, f) do { \
             var = dlsym(RTLD_NEXT, f);\
@@ -31,6 +32,11 @@
     volatile Deallocator RFreePtr    = 0;
 
     static unsigned char onceStoreFlag = 1;
+
+    void printRPoolAtExitInjection() {
+        p(RAutoPool)(RPool);
+        deleter(RPool, RAutoPool);
+    }
 
     void initLibPtrs() {
         saveStdLibFunction(RTrueMalloc, "malloc");
@@ -52,10 +58,13 @@
         if(RFreePtr == 0) {
             RFreePtr = RTrueFree;
         }
+        atexit(printRPoolAtExitInjection);
         onceStoreFlag = 0;
+        enablePool(RPool);
     }
 
     void* malloc(size_t size) {
+        RPrintf("Malloc %lu\n", size);
         if(onceStoreFlag) {
             initLibPtrs();
         }

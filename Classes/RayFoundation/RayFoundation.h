@@ -62,12 +62,19 @@ extern "C" {
 #include "RClassTable/RClassTable.h"
 #include "Utils/Utils.h"
 
-#define endRay() deleter(stringConstantsTable(), RDictionary);\
-                 deleter(RCTSingleton, RClassTable); \
-                 p(RAutoPool)(RPool); \
-                 deleter(RPool, RAutoPool); \
-                 stopConsole();\
-                 return 0;
+#ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR
+    #define endRay() deleter(stringConstantsTable(), RDictionary);\
+                     deleter(RCTSingleton, RClassTable); \
+                     stopConsole();\
+                     return 0
+#else
+    #define endRay() deleter(stringConstantsTable(), RDictionary);\
+                     deleter(RCTSingleton, RClassTable); \
+                     p(RAutoPool)(RPool); \
+                     deleter(RPool, RAutoPool); \
+                     stopConsole();\
+                     return 0;
+#endif
 
 #ifdef  __cplusplus
 }
