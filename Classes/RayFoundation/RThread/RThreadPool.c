@@ -20,7 +20,7 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 protocol(PrivateThreadArgument)
-    RThreadFunction  delegate;
+    RThreadFunction  delegateFunction;
             pointer  threadArgument;
             RThread *selfThread;
 endOf(PrivateThreadArgument)
@@ -37,13 +37,10 @@ struct RThreadPool {
     RMutex             mutex;
 };
 
-pointer privateThreadExecutor(pointer arg) {
-    PrivateThreadArgument *temp = arg;
-    pointer result = temp->delegate(temp->threadArgument);
-
-
-    $(temp->context, m(deleteWorker, RThreadPool)), temp->selfThread);
-    $(((RThreadPool*)temp->context)->arguments, m(deleteObjectFast, RArray)), temp);
+pointer privateThreadExecutor(PrivateThreadArgument *arg) {
+    pointer result = arg->delegateFunction(arg->threadArgument);
+    $(arg->context, m(deleteWorker, RThreadPool)), arg->selfThread);
+    $(((RThreadPool*)arg->context)->arguments, m(deleteObjectFast, RArray)), arg);
     return result;
 }
 
@@ -104,12 +101,12 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                 PrivateThreadArgument *arg = allocator(PrivateThreadArgument);
                 if(arg != nil) {
 
-                    arg->threadArgument = argumentForNewWorker;
-                    arg->delegate       = object->delegateFunction;
-                    arg->context        = object;
-                    arg->selfThread     = newOne;
+                    arg->threadArgument   = argumentForNewWorker;
+                    arg->delegateFunction = object->delegateFunction;
+                    arg->context          = object;
+                    arg->selfThread       = newOne;
 
-                    RThreadCreate(newOne, nil, privateThreadExecutor, arg);
+                    RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
 

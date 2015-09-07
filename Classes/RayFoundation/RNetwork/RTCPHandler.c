@@ -15,6 +15,8 @@
 
 #include "RTCPHandler.h"
 
+#ifndef RAY_EMBEDDED
+
 rbool RTCPHandlerInactiveContextDeleter(pointer context, pointer object, size_t iterator) {
     if(((RTCPDataStruct*)object)->socket == nil) {
         return yes;
@@ -106,7 +108,7 @@ method(void, privateStartOnPort, RTCPHandler)) {
                     argument->socket     = socket;
                     argument->identifier = object->arguments->count;
 
-                    $(object->arguments, m(addObject,  RArray)),      argument);
+                    $(object->arguments, m(addObject,  RArray)), argument);
 
                     // delete inactive worker arguments
                     if(object->arguments->count != 0
@@ -166,3 +168,5 @@ inline
 method(void, broadcast, RTCPHandler), RString *string) {
     $(object, m(multicast, RTCPHandler)), nil, string->baseString, string->size);
 }
+
+#endif /* RAY_EMBEDDED */

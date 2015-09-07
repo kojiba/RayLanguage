@@ -19,6 +19,7 @@
 #include "RSocket.h"
 #include "RayFoundation/RThread/RThreadPool.h"
 
+#ifndef RAY_EMBEDDED
 
 #define RTCPHandlerListenerQueueSize  50
 #define RTCPHandlerCheckCleanupAfter  20
@@ -72,5 +73,7 @@ method(void, multicast,   RTCPHandler), REnumerateDelegate *predicate, const poi
 
 extern
 method(void, broadcast,   RTCPHandler), RString *string);
+
+#endif /* RAY_EMBEDDED */
 
 #endif /*__R_TCP_HANDLER__*/
