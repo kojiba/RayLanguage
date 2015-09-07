@@ -143,10 +143,12 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
         context->chatRoom = newChatRoom;
     } else if($(command, m(startsOn, RCString)), RS("help"))) {
-        $(data->socket, m(sendString, RSocket)), RS("To change chatroom type \'--change chatroom %s\'\n"
-                                                    "To change nickname      \'--set nickname %s\'\n"));
+        $(data->socket, m(sendString, RSocket)), RS("   change chatroom type \'--change chatroom %s\'\n"
+                                                    "   change nickname      \'--set nickname %s\'\n"
+                                                    "   chatroom members     \'--is anybody here?\'\n"
+                                                    "   exit                 \'--exit\'\n"));
 
-    } else if($(command, m(startsOn, RCString)), RS("is anybody here"))) {
+    } else if($(command, m(startsOn, RCString)), RS("is anybody here?"))) {
         REnumerateDelegate listEnumerator;
         RArray  *chatRoomList;
         RString *resultList = RSC("");
@@ -197,9 +199,12 @@ pointer exec(RTCPDataStruct *data) {
     data->context = chatData;
 
     RString *welcome = stringWithFormat("Welcome %s\n"
-                                        "You enter default chatroom, to change type \'--change chatroom name\'\n"
-                                        "To change nickname \'--set nickname name\'\n"
-                                        "Follow the white rabbit.\n", chatData->nickname->baseString);
+                                        "You enter default chatroom, to change send      \'--change chatroom %%s\'\n"
+                                        "                               change nickname  \'--set nickname %%s\'\n"
+                                        "                               chatroom members \'--is anybody here?\'\n"
+                                        "                               exit             \'--exit\'\n"
+                                        "                               help             \'--help\'\n"
+                                        "And follow the white rabbit.\n", chatData->nickname->baseString);
 
     $(data->socket, m(sendString, RSocket)), welcome);
     deleter(welcome, RString);
@@ -346,7 +351,6 @@ int main(int argc, const char *argv[]) {
     exit:
     deleter(password, RString);
     endSockets();
-
 
     endRay();
 }
