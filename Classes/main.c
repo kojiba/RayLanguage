@@ -17,7 +17,6 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <signal.h>
 
 #include "Tests.h"
 
@@ -61,6 +60,20 @@ rbool ChatRoomPredicate(RString *context, RTCPDataStruct *object, size_t iterato
     return no;
 }
 
+rbool ChatRoomListEnumerator(RString *list, RTCPDataStruct *object, size_t iterator) {
+    if(((ChatData*)object->context)->nickname != nil) {
+        RString *number = stringWithFormat("%lu", iterator);
+
+        $(list, m(concatenate, RCString)), number);
+        $(list, m(concatenate, RCString)), RS(" - "));
+        $(list, m(concatenate, RCString)), ((ChatData*)object->context)->nickname);
+        $(list, m(concatenate, RCString)), RS("\n"));
+
+        deleter(number, RString);
+    }
+    return yes;
+}
+
 destructor(ChatData) {
     nilDeleter(object->nickname, RString);
     nilDeleter(object->chatRoom, RString);
@@ -73,6 +86,7 @@ void ChatDataDeleter(ChatData *object) {
 void processCommandString(const RString *command, ChatData *context, RTCPDataStruct *data) {
     REnumerateDelegate chatRoomPredicate;
     chatRoomPredicate.virtualEnumerator = (EnumeratorDelegate) ChatRoomPredicate;
+    chatRoomPredicate.context           = context->chatRoom;
 
     if($(command, m(startsOn, RCString)), RS("set nickname "))) {
         REnumerateDelegate nickNameEnumerator;
@@ -92,8 +106,6 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
             nickNameEnumerator.virtualEnumerator = (EnumeratorDelegate) nickNameFinder;
             nickNameEnumerator.context = &forCompare;
-
-            chatRoomPredicate.context = context->chatRoom;
 
             result = $(data->handler->arguments, m(enumerate, RArray)), &nickNameEnumerator, yes); // search duplicates in current chat room
 
@@ -123,10 +135,9 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
         $(messageString, m(concatenate, RCString)), RS(" leave room\n"));
 
-        chatRoomPredicate.context = context->chatRoom;
         $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size); // old chat room
 
-        $(messageString, m(trimTail, RCString)), RS(" leave room\n")->size); // remove old message, store nickname
+        $(messageString, m(trimTail,    RCString)), RS(" leave room\n")->size); // remove old message, store nickname
         $(messageString, m(concatenate, RCString)), RS(" enter room\n"));
 
         chatRoomPredicate.context = newChatRoom;
@@ -139,6 +150,35 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
     } else if($(command, m(startsOn, RCString)), RS("help"))) {
         $(data->socket, m(sendString, RSocket)), RS("To change chatroom type \'--change chatroom %s\'\n"
                                                     "To change nickname      \'--set nickname %s\'\n"));
+
+    } else if($(command, m(startsOn, RCString)), RS("is anybody here"))) {
+        REnumerateDelegate listEnumerator;
+        RArray  *chatRoomList;
+        RString *resultList = RSC("");
+        listEnumerator.context = resultList;
+        listEnumerator.virtualEnumerator = (EnumeratorDelegate) ChatRoomListEnumerator;
+
+        chatRoomList = $(data->handler->arguments, m(subarrayWithPredicate, RArray)), &chatRoomPredicate);
+
+        if(chatRoomList != nil) {
+            $(chatRoomList, m(enumerate, RArray)), &listEnumerator, yes);
+            chatRoomList->destructorDelegate = nil;
+            deleter(chatRoomList, RArray);
+        }
+
+        if(chatRoomList == nil
+                || $(resultList, m(isEqualTo, RCString)), RS(""))) {
+            $(data->socket, m(sendString, RSocket)), RS("nobody\n"));
+        } else {
+            $(data->socket, m(sendString, RSocket)), resultList);
+        }
+        deleter(resultList, RString);
+
+    } else if($(command, m(startsOn, RCString)), RS("exit"))) {
+
+        $(data->socket, m(sendString, RSocket)), RS("RServer bye c:\n"));
+        deleter(data->socket, RSocket); // close
+        data->socket = nil;
     }
 }
 
@@ -194,13 +234,19 @@ pointer exec(RTCPDataStruct *data) {
                 processCommandString(&temp, chatData, data);
             }
         }
-        resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+        if(data->socket != nil) {
+            resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+        } else {
+            break;
+        }
     }
 
     RPrintf("[I] %s:%u[%u] disconnected\n", address, port, currentThread);
 
-    deleter(data->socket, RSocket);
-    data->socket = nil; // for auto-cleaning
+    if(data->socket != nil) {
+        deleter(data->socket, RSocket);
+        data->socket = nil; // for auto-cleaning
+    }
     return nil;
 }
 
@@ -290,7 +336,6 @@ int main(int argc, const char *argv[]) {
                 RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
             }
         }
-
         deleter(current, RSocket);
     }
 
