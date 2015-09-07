@@ -161,8 +161,10 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
         chatRoomList = $(data->handler->arguments, m(subarrayWithPredicate, RArray)), &chatRoomPredicate);
 
         if(chatRoomList != nil) {
-            $(chatRoomList, m(enumerate, RArray)), &listEnumerator, yes);
             chatRoomList->destructorDelegate = nil;
+            $(chatRoomList, m(deleteObject, RArray)), data); // delete self record
+
+            $(chatRoomList, m(enumerate, RArray)), &listEnumerator, yes);
             deleter(chatRoomList, RArray);
         }
 
@@ -176,7 +178,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 
     } else if($(command, m(startsOn, RCString)), RS("exit"))) {
 
-        $(data->socket, m(sendString, RSocket)), RS("RServer bye c:\n"));
+        $(data->socket, m(sendString, RSocket)), RS("Bye-bye, Johnny.\n"));
         deleter(data->socket, RSocket); // close
         data->socket = nil;
     }
@@ -201,7 +203,8 @@ pointer exec(RTCPDataStruct *data) {
 
     RString *welcome = stringWithFormat("Welcome %s\n"
                                         "You enter default chatroom, to change type \'--change chatroom name\'\n"
-                                        "To change nickname \'--set nickname name\'\n", chatData->nickname->baseString);
+                                        "To change nickname \'--set nickname name\'\n"
+                                        "Follow the white rabbit.\n", chatData->nickname->baseString);
 
     $(data->socket, m(sendString, RSocket)), welcome);
     deleter(welcome, RString);
