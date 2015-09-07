@@ -37,16 +37,11 @@ ChatData *createEmpty(size_t count) {
     return result;
 }
 
-ChatData *createWithNickname(RString *nick, RString *chatRoom) {
-    ChatData *result = allocator(ChatData);
-    result->nickname = nick;
-    result->chatRoom = chatRoom;
-    return result;
-}
+#define ContextChatData ((ChatData*)object->context)
 
 rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator) {
-    if($(((ChatData*)object->context)->chatRoom, m(isEqualTo, RCString)), context->chatRoom)) {
-        if($(((ChatData*)object->context)->nickname, m(isEqualTo, RCString)), context->nickname)) {
+    if($(ContextChatData->chatRoom,     m(isEqualTo, RCString)), context->chatRoom)) {
+        if($(ContextChatData->nickname, m(isEqualTo, RCString)), context->nickname)) {
             return no;
         }
     }
@@ -54,19 +49,19 @@ rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator)
 }
 
 rbool ChatRoomPredicate(RString *context, RTCPDataStruct *object, size_t iterator) {
-    if($(((ChatData*)object->context)->chatRoom, m(isEqualTo, RCString)), context)) {
+    if($(ContextChatData->chatRoom, m(isEqualTo, RCString)), context)) {
        return yes;
     }
     return no;
 }
 
 rbool ChatRoomListEnumerator(RString *list, RTCPDataStruct *object, size_t iterator) {
-    if(((ChatData*)object->context)->nickname != nil) {
+    if(ContextChatData->nickname != nil) {
         RString *number = stringWithFormat("%lu", iterator);
 
         $(list, m(concatenate, RCString)), number);
         $(list, m(concatenate, RCString)), RS(" - "));
-        $(list, m(concatenate, RCString)), ((ChatData*)object->context)->nickname);
+        $(list, m(concatenate, RCString)), ContextChatData->nickname);
         $(list, m(concatenate, RCString)), RS("\n"));
 
         deleter(number, RString);
