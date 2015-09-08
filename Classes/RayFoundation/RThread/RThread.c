@@ -21,6 +21,10 @@
 
 #ifdef __WIN32
 
+#elif __linux
+    #include <sys/signal.h>
+    #include <sys/types.h>
+    #include <sys/syscall.h>
 #endif
 
 #pragma mark Info
@@ -34,7 +38,9 @@ inline RThread currentThread() {
 }
 
 inline RThreadId currentThreadIdentifier() {
-#ifndef __WIN32
+#ifdef __linux
+    return syscall(__NR_gettid);
+#elif __APPLE__
     RThreadId threadId = 0;
     pthread_threadid_np(pthread_self(), &threadId);
     return threadId;
@@ -101,7 +107,9 @@ inline void RThreadExit(pointer data) {
 }
 
 extern RThreadId RThreadIdOfThread(RThread *thread) {
-#ifndef _WIN32
+#ifdef __linux
+    return syscall(__NR_gettid);
+#elif __APPLE__
     RThreadId result;
     pthread_threadid_np(*thread, &result);
     return result;

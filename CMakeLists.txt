@@ -37,7 +37,7 @@ set(HEADER_FILES # Worker headers
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.h
                  Classes/RayFoundation/RContainers/RArray_Parallel.h
-                 Classes/RayFoundation/RContainers/Rlist.h
+                 Classes/RayFoundation/RContainers/RList.h
                  Classes/RayFoundation/RContainers/RDictionary.h
                  Classes/RayFoundation/RContainers/RBuffer.h
 
@@ -216,6 +216,8 @@ if(NOT ${DebugFlag})
 
     if(WIN32)
       target_link_libraries(${LIBRARY_NAME} wsock32 ws2_32)
+    else() 
+      target_link_libraries(${LIBRARY_NAME} pthread)
     endif()
 
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES PREFIX "")
@@ -227,6 +229,8 @@ if(NOT ${DebugFlag})
 else()
     if(WIN32)
       target_link_libraries(${EXECUTABLE_NAME} wsock32 ws2_32)
+    else() 
+      target_link_libraries(${LIBRARY_NAME} pthread)
     endif()
 endif()
 
