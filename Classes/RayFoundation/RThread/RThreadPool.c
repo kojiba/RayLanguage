@@ -106,9 +106,10 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                     arg->context          = object;
                     arg->selfThread       = newOne;
 
-                    RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
+
+                    RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
 
                 } elseError(
                         RError("RThreadPool. Add with arg bad arg allocation.", object)

@@ -17,6 +17,7 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <unistd.h>
 
 #include "Tests.h"
 
@@ -191,14 +192,15 @@ pointer exec(RTCPDataStruct *data) {
     REnumerateDelegate chatRoomPredicate;
     ChatData *chatData;
     chatRoomPredicate.virtualEnumerator = (EnumeratorDelegate) ChatRoomPredicate;
-    RCString temp;
+    RString temp,
+            *welcome;
 
     RPrintf("[I] %s:%u[%u] connected\n", address, port, currentThread);
 
     chatData = createEmpty(data->identifier);
     data->context = chatData;
 
-    RString *welcome = stringWithFormat("Welcome %s\n"
+    welcome = stringWithFormat("Welcome %s\n"
                                         "You enter default chatroom, to change send      \'--change chatroom %%s\'\n"
                                         "                               change nickname  \'--set nickname %%s\'\n"
                                         "                               chatroom members \'--is anybody here?\'\n"
@@ -260,15 +262,45 @@ void startServer(void) {
     server = c(RTCPHandler)(nil);
     if(server != nil) {
         server->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
-        delegate = allocator(delegate);
+        delegate = allocator(RTCPDelegate);
         if(delegate != nil) {
             delegate->delegateFunction = (RThreadFunction) exec;
             delegate->context          = nil;
             $(server,  m(set_delegate, RTCPHandler)), delegate);
             $(server,  m(startOnPort, RTCPHandler)), server_port);
-            RPrintf("RTCPHandler started %p on port %u\n", server, server_port);
+            RPrintf("RTCPHandler server started %p on port %u\n", server, server_port);
         }
     }
+}
+
+void sendData(RTCPDataStruct *data) {
+    RString *sendMessage = stringWithFormat("Hello from Bot#%lu\n", data->identifier);
+    $(data->socket, m(sendString, RSocket)), sendMessage);
+    sleep(1);
+    deleter(sendMessage,  RString);
+    deleter(data->socket, RSocket);
+    data->socket = nil; // for auto-cleaning
+}
+
+void startConnector(void) {
+//    RTCPDelegate *connectorDelegate = nil;
+//    RTCPHandler  *connector;
+//
+//    sleep(2);
+//
+//    connector = c(RTCPHandler)(nil);
+//    if(connector != nil) {
+//        connectorDelegate = allocator(RTCPDelegate);
+//        if(connectorDelegate != nil) {
+//
+//            connectorDelegate->delegateFunction = (RThreadFunction) sendData;
+//            connectorDelegate->context          = nil;
+//
+//            $(connector, m(set_delegate,  RTCPHandler)), connectorDelegate);
+//            $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), server_port, 100);
+//            RPrintf("RTCPHandler connector started %p\n", connector);
+//        }
+//    }
 }
 
 int main(int argc, const char *argv[]) {
@@ -293,6 +325,8 @@ int main(int argc, const char *argv[]) {
 
     startServer();
 
+    startConnector();
+
     configurator = openListenerOnPort(configurator_port, 10);
     if(configurator == nil) goto exit;
     RPrintf("Configurator started %p on port %u\n", configurator, configurator_port);
@@ -301,45 +335,47 @@ int main(int argc, const char *argv[]) {
 
         RSocket *current = $(configurator, m(accept, RSocket)));
 
-        address = addressToString(&current->address);
-        port    = ntohs(current->address.sin_port);
+        if(current != nil) {
+            address = addressToString(&current->address);
+            port    = ntohs(current->address.sin_port);
 
-        RPrintf("[I] Configurator %s:%u connected\n", address, port);
-        connectionState = networkOperationSuccessConst;
+            RPrintf("[I] Configurator %s:%u connected\n", address, port);
+            connectionState = networkOperationSuccessConst;
 
-        while(connectionState != networkConnectionClosedConst) {
-            connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
-            if(connectionState == networkOperationSuccessConst) {
-                if(receivedSize > 8) {
-                    buffer[receivedSize] = 0;
-                    ifMemEqual(buffer, password->baseString, password->size) {
+            while(connectionState != networkConnectionClosedConst) {
+                connectionState = $(current, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
+                if(connectionState == networkOperationSuccessConst) {
+                    if(receivedSize > 8) {
+                        buffer[receivedSize] = 0;
+                        ifMemEqual(buffer, password->baseString, password->size) {
 
-                        ifMemEqual(buffer + password->size + 1, "shutdown", 8) {
-                            $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
-                            RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
+                            ifMemEqual(buffer + password->size + 1, "shutdown", 8) {
+                                $(current, m(sendString, RSocket)), RS("Server will terminate\n"));
+                                RPrintf("[I] Will terminate with command from %s:%u\n\n", address, port);
 
-                            closeAll = yes;
+                                closeAll = yes;
+                            }
+
+                            ifMemEqual(buffer + password->size + 1, "system", 6) {
+                                RPrintf(" >> Execute %s", buffer + 17);
+                                system(buffer + 17);
+                            }
+
+                            ifMemEqual(buffer + password->size + 1, "print", 5) {
+                                p(RTCPHandler)(server);
+                            }
+
+                        } else {
+                            RPrintf("[E] Bad user key on %s:%u\n", address, port);
                         }
-
-                        ifMemEqual(buffer + password->size + 1, "system", 6) {
-                            RPrintf(" >> Execute %s", buffer + 17);
-                            system(buffer + 17);
-                        }
-
-                        ifMemEqual(buffer + password->size + 1, "print", 5) {
-                            p(RTCPHandler)(server);
-                        }
-
-                    } else {
-                        RPrintf("[E] Bad user key on %s:%u\n", address, port);
                     }
+                    connectionState = networkConnectionClosedConst;
+                } else if (connectionState == networkOperationErrorConst) {
+                    RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
                 }
-                connectionState = networkConnectionClosedConst;
-            } else if (connectionState == networkOperationErrorConst) {
-                RError2("[E] Receive on configurator connection, from %s:%u", current, address, port);
             }
+            deleter(current, RSocket);
         }
-        deleter(current, RSocket);
     }
 
     deleter(configurator, RSocket);

@@ -14,6 +14,7 @@
  **/
 
 #include "RTCPHandler.h"
+#include "RayFoundation/RClassTable/RClassTable.h"
 
 #ifndef RAY_EMBEDDED
 
@@ -52,8 +53,7 @@ constructor(RTCPHandler)) {
         if(object->threads != nil) {
             object->arguments = makeRArray();
             if(object->arguments != nil) {
-
-                mutexWithType(&object->mutex, RMutexNormal);
+                object->classId = registerClassOnce(toString(RTCPHandler));
 
                 $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
                 $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
@@ -64,6 +64,7 @@ constructor(RTCPHandler)) {
                 object->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerMulticastEnumerator;
 
                 object->terminateFlag = no;
+                mutexWithType(&object->mutex, RMutexNormal);
             }
         }
     }
@@ -103,7 +104,12 @@ method(void, privateStartInMode, RTCPHandler)) {
         if(!object->connectorMode) {
             socketInProcess = $(object->listener, m(accept, RSocket)));
         } else {
-            socketInProcess = socketConnectedTo(object->ipAddress->baseString, object->port);
+            if(object->connectionsCount != 0) {
+                socketInProcess = socketConnectedTo(object->ipAddress->baseString, object->port);
+                --object->connectionsCount;
+            } else {
+                return; // stop opening connections
+            }
         }
 
         if(socketInProcess != nil) {
@@ -147,7 +153,6 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
                     RError1("RTCPHandler. startOnPort. Bind error, port %u", object, object->listener->port)
             );
 
-
         } elseWarning(
                 RWarning("RTCPHandler. startOnPort. Already running, do nothing.", object)
         );
@@ -156,24 +161,26 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
     );
 }
 
-method(void, startWithHost, RTCPHandler), RString *address, u16 port) {
+method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t connectionsCount) {
     if(object->delegate != nil
         && object->delegate->delegateFunction != nil
         && address != nil
-        && address->baseString != nil) {
+        && address->baseString != nil
+        && connectionsCount > 0) {
 
         if(!object->terminateFlag) {
 
-            object->ipAddress = address;
-            object->port = port;
+            object->connectionsCount = connectionsCount;
+            object->    ipAddress = address;
+            object->         port = port;
             object->connectorMode = yes;
             RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
 
         } elseWarning(
-                RWarning("RTCPHandler. startWithHost. Already running.", object)
+                RWarning("RTCPHandler. startWithHost. Handler already running.", object)
         );
     } elseWarning(
-            RWarning("RTCPHandler. startWithHost. Delegate or delgate function is nil. What do you want to start?!", object)
+            RWarning("RTCPHandler. startWithHost. Delegate, or virtual function, or connectionsCount is nil. What do you want to start?!", object)
     );
 }
 
