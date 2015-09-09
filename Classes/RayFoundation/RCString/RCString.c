@@ -866,7 +866,7 @@ constMethod(RCompareFlags, compareWith, RCString), const RCString *checkString) 
                 }
                 return equals;
             } else {
-                if(checkString->size == object->size) {
+                if(checkString->size > object->size) {
                     return shorter;
                 } else {
                     return longer;

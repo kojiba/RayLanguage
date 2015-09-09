@@ -41,31 +41,37 @@ ChatData *createEmpty(size_t count) {
 #define ContextChatData ((ChatData*)object->context)
 
 rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator) {
-    if($(ContextChatData->chatRoom,     m(isEqualTo, RCString)), context->chatRoom)) {
-        if($(ContextChatData->nickname, m(isEqualTo, RCString)), context->nickname)) {
-            return no;
+    if(ContextChatData != nil) {
+        if($(ContextChatData->chatRoom,     m(isEqualTo, RCString)), context->chatRoom)) {
+            if($(ContextChatData->nickname, m(isEqualTo, RCString)), context->nickname)) {
+                return no;
+            }
         }
     }
     return yes;
 }
 
 rbool ChatRoomPredicate(RString *context, RTCPDataStruct *object, size_t iterator) {
-    if($(ContextChatData->chatRoom, m(isEqualTo, RCString)), context)) {
-       return yes;
+    if(ContextChatData != nil) {
+        if($(ContextChatData->chatRoom, m(isEqualTo, RCString)), context)) {
+           return yes;
+        }
     }
     return no;
 }
 
 rbool ChatRoomListEnumerator(RString *list, RTCPDataStruct *object, size_t iterator) {
-    if(ContextChatData->nickname != nil) {
-        RString *number = stringWithFormat("%lu", iterator);
+    if(ContextChatData != nil) {
+        if(ContextChatData->nickname != nil) {
+            RString *number = stringWithFormat("%lu", iterator);
 
-        $(list, m(concatenate, RCString)), number);
-        $(list, m(concatenate, RCString)), RS(" - "));
-        $(list, m(concatenate, RCString)), ContextChatData->nickname);
-        $(list, m(concatenate, RCString)), RS("\n"));
+            $(list, m(concatenate, RCString)), number);
+            $(list, m(concatenate, RCString)), RS(" - "));
+            $(list, m(concatenate, RCString)), ContextChatData->nickname);
+            $(list, m(concatenate, RCString)), RS("\n"));
 
-        deleter(number, RString);
+            deleter(number, RString);
+        }
     }
     return yes;
 }
@@ -255,20 +261,18 @@ pointer exec(RTCPDataStruct *data) {
     return nil;
 }
 
-RTCPHandler  *server   = nil;
-RTCPDelegate *delegate = nil;
-
-void startServer(void) {
-    server = c(RTCPHandler)(nil);
-    if(server != nil) {
-        server->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
-        delegate = allocator(RTCPDelegate);
-        if(delegate != nil) {
-            delegate->delegateFunction = (RThreadFunction) exec;
-            delegate->context          = nil;
-            $(server,  m(set_delegate, RTCPHandler)), delegate);
-            $(server,  m(startOnPort, RTCPHandler)), server_port);
-            RPrintf("RTCPHandler server started %p on port %u\n", server, server_port);
+void startServer(RTCPHandler  **server,
+                 RTCPDelegate **delegate) {
+    *server = c(RTCPHandler)(nil);
+    if(*server != nil) {
+        (*server)->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
+        *delegate = allocator(RTCPDelegate);
+        if(*delegate != nil) {
+            (*delegate)->delegateFunction = (RThreadFunction) exec;
+            (*delegate)->context          = nil;
+            $(*server,  m(set_delegate, RTCPHandler)), *delegate);
+            $(*server,  m(startOnPort, RTCPHandler)), server_port);
+            RPrintf("RTCPHandler server started %p on port %u\n", *server, server_port);
         }
     }
 }
@@ -276,29 +280,27 @@ void startServer(void) {
 void sendData(RTCPDataStruct *data) {
     RString *sendMessage = stringWithFormat("Hello from Bot#%lu\n", data->identifier);
     $(data->socket, m(sendString, RSocket)), sendMessage);
-    sleep(1);
     deleter(sendMessage,  RString);
+    sleep(1);
     deleter(data->socket, RSocket);
     data->socket = nil; // for auto-cleaning
 }
 
-void startConnector(void) {
-//    RTCPDelegate *connectorDelegate = nil;
-//    RTCPHandler  *connector;
-//
+void startConnector(RTCPHandler  **server,
+                    RTCPDelegate **delegate) {
 //    sleep(2);
 //
-//    connector = c(RTCPHandler)(nil);
-//    if(connector != nil) {
-//        connectorDelegate = allocator(RTCPDelegate);
-//        if(connectorDelegate != nil) {
+//    (*server) = c(RTCPHandler)(nil);
+//    if((*server) != nil) {
+//        (*delegate) = allocator(RTCPDelegate);
+//        if((*delegate) != nil) {
 //
-//            connectorDelegate->delegateFunction = (RThreadFunction) sendData;
-//            connectorDelegate->context          = nil;
+//            (*delegate)->delegateFunction = (RThreadFunction) sendData;
+//            (*delegate)->context          = nil;
 //
-//            $(connector, m(set_delegate,  RTCPHandler)), connectorDelegate);
-//            $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), server_port, 100);
-//            RPrintf("RTCPHandler connector started %p\n", connector);
+//            $((*server), m(set_delegate,  RTCPHandler)), (*delegate));
+//            $((*server), m(startWithHost, RTCPHandler)), RS("127.0.0.1"), server_port, 100);
+//            RPrintf("RTCPHandler connector started %p\n", (*server));
 //        }
 //    }
 }
@@ -312,6 +314,9 @@ int main(int argc, const char *argv[]) {
     RSocket *configurator;
     size_t  receivedSize;
 
+    RTCPHandler  *server   , *connector = nil;
+    RTCPDelegate *delegate , *connectorDelegate = nil;
+
     enablePool(RPool);
     ComplexTest(); // lib test
 
@@ -323,9 +328,8 @@ int main(int argc, const char *argv[]) {
         password = getInputString();
     }
 
-    startServer();
-
-    startConnector();
+    startServer(&server, &delegate);
+    startConnector(&connector, &connectorDelegate);
 
     configurator = openListenerOnPort(configurator_port, 10);
     if(configurator == nil) goto exit;
