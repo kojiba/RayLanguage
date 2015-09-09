@@ -52,7 +52,8 @@ typedef void*   pointer;
 #ifdef _WIN32
     #undef byte
 #endif
-typedef uint8_t byte;
+typedef uint8_t  byte;
+typedef uint16_t u16;
 
 typedef byte    rbool;
 #define yes                                               ((rbool)   1)

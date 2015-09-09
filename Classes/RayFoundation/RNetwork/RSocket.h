@@ -53,16 +53,17 @@ char* addressToString(SocketAddressIn *address);
 class(RSocket)
         SocketDescriptor socket;
 
-        uint16_t         port;
+        u16              port;
         SocketAddressIn  address;
         socklen_t        addressLength;
         size_t           packetCounter;
 
 endOf(RSocket)
 
-RSocket * makeRSocket       (RSocket *object, int socketType,   int protocolType);
-RSocket * socketBindToPort  (int socketType,  int protocolType, uint16_t port);
-RSocket * openListenerOnPort(uint16_t port,   int queueCount);
+RSocket * makeRSocket       (RSocket *object,            int socketType,   int protocolType);
+RSocket * socketBindToPort  (int socketType,             int protocolType, u16 port);
+RSocket * openListenerOnPort(u16 port,                   int queueCount);
+RSocket * socketConnectedTo (const char * const address, u16 port);
 
 extern
 constructor (RSocket));
@@ -70,8 +71,8 @@ destructor  (RSocket);
 printer     (RSocket);
 
 // Setters
-method(rbool, bindPort,           RSocket),    uint16_t port); // for receiver
-method(void,  setPort,            RSocket),    uint16_t port); // for sender
+method(rbool, bindPort,           RSocket),    u16 port); // for receiver
+method(void,  setPort,            RSocket),    u16 port); // for sender
 
 method(rbool, enableBroadCast,    RSocket),    rbool enable);
 
@@ -81,6 +82,7 @@ method(void,  reuseAddress,       RSocket));
 
 method(int,       listen,         RSocket),    int queueCount);
 method(RSocket *, accept,         RSocket));
+method(rbool,     connect,        RSocket));
 
 // Main methods
 method(byte, send,                RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes

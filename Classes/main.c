@@ -184,7 +184,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
 pointer exec(RTCPDataStruct *data) {
     char    buffer[BUFFER_SIZE];
     const char    *address = addressToString(&data->socket->address);
-    unsigned short port = ntohs(data->socket->address.sin_port);
+                  u16 port = ntohs(data->socket->address.sin_port);
     unsigned currentThread =  (unsigned int) currentThreadIdentifier();
     byte     resultFlag;
     size_t   receivedSize;
@@ -263,10 +263,10 @@ void startServer(void) {
         delegate = allocator(delegate);
         if(delegate != nil) {
             delegate->delegateFunction = (RThreadFunction) exec;
-            delegate->context          = server;
+            delegate->context          = nil;
             $(server,  m(set_delegate, RTCPHandler)), delegate);
             $(server,  m(startOnPort, RTCPHandler)), server_port);
-            RPrintf("RTCPHandler starting %p on port %u\n", server, server_port);
+            RPrintf("RTCPHandler started %p on port %u\n", server, server_port);
         }
     }
 }
@@ -276,7 +276,7 @@ int main(int argc, const char *argv[]) {
     byte connectionState;
     char buffer[BUFFER_SIZE];
     const char *address;
-    unsigned short port;
+    u16 port;
     RSocket *configurator;
     size_t  receivedSize;
 

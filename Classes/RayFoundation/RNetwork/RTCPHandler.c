@@ -48,23 +48,22 @@ constructor(RTCPHandler)) {
     object = allocator(RTCPHandler);
     if(object != nil) {
         object->delegate = nil;
-        object->listener = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
-        if(object->listener != nil) {
-            object->threads = c(RThreadPool)(nil);
-            if(object->threads != nil) {
-                object->arguments = makeRArray();
-                if(object->arguments != nil) {
+        object->threads = c(RThreadPool)(nil);
+        if(object->threads != nil) {
+            object->arguments = makeRArray();
+            if(object->arguments != nil) {
 
-                    mutexWithType(&object->mutex, RMutexNormal);
+                mutexWithType(&object->mutex, RMutexNormal);
 
-                    $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
-                    $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
+                $(object->arguments, m(setPrinterDelegate,    RArray)), (PrinterDelegate)    PrivateArgPrinter);
+                $(object->arguments, m(setDestructorDelegate, RArray)), (DestructorDelegate) PrivateArgDeleter);
 
-                    // init destructorPredicate and enumerator
-                    object->destructorPredicate.virtualEnumerator = RTCPHandlerInactiveContextDeleter;
-                    object->destructorPredicate.context           = object;
-                    object->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerMulticastEnumerator;
-                }
+                // init destructorPredicate and enumerator
+                object->destructorPredicate.virtualEnumerator = RTCPHandlerInactiveContextDeleter;
+                object->destructorPredicate.context           = object;
+                object->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerMulticastEnumerator;
+
+                object->terminateFlag = no;
             }
         }
     }
@@ -72,9 +71,11 @@ constructor(RTCPHandler)) {
 }
 
 destructor(RTCPHandler) {
-    deleter(object->listener,  RSocket);
+    RMutexLock(&object->mutex);
     deleter(object->threads,   RThreadPool);
     deleter(object->arguments, RArray);
+    RMutexUnlock(&object->mutex);
+    RMutexDestroy(&object->mutex);
 }
 
 getterImpl(delegate, RTCPDelegate *, RTCPHandler)
@@ -90,59 +91,103 @@ printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }
 
-method(void, privateStartOnPort, RTCPHandler)) {
-    if($(object->listener, m(bindPort, RSocket)), object->listener->port) == yes) {
+method(void, privateStartInMode, RTCPHandler)) {
+    $(object->threads, m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
 
-        object->terminateFlag = no;
-        $(object->threads,  m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
-        $(object->listener, m(listen,              RSocket)),     RTCPHandlerListenerQueueSize);
+    if(!object->connectorMode) {
+        $(object->listener, m(listen, RSocket)), RTCPHandlerListenerQueueSize);
+    }
 
-        while(!object->terminateFlag) {
-            RSocket *socket = $(object->listener, m(accept, RSocket)));
-            if(socket != nil) {
-                RTCPDataStruct *argument = allocator(RTCPDataStruct);
-                if(argument != nil) {
-                    argument->handler    = object;
-                    argument->delegate   = object->delegate;
-                    argument->context    = object->delegate->context;
-                    argument->socket     = socket;
-                    argument->identifier = object->arguments->count;
-
-                    $(object->arguments, m(addObject,  RArray)), argument);
-
-                    // delete inactive worker arguments
-                    if(object->arguments->count != 0
-                       && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
-                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->destructorPredicate);
-                    }
-
-                    // finally, add new worker with auto-cleanup
-                    $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
-                } elseError(
-                        RError("RTCPHandler. Can't allocate thread argument.", object)
-                );
-            }
+    while(!object->terminateFlag) {
+        RSocket *socketInProcess = nil;
+        if(!object->connectorMode) {
+            socketInProcess = $(object->listener, m(accept, RSocket)));
+        } else {
+            socketInProcess = socketConnectedTo(object->ipAddress->baseString, object->port);
         }
-    } elseError(
-            RError1("RTCPHandler. startOnPort. Bind error, port %u", object, object->listener->port)
-    );
+
+        if(socketInProcess != nil) {
+            RTCPDataStruct *argument = allocator(RTCPDataStruct);
+            if(argument != nil) {
+                argument->handler    = object;
+                argument->delegate   = object->delegate;
+                argument->context    = object->delegate->context;
+                argument->socket     = socketInProcess;
+                argument->identifier = object->arguments->count;
+
+                $(object->arguments, m(addObject,  RArray)), argument);
+
+                // delete inactive worker arguments
+                if(object->arguments->count != 0
+                   && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
+                    $(object->arguments, m(deleteWithPredicate, RArray)), &object->destructorPredicate);
+                }
+
+                // finally, add new worker with auto-cleanup
+                $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+            } elseError(
+                    RError("RTCPHandler. Can't allocate thread argument.", object)
+            );
+        }
+    }
 }
 
 method(void, startOnPort, RTCPHandler), uint16_t port) {
     if(object->delegate != nil
             && object->delegate->delegateFunction != nil) {
-        $(object->listener, m(setPort, RSocket)), port);
-        RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartOnPort, RTCPHandler), object);
+        if(!object->terminateFlag) {
+
+            object->connectorMode = no;
+            object->listener     = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
+            if(object->listener != nil
+               && $(object->listener, m(bindPort, RSocket)), port) == yes) {
+
+                RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
+            } elseError(
+                    RError1("RTCPHandler. startOnPort. Bind error, port %u", object, object->listener->port)
+            );
+
+
+        } elseWarning(
+                RWarning("RTCPHandler. startOnPort. Already running, do nothing.", object)
+        );
     } elseWarning(
             RWarning("RTCPHandler. startOnPort. Delegate or delgate function is nil. What do you want to start?!", object)
     );
 }
 
+method(void, startWithHost, RTCPHandler), RString *address, u16 port) {
+    if(object->delegate != nil
+        && object->delegate->delegateFunction != nil
+        && address != nil
+        && address->baseString != nil) {
+
+        if(!object->terminateFlag) {
+
+            object->ipAddress = address;
+            object->port = port;
+            object->connectorMode = yes;
+            RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
+
+        } elseWarning(
+                RWarning("RTCPHandler. startWithHost. Already running.", object)
+        );
+    } elseWarning(
+            RWarning("RTCPHandler. startWithHost. Delegate or delgate function is nil. What do you want to start?!", object)
+    );
+}
+
 method(void, terminate,  RTCPHandler)) {
-    object->terminateFlag = yes;
-//    RThreadCancel(&object->runningThread);
-    $(object->threads,   m(cancel, RThreadPool)));
-    $(object->arguments, m(flush, RArray)));
+    if(!object->terminateFlag) {
+        object->terminateFlag = yes;
+        if(!object->connectorMode) {
+            deleter(object->listener, RSocket);
+        }
+        $(object->threads,   m(cancel, RThreadPool)));
+        $(object->arguments, m(flush, RArray)));
+    } elseWarning(
+            RWarning("RTCPHandler. terminate. Nothing to terminate.", object)
+    );
 }
 
 method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const pointer buffer, size_t size) {

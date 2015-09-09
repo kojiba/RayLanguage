@@ -17,6 +17,7 @@
 #define __R_TCP_HANDLER__
 
 #include "RSocket.h"
+#include "RayFoundation/RContainers/RDictionary.h"
 #include "RayFoundation/RThread/RThreadPool.h"
 
 #ifndef RAY_EMBEDDED
@@ -50,11 +51,15 @@ class(RTCPHandler)
     RThread              runningThread;
 
     rbool                terminateFlag;
+    rbool                connectorMode;
 
     RTCPDelegate        *delegate;
     RSocket             *listener;
     RThreadPool         *threads;
     RArray              *arguments;
+
+    RString            *ipAddress;
+    u16                 port;
 
     RMutex              mutex;
 endOf(RTCPHandler)
@@ -69,7 +74,7 @@ setter(delegate, RTCPDelegate *, RTCPHandler);
 
 method(void, startOnPort, RTCPHandler),    uint16_t port);
 method(void, terminate,   RTCPHandler));
-method(void, multicast,   RTCPHandler), REnumerateDelegate *predicate, const pointer buffer, size_t size);
+method(void, multicast,   RTCPHandler),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
 
 extern
 method(void, broadcast,   RTCPHandler), RString *string);

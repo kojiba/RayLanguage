@@ -60,7 +60,7 @@ RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
     return object;
 }
 
-RSocket * socketBindToPort(int socketType, int protocolType, uint16_t port) {
+RSocket * socketBindToPort(int socketType, int protocolType, u16 port) {
     RSocket *result = makeRSocket(nil, socketType, protocolType);
     if(result != nil) {
         if($(result, m(bindPort, RSocket)), port) == no) {
@@ -71,11 +71,25 @@ RSocket * socketBindToPort(int socketType, int protocolType, uint16_t port) {
     return result;
 }
 
-RSocket * openListenerOnPort(uint16_t port, int queueCount) {
+RSocket * openListenerOnPort(u16 port, int queueCount) {
     RSocket *result = socketBindToPort(SOCK_STREAM, IPPROTO_TCP, port);
     if(result != nil) {
         if($(result, m(listen, RSocket)), queueCount) < 0) {
             RError("RSocket. Error open listening socket.", result);
+            deleter(result, RSocket);
+            result = nil;
+        }
+    }
+    return result;
+}
+
+RSocket * socketConnectedTo(const char * const address, u16 port) {
+    RSocket *result = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
+    if(result != nil) {
+        $(result, m(setPort, RSocket)), port);
+        $(result, m(setAddress, RSocket)), address);
+        if($(result, m(connect, RSocket))) == no) {
+            RError2("RSocket. Error connecting to %s:%u.", result, address, port);
             deleter(result, RSocket);
             result = nil;
         }
@@ -100,7 +114,7 @@ printer(RSocket) {
 
 #pragma mark Setters
 
-method(rbool, bindPort, RSocket), uint16_t port) {
+method(rbool, bindPort, RSocket), u16 port) {
     SocketAddressIn address = {};
     address.sin_family = AF_INET;
     address.sin_port   = htons(port);
@@ -120,7 +134,7 @@ method(rbool, bindPort, RSocket), uint16_t port) {
     return yes;
 }
 
-method(void, setPort, RSocket), uint16_t port) {
+method(void, setPort, RSocket), u16 port) {
     object->port = port;
 }
 
@@ -189,6 +203,27 @@ method(RSocket *, accept, RSocket)) {
     }
     return result;
 }
+
+method(rbool, connect, RSocket)) {
+#ifdef _WIN32
+    if(connect(object->socket,
+               (SocketAddress*) &object->address,
+                                &object->addressLength) != SOCKET_ERROR){
+        return yes;
+    } else {
+        return no;
+    }
+#else
+    if(connect(object->socket,
+               (SocketAddress*) &object->address,
+                                 object->addressLength) == 0) {
+        return yes;
+    } else {
+        return no;
+    }
+#endif
+}
+
 
 #pragma mark Main Methods
 
