@@ -109,6 +109,8 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
 
+                    RPrintf("Added worker %p\n", newOne);
+
                     RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
 
                 } elseError(
@@ -124,7 +126,7 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
     RMutexUnlock(threadPoolMutex);
 }
 
-method(void, addWorker,  RThreadPool), RThread *worker) {
+method(void, addWorker, RThreadPool), RThread *worker) {
     RMutexLock(threadPoolMutex);
     $(object->threads, m(addObject, RArray)), worker);
     RMutexUnlock(threadPoolMutex);

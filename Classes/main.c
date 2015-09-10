@@ -288,21 +288,21 @@ void sendData(RTCPDataStruct *data) {
 
 void startConnector(RTCPHandler  **server,
                     RTCPDelegate **delegate) {
-//    sleep(2);
-//
-//    (*server) = c(RTCPHandler)(nil);
-//    if((*server) != nil) {
-//        (*delegate) = allocator(RTCPDelegate);
-//        if((*delegate) != nil) {
-//
-//            (*delegate)->delegateFunction = (RThreadFunction) sendData;
-//            (*delegate)->context          = nil;
-//
-//            $((*server), m(set_delegate,  RTCPHandler)), (*delegate));
-//            $((*server), m(startWithHost, RTCPHandler)), RS("127.0.0.1"), server_port, 100);
-//            RPrintf("RTCPHandler connector started %p\n", (*server));
-//        }
-//    }
+    sleep(2);
+
+    (*server) = c(RTCPHandler)(nil);
+    if((*server) != nil) {
+        (*delegate) = allocator(RTCPDelegate);
+        if((*delegate) != nil) {
+
+            (*delegate)->delegateFunction = (RThreadFunction) sendData;
+            (*delegate)->context          = nil;
+
+            $((*server), m(set_delegate,  RTCPHandler)), (*delegate));
+            $((*server), m(startWithHost, RTCPHandler)), RS("127.0.0.1"), server_port, 100);
+            RPrintf("RTCPHandler connector started %p\n", (*server));
+        }
+    }
 }
 
 int main(int argc, const char *argv[]) {
@@ -387,6 +387,9 @@ int main(int argc, const char *argv[]) {
     deallocator(delegate);
     $(server, m(terminate, RTCPHandler)));
     deleter(server,        RTCPHandler);
+
+    deallocator(connectorDelegate);
+    deleter(connector,        RTCPHandler);
 
     exit:
     deleter(password, RString);

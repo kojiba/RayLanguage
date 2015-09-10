@@ -175,6 +175,7 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
             object->         port = port;
             object->connectorMode = yes;
             RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
+//            RThreadJoin(&object->runningThread); // wait when all connected
 
         } elseWarning(
                 RWarning("RTCPHandler. startWithHost. Handler already running.", object)
@@ -182,6 +183,10 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
     } elseWarning(
             RWarning("RTCPHandler. startWithHost. Delegate, or virtual function, or connectionsCount is nil. What do you want to start?!", object)
     );
+}
+
+method(void, waitConnectors, RTCPHandler)) {
+    $(object->threads, m(joinSelfDeletes, RThreadPool)));
 }
 
 method(void, terminate,  RTCPHandler)) {

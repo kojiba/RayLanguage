@@ -73,10 +73,11 @@ printer(RTCPHandler);
 getter(delegate, RTCPDelegate *, RTCPHandler);
 setter(delegate, RTCPDelegate *, RTCPHandler);
 
-method(void, startOnPort,   RTCPHandler),    uint16_t port);
-method(void, startWithHost, RTCPHandler),    RString *address, u16 port, size_t connectionsCount);
-method(void, terminate,     RTCPHandler));
-method(void, multicast,     RTCPHandler),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
+method(void, startOnPort,    RTCPHandler),    uint16_t port);
+method(void, startWithHost,  RTCPHandler),    RString *address, u16 port, size_t connectionsCount);
+method(void, waitConnectors, RTCPHandler));
+method(void, terminate,      RTCPHandler));
+method(void, multicast,      RTCPHandler),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
 
 extern
 method(void, broadcast,     RTCPHandler), RString *string);

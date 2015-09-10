@@ -246,10 +246,14 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 }
 
 method(void, deleteObject, RArray), pointer toDelete) {
-    if(toDelete != nil) {
+    if(toDelete != nil
+       || object->count == 0) {
         size_t iterator;
         RMutexLockArray();
         printDebugTrace1("Object %p", toDelete);
+#ifdef RAY_WARNINGS_ON
+        size_t oldFreeCount = object->freePlaces; // store old free count
+#endif
         forAll(iterator, object->count) {
             if(object->array[iterator] == toDelete) {
                 destroyElementAtIndex(iterator);
@@ -257,22 +261,26 @@ method(void, deleteObject, RArray), pointer toDelete) {
                 break;
             }
         }
-        ifWarning(iterator != object->count
-                  && object->count != 0,
-                RWarning1("RArray. deleteObject. There are no object %p in array.", object, toDelete)
-        )
+        ifWarning(iterator == object->count
+                  && oldFreeCount == object->freePlaces,
+            RWarning1("RArray. deleteObject. There are no object %p in array.", object, toDelete)
+        );
 
         RMutexUnlockArray();
     } elseWarning(
-            RWarning("RArray. deleteObject. Argument pointer is nil.", object)
+            RWarning1("RArray. deleteObject. Argument pointer is nil, or array is empty (size = %llu).", object, object->count)
     );
 }
 
 method(void, deleteObjectFast, RArray), pointer toDelete) {
-    if(toDelete != nil) {
+    if(toDelete != nil
+            || object->count == 0) {
         size_t iterator;
         RMutexLockArray();
         printDebugTrace1("Object %p", toDelete);
+#ifdef RAY_WARNINGS_ON
+        size_t oldFreeCount = object->freePlaces; // store old free count
+#endif
         forAll(iterator, object->count) {
             if(object->array[iterator] == toDelete) {
                 unsafeDeleteObjectAtIndex(iterator);
@@ -280,13 +288,13 @@ method(void, deleteObjectFast, RArray), pointer toDelete) {
             }
         }
         ifWarning(iterator == object->count
-                  && object->count != 0,
-                  RWarning1("RArray. deleteObjectFast. There are no object %p in array.", object, toDelete)
-        )
+                  && oldFreeCount == object->freePlaces,
+            RWarning1("RArray. deleteObjectFast. There are no object %p in array.", object, toDelete)
+        );
 
         RMutexUnlockArray();
     } elseWarning(
-            RWarning("RArray. deleteObjectFast. Argument pointer is nil.", object)
+            RWarning1("RArray. deleteObjectFast. Argument pointer is nil, or array is empty (size = %llu).", object, object->count)
     );
 }
 
