@@ -22,7 +22,6 @@
 protocol(PrivateThreadArgument)
     RThreadFunction  delegateFunction;
             pointer  threadArgument;
-            RThread *selfThread;
 endOf(PrivateThreadArgument)
 
 #define threadPoolMutex &object->mutex
@@ -39,7 +38,7 @@ struct RThreadPool {
 
 pointer privateThreadExecutor(PrivateThreadArgument *arg) {
     pointer result = arg->delegateFunction(arg->threadArgument);
-    $(arg->context, m(deleteWorker, RThreadPool)), arg->selfThread);
+    $(arg->context, m(deleteWorker, RThreadPool)), currentThread());
     $(((RThreadPool*)arg->context)->arguments, m(deleteObjectFast, RArray)), arg);
     return result;
 }
@@ -53,7 +52,6 @@ constructor(RThreadPool)) {
 
         if(object->threads != nil && object->arguments != nil) {
 
-            $(object->threads,   m(setDestructorDelegate, RArray)), getRFree());
             $(object->arguments, m(setDestructorDelegate, RArray)), getRFree());
 
             object->classId = registerClassOnce(toString(RThreadPool));
@@ -95,48 +93,42 @@ method(RThreadFunction, delegateFunction, RThreadPool)) {
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfDeletes) {
     RMutexLock(threadPoolMutex);
     if(object->delegateFunction != nil) {
-        RThread *newOne = allocator(RThread);
-        if(newOne != nil) {
-            if(selfDeletes) {
-                PrivateThreadArgument *arg = allocator(PrivateThreadArgument);
-                if(arg != nil) {
+        RThread newOne = nil;
+        if(selfDeletes) {
+            PrivateThreadArgument *arg = allocator(PrivateThreadArgument);
+            if(arg != nil) {
 
-                    arg->threadArgument   = argumentForNewWorker;
-                    arg->delegateFunction = object->delegateFunction;
-                    arg->context          = object;
-                    arg->selfThread       = newOne;
+                arg->threadArgument   = argumentForNewWorker;
+                arg->delegateFunction = object->delegateFunction;
+                arg->context          = object;
 
-                    $(object->threads,   m(addObject, RArray)), newOne);
-                    $(object->arguments, m(addObject, RArray)), arg);
+                RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
+                $(object->threads,   m(addObject, RArray)), newOne);
+                $(object->arguments, m(addObject, RArray)), arg);
 
-                    RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
-
-                } elseError(
-                        RError("RThreadPool. Add with arg bad arg allocation.", object)
-                );
-            } else {
-                RThreadCreate(newOne, nil, object->delegateFunction, argumentForNewWorker);
-            }
-        } elseError(
-                RError("RThreadPool. Add with arg bad worker allocation.", object)
-        );
+            } elseError(
+                    RError("RThreadPool. Add with arg bad arg allocation.", object)
+            );
+        } else {
+            RThreadCreate(&newOne, nil, object->delegateFunction, argumentForNewWorker);
+        }
     }
     RMutexUnlock(threadPoolMutex);
 }
 
-method(void, addWorker, RThreadPool), RThread *worker) {
+method(void, addWorker, RThreadPool), RThread worker) {
     RMutexLock(threadPoolMutex);
     $(object->threads, m(addObject, RArray)), worker);
     RMutexUnlock(threadPoolMutex);
 }
 
-method(void, deleteWorker, RThreadPool), RThread *worker) {
+method(void, deleteWorker, RThreadPool), RThread worker) {
     RMutexLock(threadPoolMutex);
     $(object->threads, m(deleteObjectFast, RArray)), worker);
     RMutexUnlock(threadPoolMutex);
 }
 
-rbool joinThreadCheck(pointer context, pointer thread, size_t iterator) {
+rbool joinThreadCheck(pointer context, RThread thread, size_t iterator) {
     RThreadJoin(thread);
     return yes;
 }
@@ -147,7 +139,7 @@ method(void, joinSelfDeletes, RThreadPool)) {
 
 method(void, join, RThreadPool)) {
     RMutexLock(threadPoolMutex);
-    object->enumerator.virtualEnumerator = joinThreadCheck;
+    object->enumerator.virtualEnumerator = (EnumeratorDelegate) joinThreadCheck;
     $(object->threads, m(enumerate, RArray)), &object->enumerator, yes);
     RMutexUnlock(threadPoolMutex);
 }

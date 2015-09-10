@@ -65,7 +65,6 @@ inline int RThreadCreate(RThread *thread,
                   RThreadAttributes attributes,
                   RThreadFunction function,
                   pointer argument ) {
-
 #ifndef __WIN32
     return pthread_create(thread, attributes, function, argument);
 #else
@@ -74,27 +73,27 @@ inline int RThreadCreate(RThread *thread,
 #endif
 }
 
-inline int RThreadCancel(RThread *thread) {
+inline int RThreadCancel(RThread thread) {
 #ifndef __WIN32
-    return pthread_cancel(*thread);
+    return pthread_cancel(thread);
 #else
     return (int)TerminateThread(thread, 0);
 #endif
 }
 
-inline int RThreadKill(RThread *thread) {
+inline int RThreadKill(RThread thread) {
 #ifndef __WIN32
-    return pthread_kill(*thread, SIGKILL);
+    return pthread_kill(thread, SIGKILL);
 #else
     return (int)TerminateThread(thread, 0);
 #endif
 }
 
-inline int RThreadJoin(RThread *thread) {
+inline int RThreadJoin(RThread thread) {
 #ifndef __WIN32
-    return pthread_join(*thread, nil);
+    return pthread_join(thread, nil);
 #else
-    return (int)WaitForSingleObject(*thread, INFINITE);
+    return (int)WaitForSingleObject(thread, INFINITE);
 #endif
 }
 
@@ -106,15 +105,15 @@ inline void RThreadExit(pointer data) {
 #endif
 }
 
-extern RThreadId RThreadIdOfThread(RThread *thread) {
+extern RThreadId RThreadIdOfThread(RThread thread) {
 #ifdef __linux
     return syscall(__NR_gettid);
 #elif __APPLE__
     RThreadId result;
-    pthread_threadid_np(*thread, &result);
+    pthread_threadid_np(thread, &result);
     return result;
 #else
-    return 0;//GetThreadId(*thread);
+    return 0;//GetThreadId(thread);
 #endif
 }
 

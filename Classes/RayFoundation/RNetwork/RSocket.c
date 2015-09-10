@@ -102,7 +102,12 @@ inline constructor(RSocket)) {
 }
 
 destructor(RSocket) {
+#ifdef _WIN32
+    closesocket(object->socket);
+#else
+    shutdown(object->socket, 0);
     close(object->socket);
+#endif
 }
 
 printer(RSocket) {

@@ -199,14 +199,13 @@ int RThreadTest(void) {
     int i;
     arrayTest->destructorDelegate = free;
     RThread thread1;
-    flushAllToByte(&thread1, sizeof(RThread), 0);
     RThreadCreate(&thread1, nil, (RThreadFunction) func1, "1 thread");
 
     forAll(i, TEST_COUNT) {
         $(arrayTest, m(addObject, RArray)), RCS("main"));
     }
 
-    $(&thread1, RThreadJoin));
+    $(thread1, RThreadJoin));
 
     RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);

@@ -85,7 +85,7 @@ setterImpl(delegate, RTCPDelegate *, RTCPHandler)
 printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n", object);
 #ifndef _WIN32
-    RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(&object->runningThread));
+    RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(object->runningThread));
 #endif
     RPrintf("------ Arguments ------");
     p(RArray)(object->arguments);
@@ -142,7 +142,7 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
     if(object->delegate != nil
             && object->delegate->delegateFunction != nil) {
         if(!object->terminateFlag) {
-
+            RMutexLock(&object->mutex);
             object->connectorMode = no;
             object->listener      = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
             if(object->listener != nil
@@ -152,7 +152,7 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
             } elseError(
                     RError("RTCPHandler. startOnPort\n", object)
             );
-
+            RMutexUnlock(&object->mutex);
         } elseWarning(
                 RWarning("RTCPHandler. startOnPort. Already running, do nothing.", object)
         );
@@ -169,14 +169,14 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
         && connectionsCount > 0) {
 
         if(!object->terminateFlag) {
-
+            RMutexLock(&object->mutex);
             object->connectionsCount = connectionsCount;
             object->    ipAddress = address;
             object->         port = port;
             object->connectorMode = yes;
             RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
-            RThreadJoin(&object->runningThread); // wait when all connected
-
+            RThreadJoin(object->runningThread); // wait when all connected
+            RMutexUnlock(&object->mutex);
         } elseWarning(
                 RWarning("RTCPHandler. startWithHost. Handler already running.", object)
         );
@@ -186,17 +186,21 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
 }
 
 method(void, waitConnectors, RTCPHandler)) {
+    RMutexLock(&object->mutex);
     $(object->threads, m(joinSelfDeletes, RThreadPool)));
+    RMutexUnlock(&object->mutex);
 }
 
 method(void, terminate,  RTCPHandler)) {
     if(!object->terminateFlag) {
         object->terminateFlag = yes;
+        RMutexLock(&object->mutex);
         if(!object->connectorMode) {
             deleter(object->listener, RSocket);
         }
         $(object->threads,   m(cancel, RThreadPool)));
         $(object->arguments, m(flush, RArray)));
+        RMutexUnlock(&object->mutex);
     } elseWarning(
             RWarning("RTCPHandler. terminate. Nothing to terminate.", object)
     );

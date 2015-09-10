@@ -35,8 +35,8 @@ method(RThreadFunction, delegateFunction,    RThreadPool));
 
 // selfDeletes - remove itself record from pool, when finished
 method(void,            addWithArg,          RThreadPool),     pointer argumentForNewWorker, rbool selfDeletes);
-method(void,            addWorker,           RThreadPool),     RThread *worker);
-method(void,            deleteWorker,        RThreadPool),     RThread *worker);
+method(void,            addWorker,           RThreadPool),     RThread worker);
+method(void,            deleteWorker,        RThreadPool),     RThread worker);
 
 method(void,            join,                RThreadPool));
 method(void,            joinSelfDeletes,     RThreadPool));
