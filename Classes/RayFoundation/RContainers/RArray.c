@@ -117,7 +117,7 @@ destructor(RArray) {
 printer(RArray) {
     size_t iterator;
     RMutexLockArray();
-    RPrintf("\n%s object %p : { \n", toString(RArray), object);
+    RPrintf("%s object %p : { \n", toString(RArray), object);
     RPrintf(" Count : %lu \n", object->count);
     RPrintf(" Free  : %lu \n", object->freePlaces);
     forAll(iterator, object->count) {

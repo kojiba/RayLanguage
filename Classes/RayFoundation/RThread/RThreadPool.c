@@ -109,8 +109,6 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
 
-                    RPrintf("Added worker %p\n", newOne);
-
                     RThreadCreate(newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
 
                 } elseError(

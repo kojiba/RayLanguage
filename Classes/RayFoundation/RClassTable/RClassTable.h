@@ -47,16 +47,11 @@ method(size_t,      getNumberOfClasses,       RClassTable));
 #define makeRCTable() $(nil, c(RClassTable)) );
 
 // some substitutions macro for better syntax
-#if defined(RCTSingleton) || defined(registerClassOnce) || defined(printRCTS) \
-    || defined(releaseRCTS) || defined(flushRCTS) || defined(getIdentifierByName)
+#if defined(RCTSingleton) || defined(registerClassOnce)
     #error "Ray Class Table Defines Error - some already defined"
 #else
 #define RCTSingleton              singletonCall(RClassTable)
-#define flushRCTS()               $(master(RCTSingleton, RArray), m(flush, RArray)));
-#define releaseRCTS               d(RClassTable)(RCTSingleton); free(singletonCall(RClassTable))
 #define registerClassOnce(name)   $(RCTSingleton, m(registerClassWithName, RClassTable)), name) // return id, or 0 if fails. [0; 3] ids is reserved
-#define printRCTS                 $(RCTSingleton, p(RClassTable)) )
-#define getIdentifierByName(name) $(RCTSingleton, m(getIdentifierByClassName, RClassTable)), name)
 #endif
 
 #endif /*__CLASS_TABLE_H__*/

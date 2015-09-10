@@ -144,13 +144,13 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
         if(!object->terminateFlag) {
 
             object->connectorMode = no;
-            object->listener     = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
+            object->listener      = makeRSocket(nil, SOCK_STREAM, IPPROTO_TCP);
             if(object->listener != nil
                && $(object->listener, m(bindPort, RSocket)), port) == yes) {
 
                 RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
             } elseError(
-                    RError1("RTCPHandler. startOnPort. Bind error, port %u", object, object->listener->port)
+                    RError("RTCPHandler. startOnPort\n", object)
             );
 
         } elseWarning(
@@ -175,7 +175,7 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
             object->         port = port;
             object->connectorMode = yes;
             RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
-//            RThreadJoin(&object->runningThread); // wait when all connected
+            RThreadJoin(&object->runningThread); // wait when all connected
 
         } elseWarning(
                 RWarning("RTCPHandler. startWithHost. Handler already running.", object)

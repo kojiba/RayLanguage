@@ -172,7 +172,7 @@ printer(RAutoPool) {
         RPrintf("\t Size total %lu bytes\n", *memTotal);
     }
 #endif
-    RPrintf("Pointers array: ");
+    RPrintf("Pointers ");
     $(object->pointersInWork, p(RArray)));
     RPrintf("-------------------------- %p\n", object);
 #ifdef R_POOL_DETAILED
