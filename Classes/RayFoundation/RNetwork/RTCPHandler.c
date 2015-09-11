@@ -169,14 +169,24 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
         && connectionsCount > 0) {
 
         if(!object->terminateFlag) {
-            RMutexLock(&object->mutex);
-            object->connectionsCount = connectionsCount;
-            object->    ipAddress = address;
-            object->         port = port;
-            object->connectorMode = yes;
-            RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler), object);
-            RThreadJoin(object->runningThread); // wait when all connected
-            RMutexUnlock(&object->mutex);
+            if(!(address->size > 15
+               || address->size < 7)) {
+
+                RMutexLock(&object->mutex);
+                object->connectionsCount = connectionsCount;
+                object->ipAddress = address;
+                object->port = port;
+                object->connectorMode = yes;
+
+                RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler),
+                              object);
+                RThreadJoin(object->runningThread); // wait when all connected
+
+                RMutexUnlock(&object->mutex);
+
+            } elseError(
+                RError1("RTCPHandler. startWithHost. Bad host address string %s", object, address->baseString)
+            )
         } elseWarning(
                 RWarning("RTCPHandler. startWithHost. Handler already running.", object)
         );

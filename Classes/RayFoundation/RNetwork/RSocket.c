@@ -42,7 +42,7 @@ RSocket * makeRSocket(RSocket *object, int socketType, int protocolType) {
         if(isFirstSocket) {
             int result = wsaStartUp();
             if(result != 0) {
-                RError("Windows sockets startup failed, errorcode in begin of line.", (pointer)result);
+                RError("Windows sockets startup failed, error code in begin of this line.", (pointer)result);
             }
             isFirstSocket = no;
         }

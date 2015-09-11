@@ -75,7 +75,7 @@ set(HEADER_FILES # Worker headers
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
 
-                 # Tests
+                 # Utils
                  Classes/RayFoundation/Utils/Utils.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RayBase.c
@@ -119,7 +119,7 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RNetwork/RSocket.c
                  Classes/RayFoundation/RNetwork/RTCPHandler.c
 
-                 # Tests
+                 # Utils
                  Classes/RayFoundation/Utils/Utils.c)
 
 if(NOT ${DebugFlag})
@@ -186,6 +186,10 @@ endif() # RInterpreter ---------------------------------------------------
 
 add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
                                                  Classes/Tests.c
+
+                                                 Classes/RayChat.h
+                                                 Classes/RayChat.c
+
                                                  ${RVM_HEADERS}
                                                  ${RVM_SOURCES}
                                                  ${RINTERPRETER_HEADERS}

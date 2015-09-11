@@ -100,7 +100,7 @@ extern int RMutexUnlock  (RMutex *mutex);
 extern int RMutexTryLock (RMutex *mutex);
 extern int RMutexDestroy (RMutex *mutex);
 
-#endif
+#endif /* RAY_EMBEDDED */
 
 #endif /*__R_THREAD_H__*/
 
