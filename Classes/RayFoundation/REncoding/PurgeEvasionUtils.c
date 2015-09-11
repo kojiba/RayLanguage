@@ -21,8 +21,14 @@
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
-#define nil ((void*)0)
-#define forAll(iterator, count) for(iterator = 0; iterator < (count); ++iterator)
+#ifndef nil
+    #define nil ((void*)0)
+#endif
+
+#ifndef forAll
+    #define forAll(iterator, count) for(iterator = 0; iterator < (count); ++iterator)
+#endif
+
 #define xor(first, second)
 
 void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize) { // key changed and data not

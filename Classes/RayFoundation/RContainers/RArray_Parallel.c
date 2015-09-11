@@ -198,7 +198,7 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
 
             // join all threads
             forAll(iterator, coreCount) {
-                RThreadJoin(&descriptors[iterator]);
+                RThreadJoin(descriptors[iterator]);
             }
 
             RMutexUnlockArray();

@@ -268,7 +268,7 @@ method(void, deleteObject, RArray), pointer toDelete) {
 
         RMutexUnlockArray();
     } elseWarning(
-            RWarning1("RArray. deleteObject. Argument pointer is nil, or array is empty (size = %llu).", object, object->count)
+            RWarning1("RArray. deleteObject. Argument pointer is nil, or array is empty (size = %zu).", object, object->count)
     );
 }
 
@@ -294,7 +294,7 @@ method(void, deleteObjectFast, RArray), pointer toDelete) {
 
         RMutexUnlockArray();
     } elseWarning(
-            RWarning1("RArray. deleteObjectFast. Argument pointer is nil, or array is empty (size = %llu).", object, object->count)
+            RWarning1("RArray. deleteObjectFast. Argument pointer is nil, or array is empty (size = %zu).", object, object->count)
     );
 }
 

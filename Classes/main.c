@@ -23,13 +23,13 @@
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
-
-    RTCPHandler  *server;
-    RTCPDelegate *delegate;
-
-    startServer(&server,
-                     &delegate,
-                     4000,
-                     4001);
+//
+//    RTCPHandler  *server;
+//    RTCPDelegate *delegate;
+//
+//    startServer(&server,
+//                     &delegate,
+//                     4000,
+//                     4001);
     endRay();
 }
