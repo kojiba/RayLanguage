@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Raylanguage by kojiba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Raylanguage</h1>
+      <h2 class="project-tagline">Additions to C functional. (Containers, strings operations, memory operations, sockets, threads, etc...)</h2>
+      <a href="https://github.com/kojiba/RayLanguage" class="btn">View on GitHub</a>
+      <a href="https://github.com/kojiba/RayLanguage/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/kojiba/RayLanguage/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="raylanguage" class="anchor" href="#raylanguage" aria-hidden="true"><span class="octicon octicon-link"></span></a>RayLanguage</h1>
+
+<p><strong>If You have some ideas, or found bugs - create issues here on github or email me.</strong></p>
+
+<p>firstly:
+Ray additions to C language defines some C-based syntax, 
+that makes object-oriented life easier for C developers.
+All based on defines.  </p>
+
+<p>Containers:<br>
+1.  Array, List (dynamicly self-longs, store pointers to objects)<br>
+2.  Dictionary (NSDictionary, std::map analog, self-longs)<br>
+3.  Buffer (self-longs, sore full copy of objects)<br>
+5.  ClassTable (for store pairs of number and string once, may be used like runtime enum etc.)  </p>
+
+<p>Strings:<br>
+1. Wide range of c-string processing operations (RCString)<br>
+2. Replacings<br>
+3. Find of substring or symbol<br>
+4. Delete characters/substrings<br>
+5. Delete of duplicatings characters/substring<br>
+6. Compares<br>
+7. Read from file/ apend to file<br>
+8. Tokenization into containeer Array<br>
+9. Base64 encoding/decoding<br>
+10. etc...  </p>
+
+<p>Memory operations:<br>
+1. Self-code easy sandboxing and testing with logging.<br>
+2. Self-code management with RAutoPool. (Checking leaks)<br>
+3. Work with byte buffers<br>
+4. Work with memory chunks    </p>
+
+<p>Some test projects based on RayFoundation:<br>
+1. Simple VM with Brainfuck compiler<br>
+2. Simple lang interpreter (unfinished)  </p>
+
+<p>Work with RArray:  </p>
+
+<div class="highlight highlight-source-c"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>RayFoundation.h<span class="pl-pds">&gt;</span></span>
+
+<span class="pl-k">typedef</span> <span class="pl-k">struct</span> ComplexStruct {
+    <span class="pl-c1">size_t</span> id;
+    RCString *fullName;
+} ComplexStruct;
+
+<span class="pl-k">void</span> <span class="pl-en">printComplexStruct</span>(ComplexStruct *some) {
+    <span class="pl-c1">printf</span>(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%p</span> | id: <span class="pl-c1">%02lu</span> | fullname : <span class="pl-cce">\'</span><span class="pl-c1">%s</span><span class="pl-cce">\'</span> <span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, some, some-&gt;id, some-&gt;fullName-&gt;baseString);
+}
+
+<span class="pl-k">void</span> <span class="pl-en">complexDeleter</span>(ComplexStruct *some) {
+    <span class="pl-c1">deleter</span>(some-&gt;fullName, RCString);
+    <span class="pl-c1">free</span>(some);
+}
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+    <span class="pl-c1">size_t</span> iterator;
+
+    RArray *array = <span class="pl-c1">makeRArray</span>(); <span class="pl-c">// create array</span>
+    <span class="pl-c">// sets delegates for automatic print and cleanup</span>
+    array-&gt;printerDelegate = (PrinterDelegate) printComplexStruct;
+    array-&gt;destructorDelegate = (DestructorDelegate) complexDeleter;
+
+    <span class="pl-c1">forAll</span>(iterator, <span class="pl-c1">100</span>) {
+        <span class="pl-c">// create struct and add to array</span>
+        ComplexStruct *some = <span class="pl-c1">malloc</span>(<span class="pl-k">sizeof</span>(ComplexStruct));
+        some-&gt;id = iterator + <span class="pl-c1">1</span>;
+        some-&gt;fullName = <span class="pl-c1">stringWithFormat</span>(<span class="pl-s"><span class="pl-pds">"</span>Object # <span class="pl-c1">%lu</span><span class="pl-pds">"</span></span>, iterator + <span class="pl-c1">1</span>); <span class="pl-c">// more string processing API in RCString.h</span>
+        $(array, <span class="pl-c1">m</span>(addObject, RArray)), some);
+    }
+    <span class="pl-c">// print</span>
+    <span class="pl-c1">printerOfRArray</span>(array);
+
+    <span class="pl-c">// delete, automatically calls destructor delegate and free array prt</span>
+    <span class="pl-c1">deleter</span>(array, RArray);
+
+    <span class="pl-c">// some syntaxic sugar see initFromArray, initFromArrayWithSizes, arrayFromArray</span>
+
+    <span class="pl-c">// create array of strings</span>
+    RCString *uniqTok = <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Unique token<span class="pl-pds">"</span></span>);
+    array = <span class="pl-c1">RA</span>(<span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Token 1<span class="pl-pds">"</span></span>), <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Token 2<span class="pl-pds">"</span></span>), uniqTok, nil); <span class="pl-c">// must be NULL terminated</span>
+
+    array-&gt;printerDelegate = (PrinterDelegate) <span class="pl-c1">p</span>(RCString);
+    array-&gt;destructorDelegate = <span class="pl-c1">free</span>;
+
+    <span class="pl-c1">printerOfRArray</span>(array);
+
+    RCompareDelegate delegate;
+    delegate.<span class="pl-smi">etaloneObject</span> = uniqTok;
+    delegate.<span class="pl-smi">virtualCompareMethod</span> = (<span class="pl-c1">RCompareFlags</span> (*)(pointer, pointer)) compareWithRCString;
+
+    RFindResult result = <span class="pl-c1">findObjectWithDelegateRArray</span>(array, &amp;delegate); <span class="pl-c">// search</span>
+
+    <span class="pl-k">if</span>(result.<span class="pl-smi">object</span> != nil) { <span class="pl-c">// object != nil -&gt; found object, place also logged</span>
+        <span class="pl-c1">printf</span>(<span class="pl-s"><span class="pl-pds">"</span>Found some object at place <span class="pl-c1">%lu</span>!<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, result.<span class="pl-smi">index</span>);
+    } <span class="pl-k">else</span> {
+        <span class="pl-c1">printf</span>(<span class="pl-s"><span class="pl-pds">"</span>Object not found!<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>);
+    }
+
+    RArray *subarray = <span class="pl-c1">getSubarrayRArray</span>(array, <span class="pl-c1">makeRRange</span>(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>)); <span class="pl-c">// delegates will be copied</span>
+    <span class="pl-c1">printerOfRArray</span>(subarray);
+    subarray-&gt;destructorDelegate = nil; <span class="pl-c">// not want to delete strings</span>
+    <span class="pl-c1">deleter</span>(subarray, RArray);
+
+    <span class="pl-c1">deleter</span>(array, RArray); <span class="pl-c">// cleanup strings</span>
+
+    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+}</pre></div>
+
+<p>RDictionary use:  </p>
+
+<div class="highlight highlight-source-c"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>RayFoundation.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>Tests.h<span class="pl-pds">"</span></span>
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+    <span class="pl-c1">enablePool</span>(RPool);
+    <span class="pl-c1">ComplexTest</span>();
+
+    RDictionary *dict =  <span class="pl-c1">dictionaryFromPairs</span>(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>,
+                                             <span class="pl-s"><span class="pl-pds">"</span>key2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value2<span class="pl-pds">"</span></span>,
+                                             <span class="pl-s"><span class="pl-pds">"</span>key3<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value3<span class="pl-pds">"</span></span>,
+                                             <span class="pl-s"><span class="pl-pds">"</span>key4<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value4<span class="pl-pds">"</span></span>,
+                                             <span class="pl-s"><span class="pl-pds">"</span>key5<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value5<span class="pl-pds">"</span></span>,
+                                             nil);
+
+    <span class="pl-k">char</span> * string = $(dict, <span class="pl-c1">m</span>(getObjectForKey, RDictionary)), <span class="pl-s"><span class="pl-pds">"</span>key4<span class="pl-pds">"</span></span>);
+
+    <span class="pl-c1">printf</span>(<span class="pl-s"><span class="pl-pds">"</span>Found object for <span class="pl-cce">\'</span>key4<span class="pl-cce">\'</span> - <span class="pl-cce">\'</span><span class="pl-c1">%s</span><span class="pl-cce">\'</span> <span class="pl-cce">\n\n</span><span class="pl-pds">"</span></span>, string);
+
+    <span class="pl-c1">deleter</span>(dict, RDictionary);
+
+    <span class="pl-c1">endRay</span>(); <span class="pl-c">// standart cleanup</span>
+}</pre></div>
+
+<p>BrainFuck samples:</p>
+
+<div class="highlight highlight-source-c"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RayFoundation/RayFoundation.h<span class="pl-pds">"</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RVirtualMachine/RVirtualFunction/RVirtualFunction.h<span class="pl-pds">"</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RVirtualMachine/RVirtualMachine/RVirtualMachine.h<span class="pl-pds">"</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RVirtualMachine/RVirtualCompiler.h<span class="pl-pds">"</span></span>
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+    <span class="pl-c">// ezy brainfuck hello world</span>
+    RVirtualFunction *function = $(RVC, <span class="pl-c1">m</span>(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span> My brainfuck hello world : +++++++++++++++++++++++++++++++++++++++++++++<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> +++++++++++++++++++++++++++.+++++++++++++++++<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ++++++++++++.+++++++..+++.-------------------<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ---------------------------------------------<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ---------------.+++++++++++++++++++++++++++++<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ++++++++++++++++++++++++++.++++++++++++++++++<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ++++++.+++.------.--------.------------------<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ---------------------------------------------<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                    <span class="pl-s"><span class="pl-pds">"</span> ----.-----------------------.<span class="pl-pds">"</span></span>));
+
+    <span class="pl-c">// execute of byte-code on RVM singleton</span>
+    <span class="pl-c1">executeRay</span>(function);
+    $(function, <span class="pl-c1">d</span>(RVirtualFunction)) );
+
+    <span class="pl-c">// brainfuck compiler multiple-cycles test</span>
+    function = $(RVC, <span class="pl-c1">m</span>(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span> Cycles : +++ [ &gt; +++ [.-] &lt;-]<span class="pl-pds">"</span></span>)); <span class="pl-c">// prints '03 02 01' 3-times</span>
+    <span class="pl-c1">executeRay</span>(function);
+    $(function, <span class="pl-c1">d</span>(RVirtualFunction)) );
+
+    <span class="pl-c">// brainfuck hard(with [, ]) hello world on RVM</span>
+    function = $(RVC, <span class="pl-c1">m</span>(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
+            <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span> Hard Hello world : ++++++++++[&gt;+++++++&gt;++++++++++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;++<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                                  <span class="pl-s"><span class="pl-pds">"</span> .&gt;+.+++++++..+++.&gt;++.&lt;&lt;+++++++++++++++.&gt;.+++.<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>
+                                  <span class="pl-s"><span class="pl-pds">"</span> ------.--------.&gt;+.&gt;.<span class="pl-pds">"</span></span>));
+
+    <span class="pl-c">// rasm byte-code print in words</span>
+    $(function, <span class="pl-c1">p</span>(RVirtualFunction)) );
+
+    <span class="pl-c1">executeRay</span>(function);
+    $(function, <span class="pl-c1">d</span>(RVirtualFunction)) );
+
+    <span class="pl-c">// final function delete</span>
+    <span class="pl-c1">deallocator</span>(function);
+
+    <span class="pl-c">// RVM singleton cleanup</span>
+    <span class="pl-c1">deleteRVM</span>();
+    <span class="pl-c1">endRay</span>(); <span class="pl-c">// standart cleanup</span>
+}</pre></div>
+
+<p>RAutoPool:  </p>
+
+<div class="highlight highlight-source-c"><pre><span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+    <span class="pl-c1">initPointers</span>();
+    <span class="pl-c1">enablePool</span>(RPool); <span class="pl-c">// enable pool sinleton</span>
+    <span class="pl-c1">ComplexTest</span>();     <span class="pl-c">// do something </span>
+
+    $(RPool, <span class="pl-c1">p</span>(RAutoPool)));   <span class="pl-c">// check leaks</span>
+    <span class="pl-c1">deleter</span>(RPool, RAutoPool); <span class="pl-c">// total cleanup </span>
+    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+    <span class="pl-c">// or use macro endRay -&gt; standart cleanup</span>
+}</pre></div>
+
+<p>Work with RClassTable:</p>
+
+<div class="highlight highlight-source-c"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RayFoundation/RClassTable/RClassTable.h<span class="pl-pds">"</span></span>
+
+<span class="pl-k">void</span> <span class="pl-en">RClassTableTest</span>(<span class="pl-k">void</span>){
+
+    <span class="pl-c">// register class name once, and get identifier in result</span>
+    <span class="pl-c">// it's can be used like management tool for creating unique </span>
+    <span class="pl-c">// identifiers for string objects (in our case class names)</span>
+
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Luke<span class="pl-pds">"</span></span>);
+    <span class="pl-c">// print our class table</span>
+    printRCTS;
+
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Dart<span class="pl-pds">"</span></span>);
+    printRCTS;
+
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Leia<span class="pl-pds">"</span></span>);
+    printRCTS;
+
+    <span class="pl-c">// try once more, but here is only one record</span>
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Leia<span class="pl-pds">"</span></span>);
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Dart<span class="pl-pds">"</span></span>);
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Luke<span class="pl-pds">"</span></span>);
+    <span class="pl-c1">registerClassOnce</span>(<span class="pl-s"><span class="pl-pds">"</span>Han Solo<span class="pl-pds">"</span></span>);
+    printRCTS;
+    <span class="pl-c">// get Identifier of Han Solo</span>
+    <span class="pl-k">char</span> *checkName = <span class="pl-s"><span class="pl-pds">"</span>Han Solo<span class="pl-pds">"</span></span>;
+    <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>Identifier of <span class="pl-c1">%s</span> is - <span class="pl-c1">%qu</span> <span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, checkName, <span class="pl-c1">registerClassOnce</span>(checkName));
+
+    <span class="pl-c">// flush your class table</span>
+    flushRCTS;
+    printRCTS;
+
+    <span class="pl-c">// delete your class table</span>
+    releaseRCTS;
+
+    <span class="pl-c">// use not singleton</span>
+    RClassTable *table = <span class="pl-c1">makeRCTable</span>();
+
+    $(table, <span class="pl-c1">m</span>(registerClassWithName, RClassTable)), <span class="pl-s"><span class="pl-pds">"</span>Some string<span class="pl-pds">"</span></span>);
+    $(table, <span class="pl-c1">m</span>(registerClassWithName, RClassTable)), <span class="pl-s"><span class="pl-pds">"</span>Some string2<span class="pl-pds">"</span></span>);
+    $(table, <span class="pl-c1">m</span>(registerClassWithName, RClassTable)), <span class="pl-s"><span class="pl-pds">"</span>Some string3<span class="pl-pds">"</span></span>);
+    <span class="pl-c">// once more time, to check</span>
+    $(table, <span class="pl-c1">m</span>(registerClassWithName, RClassTable)), <span class="pl-s"><span class="pl-pds">"</span>Some string3<span class="pl-pds">"</span></span>);
+
+    $(table, <span class="pl-c1">p</span>(RClassTable)) );
+
+    $(table, <span class="pl-c1">d</span>(RClassTable)) );
+    <span class="pl-c1">deallocator</span>(table);
+}</pre></div>
+
+<p>You can simply use it in Yours C++ projects:</p>
+
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>iostream<span class="pl-pds">&gt;</span></span>
+
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>RayFoundation.h<span class="pl-pds">"</span></span>
+
+<span class="pl-k">using</span> <span class="pl-k">namespace</span> <span class="pl-en">std</span><span class="pl-k">;</span>
+
+<span class="pl-k">class</span> <span class="pl-en">MyClass</span>{
+<span class="pl-k">protected:</span>
+    <span class="pl-k">double</span> x;
+    <span class="pl-k">double</span> y;
+<span class="pl-k">public:</span>
+    <span class="pl-en">MyClass</span>(){
+
+    }
+    <span class="pl-en">~MyClass</span>(){
+
+    }
+    <span class="pl-k">void</span> <span class="pl-en">Print</span>(){
+        cout &lt;&lt; <span class="pl-s"><span class="pl-pds">"</span>MyClass obj - <span class="pl-pds">"</span></span> &lt;&lt; <span class="pl-v">this</span> &lt;&lt; endl;
+    }
+};
+
+<span class="pl-k">void</span> <span class="pl-en">deleter</span>(pointer src) {
+    <span class="pl-c1">delete</span> (MyClass*)src;
+}
+
+<span class="pl-k">void</span> <span class="pl-en">Printer</span>(pointer src){
+    ((MyClass*)src)-&gt;<span class="pl-c1">Print</span>();
+}
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+
+    RArray *helloArray = <span class="pl-c1">makeRArray</span>();
+
+    helloArray-&gt;destructorDelegate = deleter;
+    helloArray-&gt;printerDelegate = Printer;
+
+    <span class="pl-k">for</span>(<span class="pl-k">unsigned</span> i = <span class="pl-c1">0</span>; i &lt; <span class="pl-c1">100000</span>; ++i) {
+        MyClass *a = <span class="pl-k">new</span> MyClass;
+        <span class="pl-c1">addObjectRArray</span>(helloArray, a);
+    }
+
+    $(helloArray, <span class="pl-c1">p</span>(RArray)));
+    <span class="pl-c1">deleteRA</span>(helloArray);
+    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+}</pre></div>
+
+<p>Some multi-thread tcp-echo server sample on RTCPHandler:  </p>
+
+<div class="highlight highlight-source-c"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>RayFoundation/RayFoundation.h<span class="pl-pds">&gt;</span></span>
+
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>Tests.h<span class="pl-pds">"</span></span>
+
+#<span class="pl-k">define</span> <span class="pl-en">BUFFER_SIZE</span> <span class="pl-c1">1500</span>
+
+pointer <span class="pl-en">exec</span>(RTCPDataStruct *data) {
+    <span class="pl-k">char</span>    buffer[BUFFER_SIZE];
+    <span class="pl-k">const</span> <span class="pl-k">char</span>    *address = <span class="pl-c1">addressToString</span>(&amp;data-&gt;socket-&gt;address);
+    <span class="pl-c1">ushort</span>            port = <span class="pl-c1">ntohs</span>(data-&gt;socket-&gt;address.<span class="pl-smi">sin_port</span>);
+    <span class="pl-k">unsigned</span> currentThread =  (<span class="pl-k">unsigned</span> <span class="pl-k">int</span>) <span class="pl-c1">currentThreadIdentifier</span>();
+    byte     resultFlag;
+    <span class="pl-c1">size_t</span>   receivedSize;
+
+    <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>[I] <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span> connected [tuid : <span class="pl-c1">%u</span>]<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, address, port, currentThread);
+
+    $(data-&gt;socket, <span class="pl-c1">m</span>(sendString, RSocket)), <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Hello from RServer.<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>));
+
+    resultFlag = $(data-&gt;socket, <span class="pl-c1">m</span>(receive, RSocket)), buffer, <span class="pl-c1">1000</span>, &amp;receivedSize);
+    <span class="pl-k">while</span>(resultFlag != networkConnectionClosedConst) {
+        buffer[receivedSize] = <span class="pl-c1">0</span>;
+        <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%s</span>:<span class="pl-c1">%u</span>[<span class="pl-c1">%u</span>] &gt; <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>, address, port, currentThread, buffer);
+        $(data-&gt;socket, <span class="pl-c1">m</span>(send, RSocket)), buffer, receivedSize);
+        resultFlag =  $(data-&gt;socket, <span class="pl-c1">m</span>(receive, RSocket)), buffer, BUFFER_SIZE, &amp;receivedSize);
+    }
+
+    <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>[I] <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span> disconnected [tuid : <span class="pl-c1">%u</span>]<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, address, port, currentThread);
+
+    <span class="pl-c1">deleter</span>(data-&gt;socket, RSocket);
+    data-&gt;socket = nil; <span class="pl-c">// for auto-cleaning</span>
+    <span class="pl-k">return</span> nil;
+}
+
+RTCPHandler  *server   = nil;
+RTCPDelegate *delegate = nil;
+
+<span class="pl-k">void</span> <span class="pl-en">startServer</span>(<span class="pl-k">void</span>) {
+    server = <span class="pl-c1">c</span>(RTCPHandler)(nil);
+    <span class="pl-k">if</span>(server != nil) {
+        delegate = <span class="pl-c1">allocator</span>(delegate);
+        <span class="pl-k">if</span>(delegate != nil) {
+            delegate-&gt;delegateFunction = (RThreadFunction) exec;
+            delegate-&gt;context          = server;
+            $(server,  <span class="pl-c1">m</span>(set_delegate, RTCPHandler)), delegate);
+            <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>RTCPHandler starting <span class="pl-c1">%p</span><span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, server);
+            $(server,  <span class="pl-c1">m</span>(startOnPort, RTCPHandler)), <span class="pl-c1">4000</span>);
+        }
+    }
+}
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span> *argv[]) {
+    rbool closeAll = no;
+    byte connectionState;
+    <span class="pl-k">char</span> buffer[BUFFER_SIZE];
+    <span class="pl-k">const</span> <span class="pl-k">char</span> *address;
+    <span class="pl-c1">ushort</span> port;
+    RSocket *configurator;
+    <span class="pl-c1">size_t</span>  receivedSize;
+
+    <span class="pl-c1">enablePool</span>(RPool);
+    <span class="pl-c1">ComplexTest</span>(); <span class="pl-c">// lib test</span>
+
+    <span class="pl-c1">startServer</span>();
+
+    configurator = <span class="pl-c1">openListenerOnPort</span>(<span class="pl-c1">4001</span>, <span class="pl-c1">10</span>);
+    <span class="pl-k">if</span>(configurator == nil) <span class="pl-k">goto</span> <span class="pl-c1">exit</span>;
+
+    <span class="pl-k">while</span>(!closeAll) {
+        RSocket *current = $(configurator, <span class="pl-c1">m</span>(accept, RSocket)));
+
+        address = <span class="pl-c1">addressToString</span>(&amp;current-&gt;address);
+        port    = <span class="pl-c1">ntohs</span>(current-&gt;address.<span class="pl-smi">sin_port</span>);
+
+        <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>[I] Configurator <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span> connected<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, address, port);
+        connectionState = networkOperationSuccessConst;
+
+        <span class="pl-k">while</span>(connectionState != networkConnectionClosedConst) {
+            connectionState = $(current, <span class="pl-c1">m</span>(receive, RSocket)), buffer, BUFFER_SIZE, &amp;receivedSize);
+            <span class="pl-k">if</span>(connectionState == networkOperationSuccessConst) {
+                <span class="pl-k">if</span>(receivedSize &gt; <span class="pl-c1">8</span>) {
+                    buffer[receivedSize] = <span class="pl-c1">0</span>;
+                    <span class="pl-c1">ifMemEqual</span>(buffer, <span class="pl-s"><span class="pl-pds">"</span>secretkey<span class="pl-pds">"</span></span>, <span class="pl-c1">9</span>) {
+
+                        <span class="pl-c1">ifMemEqual</span>(buffer + <span class="pl-c1">10</span>, <span class="pl-s"><span class="pl-pds">"</span>shutdown<span class="pl-pds">"</span></span>, <span class="pl-c1">8</span>) {
+                            $(current, <span class="pl-c1">m</span>(sendString, RSocket)), <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Server will terminate<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>));
+                            <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>[I] Will terminate with command from <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span><span class="pl-cce">\n\n</span><span class="pl-pds">"</span></span>, address, port);
+
+                            closeAll = yes;
+                        }
+
+                        <span class="pl-c1">ifMemEqual</span>(buffer + <span class="pl-c1">10</span>, <span class="pl-s"><span class="pl-pds">"</span>system<span class="pl-pds">"</span></span>, <span class="pl-c1">6</span>) {
+                            <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>&gt;&gt; Execute <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>, buffer + <span class="pl-c1">17</span>);
+                            <span class="pl-c1">system</span>(buffer + <span class="pl-c1">17</span>);
+                        }
+
+                    } <span class="pl-k">else</span> {
+                        <span class="pl-c1">RPrintf</span>(<span class="pl-s"><span class="pl-pds">"</span>[E] Bad user key on <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span><span class="pl-cce">\n</span><span class="pl-pds">"</span></span>, address, port);
+                    }
+                }
+                connectionState = networkConnectionClosedConst;
+            } <span class="pl-k">else</span> <span class="pl-k">if</span> (connectionState == networkOperationErrorConst) {
+                <span class="pl-c1">RError2</span>(<span class="pl-s"><span class="pl-pds">"</span>[E] Receive on configurator connection, from <span class="pl-c1">%s</span>:<span class="pl-c1">%u</span><span class="pl-pds">"</span></span>, current, address, port);
+            }
+        }
+
+        <span class="pl-c1">deleter</span>(current, RSocket);
+    }
+
+    <span class="pl-c1">deleter</span>(configurator, RSocket);
+
+    <span class="pl-c1">deallocator</span>(delegate);
+    <span class="pl-c1">p</span>(RTCPHandler)(server);
+    $(server, <span class="pl-c1">m</span>(terminate, RTCPHandler)));
+    <span class="pl-c1">deleter</span>(server,        RTCPHandler);
+
+    <span class="pl-c1">exit</span>:
+    <span class="pl-c1">endSockets</span>();
+    <span class="pl-c1">endRay</span>();
+}</pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/kojiba/RayLanguage">Raylanguage</a> is maintained by <a href="https://github.com/kojiba">kojiba</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
