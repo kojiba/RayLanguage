@@ -62,7 +62,15 @@ int main(int argc, const char *argv[]) {
 //    deleter(encryptedArray, RByteArray);
 //    deleter(decryptedArray, RByteArray);
 
-    RString *result2 = $(RS("Hello world, and new one!=)"), m(encryptPurgeEvasionBase64, RString)), RS("Key"));
+    RString *result2 = $(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit, \n"
+                                    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
+                                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut\n"
+                                    "aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n"
+                                    "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint\n"
+                                    "occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit\n"
+                                    "anim id est laborum."),
+                         m(encryptPurgeEvasionBase64, RString)), RS("Key"));
+
     p(RCString)(result2);
 
     RString *decrypted = $(result2, m(decryptPurgeEvasionBase64, RString)), RS("Key"));

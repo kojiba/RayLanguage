@@ -90,7 +90,7 @@ void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint
         // append hash
         textTemp = RReAlloc(textTemp, totalSize + evasionBytesCount);
         if(textTemp != nil) {
-            memcpy(textTemp + purgeBytesCount, hash, evasionBytesCount); // append hash
+            memcpy(textTemp + totalSize, hash, evasionBytesCount); // append hash
             *cryptedSize = totalSize; // store
             *cryptedSize += evasionBytesCount;
         }
