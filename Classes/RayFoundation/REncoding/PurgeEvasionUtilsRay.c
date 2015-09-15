@@ -22,7 +22,7 @@ constMethod(RByteArray *, encryptPurgeEvasion, RByteArray), const RByteArray *ke
     uint64_t    resultSize;
     byte        tempKey[purgeBytesCount]; // 512 bits
 
-    if(key->size > purgeBytesCount) {
+    if(key->size >= purgeBytesCount) {
         memcpy(&tempKey, key->array, purgeBytesCount);
     } else {
         // set and cpy must have one calculating speed
@@ -54,7 +54,7 @@ constMethod(RByteArray *, decryptPurgeEvasion, RByteArray), const RByteArray *ke
     uint64_t resultSize;
     byte tempKey[purgeBytesCount]; // 512 bits
 
-    if(key->size > purgeBytesCount) {
+    if(key->size >= purgeBytesCount) {
         memcpy(&tempKey, key->array, purgeBytesCount);
     } else {
         memcpy(&tempKey, key->array, key->size);
@@ -71,8 +71,11 @@ constMethod(RByteArray *, decryptPurgeEvasion, RByteArray), const RByteArray *ke
         RError("RString. decryptPurgeEvasionBase64. Lose data at 32-bit system and very long encryption.\n"
                        "Return pure not base64 array to store data.", object);
     }
-
-    return makeRByteArray(temp, resultSize);
+    if(temp != nil) {
+        return makeRByteArray(temp, resultSize);
+    } else {
+        return nil;
+    }
 }
 
 constMethod(RByteArray *, evasionHash, RByteArray)) {
@@ -103,22 +106,24 @@ constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key) 
 
 inline
 constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key) {
-    RByteArray *temp = makeRByteArray((byte *) key->baseString, key->size),
-               *tempObject,
-               *tempResult;
+    RByteArray *tempKey = makeRByteArray((byte *) key->baseString, key->size),
+               *tempObject = nil,
+               *tempResult = nil;
     RString    *result = nil;
 
-    if(temp != nil) {
-        tempResult = $(object,     m(decodeBase64ToBytes, RString)));
-        tempObject = $(tempResult, m(decryptPurgeEvasion, RByteArray)), temp);
-
-        if(tempObject != nil) {
-            result = RCS((const char*)tempObject->array);
-            result->baseString = RReAlloc(tempObject->array, result->size);
-            deallocator(tempObject);
+    if(tempKey != nil) {
+        tempResult = $(object, m(decodeBase64ToBytes, RString)));
+        if(tempResult != nil) {
+            tempObject = $(tempResult, m(decryptPurgeEvasion, RByteArray)), tempKey);
+            if(tempObject != nil) {
+                result = RCS((const char*)tempObject->array);
+                result->baseString = RReAlloc(result->baseString, result->size + 1);
+                result->baseString[tempObject->size] = 0;
+                deallocator(tempObject);
+            }
+            deleter(tempResult, RByteArray);
         }
-        deleter(tempResult, RByteArray);
-        deallocator(temp);
+        deallocator(tempKey);
     }
     return result;
 }

@@ -21,11 +21,21 @@
 #include "purge.h"
 #include "evasion.h"
 
-#define MAX_SIZE_FOR_DECRYPT UINT32_MAX
+void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash); // outputHash - 512 bits (64 bytes, 8 x uint64 blocks)
+
+/**
+ * Data format is
+ *
+ *    +--------------------------------------------------------------+
+ *    | dataSize (8 bytes) | text | evasionHash from text (64 bytes) |
+ *    +--------------------------------------------------------------+
+ *    \____encrypted_section_____/ \__________plain_section_________/
+ *     \                                                          /
+ *      \__________output_encrypted_data_(size @cryptedSize)_____/
+ *
+ **/
 
 void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize);   // return value is nil or dynamic allocated
 void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *encryptedSize); // return value is nil or dynamic allocated
-
-void  evasionHashData(const void *text, uint64_t size, uint64_t *outputHash); // outputHash - 512 bits (64 bytes, 8 uint64 blocks)
 
 #endif /*__PURGE_EVASION_UTILS_H__*/

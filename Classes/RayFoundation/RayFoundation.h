@@ -49,6 +49,7 @@ extern "C" {
 
 // Encoding
 #include "REncoding/RBase64.h"
+#include "REncoding/PurgeEvasionUtilsRay.h"
 
 // Networking
 #include "RNetwork/RSocket.h"

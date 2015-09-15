@@ -29,6 +29,14 @@ const byte networkOperationSuccessConst = 1;
     static WSADATA wsaData;
 
     #define wsaStartUp() WSAStartup(MAKEWORD(2, 2), &wsaData)
+    #define NOT_RAISE_SIGPIPE_OPTION 0
+#else
+    #ifdef __APPLE__
+        #define NOT_RAISE_SIGPIPE_OPTION SO_NOSIGPIPE
+    #endif
+    #ifdef __linux
+        #define NOT_RAISE_SIGPIPE_OPTION MSG_NOSIGNAL
+    #endif
 #endif
 
 inline const char* addressToString(SocketAddressIn *address) {
@@ -236,7 +244,7 @@ method(byte, send, RSocket), const pointer buffer, size_t size) {
     ssize_t messageLength = send(object->socket,
                                  buffer,
                                  size,
-                                 0);
+                                 NOT_RAISE_SIGPIPE_OPTION);
 //    RPrintf("Sent size %lu\n", messageLength);
     if (messageLength < 0) {
         return networkOperationErrorConst;

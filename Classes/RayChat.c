@@ -253,7 +253,7 @@ pointer exec(RTCPDataStruct *data) {
 }
 
 void startServer(RTCPHandler  **server,
-                 RTCPDelegate **delegate, 
+                 RTCPDelegate **delegate,
                  u16 serverPort,
                  u16 configuratorPort) {
 

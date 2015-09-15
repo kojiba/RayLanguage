@@ -15,8 +15,8 @@
  *         |__/
  **/
 
+#include "RayFoundation/RMemoryOperations/RByteOperations.h"
 #include "PurgeEvasionUtils.h"
-#include "RayFoundation/RSyntax.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -28,87 +28,6 @@
 #ifndef forAll
     #define forAll(iterator, count) for(iterator = 0; iterator < (count); ++iterator)
 #endif
-
-#define xor(first, second)
-
-void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize) { // key changed and data not
-    uint64_t  iterator;
-    uint8_t  *textTemp     = nil;
-    uint64_t  totalSize   = size + sizeof(uint64_t);
-    uint64_t  cipherCount = totalSize / purgeBytesCount;
-    uint64_t  addition    = totalSize % purgeBytesCount;
-
-    uint8_t keyTemp[purgeBytesCount];
-
-    if(addition != 0) {
-        totalSize += purgeBytesCount - addition;
-        ++cipherCount;
-    }
-
-    textTemp = RAlloc(totalSize);
-
-    if(textTemp != nil) {
-        *cryptedSize = 0;
-
-        memcpy(textTemp, &size, sizeof(uint64_t));       // add size in front
-        memcpy(textTemp + sizeof(uint64_t), text, size); // copy other text
-
-        if (addition != 0) { // add some zeros if needed
-            memset(textTemp + size + sizeof(uint64_t), 0, purgeBytesCount - addition);
-        }
-
-        forAll(iterator, cipherCount) {
-            evasionRand(key);
-            memcpy(keyTemp, key, purgeBytesCount);
-            purgeEncrypt((uint64_t *) (textTemp + iterator * purgeBytesCount), (uint64_t*) keyTemp);
-            memset(keyTemp, 0, purgeBytesCount);
-        }
-        *cryptedSize = totalSize; // store
-    }
-    return textTemp;
-}
-
-void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *encryptedSize) { // key changed and data not
-    uint64_t iterator;
-    uint8_t *textTemp    = nil,
-            *plainText   = nil;
-    uint64_t cipherCount = size / purgeBytesCount;
-    uint64_t sizeOfText;
-    uint8_t keyTemp[purgeBytesCount];
-
-    if(size % purgeBytesCount) {
-        RError("decryptPurgeEvasion. Bad data size. Must be multiple of 64. Data size in bytes\n", nil);
-        return nil;
-    }
-
-    textTemp = RAlloc(size);
-
-    if(textTemp != nil) {
-        *encryptedSize = 0;
-        memcpy(textTemp, text, size); // add size in front
-
-        forAll(iterator, cipherCount) {
-            evasionRand(key);
-            memcpy(keyTemp, key, purgeBytesCount);
-            purgeDecrypt((uint64_t *) (textTemp + iterator * purgeBytesCount), (uint64_t *) keyTemp);
-            memset(keyTemp, 0, purgeBytesCount);
-        }
-
-        // get size
-        memcpy((uint8_t*) &sizeOfText, textTemp, sizeof(uint64_t));
-        if(sizeOfText > MAX_SIZE_FOR_DECRYPT) {
-            RError1("decryptPurgeEvasion. Can't decrypt, must be bad size %llu", text, sizeOfText);
-            return nil;
-        }
-        plainText = RAlloc(sizeOfText);
-        if(plainText != nil) {
-            memcpy(plainText, textTemp + sizeof(uint64_t), sizeOfText);
-            *encryptedSize = sizeOfText; // store
-        }
-        deallocator(textTemp);
-    }
-    return plainText;
-}
 
 void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash) {
     uint64_t iterator;
@@ -130,6 +49,99 @@ void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash) {
     }
     // final
     memcpy(outputHash, hashTemp, evasionBytesCount);
+}
+
+
+void* encryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize) { // key changed and data not
+    uint64_t  iterator;
+    uint8_t  *textTemp     = nil;
+    uint64_t  totalSize   = size + sizeof(uint64_t);
+    uint64_t  cipherCount = totalSize / purgeBytesCount;
+    uint64_t  addition    = totalSize % purgeBytesCount;
+    uint64_t hash[8];
+    uint8_t keyTemp[purgeBytesCount];
+
+    if(addition != 0) {
+        totalSize += purgeBytesCount - addition;
+        ++cipherCount;
+    }
+
+    textTemp = RAlloc(totalSize);
+
+    if(textTemp != nil) {
+        *cryptedSize = 0;
+
+        memcpy(textTemp, &size, sizeof(uint64_t));       // add size in front
+        memcpy(textTemp + sizeof(uint64_t), text, size); // copy other text
+
+        if (addition != 0) { // add some zeros if needed
+            memset(textTemp + size + sizeof(uint64_t), 0, purgeBytesCount - addition);
+        }
+
+        evasionHashData(textTemp + sizeof(uint64_t), totalSize - sizeof(uint64_t), (uint64_t *)hash); // hash data with padding
+
+        forAll(iterator, cipherCount) { // pure crypt with key
+            evasionRand(key);
+            memcpy(keyTemp, key, purgeBytesCount);
+            purgeEncrypt((uint64_t *) (textTemp + iterator * purgeBytesCount), (uint64_t*) keyTemp);
+            memset(keyTemp, 0, purgeBytesCount);
+        }
+
+        // append hash
+        textTemp = RReAlloc(textTemp, totalSize + evasionBytesCount);
+        if(textTemp != nil) {
+            memcpy(textTemp + purgeBytesCount, hash, evasionBytesCount); // append hash
+            *cryptedSize = totalSize; // store
+            *cryptedSize += evasionBytesCount;
+        }
+    }
+    return textTemp;
+}
+
+void* decryptPurgeEvasion(const void *text, uint64_t size, uint64_t key[8], uint64_t *encryptedSize) { // key changed and data not
+    uint64_t iterator;
+    uint8_t *textTemp    = nil,
+            *plainText   = nil;
+    uint64_t cipherCount = (size - evasionBytesCount) / purgeBytesCount;
+    uint64_t sizeOfText;
+    uint8_t  keyTemp[purgeBytesCount];
+    uint64_t hash[8];
+
+    if(size % purgeBytesCount) {
+        RError("decryptPurgeEvasion. Bad data size. Must be multiple of 64. Data size in bytes\n", nil);
+        return nil;
+    }
+
+    textTemp = RAlloc(size);
+
+    if(textTemp != nil) {
+        *encryptedSize = 0;
+        memcpy(textTemp, text, size); // add size in front
+
+        forAll(iterator, cipherCount) {
+            evasionRand(key);
+            memcpy(keyTemp, key, purgeBytesCount);
+            purgeDecrypt((uint64_t *) (textTemp + iterator * purgeBytesCount), (uint64_t *) keyTemp);
+            memset(keyTemp, 0, purgeBytesCount);
+        }
+
+        // check hash
+        evasionHashData(textTemp + sizeof(uint64_t), size - evasionBytesCount - sizeof(uint64_t), (uint64_t *)hash);
+
+        if(memcmp(hash, textTemp + size - evasionBytesCount, evasionBytesCount) == 0) {
+            // get size
+            memcpy((uint8_t*) &sizeOfText, textTemp, sizeof(uint64_t));
+            plainText = RAlloc(sizeOfText);
+            if(plainText != nil) {
+                memcpy(plainText, textTemp + sizeof(uint64_t), sizeOfText);
+                *encryptedSize = sizeOfText; // store
+            }
+        } else {
+            RError("decryptPurgeEvasion. Hashes isn't equal. Can't decrypt data, must be bad key\n", text);
+        }
+        deallocator(textTemp);
+    }
+    return plainText;
 }
 
 #pragma GCC pop_options
