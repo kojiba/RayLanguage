@@ -17,29 +17,46 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <unistd.h>
 #include "Tests.h"
+#include "RayChat.h"
+
+void sendMsg(RTCPDataStruct *data) {
+    $(data->socket, m(sendString, RSocket)), RS("Hello=)\n"));
+}
+
+pointer startServerThread (pointer some) {
+    RTCPHandler  *server;
+    RTCPDelegate *delegate;
+
+    startServer(&server,
+                &delegate,
+                4000,
+                4001);
+}
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
+    RTCPDelegate delegate2;
 
-    RString *result2 = $(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit, \n"
-                                    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
-                                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut\n"
-                                    "aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n"
-                                    "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint\n"
-                                    "occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit\n"
-                                    "anim id est laborum."),
-                         m(encryptPurgeEvasionBase64, RString)), RS("Key"));
+    delegate2.context = nil;
+    delegate2.delegateFunction = (pointer (*)(struct RTCPDataStruct *)) sendMsg;
 
-    p(RCString)(result2);
+    RTCPHandler *connector = c(RTCPHandler)(nil);
+    connector->delegate = &delegate2;
 
-    RString *decrypted = $(result2, m(decryptPurgeEvasionBase64, RString)), RS("Key"));
 
-    p(RCString)(decrypted);
+    RThread serverThread = makeRThread(startServerThread);
 
-    deleter(decrypted, RString);
-    deleter(result2, RString);
+//    RPrintf("hellosecretkey\n");
+    sleep(5);
+    $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), 4000, 20);
+    $(connector, m(waitConnectors, RTCPHandler)));
+    deleter(connector, RTCPHandler);
+
+    RThreadJoin(serverThread);
+
 
     endRay();
 }

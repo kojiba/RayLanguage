@@ -27,10 +27,11 @@
 
 
 struct RTCPHandler;
+typedef struct RTCPDataStruct RTCPDataStruct;
 
 
 protocol(RTCPDelegate)
-    RThreadFunction delegateFunction;
+    pointer (*delegateFunction)(RTCPDataStruct *connectionData);
 endOf(RTCPDelegate)
 
 
@@ -40,7 +41,7 @@ protocol(RTCPDataStruct)
     RTCPDelegate        *delegate;
     struct RTCPHandler  *handler;
     size_t               identifier;
-endOf(RTCPDataStruct)
+endOf()
 
 
 

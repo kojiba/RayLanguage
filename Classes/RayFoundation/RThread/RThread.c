@@ -105,7 +105,7 @@ inline void RThreadExit(pointer data) {
 #endif
 }
 
-extern RThreadId RThreadIdOfThread(RThread thread) {
+inline RThreadId RThreadIdOfThread(RThread thread) {
 #ifdef __linux
     return syscall(__NR_gettid);
 #elif __APPLE__
@@ -115,6 +115,12 @@ extern RThreadId RThreadIdOfThread(RThread thread) {
 #else
     return 0;//GetThreadId(thread);
 #endif
+}
+
+inline RThread makeRThread(RThreadFunction function) {
+    RThread result;
+    RThreadCreate(&result, nil, function, nil);
+    return result;
 }
 
 #pragma mark Mutex

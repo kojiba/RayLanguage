@@ -100,10 +100,12 @@ method(void, privateStartInMode, RTCPHandler)) {
     }
 
     while(!object->terminateFlag) {
+        rbool selfCleanup = yes;
         RSocket *socketInProcess = nil;
         if(!object->connectorMode) {
             socketInProcess = $(object->listener, m(accept, RSocket)));
         } else {
+            selfCleanup = no;
             if(object->connectionsCount != 0) {
                 socketInProcess = socketConnectedTo(object->ipAddress->baseString, object->port);
                 --object->connectionsCount;
@@ -130,7 +132,7 @@ method(void, privateStartInMode, RTCPHandler)) {
                 }
 
                 // finally, add new worker with auto-cleanup
-                $(object->threads, m(addWithArg, RThreadPool)), argument, yes);
+                $(object->threads, m(addWithArg, RThreadPool)), argument, selfCleanup);
             } elseError(
                     RError("RTCPHandler. Can't allocate thread argument.", object)
             );
@@ -197,7 +199,7 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
 
 method(void, waitConnectors, RTCPHandler)) {
     RMutexLock(&object->mutex);
-    $(object->threads, m(joinSelfDeletes, RThreadPool)));
+    $(object->threads, m(join, RThreadPool)));
     RMutexUnlock(&object->mutex);
 }
 

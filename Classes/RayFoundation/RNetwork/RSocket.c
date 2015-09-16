@@ -244,7 +244,7 @@ method(byte, send, RSocket), const pointer buffer, size_t size) {
     ssize_t messageLength = send(object->socket,
                                  buffer,
                                  size,
-                                 NOT_RAISE_SIGPIPE_OPTION);
+                                 0);
 //    RPrintf("Sent size %lu\n", messageLength);
     if (messageLength < 0) {
         return networkOperationErrorConst;

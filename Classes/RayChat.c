@@ -198,18 +198,21 @@ pointer exec(RTCPDataStruct *data) {
     data->context = chatData;
 
     welcome = stringWithFormat("Welcome %s\n"
-                                       "You enter default chatroom, to change send      \'--change chatroom %%s\'\n"
-                                       "                               change nickname  \'--set nickname %%s\'\n"
-                                       "                               chatroom members \'--is anybody here?\'\n"
-                                       "                               exit             \'--exit\'\n"
-                                       "                               help             \'--help\'\n"
-                                       "And follow the white rabbit.\n", chatData->nickname->baseString);
+                               "You enter default chatroom, to change send      \'--change chatroom %%s\'\n"
+                               "                               change nickname  \'--set nickname %%s\'\n"
+                               "                               chatroom members \'--is anybody here?\'\n"
+                               "                               exit             \'--exit\'\n"
+                               "                               help             \'--help\'\n"
+                               "And follow the white rabbit.\n", chatData->nickname->baseString);
 
     resultFlag = $(data->socket, m(sendString, RSocket)), welcome);
     deleter(welcome, RString);
 
     resultFlag = $(data->socket, m(receive, RSocket)), buffer, BUFFER_SIZE, &receivedSize);
-    while(resultFlag != networkConnectionClosedConst) {
+
+    while(resultFlag != networkConnectionClosedConst
+          && resultFlag != networkOperationErrorConst) {
+
         buffer[receivedSize] = 0;
         temp.baseString = buffer;
         temp.size = receivedSize;
@@ -281,7 +284,7 @@ void startServer(RTCPHandler  **server,
         (*server)->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
         *delegate = allocator(RTCPDelegate);
         if(*delegate != nil) {
-            (*delegate)->delegateFunction = (RThreadFunction) exec;
+            (*delegate)->delegateFunction = exec;
             (*delegate)->context          = nil;
             $(*server,  m(set_delegate, RTCPHandler)), *delegate);
             $(*server,  m(startOnPort, RTCPHandler)), serverPort);
