@@ -43,6 +43,6 @@ method(void,            joinSelfDeletes,     RThreadPool));
 
 method(void,            cancel,              RThreadPool));
 
-#endif
+#endif /* RAY_EMBEDDED */
 
 #endif /*__R_THREAD_POOL_H__*/

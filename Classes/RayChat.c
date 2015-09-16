@@ -15,6 +15,8 @@
 
 #include "RayChat.h"
 
+#ifndef RAY_EMBEDDED
+
 #define BUFFER_SIZE 1500
 
 typedef struct ChatData {
@@ -179,7 +181,7 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
     }
 }
 
-pointer exec(RTCPDataStruct *data) {
+pointer RayChatExec(RTCPDataStruct *data) {
     char    buffer[BUFFER_SIZE];
     const char    *address = addressToString(&data->socket->address);
     u16 port = ntohs(data->socket->address.sin_port);
@@ -284,7 +286,7 @@ void startServer(RTCPHandler  **server,
         (*server)->dataStructContextDestructor = (DestructorDelegate) ChatDataDeleter;
         *delegate = allocator(RTCPDelegate);
         if(*delegate != nil) {
-            (*delegate)->delegateFunction = exec;
+            (*delegate)->delegateFunction = RayChatExec;
             (*delegate)->context          = nil;
             $(*server,  m(set_delegate, RTCPHandler)), *delegate);
             $(*server,  m(startOnPort, RTCPHandler)), serverPort);
@@ -353,3 +355,5 @@ void startServer(RTCPHandler  **server,
     deleter(password, RString);
     endSockets();
 }
+
+#endif /* RAY_EMBEDDED */

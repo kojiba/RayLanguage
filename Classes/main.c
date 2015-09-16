@@ -21,41 +21,29 @@
 #include "Tests.h"
 #include "RayChat.h"
 
-void sendMsg(RTCPDataStruct *data) {
-    $(data->socket, m(sendString, RSocket)), RS("Hello=)\n"));
-}
-
-pointer startServerThread (pointer some) {
-    RTCPHandler  *server;
-    RTCPDelegate *delegate;
-
-    startServer(&server,
-                &delegate,
-                4000,
-                4001);
+void exec() {
+    RSocket *socket = socketConnectedTo("216.58.209.206", 80);
+    RPrintf("Try connect\n");
+    nilDeleter(socket, RSocket);
 }
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
-    RTCPDelegate delegate2;
-
-    delegate2.context = nil;
-    delegate2.delegateFunction = (pointer (*)(struct RTCPDataStruct *)) sendMsg;
-
-    RTCPHandler *connector = c(RTCPHandler)(nil);
-    connector->delegate = &delegate2;
 
 
-    RThread serverThread = makeRThread(startServerThread);
+    size_t iterator;
+    RThreadPool *pool = c(RThreadPool)(nil);
+    $(pool, m(setDelegateFunction, RThreadPool)), (RThreadFunction) exec);
 
-//    RPrintf("hellosecretkey\n");
-    sleep(5);
-    $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), 4000, 20);
-    $(connector, m(waitConnectors, RTCPHandler)));
-    deleter(connector, RTCPHandler);
+    forAll(iterator, 1000) {
+        $(pool, m(addWithArg, RThreadPool)), nil, yes);
+    }
 
-    RThreadJoin(serverThread);
+
+    $(pool, m(joinSelfDeletes, RThreadPool)));
+
+    deleter(pool, RThreadPool);
 
 
     endRay();

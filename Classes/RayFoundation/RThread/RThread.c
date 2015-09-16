@@ -135,7 +135,8 @@ inline int mutexWithType(RMutex *mutex, byte mutexType) {
     if(mutexType == RMutexRecursive) {
         mutex->handle = CreateMutex(nil, no, nil);
 
-    } else if(mutexType == RMutexNormal) {
+    } else if(mutexType == RMutexNormal
+            || mutexType == RMutexErrorCheck) {
         mutex->handle = CreateSemaphore( nil, // default security attributes
                                   0,          // initial count
                                   1,          // maximum count

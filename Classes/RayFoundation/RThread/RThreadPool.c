@@ -91,8 +91,8 @@ method(RThreadFunction, delegateFunction, RThreadPool)) {
 }
 
 method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfDeletes) {
-    RMutexLock(threadPoolMutex);
     if(object->delegateFunction != nil) {
+        RMutexLock(threadPoolMutex);
         RThread newOne = nil;
         if(selfDeletes) {
             PrivateThreadArgument *arg = allocator(PrivateThreadArgument);
@@ -112,8 +112,8 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
         } else {
             RThreadCreate(&newOne, nil, object->delegateFunction, argumentForNewWorker);
         }
+        RMutexUnlock(threadPoolMutex);
     }
-    RMutexUnlock(threadPoolMutex);
 }
 
 method(void, addWorker, RThreadPool), RThread worker) {
