@@ -194,7 +194,6 @@ pointer func1(pointer arg) {
 
 int RThreadTest(void) {
 #if !defined(RAY_EMBEDDED) && defined(RAY_ARRAY_THREAD_SAFE)
-    storePtrs();
     arrayTest = makeRArray();
     int i;
     arrayTest->destructorDelegate = free;
@@ -209,7 +208,6 @@ int RThreadTest(void) {
 
     RAY_TEST(arrayTest->count != 2 * TEST_COUNT, "RThread bad array count.", -1);
     deleter(arrayTest, RArray);
-    backPtrs();
 #endif
     return 0;
 }

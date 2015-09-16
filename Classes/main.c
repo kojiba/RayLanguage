@@ -40,10 +40,10 @@ pointer startServerThread (pointer some) {
 //        password = getInputString();
 //    }
 
-    startServer(&server,
-                &delegate,
-                4000,
-                4001, RS("hellosecretkey"));
+//    startServer(&server,
+//                &delegate,
+//                4000,
+//                4001, RS("hellosecretkey"));
 }
 
 int main(int argc, const char *argv[]) {
@@ -60,7 +60,7 @@ int main(int argc, const char *argv[]) {
 
     RThread serverThread = makeRThread(startServerThread);
     sleep(1);
-    $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), 4000, 200);
+    $(connector, m(startWithHost, RTCPHandler)), RS("127.0.0.1"), 4000, 5);
     $(connector, m(waitConnectors, RTCPHandler)));
     deleter(connector, RTCPHandler);
 

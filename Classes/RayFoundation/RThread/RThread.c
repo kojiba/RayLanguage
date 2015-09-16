@@ -151,7 +151,11 @@ inline int RMutexLock(RMutex *mutex) {
 #ifndef _WIN32
     return pthread_mutex_lock(mutex);
 #else
-    return (int) WaitForSingleObject(mutex->handle, INFINITE);
+    if(mutex->type == RMutexRecursive) {
+        return (int) WaitForSingleObject(mutex->handle, INFINITE);
+    } else {
+        return WaitForSingleObject(mutex->handle, 0);
+    }
 #endif
 }
 

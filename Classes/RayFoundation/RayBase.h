@@ -130,7 +130,7 @@ extern volatile Deallocator RFreePtr;
 
 
 #ifdef __WIN32 // key delay for win
-    #define stopConsole() fgetchar()
+    #define stopConsole() getchar()
 #else
     #define stopConsole()
 #endif
