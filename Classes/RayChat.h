@@ -22,6 +22,6 @@
 void startServer(RTCPHandler  **server,
                  RTCPDelegate **delegate,
                  u16 serverPort,
-                 u16 configuratorPort);
+                 u16 configuratorPort, RString *password);
 
 #endif /*__RAY_CHAT__*/

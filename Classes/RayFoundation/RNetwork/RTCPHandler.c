@@ -168,7 +168,8 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
         && object->delegate->delegateFunction != nil
         && address != nil
         && address->baseString != nil
-        && connectionsCount > 0) {
+        && connectionsCount > 0
+        && connectionsCount < (65536 - 1000)) {
 
         if(!object->terminateFlag) {
             if(!(address->size > 15
