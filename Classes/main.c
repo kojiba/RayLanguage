@@ -31,6 +31,7 @@ void sendMsg(RTCPDataStruct *data) {
 pointer startServerThread (pointer some) {
     RTCPHandler  *server;
     RTCPDelegate *delegate;
+
 //    RPrintf("Please, input server secretkey to admin on %u port\n", 4000);
 //    RString *password = getInputString();
 //
@@ -38,7 +39,6 @@ pointer startServerThread (pointer some) {
 //        RPrintf("Please, reenter a secretkey at least 12 bytes\n");
 //        password = getInputString();
 //    }
-    signal(SIGPIPE, SIG_IGN);
 
     startServer(&server,
                 &delegate,
@@ -49,9 +49,6 @@ pointer startServerThread (pointer some) {
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
-
-    signal(SIGPIPE, SIG_IGN);
-
     RTCPDelegate delegate2;
 
     delegate2.context = nil;

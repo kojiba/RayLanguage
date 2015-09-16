@@ -125,13 +125,15 @@ method(void, privateStartInMode, RTCPHandler)) {
 
                 $(object->arguments, m(addObject,  RArray)), argument);
 
-                // delete inactive worker arguments
-                if(object->arguments->count != 0
-                   && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
-                    $(object->arguments, m(deleteWithPredicate, RArray)), &object->destructorPredicate);
+                if(!object->connectorMode) {
+                    // delete inactive worker arguments
+                    if(object->arguments->count != 0
+                       && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
+                        $(object->arguments, m(deleteWithPredicate, RArray)), &object->destructorPredicate);
+                    }
                 }
 
-                // finally, add new worker with auto-cleanup
+                // finally, add new worker with auto-cleanup = selfCleanup
                 $(object->threads, m(addWithArg, RThreadPool)), argument, selfCleanup);
             } elseError(
                     RError("RTCPHandler. Can't allocate thread argument.", object)

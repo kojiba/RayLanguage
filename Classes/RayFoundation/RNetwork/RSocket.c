@@ -113,8 +113,13 @@ destructor(RSocket) {
 #ifdef _WIN32
     closesocket(object->socket);
 #else
-    shutdown(object->socket, 0);
-    close(object->socket);
+    shutdown(object->socket, SHUT_RDWR);
+#ifndef __APPLE__                    // get SIGPIPE here on OSX
+    if(close(object->socket) < 0) {
+        RError("RSocket. Can't close socket.", object);
+    }
+#endif
+    object->socket = -1;
 #endif
 }
 
