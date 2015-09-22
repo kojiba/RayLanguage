@@ -71,13 +71,13 @@ set(HEADER_FILES # Worker headers
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.h
                  Classes/RayFoundation/RNetwork/RTCPHandler.h
-#                 Classes/RayFoundation/RNetwork/PurgeEvasionConnection.h
 
                  # Core header
                  Classes/RayFoundation/RayFoundation.h
 
                  # Utils
-                 Classes/RayFoundation/Utils/Utils.h)
+                 Classes/RayFoundation/Utils/Utils.h
+                 Classes/RayFoundation/Utils/PurgeEvasionConnection.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RBasics/RBasics.c
@@ -119,10 +119,10 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Networking
                  Classes/RayFoundation/RNetwork/RSocket.c
                  Classes/RayFoundation/RNetwork/RTCPHandler.c
-#                 Classes/RayFoundation/RNetwork/PurgeEvasionConnection.c
 
                  # Utils
-                 Classes/RayFoundation/Utils/Utils.c)
+                 Classes/RayFoundation/Utils/Utils.c
+                 Classes/RayFoundation/Utils/PurgeEvasionConnection.c)
 
 if(NOT ${DebugFlag})
     add_library(

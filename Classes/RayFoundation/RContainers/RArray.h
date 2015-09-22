@@ -104,7 +104,9 @@ method(RArray *,           subarrayWithPredicate,     RArray),    REnumerateDele
 method(RFindResult,        enumerate,                 RArray),    REnumerateDelegate *delegate, rbool isFromLeft);
 
 extern
-constMethod(pointer,       objectAtIndex,            RArray),    size_t index);
+constMethod(pointer,       objectAtIndex,             RArray),    size_t index);
+extern
+constMethod(size_t,        indexOfObject,             RArray),    pointer toFind);
 extern
 constMethod(pointer,       lastObject,                RArray));
 extern

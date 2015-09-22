@@ -417,6 +417,23 @@ inline constMethod(pointer, objectAtIndex, RArray), size_t index) {
     return nil;
 }
 
+constMethod(size_t, indexOfObject, RArray), pointer toFind) {
+    if(toFind != nil
+       || object->count == 0) {
+        size_t iterator;
+        RMutexLockArray();
+        printDebugTrace1("Object %p", toDelete);
+        forAll(iterator, object->count) {
+            if(object->array[iterator] == toFind) {
+                break;
+            }
+        }
+        RMutexUnlockArray();
+        return iterator;
+    }
+    return object->count;
+}
+
 method(RArray *, getSubarray, RArray), RRange range) {
     if(range.size + range.start <= object->count
             && range.start < object->count) {

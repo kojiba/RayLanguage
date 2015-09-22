@@ -18,11 +18,12 @@
 
 #include "RayFoundation/RMemoryOperations/RByteOperations.h"
 
-typedef struct PurgeEvasionConnectionContext PurgeEvasionConnectionContext;
+typedef struct PEConnectionContext PEConnectionContext;
 
-PurgeEvasionConnectionContext* initContext(uint64_t masterKey[8]);
-RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PurgeEvasionConnectionContext* context);
-RByteArray* decryptDataWithConnectionContext(const RByteArray *data, PurgeEvasionConnectionContext* context);
+PEConnectionContext* initPEContext(uint64_t masterKey[8]);
+uint64_t*   PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo);
+RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
+RByteArray* decryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
 
 
 #endif /*__PURGE_EVASION_CONNECTION__*/
