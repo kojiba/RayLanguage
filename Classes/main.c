@@ -35,7 +35,13 @@ int main(int argc, const char *argv[]) {
 
     PEConnectionContext *receiver = initPEContext(masterKey2);
 
-    RByteArray *array = RBfromRCS(RS("Hello"));
+    RByteArray *array = RBfromRCS(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit, \n"
+                                             "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
+                                             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \n"
+                                             "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\n "
+                                             "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \n"
+                                             "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \n"
+                                             "culpa qui officia deserunt mollit anim id est laborum.\n"));
 
     forAll(iterator, 10) {
         RByteArray *result = encryptDataWithConnectionContext(array, context);
@@ -46,7 +52,12 @@ int main(int argc, const char *argv[]) {
         RByteArray *decrypted = decryptDataWithConnectionContext(result, receiver);
         if(decrypted != nil) {
             RPrintf("Decrypted\n");
-            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 64);
+            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 32/*64*/);
+
+            RString *string = RSC((const char *)decrypted->array);
+            p(RString)(string);
+            deleter(string, RString);
+
             deleter(decrypted, RByteArray);
         }
         RPrintf("\n");
