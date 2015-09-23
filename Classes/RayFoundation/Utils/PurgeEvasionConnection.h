@@ -23,8 +23,17 @@ typedef struct PEConnectionContext PEConnectionContext;
 PEConnectionContext* initPEContext(uint64_t masterKey[8]); // masterkey will be flushed
 destructor(PEConnectionContext);
 
+/**
+ * Data format is
+ *
+ *    +-----------------------------------------+
+ *    | packetNo (8 bytes) |   encrypted part   |
+ *    +-----------------------------------------+
+ *
+ **/
+
 RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
-RByteArray* decryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
+RByteArray* decryptDataWithConnectionContext(      RByteArray *data, PEConnectionContext* context);
 
 
 #endif /*__PURGE_EVASION_CONNECTION__*/

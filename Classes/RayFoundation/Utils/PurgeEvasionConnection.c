@@ -109,21 +109,58 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
 
             // add packetNo stamp in front
             result->array = RReAlloc(result->array, arraySize(byte, result->size + sizeof(uint64_t)));
-            memmove(result->array, result->array + sizeof(uint64_t), result->size);
+            memcpy(result->array + sizeof(uint64_t), result->array, result->size);
             memcpy(result->array, &currentPacketNo, sizeof(uint64_t));
+
+            // add size
+            result->size += sizeof(uint64_t);
 
             // hash packetKey
             evasionHashData(context->connectionKey, evasionBytesCount, context->connectionKey);
 
             // hide hash, for equals messages
-            hashPtr = result->array + sizeof(uint64_t) + result->size - evasionBytesCount;
+            hashPtr = result->array + result->size - evasionBytesCount;
             purgeEncrypt((uint64_t *) hashPtr, context->connectionKey);
-
-            // add size
-            result->size += sizeof(uint64_t);
 
             // cleanup
             deallocator(tempKey);
+            return result;
+        }
+    }
+    return nil;
+}
+
+RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionContext* context) {
+    uint64_t currentPacketNo;
+    memcpy(&currentPacketNo, data->array, sizeof(uint64_t));
+    PESessionPacketKey(context, currentPacketNo);
+    if(context->connectionKey != nil) {
+        RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
+        if(tempKey != nil) {
+            RByteArray *result = nil;
+            uint64_t keyHash[8];
+            byte *hashPtr;
+
+            // remove packetNo
+            data->array += sizeof(uint64_t);
+            data->size -= sizeof(uint64_t);
+
+            // hash packetKey
+            evasionHashData(context->connectionKey, evasionBytesCount, keyHash);
+
+            // get hash
+            hashPtr = data->array + data->size - evasionBytesCount;
+            purgeDecrypt((uint64_t *) hashPtr, keyHash);
+
+            // decrypt
+            result = $(data, m(decryptPurgeEvasion, RByteArray)), tempKey);
+
+            // cleanup
+            deallocator(tempKey);
+            // revert
+            data->array -= sizeof(uint64_t);
+            data->size += sizeof(uint64_t);
+
             return result;
         }
     }

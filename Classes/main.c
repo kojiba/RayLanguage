@@ -18,7 +18,6 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <RayFoundation/Utils/PurgeEvasionConnection.h>
-#include <RayFoundation/REncoding/purge.h>
 
 #include "Tests.h"
 
@@ -29,25 +28,36 @@ int main(int argc, const char *argv[]) {
     size_t iterator;
 
     uint64_t masterKey[8] = {};
+    uint64_t masterKey2[8] = {};
     uint64_t *key;
 
     PEConnectionContext *context = initPEContext(masterKey);
 
+    PEConnectionContext *receiver = initPEContext(masterKey2);
+
     RByteArray *array = RBfromRCS(RS("Hello"));
 
-    forAll(iterator, 30) {
+    forAll(iterator, 10) {
         RByteArray *result = encryptDataWithConnectionContext(array, context);
         RPrintf("Iteration : %lu\n", iterator);
-        printByteArrayInHexWithScreenSize((const byte *) result->array, sizeof(uint64_t), 64);
-        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 64);
+//        printByteArrayInHexWithScreenSize((const byte *) result->array, sizeof(uint64_t), 64);
+        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 32/*64*/);
 
+        RByteArray *decrypted = decryptDataWithConnectionContext(result, receiver);
+        if(decrypted != nil) {
+            RPrintf("Decrypted\n");
+            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 64);
+            deleter(decrypted, RByteArray);
+        }
         RPrintf("\n");
+
         deleter(result, RByteArray);
     }
 
     deleter(array, RByteArray);
 
     deleter(context, PEConnectionContext);
+    deleter(receiver, PEConnectionContext);
 
     endRay();
 }
