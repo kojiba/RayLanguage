@@ -33,10 +33,21 @@ int main(int argc, const char *argv[]) {
 
     PEConnectionContext *context = initPEContext(masterKey);
 
-    forAll(iterator, 500) {
-        key = PESessionPacketKey(context, iterator);
-        printByteArrayInHex((const byte *) key, purgeBytesCount);
+    RByteArray *array = RBfromRCS(RS("Hello"));
+
+    forAll(iterator, 30) {
+        RByteArray *result = encryptDataWithConnectionContext(array, context);
+        RPrintf("Iteration : %lu\n", iterator);
+        printByteArrayInHexWithScreenSize((const byte *) result->array, sizeof(uint64_t), 64);
+        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 64);
+
+        RPrintf("\n");
+        deleter(result, RByteArray);
     }
+
+    deleter(array, RByteArray);
+
+    deleter(context, PEConnectionContext);
 
     endRay();
 }

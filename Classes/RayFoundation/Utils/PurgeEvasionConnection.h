@@ -20,8 +20,9 @@
 
 typedef struct PEConnectionContext PEConnectionContext;
 
-PEConnectionContext* initPEContext(uint64_t masterKey[8]);
-uint64_t*   PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo);
+PEConnectionContext* initPEContext(uint64_t masterKey[8]); // masterkey will be flushed
+destructor(PEConnectionContext);
+
 RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
 RByteArray* decryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
 

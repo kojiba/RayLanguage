@@ -21,7 +21,7 @@
 #include "purge.h"
 #include "evasion.h"
 
-void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash); // outputHash - 512 bits (64 bytes, 8 x uint64 blocks)
+void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash); // outputHash - preallocated 512 bits (64 bytes, 8 x uint64 blocks)
 
 /**
  * Data format is

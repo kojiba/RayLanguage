@@ -72,10 +72,14 @@ byte* flushAllToByte(pointer array, size_t size, byte symbol) {
     return array;
 }
 
-void printByteArrayInHex(const byte *array, size_t size) {
+inline void printByteArrayInHex(const byte *array, size_t size) {
+    printByteArrayInHexWithScreenSize(array, size, 32);
+}
+
+void printByteArrayInHexWithScreenSize(const byte *array, size_t size, size_t screenSize) {
     size_t iterator;
     forAll(iterator, size) {
-        if (iterator % 32 == 0 && iterator != 0) {
+        if (iterator % screenSize == 0 && iterator != 0) {
             RPrintf("\n");
         }
         RPrintf("%02X ", array[iterator]);

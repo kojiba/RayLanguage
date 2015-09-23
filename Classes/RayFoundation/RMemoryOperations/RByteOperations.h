@@ -60,7 +60,9 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
 
 // Basics
 byte*          flushAllToByte             (   pointer  array,   size_t size, byte symbol); // returns reference
-void           printByteArrayInHex        (const byte *array,   size_t size);
+void           printByteArrayInHexWithScreenSize
+                                          (const byte *array,   size_t size, size_t screenSize);
+extern void    printByteArrayInHex        (const byte *array,   size_t size);
 void           printByteArrayInBin        (const byte *array,   size_t size);
 byte*          getByteArrayCopy           (const byte *array,   size_t size);
 byte*          getSubArray                (const byte *array,   RRange range );            // sub-array copy
@@ -81,6 +83,6 @@ method(RByteArray*,      fromRCString,   RByteArray),    RCString *string); // n
 RByteArray* contentOfFile(const char *filename);
 
 #define makeFlushedBytes(size, symbol) flushAllToByte(RAlloc(size), size, symbol)
-#define RBfromRCS(string)              $(makeRByteArray(string->size), m(fromRCString, RByteArray)), string)
+#define RBfromRCS(string)              $(c(RByteArray)(nil, (string)->size), m(fromRCString, RByteArray)), (string))
 
 #endif /*__R_BYTE_OPERATIONS_H__*/
