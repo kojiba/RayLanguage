@@ -36,12 +36,12 @@ int main(int argc, const char *argv[]) {
     PEConnectionContext *receiver = initPEContext(masterKey2);
 
     RByteArray *array = RBfromRCS(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit, \n"
-                                             "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
-                                             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \n"
-                                             "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\n "
-                                             "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \n"
-                                             "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \n"
-                                             "culpa qui officia deserunt mollit anim id est laborum.\n"));
+                                     "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
+                                     "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \n"
+                                     "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\n "
+                                     "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \n"
+                                     "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \n"
+                                     "culpa qui officia deserunt mollit anim id est laborum.\n"));
 
     forAll(iterator, 10) {
         RByteArray *result = encryptDataWithConnectionContext(array, context);

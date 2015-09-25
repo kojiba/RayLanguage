@@ -17,6 +17,8 @@
 #include "RayFoundation/REncoding/PurgeEvasionUtils.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
 
+const byte networkOperationErrorCryptConst = 2;
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
@@ -27,6 +29,11 @@ struct PEConnectionContext {
 
     uint64_t *connectionKey;
     uint64_t *currentRandom;
+};
+
+struct PEConnection {
+    PEConnectionContext *connectionContext;
+    RSocket             *socket;
 };
 
 PEConnectionContext* initPEContext(uint64_t masterKey[8]) {
@@ -42,9 +49,9 @@ PEConnectionContext* initPEContext(uint64_t masterKey[8]) {
             && result->currentRandom != nil
             && result->connectionKey != nil) {
 
-            memcpy(result->masterKey, masterKey, purgeBytesCount);
+            RMemCpy(result->masterKey, masterKey, purgeBytesCount);
             evasionHashData(masterKey, purgeBytesCount, masterKey);
-            memset(masterKey, 0xFF, purgeBytesCount);
+            flushAllToByte(masterKey, purgeBytesCount, 0xFF);
         }
     }
     return result;
@@ -70,13 +77,13 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
     size_t index = $(context->packetNumbers, m(indexOfObject, RArray)), packetNo); // todo not only for x64
     if(index == context->packetNumbers->count) { // not find
 
-        memset(context->currentRandom, 0xFF, evasionBytesCount);
+        flushAllToByte(context->currentRandom, evasionBytesCount,  0xFF);
 
         forAll(index, packetNo) { // get random manyTimes from pure array
             evasionRand(context->currentRandom);
         }
 
-        memcpy(context->connectionKey, context->masterKey, purgeBytesCount); // cpy key
+        RMemCpy(context->connectionKey, context->masterKey, purgeBytesCount); // cpy key
 
         context->connectionKey[0] ^= context->currentRandom[0]; // add salt
         context->connectionKey[1] ^= context->currentRandom[1];
@@ -109,8 +116,8 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
 
             // add packetNo stamp in front
             result->array = RReAlloc(result->array, arraySize(byte, result->size + sizeof(uint64_t)));
-            memcpy(result->array + sizeof(uint64_t), result->array, result->size);
-            memcpy(result->array, &currentPacketNo, sizeof(uint64_t));
+            RMemCpy(result->array + sizeof(uint64_t), result->array, result->size);
+            RMemCpy(result->array, &currentPacketNo, sizeof(uint64_t));
 
             // add size
             result->size += sizeof(uint64_t);
@@ -132,7 +139,7 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
 
 RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionContext* context) {
     uint64_t currentPacketNo;
-    memcpy(&currentPacketNo, data->array, sizeof(uint64_t));
+    RMemCpy(&currentPacketNo, data->array, sizeof(uint64_t));
     PESessionPacketKey(context, currentPacketNo);
     if(context->connectionKey != nil) {
         RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
@@ -165,6 +172,50 @@ RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionConte
         }
     }
     return nil;
+}
+
+PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
+    PEConnection *result = allocator(PEConnection);
+    if(result != nil) {
+        if(socket != nil && context != nil) {
+            result->socket = socket;
+            result->connectionContext = context;
+        } else {
+
+            // cleanups
+            deallocator(socket);
+            deallocator(context);
+        }
+    }
+    return result;
+}
+
+destructor(PEConnection) {
+    deleter(object->socket, RSocket);
+    deleter(object->connectionContext, PEConnectionContext);
+}
+
+byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
+    RByteArray *encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext);
+    byte result = networkOperationErrorCryptConst;
+    if(encrypted != nil) {
+        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size);
+        deleter(encrypted, RByteArray);
+    }
+    return result;
+}
+
+inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size) {
+    byte result = networkOperationErrorCryptConst;
+    RByteArray *temp = makeRByteArray(buffer, size);
+    if(temp != nil) {
+        result = PEConnectionSend(object, temp);
+        deallocator(temp);
+    }
+    return result;
+}
+
+byte PEConnectionReceive(PEConnection *object, RByteArray* result) {
 }
 
 #pragma GCC pop_options
