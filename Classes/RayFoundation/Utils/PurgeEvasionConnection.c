@@ -16,6 +16,7 @@
 #include "RayFoundation/REncoding/purge.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtils.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
+#include "RayFoundation/RCString/RCString_Char.h"
 
 const byte networkOperationErrorCryptConst = 2;
 
@@ -115,9 +116,7 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
             result = $(data, m(encryptPurgeEvasion, RByteArray)), tempKey);
 
             // add packetNo stamp in front
-            result->array = RReAlloc(result->array, arraySize(byte, result->size + sizeof(uint64_t)));
-            RMemCpy(result->array + sizeof(uint64_t), result->array, result->size);
-            RMemCpy(result->array, &currentPacketNo, sizeof(uint64_t));
+            $(result, m(insertInBeginBytes, RByteArray)), &currentPacketNo, sizeof(uint64_t));
 
             // add size
             result->size += sizeof(uint64_t);
@@ -195,11 +194,39 @@ destructor(PEConnection) {
     deleter(object->connectionContext, PEConnectionContext);
 }
 
+void PEConnectionPrepareBuffer(RByteArray *array) {
+    static RCString fake;
+    RCString *temp = &(RCString){0, (char *) cryptedMessageStart, 11};
+    if(array != nil) {
+        fake.baseString = (char *) array->array;
+        fake.size = array->size;
+        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketBGN", "PEPacketBGNPEPacketBGN"); // shield strings
+        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketEND", "PEPacketENDPEPacketEND"); // shield strings
+    }
+    $(&fake, m(insertSubstringAt, RCString)), temp, 0);
+    $(&fake, m(appendString, RCString)), "PEPacketEND"); // here add \0 in end
+}
+
+void PEConnectionRestoreBuffer(RByteArray *array) {
+//    static RCString fake;
+//    $(array, m(insertInBeginBytes, RByteArray)), (pointer) cryptedMessageStart, 10);
+//    if(array != nil) {
+//        fake.baseString = (char *) array->array;
+//        fake.size = array->size;
+//        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketBGNPEPacketBGN", "PEPacketBGN"); // shield strings
+//        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketENDPEPacketEND", "PEPacketEND"); // shield strings
+//    }
+//    $(&fake, m(appendString, RCString)), "PEPacketEND"); // here add \0 in end
+}
+
+
 byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
     RByteArray *encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext);
     byte result = networkOperationErrorCryptConst;
     if(encrypted != nil) {
-        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size);
+        // prepare data
+        PEConnectionPrepareBuffer(encrypted);
+        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size - 1); // not send last \0
         deleter(encrypted, RByteArray);
     }
     return result;
@@ -216,6 +243,8 @@ inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, si
 }
 
 byte PEConnectionReceive(PEConnection *object, RByteArray* result) {
+    // unprepare data
+
 }
 
 #pragma GCC pop_options

@@ -211,6 +211,24 @@ method(RByteArray*, fromRCString, RByteArray), RCString *string) {
     return nil;
 }
 
+method(RByteArray*, insertInBeginBytes, RByteArray), pointer data, size_t size) {
+    object->array = RReAlloc(object->array, arraySize(byte, object->size + size));
+    if(object->array != nil) {
+        RMemCpy(object->array + size, object->array, object->size);
+        RMemCpy(object->array, data, size);
+    }
+    return object;
+}
+
+method(RByteArray*, insertInBegin, RByteArray), RByteArray *array) {
+    object->array = RReAlloc(object->array, arraySize(byte, object->size + array->size));
+    if(object->array != nil) {
+        RMemCpy(object->array + array->size, object->array, object->size);
+        RMemCpy(object->array, array->array, array->size);
+    }
+    return object;
+}
+
 RByteArray* contentOfFile(const char *filename) {
     FILE *file = RFOpen(filename, "rb");
     byte *buffer;

@@ -20,8 +20,8 @@
 #include "RayFoundation/RCString/RCString.h"
 
 class(RByteArray)
-    byte   *array;
     size_t  size;
+    byte   *array;
 endOf(RByteArray)
 
 // Memory operations
@@ -79,6 +79,8 @@ printer     (RByteArray);
 method(RByteArray*,      flushAllToByte, RByteArray),    byte symbol);
 constMethod(RByteArray*, copy,           RByteArray));
 method(RByteArray*,      fromRCString,   RByteArray),    RCString *string); // not sets size, only copy bytes, returns self
+method(RByteArray*,      insertInBeginBytes,  RByteArray), pointer data, size_t sizeInBytes);
+method(RByteArray*,      insertInBegin,  RByteArray), RByteArray *array);
 
 RByteArray* contentOfFile(const char *filename);
 

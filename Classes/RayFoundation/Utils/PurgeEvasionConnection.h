@@ -21,6 +21,9 @@
 
 extern const byte networkOperationErrorCryptConst; // if can't encrypt or decrypt
 
+const byte cryptedMessageStart[11] = {0x50, 0x45, 0x50, 0x61, 0x63, 0x6B, 0x65, 0x74, 0x42, 0x47, 0x4E}; // ACII - "PEPacketBGN"
+const byte cryptedMessageEnd  [11] = {0x50, 0x45, 0x50, 0x61, 0x63, 0x6B, 0x65, 0x74, 0x45, 0x4E, 0x44}; // ACII - "PEPacketEND"
+
 typedef struct PEConnectionContext PEConnectionContext;
 typedef struct PEConnection        PEConnection;
 
