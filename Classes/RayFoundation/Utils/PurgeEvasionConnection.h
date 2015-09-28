@@ -54,7 +54,8 @@ byte          PEConnectionReceive  (PEConnection *object, RByteArray **result);
 // wrappers
 extern
 byte          PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size);
-
+extern
+byte          PEConnectionSendString(PEConnection *object, const RString *string);
 
 #endif /* RAY_EMBEDDED */
 

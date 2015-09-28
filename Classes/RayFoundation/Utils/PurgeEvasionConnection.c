@@ -261,16 +261,6 @@ byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
     return result;
 }
 
-inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size) {
-    byte result = networkOperationErrorCryptConst;
-    RByteArray *temp = makeRByteArray(buffer, size);
-    if(temp != nil) {
-        result = PEConnectionSend(object, temp);
-        deallocator(temp);
-    }
-    return result;
-}
-
 byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
     byte buffer[TCP_MTU_SIZE];
     size_t received;
@@ -330,6 +320,22 @@ byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
     deleter(storage, RBuffer);
     RMutexUnlock(cmutex);
     return resultFlag;
+}
+
+#pragma mark Wrappers
+
+inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size) {
+    byte result = networkOperationErrorCryptConst;
+    RByteArray *temp = makeRByteArray(buffer, size);
+    if(temp != nil) {
+        result = PEConnectionSend(object, temp);
+        deallocator(temp);
+    }
+    return result;
+}
+
+byte PEConnectionSendString(PEConnection *object, const RString *string) {
+    return PEConnectionSendBytes(object, string->baseString, string->size);
 }
 
 #pragma GCC pop_options

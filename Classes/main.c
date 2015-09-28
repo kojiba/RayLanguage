@@ -70,17 +70,15 @@ int main(int argc, const char *argv[]) {
     PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
 
     if(connection != nil) {
-        RByteArray *toSend = RBfromRCS(RS("Hello world from crypto maniac 1!\n"
-                             "Hello world from crypto maniac 2!\n"
-                             "Hello world from crypto maniac 3!\n"
-                             "Hello world from crypto maniac 4!\n"
-                             "Hello world from crypto maniac 5!\n"
-                             "Hello world from crypto maniac 6!\n"
-                             "Hello world from crypto maniac 7!\n"
-                             "Hello world from crypto maniac 8!\n"
-                             "Hello world from crypto maniac 9!"));
-
-        PEConnectionSend(connection, toSend);
+        PEConnectionSendString(connection, RS("Hello world from crypto maniac 1!\n"
+                                              "Hello world from crypto maniac 2!\n"
+                                              "Hello world from crypto maniac 3!\n"
+                                              "Hello world from crypto maniac 4!\n"
+                                              "Hello world from crypto maniac 5!\n"
+                                              "Hello world from crypto maniac 6!\n"
+                                              "Hello world from crypto maniac 7!\n"
+                                              "Hello world from crypto maniac 8!\n"
+                                              "Hello world from crypto maniac 9!"));
         RPrintf("Sended\n");
 
         sleep(1);
