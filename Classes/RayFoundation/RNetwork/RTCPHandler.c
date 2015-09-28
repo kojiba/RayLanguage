@@ -93,7 +93,7 @@ printer(RTCPHandler) {
 }
 
 method(void, privateStartInMode, RTCPHandler)) {
-    $(object->threads, m(setDelegateFunction, RThreadPool)), object->delegate->delegateFunction);
+    $(object->threads, m(setDelegateFunction, RThreadPool)), (RThreadFunction) object->delegate->delegateFunction);
 
     if(!object->connectorMode) {
         $(object->listener, m(listen, RSocket)), RTCPHandlerListenerQueueSize);

@@ -17,8 +17,8 @@
 #include <stdarg.h>
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    #define arrayMutex &object->mutex
-    #define RMutexLockArray() RMutexLock(arrayMutex)
+    #define arrayMutex         (RMutex*)(const RMutex*)(&((const RArray* )object)->mutex) // warning removes
+    #define RMutexLockArray()   RMutexLock(arrayMutex)
     #define RMutexUnlockArray() RMutexUnlock(arrayMutex)
 #else
     // sets empty

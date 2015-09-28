@@ -185,7 +185,7 @@ destructor(RByteArray) {
 }
 
 printer(RByteArray) {
-    RPrintf("%s object - %p {\n", toString(RByteArray), object);
+    RPrintf("%s object - %p [%lu] {\n", toString(RByteArray), object, object->size);
     printByteArrayInHex(object->array, object->size);
     RPrintf("} - %p \n\n", object);
 }

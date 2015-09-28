@@ -36,12 +36,13 @@ endOf(RTCPDelegate)
 
 
 
-protocol(RTCPDataStruct)
-    RSocket             *socket;
-    RTCPDelegate        *delegate;
-    struct RTCPHandler  *handler;
-    size_t               identifier;
-endOf()
+struct RTCPDataStruct {
+    pointer            context;
+    RSocket            *socket;
+    RTCPDelegate       *delegate;
+    struct RTCPHandler *handler;
+    size_t identifier;
+};
 
 
 

@@ -13,12 +13,26 @@
  **/
 
 #include "PurgeEvasionConnection.h"
+
+#ifndef RAY_EMBEDDED
+
+//#define PE_CONNECTION_VERBOSE_DEBUG
+
 #include "RayFoundation/REncoding/purge.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtils.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
 #include "RayFoundation/RCString/RCString_Char.h"
+#include "RayFoundation/RContainers/RBuffer.h"
+
+#define cmutex &object->mutex
+
+#define TCP_MTU_SIZE 1500
 
 const byte networkOperationErrorCryptConst = 2;
+const byte networkOperationErrorAllocationConst = 3;
+
+const char packetEndString[24]       = "PEPacketEND PEPacketEND ";
+const char packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -35,31 +49,31 @@ struct PEConnectionContext {
 struct PEConnection {
     PEConnectionContext *connectionContext;
     RSocket             *socket;
+    RMutex               mutex;
 };
 
 PEConnectionContext* initPEContext(uint64_t masterKey[8]) {
-    PEConnectionContext *result = allocator(PEConnectionContext);
-    if(result != nil) {
-        result->masterKey      = arrayAllocator(uint64_t, 8);
-        result->packetNumbers  = makeRArray();
-        result->currentRandom  = arrayAllocator(uint64_t, 8);
-        result->connectionKey  = arrayAllocator(uint64_t, 8);
+    PEConnectionContext *object = allocator(PEConnectionContext);
+    if(object != nil) {
+        object->masterKey      = arrayAllocator(uint64_t, 8);
+        object->packetNumbers  = makeRArray();
+        object->currentRandom  = arrayAllocator(uint64_t, 8);
+        object->connectionKey  = arrayAllocator(uint64_t, 8);
 
-        if(result->masterKey  != nil
-            && result->packetNumbers != nil
-            && result->currentRandom != nil
-            && result->connectionKey != nil) {
+        if(object->masterKey  != nil
+            && object->packetNumbers != nil
+            && object->currentRandom != nil
+            && object->connectionKey != nil) {
 
-            RMemCpy(result->masterKey, masterKey, purgeBytesCount);
+            RMemCpy(object->masterKey, masterKey, purgeBytesCount);
             evasionHashData(masterKey, purgeBytesCount, masterKey);
             flushAllToByte(masterKey, purgeBytesCount, 0xFF);
         }
     }
-    return result;
+    return object;
 }
 
 destructor(PEConnectionContext) {
-
     evasionHashData(object->masterKey,     purgeBytesCount, object->masterKey);
     evasionHashData(object->connectionKey, purgeBytesCount, object->connectionKey);
     evasionHashData(object->currentRandom, purgeBytesCount, object->currentRandom);
@@ -75,7 +89,7 @@ destructor(PEConnectionContext) {
 }
 
 uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { // uint64 x 8
-    size_t index = $(context->packetNumbers, m(indexOfObject, RArray)), packetNo); // todo not only for x64
+    size_t index = $(context->packetNumbers, m(indexOfObject, RArray)), (pointer) packetNo); // todo not only for x64
     if(index == context->packetNumbers->count) { // not find
 
         flushAllToByte(context->currentRandom, evasionBytesCount,  0xFF);
@@ -96,7 +110,7 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
         context->connectionKey[7] ^= context->currentRandom[7];
 
         evasionHashData(context->connectionKey, purgeBytesCount, context->connectionKey); // hashing
-        $(context->packetNumbers, m(addObject, RArray)), packetNo); // add packetNo
+        $(context->packetNumbers, m(addObject, RArray)), (pointer) packetNo); // add packetNo
         return context->connectionKey;
     }
     return nil;
@@ -174,61 +188,76 @@ RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionConte
 }
 
 PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
-    PEConnection *result = allocator(PEConnection);
-    if(result != nil) {
+    PEConnection *object = allocator(PEConnection);
+    if(object != nil) {
         if(socket != nil && context != nil) {
-            result->socket = socket;
-            result->connectionContext = context;
+            object->socket = socket;
+            object->connectionContext = context;
+            mutexWithType(cmutex, RMutexNormal);
         } else {
 
             // cleanups
             deallocator(socket);
             deallocator(context);
+            deallocator(object);
+            object = nil;
         }
     }
-    return result;
+    return object;
 }
 
 destructor(PEConnection) {
+    RMutexLock(cmutex);
     deleter(object->socket, RSocket);
     deleter(object->connectionContext, PEConnectionContext);
+    RMutexUnlock(cmutex);
+    RMutexDestroy(cmutex);
 }
 
 void PEConnectionPrepareBuffer(RByteArray *array) {
     static RCString fake;
-    RCString *temp = &(RCString){0, (char *) cryptedMessageStart, 11};
     if(array != nil) {
         fake.baseString = (char *) array->array;
         fake.size = array->size;
-        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketBGN", "PEPacketBGNPEPacketBGN"); // shield strings
-        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketEND", "PEPacketENDPEPacketEND"); // shield strings
+        $(&fake, m(replaceCSubstrings, RCString)), (char *) packetEndString, (char *) packetEndShieldString); // shield strings
     }
-    $(&fake, m(insertSubstringAt, RCString)), temp, 0);
-    $(&fake, m(appendString, RCString)), "PEPacketEND"); // here add \0 in end
 }
 
 void PEConnectionRestoreBuffer(RByteArray *array) {
-//    static RCString fake;
-//    $(array, m(insertInBeginBytes, RByteArray)), (pointer) cryptedMessageStart, 10);
-//    if(array != nil) {
-//        fake.baseString = (char *) array->array;
-//        fake.size = array->size;
-//        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketBGNPEPacketBGN", "PEPacketBGN"); // shield strings
-//        $(&fake, m(replaceCSubstrings, RCString)), "PEPacketENDPEPacketEND", "PEPacketEND"); // shield strings
-//    }
-//    $(&fake, m(appendString, RCString)), "PEPacketEND"); // here add \0 in end
+    static RCString fake;
+    if(array != nil) {
+        fake.baseString = (char *) array->array;
+        fake.size = array->size;
+        $(&fake, m(replaceCSubstrings, RCString)), (char *) packetEndShieldString, (char *) packetEndString); // shield strings
+    }
 }
 
 
 byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
-    RByteArray *encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext);
+    RMutexLock(cmutex);
+    RByteArray *encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext); // crypt
     byte result = networkOperationErrorCryptConst;
     if(encrypted != nil) {
-        // prepare data
+        // send data
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+        RPrintf("Unprepared data\n");
+        p(RByteArray)(encrypted);
+#endif
+
         PEConnectionPrepareBuffer(encrypted);
-        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size - 1); // not send last \0
+
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+        RPrintf("Prepared data\n");
+        p(RByteArray)(encrypted);
+#endif
+        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size);
+        if(result == networkOperationSuccessConst) {
+            // send transmission end
+            result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, sizeof(packetEndString));
+        }
         deleter(encrypted, RByteArray);
     }
+    RMutexUnlock(cmutex);
     return result;
 }
 
@@ -242,9 +271,67 @@ inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, si
     return result;
 }
 
-byte PEConnectionReceive(PEConnection *object, RByteArray* result) {
-    // unprepare data
+byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
+    byte buffer[TCP_MTU_SIZE];
+    size_t received;
+    RBuffer *storage = nil;
+    RByteArray temp;
+    byte resultFlag = networkOperationSuccessConst;
 
+    RMutexLock(cmutex);
+    while(resultFlag != networkConnectionClosedConst
+          && resultFlag != networkOperationErrorConst) {
+        resultFlag = $(object->socket, m(receive, RSocket)), buffer, TCP_MTU_SIZE, &received);
+
+        if(resultFlag == networkOperationSuccessConst) {
+            if(received >= sizeof(packetEndString)
+               && !isMemEqual(buffer, packetEndString, sizeof(packetEndString))) {
+
+                if(storage == nil) {
+                    storage = c(RBuffer)(nil);
+                }
+
+                if(storage != nil) {
+                    $(storage, m(addData, RBuffer)), buffer, received);
+                } else {
+                    RError("PEConnectionReceive. Can't allocate buffer.", object);
+                    RMutexUnlock(cmutex);
+                    return networkOperationErrorAllocationConst;
+                }
+            } else {
+                break;
+            }
+        }
+
+    }
+
+    temp.array = storage->masterRByteArrayObject->array; // makes better
+    temp.size  = storage->totalPlaced;
+
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+    RPrintf("Unrestored data\n");
+    p(RByteArray)(&temp);
+#endif
+
+    // restore
+    PEConnectionRestoreBuffer(&temp);
+
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+    RPrintf("Restored buffer\n");
+    p(RByteArray)(&temp);
+#endif
+
+    // decrypt
+    *result = decryptDataWithConnectionContext(&temp, object->connectionContext);
+    if(*result == nil) {
+        resultFlag = networkOperationErrorCryptConst;
+    }
+    // cleanup
+    deleter(storage, RBuffer);
+    RMutexUnlock(cmutex);
+    return resultFlag;
 }
 
 #pragma GCC pop_options
+
+#endif /* RAY_EMBEDDED */

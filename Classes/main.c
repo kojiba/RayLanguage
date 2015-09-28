@@ -18,8 +18,40 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <RayFoundation/Utils/PurgeEvasionConnection.h>
+#include <unistd.h>
 
 #include "Tests.h"
+
+void receive() {
+    uint64_t masterKey[8] = {};
+    RSocket *listener = openListenerOnPort(3000, 10);
+    while(listener != nil) {
+        RPrintf("Listen\n");
+        RSocket *client = acceptRSocket(listener);
+        if(client != nil) {
+            RPrintf("Accepted \n");
+            RByteArray *result;
+            PEConnection *connection = PEConnectionInit(client, initPEContext(masterKey));
+            PEConnectionReceive(connection, &result);
+
+            if(result != nil) {
+                RPrintf("Received bufffer\n");
+                p(RByteArray)(result);
+
+                RPrintf("ASCII: \n%s\n",result->array);
+                deleter(result, RByteArray);
+
+            } else {
+                RPrintf("Error receive\n");
+            }
+
+            deleter(connection, PEConnection);
+        } else {
+            break;
+        }
+    }
+
+}
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
@@ -28,58 +60,34 @@ int main(int argc, const char *argv[]) {
     size_t iterator;
 
     uint64_t masterKey[8] = {};
-    uint64_t masterKey2[8] = {};
-    uint64_t *key;
 
-//    PEConnectionContext *context = initPEContext(masterKey);
-//
-//    PEConnectionContext *receiver = initPEContext(masterKey2);
-//
-//    RByteArray *array = RBfromRCS(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit, \n"
-//                                     "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n"
-//                                     "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \n"
-//                                     "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\n "
-//                                     "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \n"
-//                                     "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \n"
-//                                     "culpa qui officia deserunt mollit anim id est laborum.\n"));
-//
-//    forAll(iterator, 10) {
-//        RByteArray *result = encryptDataWithConnectionContext(array, context);
-//        RPrintf("Iteration : %lu\n", iterator);
-////        printByteArrayInHexWithScreenSize((const byte *) result->array, sizeof(uint64_t), 64);
-//        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 32/*64*/);
-//
-//        RByteArray *decrypted = decryptDataWithConnectionContext(result, receiver);
-//        if(decrypted != nil) {
-//            RPrintf("Decrypted\n");
-//            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 32/*64*/);
-//
-//            RString *string = RSC((const char *)decrypted->array);
-//            p(RString)(string);
-//            deleter(string, RString);
-//
-//            deleter(decrypted, RByteArray);
-//        }
-//        RPrintf("\n");
-//
-//        deleter(result, RByteArray);
-//
-//    }
+    RThread receiver = makeRThread((RThreadFunction) receive);
 
-    RCString *string = RSC("somedataherePEPacketBGN, andPEPacketBGN anPEPacketENDother one");
-    RCString *temp = &(RCString){0, cryptedMessageStart, 11};
-    $(string, m(replaceCSubstrings, RCString)), "PEPacketBGN", "PEPacketBGNPEPacketBGN"); // shield strings
-    $(string, m(replaceCSubstrings, RCString)), "PEPacketEND", "PEPacketENDPEPacketEND"); // shield strings
-    $(string, m(insertSubstringAt, RCString)), temp, 0);
-    $(string, m(appendString, RCString)), "PEPacketEND"); // here add \0 in end
-    p(RString)(string);
+    sleep(1);
 
-    RPrintf("\n");
+    RSocket *socket = socketConnectedTo("127.0.0.1", 3000);
+    RPrintf("Connected\n");
+    PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
 
-//    deleter(array, RByteArray);
-//
-//    deleter(context, PEConnectionContext);
-//    deleter(receiver, PEConnectionContext);
+    if(connection != nil) {
+        RByteArray *toSend = RBfromRCS(RS("Hello world from crypto maniac 1!\n"
+                             "Hello world from crypto maniac 2!\n"
+                             "Hello world from crypto maniac 3!\n"
+                             "Hello world from crypto maniac 4!\n"
+                             "Hello world from crypto maniac 5!\n"
+                             "Hello world from crypto maniac 6!\n"
+                             "Hello world from crypto maniac 7!\n"
+                             "Hello world from crypto maniac 8!\n"
+                             "Hello world from crypto maniac 9!"));
+
+        PEConnectionSend(connection, toSend);
+        RPrintf("Sended\n");
+
+        sleep(1);
+        deleter(connection, PEConnection);
+    }
+
+    RThreadCancel(receiver);
 
     endRay();
 }

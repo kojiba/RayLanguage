@@ -16,13 +16,15 @@
 #ifndef __PURGE_EVASION_CONNECTION__
 #define __PURGE_EVASION_CONNECTION__
 
+#include "RayFoundation/RayConfig.h"
+
+#ifndef RAY_EMBEDDED
+
 #include "RayFoundation/RMemoryOperations/RByteOperations.h"
 #include "RayFoundation/RNetwork/RSocket.h"
 
 extern const byte networkOperationErrorCryptConst; // if can't encrypt or decrypt
-
-const byte cryptedMessageStart[11] = {0x50, 0x45, 0x50, 0x61, 0x63, 0x6B, 0x65, 0x74, 0x42, 0x47, 0x4E}; // ACII - "PEPacketBGN"
-const byte cryptedMessageEnd  [11] = {0x50, 0x45, 0x50, 0x61, 0x63, 0x6B, 0x65, 0x74, 0x45, 0x4E, 0x44}; // ACII - "PEPacketEND"
+extern const byte networkOperationErrorAllocationConst;
 
 typedef struct PEConnectionContext PEConnectionContext;
 typedef struct PEConnection        PEConnection;
@@ -44,8 +46,16 @@ RByteArray* decryptDataWithConnectionContext(      RByteArray *data, PEConnectio
 
 PEConnection* PEConnectionInit     (RSocket *socket,      PEConnectionContext *context);
 destructor   (PEConnection);
+
+// main
 byte          PEConnectionSend     (PEConnection *object, RByteArray *toSend);
-extern byte   PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size);
-byte          PEConnectionReceive  (PEConnection *object, RByteArray *result);
+byte          PEConnectionReceive  (PEConnection *object, RByteArray **result);
+
+// wrappers
+extern
+byte          PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size);
+
+
+#endif /* RAY_EMBEDDED */
 
 #endif /*__PURGE_EVASION_CONNECTION__*/
