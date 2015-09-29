@@ -18,20 +18,19 @@
 
 #include "RayFoundation/RayConfig.h"
 
-#ifndef RAY_EMBEDDED
-
 #include "RayFoundation/RMemoryOperations/RByteOperations.h"
-#include "RayFoundation/RNetwork/RSocket.h"
 
-extern const byte networkOperationErrorCryptConst; // if can't encrypt or decrypt
-extern const byte networkOperationErrorAllocationConst;
+#ifndef RAY_EMBEDDED
+    #include "RayFoundation/RNetwork/RSocket.h"
+
+    extern const byte networkOperationErrorCryptConst; // if can't encrypt or decrypt
+    extern const byte networkOperationErrorAllocationConst;
+#endif
 
 typedef struct PEConnectionContext PEConnectionContext;
-typedef struct PEConnection        PEConnection;
-
 #pragma mark Context
 
-PEConnectionContext* initPEContext(uint64_t masterKey[8]); // masterkey will be flushed
+PEConnectionContext* initPEContext(uint64_t masterKey[8]); // master-key will be flushed
 destructor(PEConnectionContext);
 
 RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
@@ -39,19 +38,21 @@ RByteArray* decryptDataWithConnectionContext(      RByteArray *data, PEConnectio
 
 #pragma mark Connection
 
-PEConnection* PEConnectionInit     (RSocket *socket,      PEConnectionContext *context);
-destructor   (PEConnection);
+#ifndef RAY_EMBEDDED
+    typedef struct PEConnection        PEConnection;
 
-// main
-byte          PEConnectionSend     (PEConnection *object, RByteArray *toSend);
-byte          PEConnectionReceive  (PEConnection *object, RByteArray **result);
+    PEConnection* PEConnectionInit     (RSocket *socket,      PEConnectionContext *context);
+    destructor   (PEConnection);
 
-// wrappers
-extern
-byte          PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size);
-extern
-byte          PEConnectionSendString(PEConnection *object, const RString *string);
+    // main
+    byte          PEConnectionSend     (PEConnection *object, RByteArray *toSend);
+    byte          PEConnectionReceive  (PEConnection *object, RByteArray **result);
 
+    // wrappers
+    extern
+    byte          PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size);
+    extern
+    byte          PEConnectionSendString(PEConnection *object, const RString *string);
 #endif /* RAY_EMBEDDED */
 
 #endif /*__PURGE_EVASION_CONNECTION__*/

@@ -18,10 +18,12 @@
 
 #include <RayFoundation/RayFoundation.h>
 
-
+#ifndef RAY_EMBEDDED
 void startServer(RTCPHandler  **server,
                  RTCPDelegate **delegate,
                  u16 serverPort,
                  u16 configuratorPort, RString *password);
+
+#endif
 
 #endif /*__RAY_CHAT__*/

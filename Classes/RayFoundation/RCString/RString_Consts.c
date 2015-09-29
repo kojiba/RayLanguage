@@ -18,14 +18,24 @@
 
 #include "RString_Consts.h"
 
-RMutex mutex;
+#ifndef RAY_EMBEDDED
+    RMutex mutex;
+
+    #define tableMutexLock() RMutexLock(&mutex);
+    #define tableMutexUnlock() RMutexUnlock(&mutex);
+#else
+    #define tableMutexLock()
+    #define tableMutexUnlock()
+#endif
 
 RDictionary* stringConstantsTable() {
     static RDictionary * instance = nil;
     if(instance == nil) {
         instance = makeRDictionary();
         if(instance != nil) {
+#ifndef RAY_EMBEDDED
             mutexWithType(&mutex, RMutexNormal);
+#endif
             $(instance->keys, m(setPrinterDelegate, RArray)), (PrinterDelegate) RPrintf);
 
             $(instance->values, m(setDestructorDelegate, RArray)), RFree); // only dealloc
@@ -40,7 +50,7 @@ RCString * constantRString(char *string) {
     RCString *resultString = nil;
     // comparator for only compile-time constants
     RCompareDelegate delegate;
-    RMutexLock(&mutex);
+    tableMutexLock();
     delegate.virtualCompareMethod = defaultComparator;
     delegate.etaloneObject = string;
 
@@ -53,7 +63,7 @@ RCString * constantRString(char *string) {
             $(constant, m(setConstantString, RCString)), string);
             if($(stringConstantsTable()->keys, m(addObject, RArray)), string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
-                    RMutexUnlock(&mutex);
+                    tableMutexUnlock();
                     resultString = constant;
                 } else {
                     $(stringConstantsTable()->keys, m(deleteLast, RArray)));
@@ -68,7 +78,7 @@ RCString * constantRString(char *string) {
     } else {
         resultString = $(stringConstantsTable()->values, m(objectAtIndex, RArray)), result.index);
     }
-    RMutexUnlock(&mutex);
+    tableMutexUnlock();
     return resultString;
 }
 

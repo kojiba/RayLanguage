@@ -14,25 +14,17 @@
 
 #include "PurgeEvasionConnection.h"
 
-#ifndef RAY_EMBEDDED
 
 //#define PE_CONNECTION_VERBOSE_DEBUG
 
 #include "RayFoundation/REncoding/purge.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtils.h"
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
-#include "RayFoundation/RCString/RCString_Char.h"
-#include "RayFoundation/RContainers/RBuffer.h"
 
-#define cmutex &object->mutex
-
-#define TCP_MTU_SIZE 1500
-
-const byte networkOperationErrorCryptConst = 2;
-const byte networkOperationErrorAllocationConst = 3;
-
-const char packetEndString[24]       = "PEPacketEND PEPacketEND ";
-const char packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
+#ifndef RAY_EMBEDDED
+    #include "RayFoundation/RCString/RCString_Char.h"
+    #include "RayFoundation/RContainers/RBuffer.h"
+#endif
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -44,12 +36,6 @@ struct PEConnectionContext {
 
     uint64_t *connectionKey;
     uint64_t *currentRandom;
-};
-
-struct PEConnection {
-    PEConnectionContext *connectionContext;
-    RSocket             *socket;
-    RMutex               mutex;
 };
 
 PEConnectionContext* initPEContext(uint64_t masterKey[8]) {
@@ -194,6 +180,24 @@ RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionConte
     }
     return nil;
 }
+
+#ifndef RAY_EMBEDDED
+
+struct PEConnection {
+    PEConnectionContext *connectionContext;
+    RSocket             *socket;
+    RMutex               mutex;
+};
+
+#define cmutex &object->mutex
+
+#define TCP_MTU_SIZE 1500
+
+const byte networkOperationErrorCryptConst = 2;
+const byte networkOperationErrorAllocationConst = 3;
+
+const char packetEndString[24]       = "PEPacketEND PEPacketEND ";
+const char packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
 
 PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
     PEConnection *object = allocator(PEConnection);
@@ -349,6 +353,6 @@ byte PEConnectionSendString(PEConnection *object, const RString *string) {
     return PEConnectionSendBytes(object, string->baseString, string->size);
 }
 
-#pragma GCC pop_options
-
 #endif /* RAY_EMBEDDED */
+
+#pragma GCC pop_options
