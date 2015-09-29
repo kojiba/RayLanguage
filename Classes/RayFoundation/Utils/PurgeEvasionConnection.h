@@ -29,20 +29,15 @@ extern const byte networkOperationErrorAllocationConst;
 typedef struct PEConnectionContext PEConnectionContext;
 typedef struct PEConnection        PEConnection;
 
+#pragma mark Context
+
 PEConnectionContext* initPEContext(uint64_t masterKey[8]); // masterkey will be flushed
 destructor(PEConnectionContext);
 
-/**
- * Data format is
- *
- *    +-----------------------------------------+
- *    | packetNo (8 bytes) |   encrypted part   |
- *    +-----------------------------------------+
- *
- **/
-
 RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context);
 RByteArray* decryptDataWithConnectionContext(      RByteArray *data, PEConnectionContext* context);
+
+#pragma mark Connection
 
 PEConnection* PEConnectionInit     (RSocket *socket,      PEConnectionContext *context);
 destructor   (PEConnection);

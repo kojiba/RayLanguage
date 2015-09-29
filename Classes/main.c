@@ -85,6 +85,7 @@ int main(int argc, const char *argv[]) {
         deleter(connection, PEConnection);
     }
 
+
     RThreadCancel(receiver);
 
     endRay();

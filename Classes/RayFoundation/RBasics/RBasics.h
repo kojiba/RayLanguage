@@ -38,7 +38,7 @@ extern RRange          makeRRange    (size_t start, size_t size);
 extern RRange          makeRRangeTo  (size_t from,  size_t to);
 extern RCompareFlags   compareRRange (RRange first, RRange second);
 extern rbool           isInRange     (RRange range, size_t value);
-extern rbool           isOverlapping (RRange first, RRange second);
+extern rbool           isOverlappingRRange(RRange first, RRange second);
 printer(RRange);
 
 // -----------------------------------------------------------------------

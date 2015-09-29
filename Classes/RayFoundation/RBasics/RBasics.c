@@ -57,7 +57,7 @@ inline rbool isInRange(RRange range, size_t value) {
     }
 }
 
-inline rbool isOverlapping(RRange first, RRange second) {
+inline rbool isOverlappingRRange(RRange first, RRange second) {
     if((second.start > (first.start + first.size))
             || ((second.start + second.size) < first.start)) {
         return no;

@@ -116,6 +116,14 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
     return nil;
 }
 
+/**
+ * Data format is
+ *
+ *    +-----------------------------------------+
+ *    | packetNo (8 bytes) |   encrypted part   |
+ *    +-----------------------------------------+
+ *
+ **/
 
 RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context) {
     uint64_t currentPacketNo = context->packetNumbers->count;
@@ -214,6 +222,7 @@ destructor(PEConnection) {
     RMutexDestroy(cmutex);
 }
 
+static inline
 void PEConnectionPrepareBuffer(RByteArray *array) {
     static RCString fake;
     if(array != nil) {
@@ -223,6 +232,7 @@ void PEConnectionPrepareBuffer(RByteArray *array) {
     }
 }
 
+static inline
 void PEConnectionRestoreBuffer(RByteArray *array) {
     static RCString fake;
     if(array != nil) {
@@ -234,9 +244,10 @@ void PEConnectionRestoreBuffer(RByteArray *array) {
 
 
 byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
-    RMutexLock(cmutex);
-    RByteArray *encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext); // crypt
+    RByteArray *encrypted;
     byte result = networkOperationErrorCryptConst;
+    RMutexLock(cmutex);
+    encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext); // crypt
     if(encrypted != nil) {
         // send data
 #ifdef PE_CONNECTION_VERBOSE_DEBUG

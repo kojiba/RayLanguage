@@ -153,7 +153,7 @@ method(rbool, isRangeFree, RSandBox), RRange range) {
     switch (object->allocationMode) {
         case RSandBoxAllocationModeRandom : {
             forAll(iterator, object->descriptorsCount) {
-                if(isOverlapping(object->descriptorTable[iterator].memRange, range) == yes) {
+                if(isOverlappingRRange(object->descriptorTable[iterator].memRange, range) == yes) {
                     return no;
                 }
             }
