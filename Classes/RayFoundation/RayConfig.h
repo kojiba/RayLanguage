@@ -23,6 +23,12 @@
 //#define RAY_SHORT_DEBUG  // short trace for array and classTable
 //#define RAY_CONSOLE_COLORS_ON // enable colored console messages
 
+#pragma mark Clang blocks
+
+#if __has_extension(blocks)
+    #define RAY_BLOCKS_ON   // blocks extensions for containers
+#endif
+
 #pragma mark Embedded Cut
 
 /*

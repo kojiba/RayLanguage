@@ -69,16 +69,16 @@ typedef rbool         (* EnumeratorDelegate)(pointer context, pointer object, si
 
 // -----------------------------------------------------------------------
 
-protocol(RCompareDelegate) //--------------------------------------------
+protocol(RCompareDelegate)
     ComparatorDelegate virtualCompareMethod;
     pointer            etaloneObject;
-endOf(RCompareDelegate) //-----------------------------------------------
+endOf(RCompareDelegate)
 
 extern RCompareFlags defaultComparator(pointer first, pointer second);
 
 // -----------------------------------------------------------------------
 
-protocol(REnumerateDelegate) //--------------------------------------------
+protocol(REnumerateDelegate)
     EnumeratorDelegate virtualEnumerator;
 endOf(REnumerateDelegate)
 
@@ -87,5 +87,11 @@ typedef struct SerializerData { // worker struct for serializers
                   pointer  serializePtrStart;
     struct SerializerData *next; // for multiple-serialize
 } SerializerData;
+
+
+
+#ifdef RAY_BLOCKS_ON
+    typedef rbool (^REnumerateBlock)(pointer objectIterator, size_t iterator);
+#endif
 
 #endif

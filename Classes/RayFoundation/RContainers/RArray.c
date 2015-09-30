@@ -247,7 +247,7 @@ method(void, setObjectAtIndex, RArray), pointer newObject, size_t index){
 
 method(void, deleteObject, RArray), pointer toDelete) {
     if(toDelete != nil
-       || object->count == 0) {
+       && object->count != 0) {
         size_t iterator;
         RMutexLockArray();
         printDebugTrace1("Object %p", toDelete);

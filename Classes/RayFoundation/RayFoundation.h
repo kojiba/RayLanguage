@@ -30,6 +30,8 @@ extern "C" {
 
 // Containers
 #include "RContainers/RArray.h"
+#include "RContainers/RArray_Blocks.h"
+#include "RContainers/RArray_Parallel.h"
 #include "RContainers/RList.h"
 #include "RContainers/RBuffer.h"
 #include "RContainers/RDictionary.h"
@@ -62,6 +64,7 @@ extern "C" {
 // Others
 #include "RClassTable/RClassTable.h"
 #include "Utils/Utils.h"
+#include "Utils/PurgeEvasionConnection.h"
 
 #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR
     #define endRay() deleter(stringConstantsTable(), RDictionary);\

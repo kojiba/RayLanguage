@@ -85,11 +85,9 @@
 
 #ifdef NDEBUG
     #define RAY_RELEASE_BUILD
-
     #define DebugDetailsString "Release "
 #else
     #define RAY_DEBUG_BUILD
-
     #define DebugDetailsString "Debug "
 #endif
 
