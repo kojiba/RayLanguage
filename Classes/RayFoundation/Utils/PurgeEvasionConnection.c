@@ -118,7 +118,6 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
         RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
         if(tempKey != nil) {
             RByteArray *result = nil;
-            byte *hashPtr;
 
             // encrypt
             result = $(data, m(encryptPurgeEvasion, RByteArray)), tempKey);
@@ -128,13 +127,6 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
 
             // add size
             result->size += sizeof(uint64_t);
-
-            // hash packetKey
-            evasionHashData(context->connectionKey, evasionBytesCount, context->connectionKey);
-
-            // hide hash, for equals messages
-            hashPtr = result->array + result->size - evasionBytesCount;
-            purgeEncrypt((uint64_t *) hashPtr, context->connectionKey);
 
             // cleanup
             deallocator(tempKey);
@@ -152,19 +144,10 @@ RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionConte
         RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
         if(tempKey != nil) {
             RByteArray *result = nil;
-            uint64_t keyHash[8];
-            byte *hashPtr;
 
             // remove packetNo
             data->array += sizeof(uint64_t);
             data->size -= sizeof(uint64_t);
-
-            // hash packetKey
-            evasionHashData(context->connectionKey, evasionBytesCount, keyHash);
-
-            // get hash
-            hashPtr = data->array + data->size - evasionBytesCount;
-            purgeDecrypt((uint64_t *) hashPtr, keyHash);
 
             // decrypt
             result = $(data, m(decryptPurgeEvasion, RByteArray)), tempKey);

@@ -18,28 +18,51 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <RayFoundation/Utils/PurgeEvasionConnection.h>
+#include <unistd.h>
+
 #include "Tests.h"
+
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    RArray *array = RA(RS("Hello"), RS("its"), RS("clang"), RS("blocks"), RS("introduce"), nil );
-    array->printerDelegate = (PrinterDelegate) p(RCString);
+    size_t iterator;
 
-    p(RArray)(array);
+    uint64_t masterKey[8] = {};
+    uint64_t masterKey2[8] = {};
+    uint64_t *key;
 
+    PEConnectionContext *context = initPEContext(masterKey);
 
+    PEConnectionContext *receiver = initPEContext(masterKey2);
 
-    $(array, m(deleteWithBlock, RArray)), ^(pointer objectIterator, size_t iterator) {
-            if(objectIterator == RS("clang"))
-                return yes;
-            return no;
-        });
+    RByteArray *array = RBfromRCS(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit\n"));
 
-    p(RArray)(array);
+    RPrintf("Etalon:\n");
+    p(RByteArray)(array);
 
-    deleter(array, RArray);
+    forAll(iterator, 10) {
+        RByteArray *result = encryptDataWithConnectionContext(array, context);
+        RPrintf("Iteration : %lu\n", iterator);
+        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 32);
+
+        RByteArray *decrypted = decryptDataWithConnectionContext(result, receiver);
+        if(decrypted != nil) {
+            RPrintf("Decrypted\n");
+            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 32/*64*/);
+
+            deleter(decrypted, RByteArray);
+        }
+        RPrintf("\n");
+
+        deleter(result, RByteArray);
+    }
+
+    deleter(array, RByteArray);
+
+    deleter(context, PEConnectionContext);
+    deleter(receiver, PEConnectionContext);
 
     endRay();
 }

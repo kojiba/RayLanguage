@@ -26,7 +26,7 @@
 #pragma mark Clang blocks
 
 #if __has_extension(blocks)
-    #define RAY_BLOCKS_ON   // blocks extensions for containers
+//    #define RAY_BLOCKS_ON   // blocks extensions for containers
 #endif
 
 #pragma mark Embedded Cut

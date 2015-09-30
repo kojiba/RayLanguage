@@ -29,7 +29,7 @@ void evasionHashData(const void *text, uint64_t size, uint64_t *outputHash); // 
  *    +--------------------------------------------------------------+
  *    | dataSize (8 bytes) | text | evasionHash from text (64 bytes) |
  *    +--------------------------------------------------------------+
- *     \____encrypted_section_____/ \__________plain_section________/
+ *     \_____________________encrypted_section______________________/
  *      \                                                          /
  *       \__________output_encrypted_data_(size @cryptedSize)_____/
  *
