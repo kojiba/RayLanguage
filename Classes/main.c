@@ -22,47 +22,38 @@
 
 #include "Tests.h"
 
+sandBoxNamed(sandbox, 1024*1024*1)
+
+sandBoxNamed(sandbox2, 1024*1024*2)
+
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
+    enableSandBox(sandbox2());
+    enableSandBox(sandbox());
+
+    sandbox()->allocationMode = RSandBoxAllocationModeRandom;
+
     ComplexTest(); // lib test
 
-    size_t iterator;
+    RArray *array = RA(RS("Hello"), RS("hello"), nil);
 
-    uint64_t masterKey[8] = {};
-    uint64_t masterKey2[8] = {};
-    uint64_t *key;
+    p(RArray)(array);
 
-    PEConnectionContext *context = initPEContext(masterKey);
+    deleter(stringConstantsTable(), RDictionary);
+    deleter(RCTSingleton, RClassTable);
 
-    PEConnectionContext *receiver = initPEContext(masterKey2);
+    RPrintf("Inner sandbox\n");
 
-    RByteArray *array = RBfromRCS(RS("Lorem ipsum dolor sit amet, consectetur adipiscing elit\n"));
+    p(RSandBox)(sandbox());
+    deleter(sandbox(), RSandBox);
 
-    RPrintf("Etalon:\n");
-    p(RByteArray)(array);
 
-    forAll(iterator, 10) {
-        RByteArray *result = encryptDataWithConnectionContext(array, context);
-        RPrintf("Iteration : %lu\n", iterator);
-        printByteArrayInHexWithScreenSize((const byte *) result->array + sizeof(uint64_t), result->size - sizeof(uint64_t), 32);
+    RPrintf("Most high lvl\n");
+    p(RSandBox)(sandbox2());
+    deleter(sandbox2(), RSandBox);
 
-        RByteArray *decrypted = decryptDataWithConnectionContext(result, receiver);
-        if(decrypted != nil) {
-            RPrintf("Decrypted\n");
-            printByteArrayInHexWithScreenSize((const byte *) decrypted->array, decrypted->size, 32/*64*/);
-
-            deleter(decrypted, RByteArray);
-        }
-        RPrintf("\n");
-
-        deleter(result, RByteArray);
-    }
-
-    deleter(array, RByteArray);
-
-    deleter(context, PEConnectionContext);
-    deleter(receiver, PEConnectionContext);
-
-    endRay();
+    p(RAutoPool)(RPool);
+    deleter(RPool, RAutoPool);
+    stopConsole();
 }

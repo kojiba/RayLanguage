@@ -57,7 +57,7 @@
     //#define RAY_BUFFER_THREAD_SAFE
     #define RAY_CLASS_TABLE_THREAD_SAFE
     #define RAY_POOL_THREAD_SAFE
-//    #define RAY_SAND_BOX_THREAD_SAFE
+    #define RAY_SAND_BOX_THREAD_SAFE
 #endif
 
 #pragma mark Errors

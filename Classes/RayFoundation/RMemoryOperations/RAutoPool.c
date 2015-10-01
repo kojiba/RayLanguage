@@ -140,7 +140,9 @@ autoPoolNamed(singletonOfRAutoPool)
 
 destructor(RAutoPool) {
     disablePool(object);
+    RMutexLockPool();
     deleter(object->pointersInWork, RArray);
+    RMutexUnlockPool();
 #ifdef RAY_POOL_THREAD_SAFE
     RMutexDestroy(poolMutex);
 #endif
@@ -163,7 +165,7 @@ printer(RAutoPool) {
 #else
     RMutexLockPool();
     storePoolPtrs();
-    toInnerPoolPtrs()
+    toInnerPoolPtrs();
 #endif
     RPrintf("%s object - %p -------\n", toString(RAutoPool), object);
 #ifdef R_POOL_DETAILED
@@ -238,7 +240,7 @@ method(pointer, realloc, RAutoPool), pointer ptr, size_t newSize) {
             return object->innerRealloc(ptr, newSize);
         }
 #endif
-            RCompareDelegate delegate;
+        RCompareDelegate delegate;
 
         storePoolPtrs();
         toInnerPoolPtrs();

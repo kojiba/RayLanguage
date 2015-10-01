@@ -76,8 +76,7 @@ extern "C" {
                      deleter(RCTSingleton, RClassTable); \
                      p(RAutoPool)(RPool); \
                      deleter(RPool, RAutoPool); \
-                     stopConsole();\
-                     return 0;
+                     stopConsole();
 #endif
 
 #ifdef  __cplusplus

@@ -18,25 +18,43 @@
 
 #include "RSandBox.h"
 
-#ifdef RAY_SAND_BOX_THREAD_SAFE
-    #define sandboxMutex &object->mutex
-    #define RMutexLockSandbox() RMutexLock(sandboxMutex)
+#define toSandboxPtrs() setRMalloc (object->innerMalloc);\
+                        setRCalloc (object->innerCalloc);\
+                        setRRealloc(object->innerRealloc);\
+                        setRFree   (object->innerFree)
+
+
+#if defined(RAY_SAND_BOX_THREAD_SAFE)
+
+    #define storeSandboxPtrs()
+    #define backSandboxPtrs()
+    #define toInnerSandboxPtrs()
+
+    #define sandboxMutex          &object->mutex
+    #define RMutexLockSandbox()   RMutexLock(sandboxMutex)
     #define RMutexUnlockSandbox() RMutexUnlock(sandboxMutex)
+
+    #ifndef _WIN32
+        #include <sys/errno.h>
+        #define isMutexDeadLocked RMutexLockSandbox() == EDEADLK
+    #else
+        #define isMutexDeadLocked RMutexLockSandbox() != WAIT_OBJECT_0
+    #endif
 #else
+
+    #define storeSandboxPtrs()       storePtrs()
+    #define backSandboxPtrs()        backPtrs()
+    #define toInnerSandboxPtrs()     toSandboxPtrs()
+
     #define sandboxMutex
     #define RMutexLockSandbox()
     #define RMutexUnlockSandbox()
 #endif
 
-#define toSandBoxPtrs() setRMalloc (object->innerMalloc);\
-                        setRCalloc (object->innerCalloc);\
-                        setRRealloc(object->innerRealloc);\
-                        setRFree   (object->innerFree)
-
 constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
-        object->descriptorTable = RAlloc(sizeof(RControlDescriptor) * descriptorsCount);
+        object->descriptorTable = arrayAllocator(RControlDescriptor, descriptorsCount);
         object->memPart         = c(RByteArray)(nil, sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
@@ -53,7 +71,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
             object->delegate              = nil;
 
 #ifdef RAY_SAND_BOX_THREAD_SAFE
-            mutexWithType(&object->mutex, RMutexNormal);
+            mutexWithType(&object->mutex, RMutexErrorCheck);
 #endif
         } else {
             RError("RSandBox. Can't allocate descriptors table or memory part.", object);
@@ -63,7 +81,8 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
 }
 
 destructor(RSandBox) {
-    toSandBoxPtrs();
+    disableSandBox(object);
+    RMutexLockSandbox();
     if(object->allocationMode == RSandBoxAllocationModeRandom
             || object->allocationMode == RSandBoxAllocationModeDelegated) {
 
@@ -75,20 +94,18 @@ destructor(RSandBox) {
             deallocator(object->descriptorTable);
 
             flushAllToByte((byte *) object, sizeof(RSandBox), 0);
-            return;
-
     } else {
         // simple cleanup
         deleter(object->memPart, RByteArray);
         deallocator(object->descriptorTable);
     }
+    RMutexUnlockSandbox();
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     RMutexDestroy(sandboxMutex);
 #endif
 }
 
 method(size_t, memoryPlaced, RSandBox)) {
-    size_t iterator;
     switch(object->allocationMode) {
         case RSandBoxAllocationModeStandart : {
 
@@ -98,6 +115,7 @@ method(size_t, memoryPlaced, RSandBox)) {
 
         case RSandBoxAllocationModeRandom : {
             size_t result = 0;
+            size_t iterator;
             forAll(iterator, object->descriptorsCount) {
                 result += object->descriptorTable[iterator].memRange.size;
             }
@@ -112,7 +130,9 @@ method(size_t, memoryPlaced, RSandBox)) {
 }
 
 printer(RSandBox) {
+    storeSandboxPtrs();
     RMutexLockSandbox();
+    toInnerSandboxPtrs();
 
     size_t iterator;
     RPrintf("%s object - %p {\n", toString(RSandBox), object);
@@ -144,6 +164,7 @@ printer(RSandBox) {
     RPrintLn("}\n");
 
     RMutexUnlockSandbox();
+    backSandboxPtrs()
 }
 
 #pragma mark Workings
@@ -199,19 +220,24 @@ method(size_t, rangeForPointer, RSandBox), pointer ptr) {
 #pragma mark Main methods
 
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    if(isMutexDeadLocked) {
+        return object->innerMalloc(sizeInBytes);
+    }
+#endif
     if(sizeInBytes < object->memPart->size) {
+        storeSandboxPtrs()
         RMutexLockSandbox();
-        storePtrs();
-        toSandBoxPtrs();
+        toInnerSandboxPtrs();
 
         if(object->descriptorsTotal == object->descriptorsCount + 1) {
-            object->descriptorTable = RReAlloc(object->descriptorTable, object->descriptorsTotal * 2 * sizeof(RControlDescriptor));
+            object->descriptorTable = RReAlloc(object->descriptorTable, arraySize(RControlDescriptor, object->descriptorsTotal * 2));
             if(object->descriptorTable != nil) {
                 object->descriptorsTotal *= 2;
             } else {
-                backPtrs();
-                RError("RSandBox. Can't reallocate descriptors table.", object);
                 RMutexUnlockSandbox();
+                backSandboxPtrs();
+                RError("RSandBox. Can't reallocate descriptors table.", object);
                 return nil;
             }
         }
@@ -249,16 +275,16 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 
         if(placeToAlloc.start + sizeInBytes < object->memPart->size) {
             $(object, m(addFilledRange, RSandBox)), placeToAlloc);
-            backPtrs();
             RMutexUnlockSandbox();
+            backSandboxPtrs();
             return object->memPart->array + placeToAlloc.start;
 
         } elseError(
                 RError("RSandBox. Not enought memory.", object)
         );
 
-        backPtrs();
         RMutexUnlockSandbox();
+        backSandboxPtrs();
     } elseError(
             RError("RSandBox. Size to allocate more than sand box total memory.", object)
     );
@@ -267,46 +293,65 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 
 method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
     if(ptr == nil) {
-        return $(object, m(malloc, RSandBox)),newSize);
+        return $(object, m(malloc, RSandBox)), newSize);
     } else if (newSize == 0) {
         $(object, m(free, RSandBox)), ptr);
         return nil;
     } else {
-        pointer some = nil;
-        size_t iterator;
-        RMutexLockSandbox();
-        storePtrs();
-        iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
-        backPtrs();
-        RMutexUnlockSandbox();
-        if(iterator != object->descriptorsCount) {
-            some = $(object, m(malloc, RSandBox)), newSize);
-            if(some != nil) {
-                RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
-                $(object, m(free, RSandBox)), ptr);
-                return some;
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+        if(isMutexDeadLocked) {
+            return object->innerRealloc(ptr, newSize);
+        } else {
+#endif
+            pointer some = nil;
+            size_t iterator;
+            storeSandboxPtrs()
+            RMutexLockSandbox();
+            toInnerSandboxPtrs();
+            iterator = $(object, m(rangeForPointer, RSandBox)), ptr);
+            RMutexUnlockSandbox();
+            backSandboxPtrs();
+            if(iterator != object->descriptorsCount) {
+                some = $(object, m(malloc, RSandBox)), newSize);
+                if(some != nil) {
+                    RMemCpy(some, ptr, object->descriptorTable[iterator].memRange.size);
+                    $(object, m(free, RSandBox)), ptr);
+                    return some;
+                }
             }
+#ifdef RAY_SAND_BOX_THREAD_SAFE
         }
+#endif
     }
     return nil;
 }
 
 method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+    if(isMutexDeadLocked) {
+        return object->innerCalloc(blockCount, blockSize);
+    }
+#endif
+    storeSandboxPtrs()
     RMutexLockSandbox();
-    storePtrs();
-    toSandBoxPtrs();
-//    fixme
-    pointer some = RClearAlloc(blockCount, blockSize);
-    backPtrs();
+    toInnerSandboxPtrs();
+    pointer some = $(object, m(malloc, RSandBox)), blockCount * blockSize);
+    flushAllToByte(some, blockCount * blockSize, 0);
     RMutexUnlockSandbox();
+    backSandboxPtrs();
     return some;
 }
 
 method(void, free, RSandBox), pointer ptr) {
     if(ptr != nil) {
+#ifdef RAY_SAND_BOX_THREAD_SAFE
+        if(isMutexDeadLocked) {
+            return object->innerFree(ptr);
+        }
+#endif
+        storeSandboxPtrs()
         RMutexLockSandbox();
-        storePtrs();
-        toSandBoxPtrs();
+        toInnerSandboxPtrs();
 
         size_t rangeIterator = $(object, m(rangeForPointer, RSandBox)), ptr);
         if (rangeIterator != object->descriptorsCount) {
@@ -320,11 +365,11 @@ method(void, free, RSandBox), pointer ptr) {
 
         }
 
-        backPtrs();
         RMutexUnlockSandbox();
-    } elseWarning(
-            RWarning("RSandBox. Free nil.", object)
-    );
+        backSandboxPtrs();
+    } else {
+        RWarning("RSandBox. Free nil.", object);
+    }
 }
 
 
@@ -348,14 +393,19 @@ method(void, XorDecrypt, RSandBox), RByteArray *key) {
 
 #pragma mark Switch
 
-void enableSandBox(RSandBox *sandBox) {
-    setRMalloc (sandBox->selfMalloc);
-    setRCalloc (sandBox->selfCalloc);
-    setRRealloc(sandBox->selfRealloc);
-    setRFree   (sandBox->selfFree);
+
+void enableSandBox(RSandBox *object) {
+    RMutexLockSandbox();
+    setRMalloc (object->selfMalloc);
+    setRCalloc (object->selfCalloc);
+    setRRealloc(object->selfRealloc);
+    setRFree   (object->selfFree);
+    RMutexUnlockSandbox();
 }
 
 void disableSandBox(RSandBox *object) {
-    toSandBoxPtrs();
+    RMutexLockSandbox();
+    toSandboxPtrs();
+    RMutexUnlockSandbox();
 }
 

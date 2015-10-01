@@ -44,10 +44,10 @@ extern volatile Deallocator RFreePtr;
 #define getRRealloc() RReallocPtr
 #define getRFree()    RFreePtr
 
-#define setRMalloc(function)  RMallocPtr  = function;
-#define setRRealloc(function) RReallocPtr = function;
-#define setRCalloc(function)  RCallocPtr  = function;
-#define setRFree(function)    RFreePtr    = function;
+#define setRMalloc(function)  RMallocPtr  = function
+#define setRRealloc(function) RReallocPtr = function
+#define setRCalloc(function)  RCallocPtr  = function
+#define setRFree(function)    RFreePtr    = function
 
 #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR
     static Allocator   RTrueMalloc  = 0;
