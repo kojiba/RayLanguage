@@ -684,7 +684,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
                 if(!isFirst) {
                     isFirst = yes;
                     substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
-                    addObjectToRA(result, substring);
+                     $(result, m(addObject, RArray)), substring);
                     startOfSubstring = iterator;
                 }
             }
@@ -699,7 +699,7 @@ constMethod(RArray *, substringsSeparatedBySymbols, RCString), const RCString * 
             // add last
             substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, endOfSubstring));
             if(substring != nil) {
-                addObjectToRA(result, substring);
+                 $(result, m(addObject, RArray)), substring);
             }
             // and sizeToFit
             $(result, m(sizeToFit, RArray)) );
@@ -762,7 +762,7 @@ constMethod(RArray *, substringsSeparatedByString, RCString), const RCString * c
                 // add last
                 substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
                 if(substring != nil) {
-                    addObjectToRA(result, substring);
+                     $(result, m(addObject, RArray)), substring);
                 }
             }
             $(result, m(sizeToFit, RArray)));
@@ -830,7 +830,7 @@ constMethod(RArray *, separatedByStringWithShield, RCString), const RCString * c
                 // add last
                 substring = $(object, m(substringInRange, RCString)), makeRRangeTo(startOfSubstring, iterator));
                 if(substring != nil) {
-                    addObjectToRA(result, substring);
+                     $(result, m(addObject, RArray)), substring);
                 }
             }
             $(result, m(sizeToFit, RArray)));

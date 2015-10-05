@@ -145,7 +145,7 @@ RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) 
     }
 
     while(subArray != nil && size > 0) {
-        addObjectToRA(resultArray, subArray);
+        $(resultArray, m(addObject, RArray)), subArray);
         size = size - subArray->size - 1;
         tempArray += subArray->size + 1;
         subArray = getSubArrayToFirstSymbol(tempArray, size, symbol);

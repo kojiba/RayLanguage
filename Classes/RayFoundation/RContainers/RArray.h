@@ -1,9 +1,12 @@
 /**
- * RArray.h
- * Realization of C dynamic array of pointers
+ * @file RArray.h
+ * @brief Realization of C dynamic array of pointers.
  * In Ray additions.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 2014 Ukraine Kharkiv
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @date 9/10/2014
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -12,7 +15,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
 
 #ifndef __R_ARRAY_H__
 #define __R_ARRAY_H__
@@ -26,44 +29,39 @@
 
 struct RArray;
 
-typedef enum RArrayFlags {
+typedef enum RArrayFlags {    ///< basic errors
 
-    // basic errors
-                 no_error,
-    temp_allocation_error,
-       reallocation_error,
-         allocation_error,
+                 no_error,    ///< no_error flag (operation success)
+    temp_allocation_error,    ///< error, allocating temporary storage
+       reallocation_error,    ///< error, reallocation memory
+         allocation_error,    ///< error, allocating memory
 
-    // sort-flags for sortWithDelegate
-             swap_objects,   // or 0
+             index_exists,    ///< object at index exist
+     index_does_not_exist,    ///< object at index not exist
 
-    // flag for checkIfIndexInArray
-             index_exists,
-     index_does_not_exist,
-
-    // flag, determines bad newSize
-    // (smaller that exist)
-    // in addSize function
+    /// flag, determines bad newSize
+    /// (smaller that exist)
+    /// in addSize function
                  bad_size,
 
 } RArrayFlags;
 
-#define startSizeOfRArrayDefault      20
-#define sizeMultiplierOfRArrayDefault 2
+#define startSizeOfRArrayDefault      20    ///< default size of arrays, created with constructor
+#define sizeMultiplierOfRArrayDefault 2     ///< default multiplier value of arrays, created with constructor
 
 class(RArray) //---------------------------------------------------------------------
 
-    size_t sizeMultiplier;                // size multiplier when auto-add-size
-    size_t count;                         // count of elements in array
-    size_t freePlaces;                    // count of free places for elements
+    size_t sizeMultiplier;                    ///< size multiplier (array longs-up on add object, when needed)
+    size_t count;                             ///< count of elements in array
+    size_t freePlaces;                        ///< count of free places for elements
 
-    DestructorDelegate destructorDelegate;   // destructor of elements delegate
-    PrinterDelegate    printerDelegate;      // printer of elements delegate
+    DestructorDelegate destructorDelegate;    ///< destructor of elements delegate
+    PrinterDelegate    printerDelegate;       ///< printer of elements delegate
 
-    pointer  *array;                         // array of pointers
+    pointer  *array;                          ///< array for store pointers
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    RMutex mutex;
+    RMutex mutex;    ///< single thread lock (mutex)
 #endif
 
 endOf(RArray) //--------------------------------------------------------------------
@@ -113,8 +111,8 @@ extern
      method(RArray *,      copy,                      RArray));
 
 #pragma mark Sorts
-method(void,               bubbleSortWithDelegate,    RArray),    byte (*comparator)(pointer, pointer));
-method(void,               quickSortWithDelegate,     RArray),    size_t first, size_t last, byte (*comparator)(pointer, pointer));
+method(void,               bubbleSortWithDelegate,    RArray),    rbool (*comparator)(pointer, pointer));
+method(void,               quickSortWithDelegate,     RArray),    size_t first, size_t last, rbool (*comparator)(pointer, pointer));
 method(void,               sort,                      RArray));
 
 #pragma mark Work
@@ -194,11 +192,6 @@ RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointer
 //----------------------------------------------------------------------------------
 
 #define makeRArray()                          $(nil, c(RArray)), nil)
-#define printRA(dynamicArray)                 $(dynamicArray, p(RArray)))
-#define addObjectToRA(dynamicArray, object)   $(dynamicArray, m(addObject, RArray)), object)
-#define sortRA(dynamicArray)                  $(dynamicArray, m(sort, RArray)))
-#define objectAtIndexRA(dynamicArray, index) $(dynamicArray, m(objectAtIndex, RArray)), index)
-#define sizeToFitRA(dynamicArray)             $(dynamicArray, m(sizeToFit, RArray)) )
-#define RA                                    arrayFromArray
+#define RA                                    arrayFromArray ///
 
 #endif /*__R_ARRAY_H__*/

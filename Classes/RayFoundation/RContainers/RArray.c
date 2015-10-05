@@ -537,7 +537,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
 
     forAll(outer, object->count - 1) {
         forAll(inner, object->count - outer - 1) {
-            if (comparator(object->array[inner], object->array[inner + 1]) == swap_objects) {
+            if (comparator(object->array[inner], object->array[inner + 1]) == yes) {
                 // swap
                 swapElementsAtIndexes(inner, inner + 1);
             }
@@ -549,9 +549,9 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
 byte RArrayDefaultComparator(pointer first, pointer second) {
     // pointer sort
     if (first > second) {
-        return swap_objects;
+        return yes;
     } else {
-        return 0;
+        return no;
     }
 }
 
@@ -568,7 +568,7 @@ method(void, quickSortWithDelegate, RArray), size_t first, size_t last, byte (*c
         size_t left = first;
         size_t right = last;
         while (left < right) {
-            if (comparator(object->array[left], pivot) != swap_objects) {
+            if (comparator(object->array[left], pivot) == no) {
                 left += 1;
             } else {
                 right -= 1;

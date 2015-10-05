@@ -22,7 +22,7 @@ int StringArrayTest(void) {
     RArray *stringArray = makeRArray();
     stringArray->destructorDelegate = (void (*)(pointer)) stringDeleter;
     for(i = 0; i < 10; ++i) {
-        addObjectToRA(stringArray, stringWithFormat("Temp string %i", i));
+         $(stringArray, m(addObject, RArray)), stringWithFormat("Temp string %i", i));
     }
     RAY_TEST(stringArray->count != 10, "String array size is not 10", -1);
 
@@ -90,18 +90,18 @@ int RDynamicArrayTest(void){
         if(a != nil) {
             RMemCpy(a, "Hello  ", sizeof("Hello  "));
             a[6] = (char) (i % 10 + 48);
-            addObjectToRA(dynamicArray, a);
+             $(dynamicArray, m(addObject, RArray)), a);
         }
         RAY_TEST(dynamicArray->count != i + 1, "RArray bad size", -2);
     }
 
-    sortRA(dynamicArray);
+    $(dynamicArray, m(sort, RArray)));
 
     RArray *sub = $(dynamicArray, m(getSubarray, RArray)), makeRRange(10, 10));
     RAY_TEST(sub == nil, "Subarray error.", -3);
     sub->destructorDelegate = nil;
     RAY_TEST(sub->count != 10, "Subarray bad size.", -4);
-    sizeToFitRA(sub);
+    $(sub, m(sizeToFit, RArray)));
     RAY_TEST(sub->freePlaces != 0, "Subarray bad sizeToFit.", -5);
 
     deleter(dynamicArray, RArray);

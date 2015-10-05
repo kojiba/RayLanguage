@@ -1,9 +1,10 @@
 /**
- * RayBase.h
- * A ray of light in the realm of darkness.
- * Defines basic c-functions, to may re-format it if needed.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 2014 Ukraine Kharkiv
+ * @file RayBase.h
+ * @brief Defines basic c-functions, to may re-format it if needed.
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @date 9/23/2014 Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
