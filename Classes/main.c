@@ -17,19 +17,26 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <RayFoundation/Utils/PurgeEvasionConnection.h>
-#include <unistd.h>
 
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
-
     ComplexTest(); // lib test
 
-    RArray *array = RA(RS("Hello"), RS("hello"), nil);
+    size_t iterator;
 
-    p(RArray)(array);
 
-    endRay();
+    initRClock();
+    forAll(iterator, 1024 * 1024) {
+        malloc(4096);
+    }
+    tickRClock();
+
+    deleter(stringConstantsTable(), RDictionary);
+                     deleter(RCTSingleton, RClassTable);
+//                     p(RAutoPool)(RPool);
+                     deleter(RPool, RAutoPool);
+                     stopConsole();
+                     return 0;
 }

@@ -1,8 +1,11 @@
 /**
- * RArray.c
- * Realization of C dynamic array, in Ray additions.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 2014 Ukraine Kharkiv
+ * @file RArray.c
+ * @brief Implementation of C dynamic array of pointers.
+ * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @date 9/10/2014
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -11,7 +14,8 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
+
 
 #include "RArray.h"
 #include <stdarg.h>
@@ -546,7 +550,7 @@ method(void, bubbleSortWithDelegate, RArray), byte (*comparator)(pointer, pointe
     RMutexUnlockArray();
 }
 
-byte RArrayDefaultComparator(pointer first, pointer second) {
+rbool RArrayDefaultComparator(pointer first, pointer second) {
     // pointer sort
     if (first > second) {
         return yes;

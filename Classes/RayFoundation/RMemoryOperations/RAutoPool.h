@@ -39,6 +39,9 @@
     } RPoolDescriptor;
 #endif
 
+#define startSizeOfRPoolDefault      1024    ///< default size of arrays, created with constructor
+#define sizeMultiplierOfRPoolDefault 8       ///< default multiplier value of arrays, created with constructor
+
 class(RAutoPool)
     RArray *pointersInWork;
 
@@ -59,7 +62,9 @@ class(RAutoPool)
 #endif
 endOf(RAutoPool)
 
-constructor (RAutoPool));
+RAutoPool* makeRAutoPool(size_t startSize, size_t multiplier);
+
+extern constructor (RAutoPool));
 destructor  (RAutoPool);
 printer     (RAutoPool);
 singleton   (RAutoPool);
@@ -81,7 +86,7 @@ void disablePool(RAutoPool *pool);
 
 //-------------------------------------------------------------------------------
 
-#define autoPoolNamed(name) \
+#define autoPoolNamed(name, startSize, multiplier) \
 RAutoPool* name();\
 pointer concatenate(PoolAllocator_, name)(size_t size) {\
     return $(name(), m(malloc, RAutoPool)), size);\
@@ -98,7 +103,7 @@ void concatenate(PoolDeallocator_, name)(pointer ptr) {\
 RAutoPool* name(void) { \
     static RAutoPool *instance = nil; \
     if(instance == nil) { \
-        instance = $(nil, c(RAutoPool))); \
+        instance = makeRAutoPool((startSize), (multiplier)); \
         if(instance != nil) { \
             instance->selfMalloc  = concatenate(PoolAllocator_, name); \
             instance->selfRealloc = concatenate(PoolReallocator_, name); \

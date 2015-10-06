@@ -110,10 +110,10 @@ void innerFree(pointer some) {
 
 }
 
-constructor(RAutoPool)) {
-    object = allocator(RAutoPool);
+RAutoPool* makeRAutoPool(size_t startSize, size_t multiplier) {
+    RAutoPool* object = allocator(RAutoPool);
     if(object != nil) {
-        object->pointersInWork = makeRArray();
+        object->pointersInWork = makeRArrayOptions(startSize, multiplier, nil);
         if(object->pointersInWork != nil) {
             object->classId      = 5;
             // store current hierarchy lvl memory functions
@@ -128,15 +128,19 @@ constructor(RAutoPool)) {
             mutexWithType(&object->mutex, RMutexErrorCheck);
 #endif
         } elseError(
-            RError("RAutoPool. Bad workers RArray allocation.", object)
+                RError("RAutoPool. Bad workers RArray allocation.", object)
         );
 
     }
     return object;
 }
 
+inline constructor(RAutoPool)) {
+    return makeRAutoPool(startSizeOfRPoolDefault, sizeMultiplierOfRPoolDefault);
+}
+
 // create implementation for default singleton
-autoPoolNamed(singletonOfRAutoPool)
+autoPoolNamed(singletonOfRAutoPool, startSizeOfRPoolDefault, sizeMultiplierOfRPoolDefault)
 
 destructor(RAutoPool) {
     disablePool(object);
