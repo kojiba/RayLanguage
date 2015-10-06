@@ -17,26 +17,28 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
-    ComplexTest(); // lib test
-
-    size_t iterator;
+    ComplexTest(); // lib testRAY_BLOCKS_ON
 
 
-    initRClock();
-    forAll(iterator, 1024 * 1024) {
-        malloc(4096);
-    }
-    tickRClock();
+    printf("Ima main\n");
 
-    deleter(stringConstantsTable(), RDictionary);
-                     deleter(RCTSingleton, RClassTable);
-//                     p(RAutoPool)(RPool);
-                     deleter(RPool, RAutoPool);
-                     stopConsole();
-                     return 0;
+    RThreadJoin(
+            RThreadWithBlock( ^{
+                                printf("Ima block, yo!!!\n");
+            })
+    );
+
+    RThreadJoin(
+            makeRThreadWithBlock( "I_NEVER_ASK_FOR_THIS", (RThreadBlock) ^(char* arg){
+                            printf("Ima block with augumentations, but %s\n", arg);
+                        })
+    );
+
+    printf("Ima main again!\n");
+
+    endRay();
 }

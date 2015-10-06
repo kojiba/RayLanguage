@@ -27,6 +27,23 @@
     #include <sys/syscall.h>
 #endif
 
+#ifdef RAY_BLOCKS_ON
+    #include <Block.h>
+
+    typedef struct RThreadPrivateBlockArgument {
+        RThreadBlock block;
+        pointer      argument;
+    } RThreadPrivateBlockArgument;
+
+    pointer RThreadPrivateBlockExecuter(RThreadPrivateBlockArgument *argument) {
+        pointer result = argument->block(argument->argument);
+        // cleanup
+        _Block_release(argument->block);
+        deallocator(argument);
+        return result;
+    }
+#endif
+
 #pragma mark Info
 
 inline RThread currentThread() {
@@ -122,6 +139,24 @@ inline RThread makeRThread(RThreadFunction function) {
     RThreadCreate(&result, nil, function, nil);
     return result;
 }
+
+#ifdef RAY_BLOCKS_ON
+
+inline RThread makeRThreadWithBlock(pointer argument, RThreadBlock block) {
+    RThreadPrivateBlockArgument *tempArg = allocator(RThreadPrivateBlockArgument);
+    tempArg->block = _Block_copy(block);
+    tempArg->argument = argument;
+    RThread result;
+
+    RThreadCreate(&result, nil, (RThreadFunction) RThreadPrivateBlockExecuter, tempArg);
+    return result;
+}
+
+inline RThread RThreadWithBlock(void(^block)(void)) {
+    return makeRThreadWithBlock(nil, (RThreadBlock) block);
+}
+
+#endif
 
 #pragma mark Mutex
 

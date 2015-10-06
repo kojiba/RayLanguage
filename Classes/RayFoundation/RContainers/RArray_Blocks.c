@@ -154,7 +154,7 @@ method(void, quickSortWithBlock, RArray), size_t first, size_t last, byte (^comp
         size_t left = first;
         size_t right = last;
         while (left < right) {
-            if (comparator(object->array[left], pivot) != swap_objects) {
+            if (comparator(object->array[left], pivot) == no) {
                 left += 1;
             } else {
                 right -= 1;

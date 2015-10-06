@@ -33,6 +33,11 @@
     typedef uint64_t               RThreadId;
     typedef pointer             (* RThreadFunction)(pointer);
 
+    #ifdef RAY_BLOCKS_ON
+        typedef pointer (^RThreadBlock)(pointer);
+    #endif
+
+
     #define RMutexAttributeInit              pthread_mutexattr_init
     #define RMutexAttributeSetType           pthread_mutexattr_settype
     #define RConditionSignal                 pthread_cond_signal
@@ -94,6 +99,11 @@ extern
 RThreadId RThreadIdOfThread(RThread thread);
 extern
 RThread makeRThread(RThreadFunction function);
+
+#ifdef RAY_BLOCKS_ON
+    extern RThread makeRThreadWithBlock(pointer argument, RThreadBlock block);
+    extern RThread RThreadWithBlock(void(^block)(void));
+#endif
 
 #pragma mark Mutex
 
