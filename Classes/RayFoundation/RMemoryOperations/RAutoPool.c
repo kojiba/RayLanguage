@@ -426,3 +426,17 @@ void disablePool(RAutoPool *object) {
     toPoolPtrs();
     RMutexUnlockPool();
 }
+
+#ifdef RAY_BLOCKS_ON
+
+autoPoolNamed(singleBlockPool, 64, 3);
+
+inline
+void autoReleaseBlock(void(^block)(void)) {
+    enablePool(singleBlockPool());
+    block();
+    $(singleBlockPool(), m(drain, RAutoPool)));
+    disablePool(singleBlockPool());
+}
+
+#endif

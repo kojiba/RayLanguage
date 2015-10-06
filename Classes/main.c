@@ -28,18 +28,34 @@ int main(int argc, const char *argv[]) {
     __block int counter = 0;
 
     RThreadJoin(
-            RThreadWithBlock( ^{
-                                printf("Ima block, yo!!! Counter %d\n", counter);
+            RThreadWithBlock(^{
+                printf("Ima block, yo!!! Counter %d\n", counter);
                 ++counter;
+
+                autoReleaseBlock(^{
+                    size_t iterator;
+                    printf("Ima inner autorelease block\n");
+                    forAll(iterator, 100) {
+                        malloc(20); // leaks, but not
+                    }
+                });
             })
     );
 
     RThreadJoin(
-            makeRThreadWithBlock( "I_NEVER_ASK_FOR_THIS", (RThreadBlock) ^(char* arg){
-                            printf("Ima block with augumentations, but %s. Counter %d\n", arg, counter);
-                            ++counter;
-                        })
+            makeRThreadWithBlock("I_NEVER_ASK_FOR_THIS", (RThreadBlock) ^(char *arg) {
+                printf("Ima block with augumentations, but %s. Counter %d\n", arg, counter);
+                ++counter;
+            })
     );
+
+    autoReleaseBlock(^{
+        size_t iterator;
+        printf("Ima main autorelease block\n");
+        forAll(iterator, 100) {
+            malloc(20); // leaks, but not
+        }
+    });
 
     printf("Ima main again! Counter %d\n", counter);
 

@@ -72,12 +72,22 @@ extern "C" {
                      stopConsole();\
                      return 0
 #else
-    #define endRay() deleter(stringConstantsTable(), RDictionary);\
-                     deleter(RCTSingleton, RClassTable); \
-                     p(RAutoPool)(RPool); \
-                     deleter(RPool, RAutoPool); \
-                     stopConsole();\
-                     return 0
+    #ifdef RAY_BLOCKS_ON
+        #define endRay() deleter(stringConstantsTable(), RDictionary);\
+                         deleter(RCTSingleton, RClassTable); \
+                         deleter(singleBlockPool(), RAutoPool); \
+                         p(RAutoPool)(RPool); \
+                         deleter(RPool, RAutoPool); \
+                         stopConsole();\
+                         return 0
+    #else
+        #define endRay() deleter(stringConstantsTable(), RDictionary);\
+                         deleter(RCTSingleton, RClassTable); \
+                         p(RAutoPool)(RPool); \
+                         deleter(RPool, RAutoPool); \
+                         stopConsole();\
+                         return 0
+    #endif
 #endif
 
 #ifdef  __cplusplus

@@ -21,6 +21,7 @@
 // Bit architecture
 #if UINTPTR_MAX == 0xffff
     #define R16BIT
+    #define RSystemBitVersion "16-bit "
 #elif UINTPTR_MAX == 0xffffff
     #define R24BIT
     #define RSystemBitVersion "24-bit "

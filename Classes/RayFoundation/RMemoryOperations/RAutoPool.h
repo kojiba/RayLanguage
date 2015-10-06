@@ -84,6 +84,11 @@ method(void,    drain,          RAutoPool)); // cleanup pointers only for that t
 void enablePool(RAutoPool *pool);
 void disablePool(RAutoPool *pool);
 
+#ifdef RAY_BLOCKS_ON
+    RAutoPool *singleBlockPool(); // much smaller than RPool
+    extern void autoReleaseBlock(void(^block)(void));
+#endif
+
 //-------------------------------------------------------------------------------
 
 #define autoPoolNamed(name, startSize, multiplier) \
