@@ -21,6 +21,6 @@
 #include "RayFoundation/RContainers/RDictionary.h"
 
 RDictionary * stringConstantsTable();
-RCString *    constantRString(char *string);
+const RCString *    constantRString(const char *string);
 
 #define RS(cstring) constantRString(cstring)

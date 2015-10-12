@@ -10,7 +10,7 @@ constructor(RVirtualFunction)) {
 }
 
 destructor(RVirtualFunction) {
-    deleter(master(object, RByteArray), RByteArray);
+    deleter(master(object, RBytes), RBytes);
     nilDeleter(object->name, RCString);
 }
 
@@ -20,9 +20,9 @@ printer(RVirtualFunction) {
     RPrintf("Name : \"%s\" \n", object->name->baseString);
     RPrintf("Byte Code : \n");
 
-    forAll(iterator, master(object, RByteArray)->size) {
+    forAll(iterator, master(object, RBytes)->size) {
         RPrintf("\t %lu - ",iterator);
-        switch (master(object, RByteArray)->array[iterator]) {
+        switch (master(object, RBytes)->array[iterator]) {
 
             case r_increment : {
                 RPrintLn("incr");
@@ -47,7 +47,7 @@ printer(RVirtualFunction) {
 
             case r_if : {
                 size_t whereGoTo;
-                memcpy(&whereGoTo, &master(object, RByteArray)->array[iterator += 2], sizeof(size_t));
+                memcpy(&whereGoTo, &master(object, RBytes)->array[iterator += 2], sizeof(size_t));
 
                 RPrintLn("if");
                 RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
@@ -57,7 +57,7 @@ printer(RVirtualFunction) {
 
             case r_if_not : {
                 size_t whereGoTo;
-                memcpy(&whereGoTo, &master(object, RByteArray)->array[iterator += 2], sizeof(size_t));
+                memcpy(&whereGoTo, &master(object, RBytes)->array[iterator += 2], sizeof(size_t));
 
                 RPrintLn("if NOT");
                 RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
@@ -66,7 +66,7 @@ printer(RVirtualFunction) {
             } break;
 
             case r_goto_address : {
-                RPrintf("goto %u\n", master(object, RByteArray)->array[++iterator]);
+                RPrintf("goto %u\n", master(object, RBytes)->array[++iterator]);
             } break;
 
             case r_end : {
@@ -74,7 +74,7 @@ printer(RVirtualFunction) {
             } break;
 
             default: {
-                RPrintf("unknown - %u", master(object, RByteArray)->array[iterator]);
+                RPrintf("unknown - %u", master(object, RBytes)->array[iterator]);
             } break;
         }
     }

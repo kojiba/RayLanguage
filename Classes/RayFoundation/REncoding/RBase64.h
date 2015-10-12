@@ -17,7 +17,7 @@
 #define __R_BASE_64_H__
 
 #include "RayFoundation/RCString/RString.h"
-#include "RayFoundation/RMemoryOperations/RByteOperations.h"
+#include "RayFoundation/RMemoryOperations/RBytes.h"
 
 static const char encodingTableBase64[64] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -61,9 +61,9 @@ size_t decodeBase64 (pointer destination, const pointer encodedData);           
 // RCString
 constMethod(RString*,    encodeBase64,        RString));
 constMethod(RString*,    decodeBase64,        RString));
-constMethod(RByteArray*, decodeBase64ToBytes, RString));
+constMethod(RBytes*, decodeBase64ToBytes, RString));
 
-// RByteArray
-constMethod(RString*,    encodeBase64, RByteArray));
+// RBytes
+constMethod(RString*,    encodeBase64, RBytes));
 
 #endif /*__R_BASE_64_H__*/

@@ -18,29 +18,19 @@
 
 #include "RayFoundation/RBasics/RBasics.h"
 #include "RayFoundation/RContainers/RArray.h"
-
-typedef struct RCString RCString;
+#include "RayFoundation/RMemoryOperations/RBytes.h"
 
 #define baseInputStringSize 40 // defines default buffer for getInputString
 
-// basics
-size_t     indexOfFirstCharacterCString  (const char *string, size_t size, char character); // returns index, or size
-size_t     indexOfLastCharacterCString   (const char *string, size_t size, char character); // returns index, or size
-char *     copyOfCString                 (const char *string);
-char *     substringInRange              (const char *string, RRange range);
-RCString * randomRCString                (void); // uses rand(), string [10; 50] length, uses randomCharacter
-char       randomCharacter               (void); // uses rand() [34; 125] ascii
+typedef RData RString;
+
+RString * randomASCIIString(void); // uses rand(), string [10; 50] length, uses randomCharacter
+char      randomCharacter(void); // uses rand() [34; 125] ascii
 
 char *     cstringWithFormat             (const char *format, ...);
 char *     vcstringWithFormat            (const char *format, va_list list);
 
-struct RCString { //------------------------------------
-    size_t classId;
-
-    char * baseString; // 0-terminated c-string
-    size_t size;       // size without '\0' character
-
-}; //---------------------------------------------------
+#define makeRString(size) makeRData(RAlloc(size), size, RDataTypeASCII)
 
 // Constructor - Destructor - Reallocation
 constructor (RCString));

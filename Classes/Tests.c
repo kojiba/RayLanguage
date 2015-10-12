@@ -1,18 +1,18 @@
 #include <time.h>
 #include <RayFoundation/RayFoundation.h>
 
-int RByteArrayTest(void) {
+int RBytesTest(void) {
     size_t i;
     size_t j;
     for(i = 0; i < 32; ++i) {
-        RByteArray *array = c(RByteArray)(nil, i);
+        RBytes *array = c(RBytes)(nil, i);
         if(i == 31) {
             for(j = 0; j < 31; ++j) {
-                array->array[j] = (byte) j;
+                array->data[j] = (byte) j;
             }
-            RAY_TEST(array->size != 31, "RByteArrayTest. Bad array size", -1);
+            RAY_TEST(array->size != 31, "RBytesTest. Bad array size", -1);
         }
-        deleter(array, RByteArray);
+        deleter(array, RBytes);
     }
     return 0;
 }
@@ -268,7 +268,7 @@ void ComplexTest() {
         && !RClassTableTest()
         && !RDictionaryTest()
         && !StringArrayTest()
-        && !RByteArrayTest()
+        && !RBytesTest()
         && !RBufferTest()
         && !RCStringTest()
         && !RThreadTest()

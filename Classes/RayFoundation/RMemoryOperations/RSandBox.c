@@ -55,7 +55,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
         object->descriptorTable = arrayAllocator(RControlDescriptor, descriptorsCount);
-        object->memPart         = c(RByteArray)(nil, sizeOfMemory);
+        object->memPart         = c(RBytes)(nil, sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
             object->classId               = 4;
@@ -87,8 +87,8 @@ destructor(RSandBox) {
             || object->allocationMode == RSandBoxAllocationModeDelegated) {
 
             // totally fresh all to 0
-            flushAllToByte(object->memPart->array, object->memPart->size, 0);
-            deleter(object->memPart, RByteArray);
+            flushAllToByte(object->memPart->data, object->memPart->size, 0);
+            deleter(object->memPart, RBytes);
 
             flushAllToByte((byte *) object->descriptorTable, object->descriptorsTotal * sizeof(RControlDescriptor), 0);
             deallocator(object->descriptorTable);
@@ -96,7 +96,7 @@ destructor(RSandBox) {
             flushAllToByte((byte *) object, sizeof(RSandBox), 0);
     } else {
         // simple cleanup
-        deleter(object->memPart, RByteArray);
+        deleter(object->memPart, RBytes);
         deallocator(object->descriptorTable);
     }
     RMutexUnlockSandbox();
@@ -156,7 +156,7 @@ printer(RSandBox) {
         RPrintf("\t\t Pointer     | Start   | Size \n");
         forAll(iterator, object->descriptorsCount) {
             RPrintf("\t\t %p | %lu | %lu \n",
-                    (pointer) (object->memPart->array + object->descriptorTable[iterator].memRange.start),
+                    (pointer) (object->memPart->data + object->descriptorTable[iterator].memRange.start),
                     object->descriptorTable[iterator].memRange.start,
                     object->descriptorTable[iterator].memRange.size);
         }
@@ -202,7 +202,7 @@ method(void, addFilledRange, RSandBox), RRange range) {
 }
 
 method(size_t, rangeForPointer, RSandBox), pointer ptr) {
-    size_t shift = ptr - (pointer)(object->memPart->array);
+    size_t shift = ptr - (pointer)(object->memPart->data);
     if(shift > object->memPart->size) {
         RError1("RSandBox. Pointer - %p wasn't allocated with sandBox.", object, ptr);
         return object->descriptorsCount;
@@ -277,7 +277,7 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
             $(object, m(addFilledRange, RSandBox)), placeToAlloc);
             RMutexUnlockSandbox();
             backSandboxPtrs();
-            return object->memPart->array + placeToAlloc.start;
+            return object->memPart->data + placeToAlloc.start;
 
         } elseError(
                 RError("RSandBox. Not enought memory.", object)
@@ -358,7 +358,7 @@ method(void, free, RSandBox), pointer ptr) {
             if(object->allocationMode == RSandBoxAllocationModeRandom
                     || object->allocationMode == RSandBoxAllocationModeDelegated) {
                 // totally fresh all to 0
-                flushAllToByte(object->memPart->array + object->descriptorTable[rangeIterator].memRange.start, object->descriptorTable[rangeIterator].memRange.size, 0);
+                flushAllToByte(object->memPart->data + object->descriptorTable[rangeIterator].memRange.start, object->descriptorTable[rangeIterator].memRange.size, 0);
             }
             RMemMove(object->descriptorTable + rangeIterator, object->descriptorTable + rangeIterator + 1, (object->descriptorsTotal - rangeIterator) * sizeof(RControlDescriptor));
             --object->descriptorsCount;
@@ -375,20 +375,20 @@ method(void, free, RSandBox), pointer ptr) {
 
 #pragma mark Simple crypt
 
-method(void, XorCrypt, RSandBox), RByteArray *key) {
-    Xor(object->memPart->array,  key, object->memPart->size, key->size);           // crypt memory chunk
-    Xor(object->memPart, key, sizeof(RByteArray), key->size);                      // crypt memory ptr
+method(void, XorCrypt, RSandBox), RBytes *key) {
+    Xor(object->memPart->data,  key, object->memPart->size, key->size);           // crypt memory chunk
+    Xor(object->memPart, key, sizeof(RBytes), key->size);                      // crypt memory ptr
     Xor(object->descriptorTable, key,
             object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // crypt descriptors table
     Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
 }
 
-method(void, XorDecrypt, RSandBox), RByteArray *key) {
+method(void, XorDecrypt, RSandBox), RBytes *key) {
     Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
     Xor(object->descriptorTable, key,
             object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
-    Xor(object->memPart, key, sizeof(RByteArray), key->size);                      // decrypt memory ptr
-    Xor(object->memPart->array,  key, object->memPart->size, key->size);           // decrypt memory chunk
+    Xor(object->memPart, key, sizeof(RBytes), key->size);                      // decrypt memory ptr
+    Xor(object->memPart->data,  key, object->memPart->size, key->size);           // decrypt memory chunk
 }
 
 #pragma mark Switch

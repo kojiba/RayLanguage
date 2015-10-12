@@ -162,8 +162,8 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     return byteCode;
 }
 
-method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
-    RByteArray *body;
+method(RBytes *, getBrainFuckFunctionBody, RVirtualCompiler)) {
+    RBytes *body;
     byte        character;
     size_t      sizeOfByteCode;
 
@@ -183,7 +183,7 @@ method(RByteArray *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     // removing all '\n' start byte-code, +1 to r_end
     sizeOfByteCode = object->code->size - object->numberOfLines + 1 + (1 + sizeof(size_t)) * (object->forwardRepetitions + object->backwardRepetitions);
 
-    body = c(RByteArray)(nil, sizeOfByteCode);
+    body = c(RBytes)(nil, sizeOfByteCode);
 
     // set pointer to body
     object->body = body;
@@ -220,7 +220,7 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
 
         // set name and body
         function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
-        master(function, RByteArray) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
+        master(function, RBytes) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
 
         if(function->name == nil) {
             function->name = RSC("Unnamed");

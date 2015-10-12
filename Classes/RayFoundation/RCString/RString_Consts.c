@@ -46,13 +46,13 @@ RDictionary* stringConstantsTable() {
     return instance;
 }
 
-RCString * constantRString(char *string) {
+const RCString * constantRString(const char *string) {
     RCString *resultString = nil;
     // comparator for only compile-time constants
     RCompareDelegate delegate;
     tableMutexLock();
     delegate.virtualCompareMethod = defaultComparator;
-    delegate.etaloneObject = string;
+    delegate.etaloneObject = (char *)string;
 
     RFindResult result = $(stringConstantsTable()->keys, m(findObjectWithDelegate, RArray)), &delegate);
 
@@ -61,7 +61,7 @@ RCString * constantRString(char *string) {
         RCString *constant = makeRCString();
         if(constant != nil) {
             $(constant, m(setConstantString, RCString)), string);
-            if($(stringConstantsTable()->keys, m(addObject, RArray)), string) == no_error) {
+            if($(stringConstantsTable()->keys, m(addObject, RArray)), (char *)string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
                     tableMutexUnlock();
                     resultString = constant;

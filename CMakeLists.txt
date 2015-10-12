@@ -34,6 +34,12 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RBasics/RBasics.h
                  Classes/RayFoundation/RErrors.h
 
+                 # Memory operations
+                 Classes/RayFoundation/RMemoryOperations/RByteOperations.h
+                 Classes/RayFoundation/RMemoryOperations/RBytes.h
+                 Classes/RayFoundation/RMemoryOperations/RSandBox.h
+                 Classes/RayFoundation/RMemoryOperations/RAutoPool.h
+
                  # Containers
                  Classes/RayFoundation/RContainers/RArray.h
                  Classes/RayFoundation/RContainers/RArray_Blocks.h
@@ -50,10 +56,6 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RCString/RString.h
                  Classes/RayFoundation/RCString/RString_Consts.h
 
-                 # Memory operations
-                 Classes/RayFoundation/RMemoryOperations/RByteOperations.h
-                 Classes/RayFoundation/RMemoryOperations/RSandBox.h
-                 Classes/RayFoundation/RMemoryOperations/RAutoPool.h
 
                  # Encoding
                  Classes/RayFoundation/REncoding/RBase64.h
@@ -91,6 +93,12 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RContainers/RDictionary.c
                  Classes/RayFoundation/RContainers/RBuffer.c
 
+                 # Memory operations
+                 Classes/RayFoundation/RMemoryOperations/RByteOperations.c
+                 Classes/RayFoundation/RMemoryOperations/RBytes.c
+                 Classes/RayFoundation/RMemoryOperations/RSandBox.c
+                 Classes/RayFoundation/RMemoryOperations/RAutoPool.c
+
                  # Strings
                  Classes/RayFoundation/RCString/RCString.c
                  Classes/RayFoundation/RCString/RCString_Char.c
@@ -98,11 +106,6 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RCString/RCString_Numbers.c
                  Classes/RayFoundation/RCString/RString.c
                  Classes/RayFoundation/RCString/RString_Consts.c
-
-                 # Memory operations
-                 Classes/RayFoundation/RMemoryOperations/RByteOperations.c
-                 Classes/RayFoundation/RMemoryOperations/RSandBox.c
-                 Classes/RayFoundation/RMemoryOperations/RAutoPool.c
 
                  # Encoding
                  Classes/RayFoundation/REncoding/RBase64.c

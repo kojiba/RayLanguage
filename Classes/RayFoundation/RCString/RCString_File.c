@@ -14,12 +14,12 @@
  **/
 
 #include "RCString_File.h"
-#include "RayFoundation/RMemoryOperations/RByteOperations.h"
+#include "RayFoundation/RMemoryOperations/RBytes.h"
 
 RCString* stringFromFile(const char *filename) {
-    RByteArray *content = contentOfFile(filename);
-    RCString   *result = RSC((const char *)content->array);
-    deleter(content, RByteArray);
+    RBytes   *content = contentOfFile(filename);
+    RCString *result = RSC((const char *)content->data);
+    deleter(content, RBytes);
     ifError(result == nil,
             RError1("stringFromFile. Can't create string from \"%s\".", result, filename)
     );

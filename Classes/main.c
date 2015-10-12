@@ -17,47 +17,38 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <unistd.h>
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
+    char string[] = "|lol|lol|lol|";
 
-    printf("Ima main\n");
-    __block int counter = 0;
+    size_t size = sizeof(string) - 1;
+    byte *data = getByteArrayCopy((const byte *) string, size);
 
-    RThreadJoin(
-            RThreadWithBlock(^{
-                printf("Ima block, yo!!! Counter %d\n", counter);
-                ++counter;
+    char substring[] = "lol";
+    size_t subSize = sizeof(substring) - 1;
 
-                autoReleaseBlock(^{
-                    size_t iterator;
-                    printf("Ima inner autorelease block\n");
-                    forAll(iterator, 100) {
-                        malloc(20); // leaks, but not
-                    }
-                });
-            })
-    );
+    deleteAllSubArrays(data, &size, substring, subSize);
 
-    RThreadJoin(
-            makeRThreadWithBlock("I_NEVER_ASK_FOR_THIS", (RThreadBlock) ^(char *arg) {
-                printf("Ima block with augumentations, but %s. Counter %d\n", arg, counter);
-                ++counter;
-            })
-    );
+    data[size] = 0;
+    RPrintf("%s\n", data);
 
-    autoReleaseBlock(^{
-        size_t iterator;
-        printf("Ima main autorelease block\n");
-        forAll(iterator, 100) {
-            malloc(20); // leaks, but not
-        }
-    });
+    deleteRepetitionsOfByte(data, &size, '|');
+    data[size] = 0;
+    RPrintf("%s\n", data);
 
-    printf("Ima main again! Counter %d\n", counter);
+//    deleteRepetitionsOfSubArray(data, &size, (const byte *) "bro", sizeof("bro") - 1);
+
+//    data[size] = 0;
+//    RPrintf("%s\n", data);
+
+
+
+    deallocator(data);
 
     endRay();
 }

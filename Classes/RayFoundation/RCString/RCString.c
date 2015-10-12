@@ -19,89 +19,21 @@
 
 #pragma mark Basics
 
-size_t indexOfFirstCharacterCString(const char *string, size_t size, char character) {
-    register size_t iterator = 0;
-    while(iterator < size) {
-        if(string[iterator] == character) {
-            break;
-        } else {
-            ++iterator;
-        }
-    }
-    return iterator;
-}
-
-size_t indexOfLastCharacterCString(const char *string, size_t size, char character) {
-    register size_t iterator = 0;
-    register size_t last     = size;
-    while(iterator < size) {
-        if(string[iterator] == character) {
-            last = iterator;
-        }
-        ++iterator;
-    }
-    return last;
-}
-char * copyOfCString(const char *string) {
-    size_t length = RStringLength(string);
-    if(length > 0) {
-        char *result = arrayAllocator(char, length + 1);
-        if(result != nil) {
-            RMemCpy(result, string, length);
-            return result;
-        }
-    }
-    return nil;
-}
-
-char * substringInRange(const char *string, RRange range) {
-    char     *result = nil;
-    RCString *temp   = RCS(string);
-    if(temp != nil) {
-        RCString *sub = $(temp, m(substringInRange, RCString)), range);
-        if(sub != nil) {
-            result = sub->baseString;
-            deallocator(sub);
-        }
-        deallocator(temp);
-    }
-    return result;
-}
-
 char randomCharacter(void) {
-    register char character = ((char)rand());
-    while(!(character > 34 &&
-            character < 126)) {
-        character = ((char)rand());
-    }
-    return character;
+    return (char) (rand() % 94 + 32);
 }
 
-RCString * randomRCString(void) {
-    register size_t  iterator;
-             RCString *string = makeRCString();
-    register size_t  size   = ((size_t)rand()) % 50;
-    char     *cstring;
+RString * randomASCIIString(void) {
+    size_t   iterator;
+    size_t   size   = ((size_t)rand()) % 40 + 10;
+    RString *string = c(RBytes)(nil, size);
 
     if(string!= nil) {
-        while(size < 10) {
-            size = ((size_t)rand()) % 50;
+        string->type = RDataTypeASCII;
+        forAll(iterator, size) {
+            string->data[iterator] = (byte) randomCharacter();
         }
-        cstring = arrayAllocator(char, size + 1);
-        if(cstring != nil) {
-            forAll(iterator, size){
-                cstring[iterator] = randomCharacter();
-            }
-            cstring[size] = 0;
-            $(string, m(setConstantString, RCString)), cstring);
-
-        } elseError(
-                RError("RCString. Allocation of temp cstring error.", (pointer) cstring)
-        );
-
-    } elseError(
-            RError("RCString. randomRCString. Bad allocation of result.", nil)
-    );
+    }
 
     return string;
 }
@@ -342,7 +274,8 @@ inline constMethod(rbool, isContainsSubstring, RCString), RCString *string) {
        && object->size >= string->size) {
         // search for first symbol
         size_t iterator = indexOfFirstCharacterCString(object->baseString, object->size, string->baseString[0]);
-        if (iterator != string->size) {
+        if (iterator != string->size
+                && string->size - iterator >= string->size) {
             // compare others
             if (RMemCmp(object->baseString + iterator + 1, string->baseString + 1, string->size - 1) == 0) {
                 return yes;

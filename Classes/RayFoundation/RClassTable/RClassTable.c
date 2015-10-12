@@ -180,7 +180,7 @@ singleton(RClassTable) {
             $(instance, m(registerClassWithName, RClassTable)), toString(RSandBox));
             $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
             $(instance, m(registerClassWithName, RClassTable)), toString(RThread));
-            $(instance, m(registerClassWithName, RClassTable)), toString(RByteArray));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RBytes));
         }
 
 #ifdef RAY_SHORT_DEBUG

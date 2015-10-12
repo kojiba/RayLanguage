@@ -12,7 +12,7 @@ int RClassNamePairTest(void);
 int RClassTableTest(void);
 int RDictionaryTest(void);
 int StringArrayTest(void);
-int RByteArrayTest(void);
+int RBytesTest(void);
 int RBufferTest(void);
 int RCStringTest(void);
 

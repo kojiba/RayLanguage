@@ -2,7 +2,7 @@
  * RByteOperations.c
  * Realization of some operations on bytes array, like getSubArray, etc.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
- * 2.10.14 2014 Ukraine Kharkiv
+ * 10/2/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -17,59 +17,80 @@
 
 #define byteToBinaryPatern "%d%d%d%d%d%d%d%d "
 
-#define byteToBinary(byte)  \
-  (byte & 0x80 ? 1 : 0), \
-  (byte & 0x40 ? 1 : 0), \
-  (byte & 0x20 ? 1 : 0), \
-  (byte & 0x10 ? 1 : 0), \
-  (byte & 0x08 ? 1 : 0), \
-  (byte & 0x04 ? 1 : 0), \
-  (byte & 0x02 ? 1 : 0), \
-  (byte & 0x01 ? 1 : 0)
+#define byteToBinary(byte)   \
+      (byte & 0x80 ? 1 : 0), \
+      (byte & 0x40 ? 1 : 0), \
+      (byte & 0x20 ? 1 : 0), \
+      (byte & 0x10 ? 1 : 0), \
+      (byte & 0x08 ? 1 : 0), \
+      (byte & 0x04 ? 1 : 0), \
+      (byte & 0x02 ? 1 : 0), \
+      (byte & 0x01 ? 1 : 0)
 
-#pragma mark Memory Operations
 
-void Xor(      pointer data,
-         const pointer key,
+void Xor(      byte   *data,
+         const byte   *key,
                size_t  sizeOfData,
                size_t  sizeOfKey) {
     size_t iterator;
     forAll(iterator, sizeOfData) {
-        ((byte*)data)[iterator] = ((byte*)data)[iterator] ^ ((byte*)key)[iterator % sizeOfKey];
+        data[iterator] ^= key[iterator % sizeOfKey];
     }
 }
 
-void Add_8(      pointer data,
-           const pointer key,
-                 size_t  sizeOfData,
-                 size_t  sizeOfKey) {
+byte* flushAllToByte(byte *array, size_t size, byte symbol) {
     size_t iterator;
-    forAll(iterator, sizeOfData) {
-        ((byte*)data)[iterator] = ((byte*)data)[iterator] + ((byte*)key)[iterator % sizeOfKey];
-    }
-}
+    if(size <= sizeof(size_t)) {
+        forAll(iterator, size) {
+            array[iterator] = symbol;
+        }
+    } else {
+        size_t footer = symbol;
 
-void Sub_8(      pointer data,
-           const pointer key,
-                 size_t  sizeOfData,
-                 size_t  sizeOfKey) {
-    size_t iterator;
-    forAll(iterator, sizeOfData) {
-        ((byte*)data)[iterator] = ((byte*)data)[iterator] - ((byte*)key)[iterator % sizeOfKey];
-    }
-}
+        // create size_t footer of duplications
+        forAll(iterator, sizeof(size_t)) {
+            footer <<= 8;
+            footer += symbol;
+        }
 
-#pragma mark Basics
-
-byte* flushAllToByte(pointer array, size_t size, byte symbol) {
-    size_t iterator;
-    forAll(iterator, size / sizeof(size_t)) {
-        ((size_t*) array)[iterator] = symbol;
-    }
-    for(iterator *= sizeof(size_t); iterator < size; ++iterator){
-        ((byte*) array)[iterator] = symbol;
+        // fast flushing
+        forAll(iterator, size / sizeof(size_t)) {
+            ((size_t*)array)[iterator] = footer;
+        }
+        iterator *= sizeof(size_t);
+        // byte-to-byte
+        return flushAllToByte(array + iterator, size - iterator, symbol);
     }
     return array;
+}
+
+size_t compareMemory(const byte *array, const byte *toCompare, size_t size) {
+    size_t iterator;
+    if(size <= sizeof(size_t)) {
+        forAll(iterator, size) {
+            if(array[iterator] != toCompare[iterator]) {
+                return iterator;
+            }
+        }
+        return 0;
+    } else {
+        // fast compare
+        forAll(iterator, size / sizeof(size_t)) {
+            if(((size_t*)array)[iterator] != ((size_t*)toCompare)[iterator]) {
+                iterator *= sizeof(size_t);
+                return iterator + compareMemory(array + iterator, toCompare + iterator, sizeof(size_t));
+            }
+        }
+
+        for(iterator *= sizeof(size_t); iterator < size; ++iterator){
+            if(array[iterator] != toCompare[iterator]) {
+                return iterator;
+            }
+        }
+
+        return 0;
+
+    }
 }
 
 inline void printByteArrayInHex(const byte *array, size_t size) {
@@ -106,162 +127,255 @@ byte* getByteArrayCopy(const byte *array, size_t size) {
     return arrayCopy;
 }
 
-byte* getSubArray(const byte *array, RRange range) {
-    byte *subArray = RAlloc(range.size);
-    if(subArray != nil) {
-        RMemMove(subArray, array + range.start, range.size);
+size_t indexOfFirstByte(const byte *array, size_t size, byte symbol) {
+    register size_t iterator = 0;
+    while(iterator < size) {
+        if(array[iterator] == symbol) {
+            return iterator;
+        } else {
+            ++iterator;
+        }
     }
-    return subArray;
+    return RNotFound;
 }
 
-RByteArray* getSubArrayToFirstSymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray *result   = nil;
-    size_t    iterator = 0;
+size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
+    size_t compared;
+    size_t storedIterator = 0;
+    if(size >= subSize) {
+        // search for first symbol
+        size_t iterator = indexOfFirstByte(array, size, sub[0]);
+        while (iterator != RNotFound
+               && (size - iterator) >= (subSize - 1) ) {
+            // compare others
+            array += iterator + 1;
+            size  -= iterator + 1;
+            storedIterator += iterator;
 
-    while(array[iterator] != symbol
-            && iterator < size) {
-        ++iterator;
+            compared = compareMemory(array, sub + 1, subSize - 1);
+
+            if (compared != 0) {
+                         array += compared;
+                          size -= compared;
+                storedIterator += compared + 1;
+                iterator = indexOfFirstByte(array, size, sub[0]);
+
+            } else {
+                return storedIterator;
+            }
+
+        }
     }
+    return RNotFound;
+}
 
-    if(iterator != 0) {
-        result = $(nil, c(RByteArray)), iterator);
-        RMemMove(result->array, array, iterator);
+inline rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
+    return indexOfFirstSubArray(array, size, sub, subSize) == RNotFound ? no : yes;
+}
+
+size_t numberOfBytes(const byte *array, size_t size, byte symbol) {
+    size_t reps = 0;
+    size_t iterator;
+
+    forAll(iterator, size) {
+        if(array[iterator] == symbol) {
+            ++reps;
+        }
     }
-    return result;
+    return reps;
 }
 
-RArray* getArraysSeparatedBySymbol(const byte *array, size_t size, byte symbol) {
-    RByteArray         *subArray    = nil;
-    RArray             *resultArray = nil;
-    byte               *tempArray   = (byte *) array;
-
-    subArray = getSubArrayToFirstSymbol(array, size, symbol);
-
-    if(subArray != nil) {
-        resultArray = makeRArray();
-        // init RArray
-        resultArray->destructorDelegate = (void (*)(pointer)) d(RByteArray);
-        resultArray->printerDelegate    = (void (*)(pointer)) p(RByteArray);
+size_t numberOfSubArrays(const byte *array, size_t size, const byte *sub, size_t subSize) {
+    if(subSize == 1) {
+        return numberOfBytes(array, size, sub[0]);
+    } else {
+            size_t iterator;
+            size_t count    = 0;
+            forAll(iterator, size - subSize + 1) {
+                // search for first symbol
+                if(array[iterator] == sub[0]) {
+                    // compare others
+                    ifMemEqual(array + iterator + 1, sub + 1, subSize - 1) {
+                        ++count;
+                        iterator += subSize - 2;
+                    }
+                }
+            }
+            return count;
     }
+}
 
-    while(subArray != nil && size > 0) {
-        $(resultArray, m(addObject, RArray)), subArray);
-        size = size - subArray->size - 1;
-        tempArray += subArray->size + 1;
-        subArray = getSubArrayToFirstSymbol(tempArray, size, symbol);
+byte* deleteInRange(byte *array, size_t *size, RRange range) {
+    size_t tempSize = *size;
+    if(range.size != 0
+       && ((range.start + range.size) <= tempSize)) {
+        RMemMove(array + range.start,
+                 array + range.start + range.size,
+                 tempSize - range.size - range.start + 1);
+        tempSize -= range.size;
+        *size = tempSize;
     }
+    return array;
+}
 
-    // size to fit RArray
-    if(resultArray != nil) {
-        $(resultArray, m(sizeToFit, RArray)) );
+inline byte* deleteAtIndex(byte *array, size_t *size, size_t index) {
+    return deleteInRange(array, size, makeRRange(index, 1));
+}
+
+byte* deleteAllBytes(byte *array, size_t *size, byte symbol) {
+    size_t storedIndex = 0;
+    size_t index = indexOfFirstByte(array, *size, symbol);
+    while(index != RNotFound) {
+        deleteInRange(array, size, makeRRange(storedIndex + index, 1));
+        storedIndex += index;
+        index = indexOfFirstByte(array + index, *size, symbol);
     }
-    return resultArray;
+    return array;
 }
 
-#pragma mark RByteArray
 
-RByteArray* makeRByteArray(byte *array, size_t size) {
-    RByteArray* object = allocator(RByteArray);
-    if(object != nil) {
-        object->array   = array;
-        object->classId = 7;
-        object->size    = size;
+byte* deleteRepetitionsOfByte(byte *array, size_t *size, const byte symbol) {
+    size_t iterator;
+    size_t length;
+    forAll(iterator, *size - 1) {
+
+        // search first occurrence
+        if(array[iterator] == symbol) {
+
+            // find length of repetition
+            for(length = 0; length < *size - iterator; ++length) {
+                if(array[length + iterator + 1] != symbol){
+                    break;
+                }
+            }
+
+            // delete if length > 0
+            if(length > 0) {
+                deleteInRange(array, size, makeRRange(iterator + 1, length));
+            }
+        }
     }
-    return object;
+    return array;
 }
 
-inline constructor(RByteArray), size_t size) {
-    byte *array = RAlloc(size);
-    if(array != nil) {
-        return makeRByteArray(array, size);
-    } elseError(
-            RError("RByteArray. Array allocation failed", object)
-    );
-    return nil;
-}
+byte* deleteAllSubArrays(byte *array, size_t *size, const byte *sub, size_t subSize) {
+    byte *stored = array;
+    size_t tempSize = *size;
+    size_t index = indexOfFirstSubArray(array, tempSize, sub, subSize);
 
-destructor(RByteArray) {
-    deallocator(object->array);
-}
+    while(index != RNotFound
+            && tempSize >= subSize) {
 
-printer(RByteArray) {
-    RPrintf("%s object - %p [%lu] {\n", toString(RByteArray), object, object->size);
-    printByteArrayInHex(object->array, object->size);
-    RPrintf("} - %p \n\n", object);
-}
+        array += index;
+        tempSize -= index;
+        deleteInRange(array, &tempSize, makeRRange(0, subSize));
+        *size -= subSize;
 
-method(RByteArray*, flushAllToByte, RByteArray), byte symbol) {
-    object->array = flushAllToByte(object->array, object->size, symbol);
-    return object;
-}
-
-constMethod(RByteArray*, copy, RByteArray)) {
-    RByteArray *copy = $(nil, c(RByteArray)), object->size);
-    if(copy != nil) {
-        RMemCpy(copy->array, object->array, object->size);
+        index = indexOfFirstSubArray(array, tempSize, sub, subSize);
     }
-    return copy;
+    return stored;
 }
 
-method(RByteArray*, fromRCString, RByteArray), RCString *string) {
-    if(object->size <= string->size && object->size != 0) {
-        RMemCpy(object->array, string->baseString, string->size);
-        return object;
-    }
-    return nil;
-}
+byte* deleteRepetitionsOfSubArray(byte *array, size_t *size, const byte *sub, size_t subSize) {
+    if(*size >= subSize * 2) {
+        size_t iterator;
+        size_t count;
+        size_t tempSize = *size;
 
-method(RByteArray*, insertInBeginBytes, RByteArray), pointer data, size_t size) {
-    object->array = RReAlloc(object->array, arraySize(byte, object->size + size));
-    if(object->array != nil) {
-        RMemCpy(object->array + size, object->array, object->size);
-        RMemCpy(object->array, data, size);
-    }
-    return object;
-}
+        size_t index = indexOfFirstSubArray(array, *size, sub, subSize);
+        while (index != RNotFound
+               && tempSize >= subSize) {
 
-method(RByteArray*, insertInBegin, RByteArray), RByteArray *array) {
-    object->array = RReAlloc(object->array, arraySize(byte, object->size + array->size));
-    if(object->array != nil) {
-        RMemCpy(object->array + array->size, object->array, object->size);
-        RMemCpy(object->array, array->array, array->size);
-    }
-    return object;
-}
+            array += index + subSize;
+            tempSize -= index + subSize;
+            count = 0;
 
-RByteArray* contentOfFile(const char *filename) {
-    FILE *file = RFOpen(filename, "rb");
-    byte *buffer;
-    ssize_t fileSize;
+            iterator = indexOfFirstSubArray(array, tempSize, sub, subSize);
+            if(iterator != RNotFound) {
 
-    if(file != nil) {
-        RFSeek(file, 0, SEEK_END);
-        fileSize = RFTell(file);
-        if(fileSize > 0) {
-            RRewind(file);
-            buffer = arrayAllocator(byte, (fileSize + 1));
-            if(buffer != nil) {
-                if(RFRead(buffer, sizeof(byte), (size_t) fileSize, file) > 0) {
-                    RFClose(file);
-                    return  makeRByteArray(buffer, (size_t) fileSize);
-                } else {
-                    RError2("contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
-                            nil, filename, fileSize);
-                    RFClose(file);
+                while(iterator == 0
+                      && tempSize >= subSize) {
+                    array += subSize;
+                    tempSize -= subSize;
+
+                    ++count;
+                    iterator = indexOfFirstSubArray(array, tempSize, sub, subSize);
                 }
 
-            } elseError(
-                    RError2("contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
-                    nil, filename, fileSize
-            ));
+                if (count > 0) {
+                    deleteInRange(array - subSize * (count + 1), size, makeRRange(index + subSize, subSize * count));
+                    tempSize -= subSize * count;
+                } else {
+                    index = iterator;
+                }
 
-        } elseError(
-                RError1("contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
-        );
 
-    } elseError(
-            RError1( "contentOfFile. Cannot open file \"%s\".\n", nil, filename)
-    );
+            }
+        }
+    }
+    return array;
+}
 
+inline byte* trimTail(byte *array, size_t *size, size_t count) {
+    return deleteInRange(array, size, makeRRange(0, count));
+}
+
+inline byte* trimHead(byte *array, size_t *size, size_t count) {
+    return deleteInRange(array, size, makeRRange(*size - count, count));
+}
+
+inline byte* trimAfterSubArray(byte *array, size_t *size, const byte *sub, size_t subSize) {
+    size_t index = indexOfFirstSubArray(array, *size, sub, subSize);
+    if(index != RNotFound) {
+        deleteInRange(array, size, makeRRange(index, *size - index));
+    }
+    return array;
+}
+inline byte* trimBeforeSubArray(byte *array, size_t *size, const byte *sub, size_t subSize) {
+    size_t index = indexOfFirstSubArray(array, *size, sub, subSize);
+    if(index != RNotFound) {
+        deleteInRange(array, size, makeRRange(0, index));
+    }
+    return array;
+}
+
+byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer) {
+    size_t iterator = indexOfFirstByte(array, size, toReplace);
+    while(iterator != RNotFound) {
+        array[iterator] = replacer;
+        iterator = indexOfFirstByte(array + iterator, size - iterator, toReplace);
+    }
+    return array;
+}
+
+byte* replaceBytesWithBytes(byte *array, size_t *size, byte *toReplace, size_t toReplaceSize, byte *replacer, size_t replacerSize) {
+    size_t index = indexOfFirstSubArray(array, *size, toReplace, toReplaceSize);
+
+    while(index != RNotFound) {
+        array = insertSubArray(array, size, replacer, replacerSize, index);
+        array = deleteInRange(array, size, makeRRange(index + replacerSize, toReplaceSize));
+        index = indexOfFirstSubArray(array + index, *size, toReplace, toReplaceSize);
+    }
+    return array;
+}
+
+byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place) {
+    if(place <= *size) {
+        array = RReAlloc(array, arraySize(byte, *size + subSize));
+        RMemMove(array + place + subSize, array + place, *size - place);
+        RMemCpy(array + place, sub, subSize);
+        *size += subSize;
+    }
+    return array;
+}
+
+byte* subArrayInRange(const byte *array, size_t size, RRange range) {
+    if(range.size + range.start <= size) {
+        byte *result = arrayAllocator(byte, range.size);
+        if(result != nil) {
+            RMemCpy(result, array + range.start, range.size);
+        }
+        return result;
+    }
     return nil;
 }

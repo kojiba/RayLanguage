@@ -27,6 +27,8 @@ typedef enum RCompareFlags{
     smaller
 } RCompareFlags;
 
+static const size_t RNotFound = SIZE_MAX;
+
 // -----------------------------------------------------------------------
 
 typedef struct RRange {

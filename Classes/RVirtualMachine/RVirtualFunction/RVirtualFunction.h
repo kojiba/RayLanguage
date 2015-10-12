@@ -4,7 +4,7 @@
 #include <RayFoundation/RayFoundation.h>
 
 class(RVirtualFunction)
-    discipleOf(RByteArray)
+    discipleOf(RBytes)
 
     RCString   *name;
 endOf(RVirtualFunction)

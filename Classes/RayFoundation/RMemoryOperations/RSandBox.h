@@ -20,7 +20,7 @@
 #ifndef __R_SAND_BOX_H__
 #define __R_SAND_BOX_H__
 
-#include "RByteOperations.h"
+#include "RBytes.h"
 
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     #include "RayFoundation/RThread/RThread.h"
@@ -47,7 +47,7 @@ class(RSandBoxDelegate)
 endOf(RSandBoxDelegate)
 
 class(RSandBox)
-    RByteArray *memPart;
+    RBytes *memPart;
 
     RControlDescriptor *descriptorTable;
                 size_t  descriptorsCount;
@@ -86,8 +86,8 @@ method(pointer, calloc,         RSandBox),    size_t blockCount, size_t blockSiz
 method(void,    free,           RSandBox),    pointer ptr);
 
 // Simple crypt
-method(void,    XorCrypt,       RSandBox),    RByteArray *key);
-method(void,    XorDecrypt,     RSandBox),    RByteArray *key);
+method(void,    XorCrypt,       RSandBox),    RBytes *key);
+method(void,    XorDecrypt,     RSandBox),    RBytes *key);
 
 // change malloc, realloc, calloc, free pointers to sandBox
 void enableSandBox(RSandBox *sandBox);

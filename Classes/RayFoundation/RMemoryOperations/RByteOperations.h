@@ -19,26 +19,13 @@
 #include "RayFoundation/RContainers/RArray.h"
 #include "RayFoundation/RCString/RCString.h"
 
-class(RByteArray)
-    size_t  size;
-    byte   *array;
-endOf(RByteArray)
 
 // Memory operations
-void           Xor (      pointer data,
-                    const pointer key,
-                          size_t  sizeOfData,
-                          size_t  sizeOfKey);
+void           Xor (      byte* data, const byte* key,       size_t  sizeOfData,        size_t  sizeOfKey);
 
-void           Add_8 (       pointer data,       // addition by module 8
-                       const pointer key,
-                             size_t  sizeOfData,
-                             size_t  sizeOfKey);
+byte*  flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
+size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
 
-void           Sub_8 (       pointer data,       // subtraction by module 8
-                       const pointer key,
-                             size_t  sizeOfData,
-                             size_t  sizeOfKey);
 
 #define rotateLeftU(data,  shift, capasity) (((data) << shift) | ((data) >> (capasity - shift)))
 #define rotateRightU(data, shift, capasity) (((data) >> shift) | ((data) << (capasity - shift)))
@@ -55,36 +42,43 @@ void           Sub_8 (       pointer data,       // subtraction by module 8
 #define rotateLeft8(data,  shift) rotateLeftU(data, shift, 8)
 #define rotateRight8(data, shift) rotateRightU(data, shift, 8)
 
-#define isMemEqual(one, another, size) (RMemCmp(one, another, size) == 0)
-#define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
+#define isMemEqual(one, another, size) (compareMemory(one, another, size) == 0)
+#define ifMemEqual(one, another, size) if(compareMemory(one, another, size))
 
 // Basics
-byte*          flushAllToByte             (   pointer  array,   size_t size, byte symbol); // returns reference
-void           printByteArrayInHexWithScreenSize
-                                          (const byte *array,   size_t size, size_t screenSize);
+void           printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
 extern void    printByteArrayInHex        (const byte *array,   size_t size);
 void           printByteArrayInBin        (const byte *array,   size_t size);
+
 byte*          getByteArrayCopy           (const byte *array,   size_t size);
-byte*          getSubArray                (const byte *array,   RRange range );            // sub-array copy
-RByteArray*    getSubArrayToFirstSymbol   (const byte *array,   size_t size, byte symbol); // sub-array copy, or nil
-RArray*        getArraysSeparatedBySymbol (const byte *array,   size_t size, byte symbol); // size-to-fit RArray with set-upd delegates, or nil
 
-// RByteArray
-RByteArray* makeRByteArray(byte *array, size_t size);
-extern
-constructor (RByteArray), size_t size);
-destructor  (RByteArray);
-printer     (RByteArray);
+size_t indexOfFirstByte(const byte *array, size_t size, byte symbol);
+size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
+extern rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 
-method(RByteArray*,      flushAllToByte, RByteArray),    byte symbol);
-constMethod(RByteArray*, copy,           RByteArray));
-method(RByteArray*,      fromRCString,   RByteArray),    RCString *string); // not sets size, only copy bytes, returns self
-method(RByteArray*,      insertInBeginBytes,  RByteArray), pointer data, size_t sizeInBytes);
-method(RByteArray*,      insertInBegin,  RByteArray), RByteArray *array);
+size_t numberOfBytes(const byte *array, size_t size, byte symbol);
+size_t numberOfSubArrays(const byte *array, size_t size, const byte *sub, size_t subSize);
 
-RByteArray* contentOfFile(const char *filename);
+byte* deleteInRange(byte *array, size_t *size, RRange range);
+extern byte* deleteAtIndex(byte *array, size_t *size, size_t index);
 
-#define makeFlushedBytes(size, symbol) flushAllToByte(RAlloc(size), size, symbol)
-#define RBfromRCS(string)              $(c(RByteArray)(nil, (string)->size), m(fromRCString, RByteArray)), (string))
+byte* deleteAllBytes(byte *array, size_t *size, byte symbol);
+byte* deleteRepetitionsOfByte(byte *array, size_t *size, const byte symbol);
+
+byte* deleteAllSubArrays(byte *array, size_t *size, const byte *sub, size_t subSize);
+byte* deleteRepetitionsOfSubArray(byte *array, size_t *size, const byte *sub, size_t subSize);
+
+extern byte* trimTail(byte *array, size_t *size, size_t count);
+extern byte* trimHead(byte *array, size_t *size, size_t count);
+
+extern byte* trimAfterSubArray(byte *array, size_t *size, const byte *sub, size_t subSize);
+extern byte* trimBeforeSubArray(byte *array, size_t *size,const byte *sub, size_t subSize);
+
+byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer);
+byte* replaceBytesWithBytes(byte *array, size_t *size, byte *toReplace, size_t toReplaceSize, byte *replacer, size_t replacerSize);
+
+byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place);
+
+byte* subArrayInRange(const byte *array, size_t size, RRange range);
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

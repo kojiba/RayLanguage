@@ -25,7 +25,7 @@ class(RVirtualCompiler)
     // for store open brackets places
     RArray     *brakets;
 
-    RByteArray *body;          // pointer to byte-code, that will be returned
+    RBytes *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)
 

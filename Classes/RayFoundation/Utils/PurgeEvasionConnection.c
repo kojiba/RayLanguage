@@ -12,6 +12,7 @@
  *         |__/
  **/
 
+#include <RayFoundation/RCString/RString_Consts.h>
 #include "PurgeEvasionConnection.h"
 
 
@@ -111,19 +112,19 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
  *
  **/
 
-RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectionContext* context) {
+RBytes* encryptDataWithConnectionContext(const RBytes *data, PEConnectionContext* context) {
     uint64_t currentPacketNo = context->packetNumbers->count;
     PESessionPacketKey(context, currentPacketNo);
     if(context->connectionKey != nil) {
-        RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
+        RBytes *tempKey = makeRBytes((byte *) context->connectionKey, purgeBytesCount);
         if(tempKey != nil) {
-            RByteArray *result = nil;
+            RBytes *result = nil;
 
             // encrypt
-            result = $(data, m(encryptPurgeEvasion, RByteArray)), tempKey);
+            result = $(data, m(encryptPurgeEvasion, RBytes)), tempKey);
 
             // add packetNo stamp in front
-            $(result, m(insertInBeginBytes, RByteArray)), &currentPacketNo, sizeof(uint64_t));
+            $(result, m(insertInBeginBytes, RBytes)), &currentPacketNo, sizeof(uint64_t));
 
             // add size
             result->size += sizeof(uint64_t);
@@ -136,26 +137,26 @@ RByteArray* encryptDataWithConnectionContext(const RByteArray *data, PEConnectio
     return nil;
 }
 
-RByteArray* decryptDataWithConnectionContext(RByteArray *data, PEConnectionContext* context) {
+RBytes* decryptDataWithConnectionContext(RBytes *data, PEConnectionContext* context) {
     uint64_t currentPacketNo;
-    RMemCpy(&currentPacketNo, data->array, sizeof(uint64_t));
+    RMemCpy(&currentPacketNo, data->data, sizeof(uint64_t));
     PESessionPacketKey(context, currentPacketNo);
     if(context->connectionKey != nil) {
-        RByteArray *tempKey = makeRByteArray((byte *) context->connectionKey, purgeBytesCount);
+        RBytes *tempKey = makeRBytes((byte *) context->connectionKey, purgeBytesCount);
         if(tempKey != nil) {
-            RByteArray *result = nil;
+            RBytes *result = nil;
 
             // remove packetNo
-            data->array += sizeof(uint64_t);
+            data->data += sizeof(uint64_t);
             data->size -= sizeof(uint64_t);
 
             // decrypt
-            result = $(data, m(decryptPurgeEvasion, RByteArray)), tempKey);
+            result = $(data, m(decryptPurgeEvasion, RBytes)), tempKey);
 
             // cleanup
             deallocator(tempKey);
             // revert
-            data->array -= sizeof(uint64_t);
+            data->data -= sizeof(uint64_t);
             data->size += sizeof(uint64_t);
 
             return result;
@@ -210,28 +211,28 @@ destructor(PEConnection) {
 }
 
 static inline
-void PEConnectionPrepareBuffer(RByteArray *array) {
+void PEConnectionPrepareBuffer(RBytes *array) {
     static RCString fake;
     if(array != nil) {
-        fake.baseString = (char *) array->array;
+        fake.baseString = (char *) array->data;
         fake.size = array->size;
         $(&fake, m(replaceCSubstrings, RCString)), (char *) packetEndString, (char *) packetEndShieldString); // shield strings
     }
 }
 
 static inline
-void PEConnectionRestoreBuffer(RByteArray *array) {
+void PEConnectionRestoreBuffer(RBytes *array) {
     static RCString fake;
     if(array != nil) {
-        fake.baseString = (char *) array->array;
+        fake.baseString = (char *) array->data;
         fake.size = array->size;
         $(&fake, m(replaceCSubstrings, RCString)), (char *) packetEndShieldString, (char *) packetEndString); // shield strings
     }
 }
 
 
-byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
-    RByteArray *encrypted;
+byte PEConnectionSend(PEConnection *object, RBytes *toSend) {
+    RBytes *encrypted;
     byte result = networkOperationErrorCryptConst;
     RMutexLock(cmutex);
     encrypted = encryptDataWithConnectionContext(toSend, object->connectionContext); // crypt
@@ -239,31 +240,31 @@ byte PEConnectionSend(PEConnection *object, RByteArray *toSend) {
         // send data
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
         RPrintf("Unprepared data\n");
-        p(RByteArray)(encrypted);
+        p(RBytes)(encrypted);
 #endif
 
         PEConnectionPrepareBuffer(encrypted);
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
         RPrintf("Prepared data\n");
-        p(RByteArray)(encrypted);
+        p(RBytes)(encrypted);
 #endif
-        result = $(object->socket, m(send, RSocket)), encrypted->array, encrypted->size);
+        result = $(object->socket, m(send, RSocket)), encrypted->data, encrypted->size);
         if(result == networkOperationSuccessConst) {
             // send transmission end
             result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, sizeof(packetEndString));
         }
-        deleter(encrypted, RByteArray);
+        deleter(encrypted, RBytes);
     }
     RMutexUnlock(cmutex);
     return result;
 }
 
-byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
+byte PEConnectionReceive(PEConnection *object, RBytes** result) {
     byte buffer[TCP_MTU_SIZE];
     size_t received;
     RBuffer *storage = nil;
-    RByteArray temp;
+    RBytes temp;
     byte resultFlag = networkOperationSuccessConst;
 
     RMutexLock(cmutex);
@@ -271,9 +272,12 @@ byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
           && resultFlag != networkOperationErrorConst) {
         resultFlag = $(object->socket, m(receive, RSocket)), buffer, TCP_MTU_SIZE, &received);
 
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+        RPrintf("Received some data\n");
+        printByteArrayInHex(buffer, received);
+#endif
+
         if(resultFlag == networkOperationSuccessConst) {
-            if(received >= sizeof(packetEndString)
-               && !isMemEqual(buffer, packetEndString, sizeof(packetEndString))) {
 
                 if(storage == nil) {
                     storage = c(RBuffer)(nil);
@@ -286,19 +290,19 @@ byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
                     RMutexUnlock(cmutex);
                     return networkOperationErrorAllocationConst;
                 }
-            } else {
-                break;
-            }
+//            if(isContainsSubBytes(buffer, received, (byte *) packetEndString, 24)) {
+//                break;
+//            }
         }
 
     }
 
-    temp.array = storage->masterRByteArrayObject->array; // makes better
-    temp.size  = storage->totalPlaced;
+    temp.data = storage->masterRBytesObject->data; // makes better
+    temp.size = storage->totalPlaced;
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
     RPrintf("Unrestored data\n");
-    p(RByteArray)(&temp);
+    p(RBytes)(&temp);
 #endif
 
     // restore
@@ -306,7 +310,7 @@ byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
     RPrintf("Restored buffer\n");
-    p(RByteArray)(&temp);
+    p(RBytes)(&temp);
 #endif
 
     // decrypt
@@ -324,7 +328,7 @@ byte PEConnectionReceive(PEConnection *object, RByteArray** result) {
 
 inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, size_t size) {
     byte result = networkOperationErrorCryptConst;
-    RByteArray *temp = makeRByteArray(buffer, size);
+    RBytes *temp = makeRBytes(buffer, size);
     if(temp != nil) {
         result = PEConnectionSend(object, temp);
         deallocator(temp);
