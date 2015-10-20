@@ -17,8 +17,6 @@
 #define __R_BYTE_OPERATIONS_H__
 
 #include "RayFoundation/RContainers/RArray.h"
-#include "RayFoundation/RCString/RCString.h"
-
 
 // Memory operations
 void           Xor (      byte* data, const byte* key,       size_t  sizeOfData,        size_t  sizeOfKey);
@@ -80,5 +78,6 @@ byte* replaceBytesWithBytes(byte *array, size_t *size, byte *toReplace, size_t t
 byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place);
 
 byte* subArrayInRange(const byte *array, size_t size, RRange range);
+byte* setSubArrayInRange(byte *array, size_t size, const byte *sub, size_t subSize, RRange range);
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

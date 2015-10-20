@@ -131,19 +131,6 @@ destructor(RString) {
     object->size = 0;
 }
 
-printer(RString) {
-    if(object != nil
-       && object->baseString != nil) {
-        size_t iterator;
-        forAll(iterator, object->size) {
-            putchar(*(object->baseString + iterator));
-        }
-    } else {
-        RPrintf("nil\n");
-    }
-}
-
-
 inline
 method(size_t, length, RString)) {
     return utf8Length((byte *) object->baseString, object->size);

@@ -29,75 +29,40 @@ RData* makeRData(byte *array, size_t size, byte type)  {
     return object;
 }
 
-RBytes *makeRBytes(byte *array, size_t size) {
-    RBytes *object = allocator(RBytes);
-    if (object != nil) {
-        object->data = array;
-        object->size = size;
-    }
-    return object;
-}
-
-inline constructor(RBytes), size_t size) {
-    byte *array = RAlloc(size);
-    if (array != nil) {
-        return makeRBytes(array, size);
-    } elseError(
-            RError("RBytes. Array allocation failed", object)
-    );
-    return nil;
-}
-
-destructor(RBytes) {
+destructor(RData) {
     deallocator(object->data);
 }
 
-printer(RBytes) {
-    RPrintf("%s object - %p [%lu] {\n", toString(RBytes), object, object->size);
-    printByteArrayInHex(object->data, object->size);
-    RPrintf("} - %p \n\n", object);
+printer(RData) {
+    if(object != nil && object->data != nil) {
+        if (object->type == RDataTypeBytes
+            || object->type == RDataTypeOther) {
+            RPrintf("RData object - %p [%lu] {\n", object, object->size);
+            printByteArrayInHex(object->data, object->size);
+            RPrintf("} - %p \n\n", object);
+        } else {
+            // write string full
+            fwrite(object->data, object->size, 1, stdout);
+        }
+    } else {
+        RPrintf("nil");
+    }
 }
 
-method(RBytes *, flushAllToByte, RBytes), byte symbol) {
+void RDataDeleter(RData* object) {
+    deleter(object, RData);
+}
+
+method(RData *, flushAllToByte, RData), byte symbol) {
     object->data = flushAllToByte(object->data, object->size, symbol);
     return object;
 }
 
-constMethod(RBytes *, copy, RBytes)) {
-    RBytes *copy = $(nil, c(RBytes)), object->size);
-    if (copy != nil) {
-        RMemCpy(copy->data, object->data, object->size);
-    }
-    return copy;
+constMethod(RData *, copy, RData)) {
+    return makeRData(getByteArrayCopy(object->data, object->size), object->size, object->type);
 }
 
-method(RBytes *, fromRCString, RBytes), RCString *string) {
-    if (object->size <= string->size && object->size != 0) {
-        RMemCpy(object->data, string->baseString, string->size);
-        return object;
-    }
-    return nil;
-}
-
-method(RBytes *, insertInBeginBytes, RBytes), pointer data, size_t size) {
-    object->data = RReAlloc(object->data, arraySize(byte, object->size + size));
-    if (object->data != nil) {
-        RMemCpy(object->data + size, object->data, object->size);
-        RMemCpy(object->data, data, size);
-    }
-    return object;
-}
-
-method(RBytes *, insertInBegin, RBytes), RBytes *array) {
-    object->data = RReAlloc(object->data, arraySize(byte, object->size + array->size));
-    if (object->data != nil) {
-        RMemCpy(object->data + array->size, object->data, object->size);
-        RMemCpy(object->data, array->data, array->size);
-    }
-    return object;
-}
-
-RBytes *contentOfFile(const char *filename) {
+RData *contentOfFile(const char *filename) {
     FILE *file = RFOpen(filename, "rb");
     byte *buffer;
     ssize_t fileSize;
@@ -111,7 +76,7 @@ RBytes *contentOfFile(const char *filename) {
             if (buffer != nil) {
                 if (RFRead(buffer, sizeof(byte), (size_t) fileSize, file) > 0) {
                     RFClose(file);
-                    return makeRBytes(buffer, (size_t) fileSize);
+                    return makeRDataBytes(buffer, (size_t) fileSize);
                 } else {
                     RError2("contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
                             nil, filename, fileSize);

@@ -122,7 +122,7 @@ void printByteArrayInBin(const byte *array, size_t size) {
 byte* getByteArrayCopy(const byte *array, size_t size) {
     byte *arrayCopy = RAlloc(size);
     if(arrayCopy != nil) {
-        RMemMove(arrayCopy, array, size);
+        RMemCpy(arrayCopy, array, size);
     }
     return arrayCopy;
 }
@@ -378,4 +378,12 @@ byte* subArrayInRange(const byte *array, size_t size, RRange range) {
         return result;
     }
     return nil;
+}
+
+byte* setSubArrayInRange(byte *array, size_t size, const byte *sub, size_t subSize, RRange range) {
+    if(range.size + range.start <= size
+            && range.size <= subSize) {
+        RMemCpy(array + range.start, sub, range.size);
+    }
+    return array;
 }

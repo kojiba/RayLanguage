@@ -47,7 +47,7 @@ class(RSandBoxDelegate)
 endOf(RSandBoxDelegate)
 
 class(RSandBox)
-    RBytes *memPart;
+    RData *memPart;
 
     RControlDescriptor *descriptorTable;
                 size_t  descriptorsCount;
@@ -86,8 +86,8 @@ method(pointer, calloc,         RSandBox),    size_t blockCount, size_t blockSiz
 method(void,    free,           RSandBox),    pointer ptr);
 
 // Simple crypt
-method(void,    XorCrypt,       RSandBox),    RBytes *key);
-method(void,    XorDecrypt,     RSandBox),    RBytes *key);
+method(void,    XorCrypt,       RSandBox),    RData *key);
+method(void,    XorDecrypt,     RSandBox),    RData *key);
 
 // change malloc, realloc, calloc, free pointers to sandBox
 void enableSandBox(RSandBox *sandBox);

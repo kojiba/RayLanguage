@@ -33,26 +33,14 @@ typedef struct RData { // basic sized data struct used for store bytes arrays an
 } RData;
 
 RData* makeRData(byte *array, size_t size, byte type);
+#define makeRDataBytes(array, size) makeRData(array, size, RDataTypeBytes)
 
-// RBytes
-typedef struct RData RBytes;
+destructor(RData);
+void RDataDeleter(RData* object);
 
-#define makeRBytes(size) makeRData(RAlloc(size), size, RDataTypeBytes)
+method(RData*,      flushAllToByte, RData),    byte symbol);
+constMethod(RData*, copy,           RData));
 
-extern
-constructor (RBytes), size_t size);
-destructor  (RBytes);
-printer     (RBytes);
-
-method(RBytes*,      flushAllToByte, RBytes),    byte symbol);
-constMethod(RBytes*, copy,           RBytes));
-method(RBytes*,      fromRCString,   RBytes),    RString *string); // not sets size, only copy bytes, returns self
-method(RBytes*,      insertInBeginBytes,  RBytes), pointer data, size_t sizeInBytes);
-method(RBytes*,      insertInBegin,  RBytes), RBytes *array);
-
-RBytes* contentOfFile(const char *filename);
-
-#define makeFlushedBytes(size, symbol) flushAllToByte(RAlloc(size), size, symbol)
-#define RBfromRCS(string)              $(c(RBytes)(nil, (string)->size), m(fromRCString, RBytes)), (string))
+RData* contentOfFile(const char *filename);
 
 #endif /*__R_BYTES__*/
