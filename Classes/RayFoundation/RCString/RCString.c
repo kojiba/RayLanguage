@@ -178,63 +178,23 @@ method(void, trimToString, RString), RString *string) {
 
 #pragma mark Subs and Copies
 
-method(RString *, setSubstringInRange, RString), RRange range, const char * const string) {
-    if(range.size != 0 && ((range.start + range.size - 1) < object->size)) {
-        RMemMove(object->baseString + range.start, string, range.size);
-    } elseError( RError3(
-            "RString. setSubstringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
-                object, range.start, range.start + range.size, object->size
-    ));
+method(RString *, setSubstringInRange, RString), RRange range, RString *substring) {
+    object->data = setSubArrayInRange(object->data, object->size, substring->data, substring->size, range);
     return object;
 }
 
 method(RString *, insertSubstringAt, RString), RString *substring, size_t place) {
-    if(place < object->size) {
-        char *result = arrayAllocator(char, object->size + substring->size + 1);
-        RMemMove(result,                           object->baseString,         place);
-        RMemMove(result + place,                   substring->baseString,      substring->size);
-        RMemMove(result + place + substring->size, object->baseString + place, object->size - place);
-        deallocator(object->baseString);
-        result[object->size + substring->size] = 0;
-
-        object->size += substring->size;
-        object->baseString = result;
-    } else if(place == object->size) {
-        $(object, m(concatenate, RString)), substring);
-
-    } elseWarning(
-            RWarning("RString. Bad place to insert!", object)
-    );
-
+    object->data = insertSubArray(object->data, &object->size, substring->data, substring->size, place);
     return object;
 }
 
 constMethod(RString *, substringInRange, RString), RRange range) {
-    if(range.size != 0
-            && ((range.start + range.size) <= object->size)) {
-        char *cstring = arrayAllocator(char, range.size + 1);
-        if(cstring != nil) {
-            RMemCpy(cstring, object->baseString + range.start, range.size);
-            RString *RString   = $(nil, c(RString)));
-
-            if(RString != nil) {
-                RString->size = range.size;
-                RString->baseString = cstring;
-                cstring[range.size] = 0;
-                return RString;
-            }
-        }
-    } elseError(
-        RError3(
-            "RString. substringInRange. Bad range [ %lu ; %lu ] for string size %lu.\n",
-                object, range.start, range.start + range.size, object->size
-    ));
-    return nil;
+    return makeRData(subArrayInRange(object->data, object->size, range), range.size, object->type);
 }
 
 constMethod(RString *, substringToSymbol, RString), char symbol) {
-    register size_t index = indexOfFirstCharacteRString(object->baseString, object->size, symbol);
-    if(index != object->size) {
+    size_t index = indexOfFirstByte(object->data, object->size, (byte) symbol);
+    if(index != RNotFound) {
         return $(object, m(substringInRange, RString)), makeRRange(0, index));
     } else {
         return nil;
@@ -479,7 +439,6 @@ constMethod(RString *, copy, RString)) {
 #pragma mark Comparator
 
 constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
-    static size_t iterator;
     if(checkString == nil || object == nil) {
         RWarning("RString. One of compare strings is empty.", object);
         return not_equals;
@@ -488,12 +447,11 @@ constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
             return equals;
         } else {
             if (checkString->size == object->size) {
-                forAll(iterator, object->size) {
-                    if(object->baseString[iterator] != checkString->baseString[iterator]){
-                        return not_equals;
-                    }
+                if(compareMemory(object->data, checkString->data, object->size) == 0) {
+                    return equals;
+                } else {
+                    return not_equals;
                 }
-                return equals;
             } else {
                 if(checkString->size > object->size) {
                     return shorter;
@@ -511,66 +469,40 @@ constMethod(rbool, isEqualTo, RString), const RString *checkString) {
 }
 
 constMethod(rbool, startsOn, RString), const RString *const checkString) {
-    return $(object, m(startsOnC, RString)), checkString->baseString);
+    return isStartsOnArray(object->data, object->size, checkString->data, checkString->size);
 }
 
 constMethod(rbool, endsOn, RString), const RString *const checkString) {
-    ssize_t iterator = 0;
-    while(iterator < checkString->size) {
-        if(object->baseString[object->size - iterator] != checkString->baseString[checkString->size - iterator]) {
-            return no;
-        }
-        ++iterator;
-    }
-    return yes;
+    return isEndsOnArray(object->data, object->size, checkString->data, checkString->size);
 }
 
 #pragma mark Concatenate
 
 method(void, concatenate, RString), const RString *string) {
-    if(string->size != 0 && string->baseString != nil) {
-        object->baseString = RReAlloc(object->baseString, arraySize(char, string->size + object->size + 1));
-        if(object->baseString != nil) {
-            RMemMove(object->baseString + object->size, string->baseString, string->size);
-            object->baseString[string->size + object->size] = 0;
-            object->size += string->size;
-
-        } elseError(
-                RError("RString. concatenate. Realloc error.", object)
-        );
-
-    } elseWarning(
-            RWarning("RString. concatenate. Bad concatenate string.", object)
-    );
+    appendArray(&object->data, &object->size, string->data, string->size);
 }
 
 method(void, append, RString), const char character) {
-    object->baseString = RReAlloc(object->baseString, arraySize(char, object->size + 2));
-    if(object->baseString != nil) {
-        object->baseString[object->size] = character;
-        object->baseString[object->size + 1] = 0;
-        ++object->size;
-
-    } elseError( RError("RString. append. Realloc error.", object) );
+    appendArray(&object->data, &object->size, (const byte *) &character, 1);
 }
 
 #pragma mark Conversions
 
 method(RString*, toUpperCase, RString)) {
-    register size_t iterator;
+    size_t iterator;
     forAll(iterator, object->size) {
-        if(object->baseString[iterator] > 96 && object->baseString[iterator] < 123 ) {
-            object->baseString[iterator] -= 32;
+        if(object->data[iterator] > 96 && object->data[iterator] < 123 ) {
+            object->data[iterator] -= 32;
         }
     }
     return object;
 }
 
 method(RString*, toLowerCase, RString)) {
-    register size_t iterator;
+    size_t iterator;
     forAll(iterator, object->size) {
-        if(object->baseString[iterator] > 64 && object->baseString[iterator] < 91 ) {
-            object->baseString[iterator] += 32;
+        if(object->data[iterator] > 64 && object->data[iterator] < 91 ) {
+            object->data[iterator] += 32;
         }
     }
     return object;

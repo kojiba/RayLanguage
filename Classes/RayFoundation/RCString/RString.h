@@ -26,11 +26,6 @@ rbool utf8GetNextCharacter(const byte     *string,
 
 size_t utf8Length(byte *string, size_t sizeInBytes);
 
-typedef RCString RString;
-
-printer(RString);
-destructor(RString);
-
 extern
 method(size_t, length, RString));
 

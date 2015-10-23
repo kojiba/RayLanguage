@@ -74,16 +74,16 @@ extern
 method(void,               trimToString,                 RString),    RString *string);
 
 // Subs and Copies
-method(RString *,          setSubstringInRange,          RString),    RRange range, const char * const string); // returns reference (not copy!)
+method(RString *,          setSubstringInRange,          RString),    RRange range, RString *substring); // returns reference (not copy!)
 method(RString *,          insertSubstringAt,            RString),    RString *substring, size_t place);       // returns reference (not copy!)
 
 constMethod(RString *,     substringToSymbol,            RString),    char symbol);                             // or nil
 constMethod(RString *,     substringInRange,             RString),    RRange range);                            // substring is a copy, basic method, that uses others
 constMethod(RString *,     substringByBounds,            RString),    RBounds bounds);                          // substring is a copy, by nesting (search first and last)
-constMethod(RArray *,       substringsSeparatedBySymbol,  RString),    char symbol);                             // or nil, RArray is sizeToFit, subs are copies
-constMethod(RArray *,       substringsSeparatedBySymbols, RString),    const RString * const separatorsString); // or nil, RArray is sizeToFit, subs are copies
-constMethod(RArray *,       substringsSeparatedByString,  RString),    const RString * const separatorString);  // separatorString length > 1, not use for one symbol
-constMethod(RArray *,       separatedByStringWithShield,  RString),    const RString * const separatorString, const RString * const shield);
+constMethod(RArray *,      substringsSeparatedBySymbol,  RString),    char symbol);                             // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,      substringsSeparatedBySymbols, RString),    const RString * const separatorsString); // or nil, RArray is sizeToFit, subs are copies
+constMethod(RArray *,      substringsSeparatedByString,  RString),    const RString * const separatorString);  // separatorString length > 1, not use for one symbol
+constMethod(RArray *,      separatedByStringWithShield,  RString),    const RString * const separatorString, const RString * const shield);
 
 constMethod(RString *,     copy,                         RString));
 

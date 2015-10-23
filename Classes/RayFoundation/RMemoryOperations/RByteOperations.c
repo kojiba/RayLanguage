@@ -128,12 +128,23 @@ byte* getByteArrayCopy(const byte *array, size_t size) {
 }
 
 size_t indexOfFirstByte(const byte *array, size_t size, byte symbol) {
-    register size_t iterator = 0;
-    while(iterator < size) {
-        if(array[iterator] == symbol) {
+    size_t iterator;
+    forAll(iterator, size) {
+        if (array[iterator] == symbol) {
             return iterator;
-        } else {
-            ++iterator;
+        }
+    }
+    return RNotFound;
+}
+
+size_t indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize) {
+    size_t iterator;
+    size_t setIterator;
+    forAll(iterator, size) {
+        forAll(setIterator, setSize) {
+            if (array[iterator] == set[setIterator]) {
+                return iterator;
+            }
         }
     }
     return RNotFound;
@@ -142,6 +153,7 @@ size_t indexOfFirstByte(const byte *array, size_t size, byte symbol) {
 size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
     size_t compared;
     size_t storedIterator = 0;
+
     if(size >= subSize) {
         // search for first symbol
         size_t iterator = indexOfFirstByte(array, size, sub[0]);
@@ -171,6 +183,22 @@ size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, siz
 
 inline rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
     return indexOfFirstSubArray(array, size, sub, subSize) == RNotFound ? no : yes;
+}
+
+rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
+    if(subSize <= size) {
+        return compareMemory(array, sub, subSize) == 0 ? yes : no;
+    } else {
+        return no;
+    }
+}
+
+rbool isEndsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
+    if(subSize <= size) {
+        return compareMemory(array + size - subSize, sub, subSize) == 0 ? yes : no;
+    } else {
+        return no;
+    }
 }
 
 size_t numberOfBytes(const byte *array, size_t size, byte symbol) {
@@ -386,4 +414,78 @@ byte* setSubArrayInRange(byte *array, size_t size, const byte *sub, size_t subSi
         RMemCpy(array + range.start, sub, range.size);
     }
     return array;
+}
+
+void appendArray(byte **array, size_t *size, const byte *sub, size_t subSize) {
+    byte *temp = *array;
+    temp = RReAlloc(temp, arraySize(byte, *size + subSize));
+    if(temp != nil) {
+        memcpy(temp + *size, sub, subSize);
+        *size += subSize;
+        *array = temp;
+    } elseError( RError("appendArray. Realloc error.", array) );
+}
+
+RArray* subArraysSeparatedByBytes(byte *array, size_t *size, const byte *separatorsArray, size_t separatorsSize) {
+        size_t  iterator;
+        size_t  endOfSubstring   = 0;
+        size_t  startOfSubstring = 0;
+        rbool   isFirst          = yes;
+
+    for(iterator = 0; iterator != RNotFound; iterator )
+
+        forAll(iterator, object->size) {
+            // check if separator
+            if($(separatorsString, m(isContains, RString)), object->baseString[iterator]) == yes) {
+                // if first separator set end of substring
+                if(isFirst) {
+                    endOfSubstring = iterator;
+                    isFirst = no;
+                    if(result == nil) {
+                        result = makeRArray();
+
+                        if(result != nil) {
+                            // set-up delegates
+                            result->printerDelegate = (void (*)(pointer)) p(RString);
+                            result->destructorDelegate = (void (*)(pointer)) stringDeleter;
+
+                            // exit if allocation fails
+                        } else {
+                            RError("RString. Bad array for substrings allocation.", object);
+                            return nil;
+                        }
+                    }
+                }
+
+                // if not separator
+            } else {
+
+                // if we found some separators
+                if(!isFirst) {
+                    isFirst = yes;
+                    substring = $(object, m(substringInRange, RString)), makeRRangeTo(startOfSubstring, endOfSubstring));
+                    $(result, m(addObject, RArray)), substring);
+                    startOfSubstring = iterator;
+                }
+            }
+        }
+
+        // if we found some
+        if(result != nil) {
+            // if last is not separator - add whole last word
+            if(endOfSubstring < startOfSubstring) {
+                endOfSubstring = object->size;
+            }
+            // add last
+            substring = $(object, m(substringInRange, RString)), makeRRangeTo(startOfSubstring, endOfSubstring));
+            if(substring != nil) {
+                $(result, m(addObject, RArray)), substring);
+            }
+            // and sizeToFit
+            $(result, m(sizeToFit, RArray)) );
+        }
+    } elseWarning(
+            RWarning("RString. substringsSeparatedBySymbols. Bad separator string size, or string size.", object)
+    );
+    return result;
 }

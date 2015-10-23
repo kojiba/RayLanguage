@@ -51,8 +51,11 @@ void           printByteArrayInBin        (const byte *array,   size_t size);
 byte*          getByteArrayCopy           (const byte *array,   size_t size);
 
 size_t indexOfFirstByte(const byte *array, size_t size, byte symbol);
+size_t indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize);
 size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 extern rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
+rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);
+rbool isEndsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 
 size_t numberOfBytes(const byte *array, size_t size, byte symbol);
 size_t numberOfSubArrays(const byte *array, size_t size, const byte *sub, size_t subSize);
@@ -79,5 +82,6 @@ byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize,
 
 byte* subArrayInRange(const byte *array, size_t size, RRange range);
 byte* setSubArrayInRange(byte *array, size_t size, const byte *sub, size_t subSize, RRange range);
+void  appendArray(byte **array, size_t *size, const byte *sub, size_t subSize);
 
 #endif /*__R_BYTE_OPERATIONS_H__*/
