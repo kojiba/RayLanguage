@@ -194,6 +194,8 @@ pointer RayChatExec(RTCPDataStruct *data) {
     RString temp,
             *welcome;
 
+    temp.type = RDataTypeUTF8;
+
     RPrintf("[I] %s:%u[%u] connected\n", address, port, currentThread);
 
     chatData = createEmpty(data->identifier);
@@ -215,13 +217,13 @@ pointer RayChatExec(RTCPDataStruct *data) {
     while(resultFlag != networkConnectionClosedConst
           && resultFlag != networkOperationErrorConst) {
 
-        buffer[receivedSize] = 0;
-        temp.data = buffer;
+        temp.data = (byte *) buffer;
         temp.size = receivedSize;
 
         if(!$(&temp, m(startsOn, RString)), RS("\n"))) { // empty msg
 
-            RPrintf("    %s:%u[%u] %s:%s > %s", address, port, currentThread, chatData->chatRoom->data, chatData->nickname->data, buffer); // log
+            RPrintf("    %s:%u[%u] %s:%s >", address, port, currentThread, chatData->chatRoom->data, chatData->nickname->data); // log
+            p(RString)(&temp);
 
             if(!$(&temp, m(startsOn, RString)), RS("--"))) {
 
@@ -237,7 +239,7 @@ pointer RayChatExec(RTCPDataStruct *data) {
                 deleter(stringToSend, RString);
             } else {
                 temp.data += 2; // remove --
-                temp.size -= 3;       // remove \n
+                temp.size -= 3; // remove \n
                 processCommandString(&temp, chatData, data);
             }
         }
@@ -260,7 +262,7 @@ pointer RayChatExec(RTCPDataStruct *data) {
 void startServer(RTCPHandler  **server,
                  RTCPDelegate **delegate,
                  u16 serverPort,
-                 u16 configuratorPort, RString *password) {
+                 u16 configuratorPort, const RString *password) {
 
     rbool closeAll = no;
     byte connectionState;

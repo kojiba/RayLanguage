@@ -28,6 +28,7 @@ typedef enum RCompareFlags{
 } RCompareFlags;
 
 static const size_t RNotFound = SIZE_MAX;
+static const size_t REquals = RNotFound;
 
 // -----------------------------------------------------------------------
 

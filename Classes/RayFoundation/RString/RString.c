@@ -245,7 +245,7 @@ constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
             return equals;
         } else {
             if (checkString->size == object->size) {
-                if(compareMemory(object->data, checkString->data, object->size) == 0) {
+                if(compareMemory(object->data, checkString->data, object->size) == REquals) {
                     return equals;
                 } else {
                     return not_equals;

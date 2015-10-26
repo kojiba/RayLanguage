@@ -72,7 +72,7 @@ size_t compareMemory(const byte *array, const byte *toCompare, size_t size) {
                 return iterator;
             }
         }
-        return 0;
+        return REquals;
     } else {
         // fast compare
         forAll(iterator, size / sizeof(size_t)) {
@@ -88,7 +88,7 @@ size_t compareMemory(const byte *array, const byte *toCompare, size_t size) {
             }
         }
 
-        return 0;
+        return REquals;
 
     }
 }
@@ -166,7 +166,7 @@ size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, siz
 
             compared = compareMemory(array, sub + 1, subSize - 1);
 
-            if (compared != 0) {
+            if (compared != REquals) {
                          array += compared;
                           size -= compared;
                 storedIterator += compared + 1;
@@ -191,7 +191,7 @@ inline rbool isContainsSubArray(const byte *array, size_t size, const byte *sub,
 
 rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
     if(subSize <= size) {
-        return compareMemory(array, sub, subSize) == 0 ? yes : no;
+        return compareMemory(array, sub, subSize) == REquals ? yes : no;
     } else {
         return no;
     }
@@ -199,7 +199,7 @@ rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t su
 
 rbool isEndsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
     if(subSize <= size) {
-        return compareMemory(array + size - subSize, sub, subSize) == 0 ? yes : no;
+        return compareMemory(array + size - subSize, sub, subSize) == REquals ? yes : no;
     } else {
         return no;
     }

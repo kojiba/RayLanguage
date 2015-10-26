@@ -164,7 +164,7 @@ printer(RSandBox) {
     RPrintLn("}\n");
 
     RMutexUnlockSandbox();
-    backSandboxPtrs()
+    backSandboxPtrs();
 }
 
 #pragma mark Workings

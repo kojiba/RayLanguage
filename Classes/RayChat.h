@@ -22,7 +22,7 @@
 void startServer(RTCPHandler  **server,
                  RTCPDelegate **delegate,
                  u16 serverPort,
-                 u16 configuratorPort, RString *password);
+                 u16 configuratorPort, const RString *password);
 
 #endif
 

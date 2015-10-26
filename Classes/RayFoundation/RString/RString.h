@@ -30,11 +30,7 @@ char      randomCharacter(void); // uses rand() [34; 125] ascii
 char *     cstringWithFormat             (const char *format, ...);
 char *     vcstringWithFormat            (const char *format, va_list list);
 
-#define makeRString(size) makeRData(RAlloc(size), size, RDataTypeASCII)
-
 // Constructor - Destructor - Reallocation
-
-#define constructorOfRString makeRData(nil, size, RDataTypeASCII)
 
 extern destructor(RString);
 extern printer(RString);
@@ -49,16 +45,16 @@ method(void, replaceCharacters, RString), char characterToReplace, char replacer
 method(void, replaceSubstrings, RString),      RString *toReplace,      RString *replacer);
 
 // Info - universal encoding
-constMethod(size_t,         numberOfCharacters,           RString),    char character);
-constMethod(size_t,         numberOfSubstrings,           RString),    const RString * const string);
-constMethod(rbool,          isContains,                   RString),    char character);
-constMethod(rbool,          isContainsSubstring,          RString),    RString *string);
+constMethod(size_t,        numberOfCharacters,           RString),    char character);
+constMethod(size_t,        numberOfSubstrings,           RString),    const RString * const string);
+constMethod(rbool,         isContains,                   RString),    char character);
+constMethod(rbool,         isContainsSubstring,          RString),    RString *string);
 extern
-constMethod(size_t,         numberOfLines,                RString));
-constMethod(size_t,         indexOfSubstring,             RString),    RString *string);
+constMethod(size_t,        numberOfLines,                RString));
+constMethod(size_t,        indexOfSubstring,             RString),    RString *string);
 
 // Deletions
-method(RString *,          deleteAllCharacters,      RString),    char character);            // returns reference (not copy!)
+method(RString *,          deleteAllCharacters,          RString),    char character);            // returns reference (not copy!)
 method(void,               removeRepetitionsOf,          RString),    char character);
 
 method(RString *,          deleteAllSubstrings,          RString),    const RString *substring); // returns reference (not copy!)

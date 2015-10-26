@@ -39,6 +39,6 @@ method(size_t, length, RString));
  *      return yes;
  * }
  */
-method(RFindResult, enumerate, RString), rbool (*enumerator)(RString string, size_t iterator)); // RString is only static struct not \0 terminated use p(RString)
+method(RFindResult, enumerate, RString), rbool (*enumerator)(RString string, size_t iterator));
 
 #endif /*__R_STRING_H__*/

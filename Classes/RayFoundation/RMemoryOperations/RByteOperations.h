@@ -39,7 +39,7 @@ size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
 #define rotateLeft8(data,  shift) rotateLeftU(data, shift, 8)
 #define rotateRight8(data, shift) rotateRightU(data, shift, 8)
 
-#define isMemEqual(one, another, size) (compareMemory(one, another, size) == 0)
+#define isMemEqual(one, another, size) (compareMemory(one, another, size) == REquals)
 #define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
 
 // Basics
