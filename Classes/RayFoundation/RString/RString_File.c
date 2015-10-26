@@ -49,6 +49,8 @@ RString * getInputString() {
 
     if(result != nil
        && charBuff != nil) {
+        result->type = RDataTypeASCII;
+        result->size = 0;
         int symbol = ' ';
 
         while(symbol != '\n') {
@@ -72,12 +74,11 @@ RString * getInputString() {
             }
         }
 
-        if(empty > 0) {
-            charBuff = RReAlloc(charBuff, arraySize(char, result->size + 1));
+        if(empty > 0) { // size to fit
+            charBuff = RReAlloc(charBuff, arraySize(char, result->size));
         }
 
-        result->data = charBuff;
-        charBuff[result->size] = 0;
+        result->data = (byte *) charBuff;
 
     } elseError(
             RError("getInputString. Bad result string allocation.", nil)

@@ -23,5 +23,10 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
+    RPrintf("Input some:\n");
+    RString *input = getInputString(); // all to '\n' symbol size is automatic
+    p(RString)(input);
+    deleter(input, RString);
+
     endRay();
 }

@@ -42,7 +42,7 @@ extern printer(RString);
 RString * stringWithFormat(char *format, ...); // ASCII
 #define RStringDeleter RDataDeleter
 
-method(RString*, setConstantString, RString), char *nullTerminatedString);
+method(RString*, setConstantString, RString), const char *nullTerminatedString);
 
 // Replace
 method(void, replaceCharacters, RString), char characterToReplace, char replacer);

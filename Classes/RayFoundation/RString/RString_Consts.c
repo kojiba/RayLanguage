@@ -58,10 +58,8 @@ const RString * constantRString(const char *string) {
 
     // add some if not found
     if(result.object == nil) {
-        RString *constant = allocator(RString);
+        RString *constant = RCS(string);
         if(constant != nil) {
-            constant->data = (byte *) string;
-            constant->size = strlen(string);
             if($(stringConstantsTable()->keys, m(addObject, RArray)), (char *)string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
                     tableMutexUnlock();

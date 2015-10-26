@@ -88,7 +88,7 @@ inline printer(RString) {
     p(RData)(object);
 }
 
-method(RString*, setConstantString, RString), char *nullTerminatedString) {
+method(RString*, setConstantString, RString), const char *nullTerminatedString) {
     if(object != nil) {
         object->data = (byte *) nullTerminatedString;
         object->size = RStringLength(nullTerminatedString);
