@@ -181,6 +181,10 @@ size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, siz
     return RNotFound;
 }
 
+inline rbool isContainsByte(const byte *array, size_t size, byte symbol) {
+    return indexOfFirstByte(array, size, symbol) == RNotFound ? no : yes;
+}
+
 inline rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize) {
     return indexOfFirstSubArray(array, size, sub, subSize) == RNotFound ? no : yes;
 }
@@ -424,68 +428,4 @@ void appendArray(byte **array, size_t *size, const byte *sub, size_t subSize) {
         *size += subSize;
         *array = temp;
     } elseError( RError("appendArray. Realloc error.", array) );
-}
-
-RArray* subArraysSeparatedByBytes(byte *array, size_t *size, const byte *separatorsArray, size_t separatorsSize) {
-        size_t  iterator;
-        size_t  endOfSubstring   = 0;
-        size_t  startOfSubstring = 0;
-        rbool   isFirst          = yes;
-
-    for(iterator = 0; iterator != RNotFound; iterator )
-
-        forAll(iterator, object->size) {
-            // check if separator
-            if($(separatorsString, m(isContains, RString)), object->baseString[iterator]) == yes) {
-                // if first separator set end of substring
-                if(isFirst) {
-                    endOfSubstring = iterator;
-                    isFirst = no;
-                    if(result == nil) {
-                        result = makeRArray();
-
-                        if(result != nil) {
-                            // set-up delegates
-                            result->printerDelegate = (void (*)(pointer)) p(RString);
-                            result->destructorDelegate = (void (*)(pointer)) stringDeleter;
-
-                            // exit if allocation fails
-                        } else {
-                            RError("RString. Bad array for substrings allocation.", object);
-                            return nil;
-                        }
-                    }
-                }
-
-                // if not separator
-            } else {
-
-                // if we found some separators
-                if(!isFirst) {
-                    isFirst = yes;
-                    substring = $(object, m(substringInRange, RString)), makeRRangeTo(startOfSubstring, endOfSubstring));
-                    $(result, m(addObject, RArray)), substring);
-                    startOfSubstring = iterator;
-                }
-            }
-        }
-
-        // if we found some
-        if(result != nil) {
-            // if last is not separator - add whole last word
-            if(endOfSubstring < startOfSubstring) {
-                endOfSubstring = object->size;
-            }
-            // add last
-            substring = $(object, m(substringInRange, RString)), makeRRangeTo(startOfSubstring, endOfSubstring));
-            if(substring != nil) {
-                $(result, m(addObject, RArray)), substring);
-            }
-            // and sizeToFit
-            $(result, m(sizeToFit, RArray)) );
-        }
-    } elseWarning(
-            RWarning("RString. substringsSeparatedBySymbols. Bad separator string size, or string size.", object)
-    );
-    return result;
 }

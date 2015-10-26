@@ -21,9 +21,9 @@ constructor (RayProperty));
 destructor  (RayProperty);
 printer     (RayProperty);
 
-method(RCString *, serializeToCType, RayProperty), RClassTable *delegate);
+method(RString *, serializeToCType, RayProperty), RClassTable *delegate);
 
-RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate); // must be already preprocessed
+RayProperty* ParsePropertyString(RString *code, RClassTable *delegate); // must be already preprocessed
 
 extern inline
 RayProperty* ParsePropertyCString(char *code, RClassTable *delegate);

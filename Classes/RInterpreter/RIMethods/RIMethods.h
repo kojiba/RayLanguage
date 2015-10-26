@@ -17,7 +17,7 @@
 #define __RAY_METHOD_H__
 
 #include "../../RayFoundation/RSyntax.h"
-#include "../../RayFoundation/RCString/RCString.h"
+#include "../../RayFoundation/RString/RString.h"
 #include "../../RayFoundation/RContainers/RStringDictionary.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
 #include "../RInterpereterConsts.h"
@@ -31,8 +31,8 @@ class(RayMethod)
     RayOperatorType   operatorType;
 
     size_t         returnType;
-    RCString      *nativeName;
-    RCString      *namespaceName;
+    RString      *nativeName;
+    RString      *namespaceName;
 
     RArray        *arguments;
     rbool          isImplemented;
@@ -49,9 +49,9 @@ method(void, addArgument,      RayMethod), size_t type, const char *name); // na
 method(void, setArguments,     RayMethod), RArray *array);                // not copies arg dict
 
 // Main methods
-method(RCString *, serializetoCFunction, RayMethod),    RClassTable *delegate, rbool isPointer);
+method(RString *, serializetoCFunction, RayMethod),    RClassTable *delegate, rbool isPointer);
 
-RayMethod* ParseMethodString(RCString *code, RClassTable *delegate); // must be already preprocessed
+RayMethod* ParseMethodString(RString *code, RClassTable *delegate); // must be already preprocessed
 
 extern inline
 RayMethod* ParseMethodCString(char *code, RClassTable *delegate);

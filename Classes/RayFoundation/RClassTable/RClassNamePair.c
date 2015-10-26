@@ -19,8 +19,8 @@ constructor(RClassNamePair)) {
     object = allocator(RClassNamePair);
 
     if (object != nil) {
-        master(object, RCString) = makeRCString();
-        if(master(object, RCString) != nil) {
+        master(object, RString) = allocator(RString);
+        if(master(object, RString) != nil) {
             // 2 - it's for RClassNamePair
             object->classId = 2;
             object->idForClassName = 0;
@@ -30,7 +30,7 @@ constructor(RClassNamePair)) {
 }
 
 destructor(RClassNamePair) {
-    deallocator(master(object, RCString));
+    deallocator(master(object, RString));
 }
 
 void RClassNamePairDeleter(pointer ptr) {
@@ -38,8 +38,8 @@ void RClassNamePairDeleter(pointer ptr) {
 }
 
 printer(RClassNamePair) {
-    if(master(object, RCString) != nil) {
-        RPrintf("\"%s\"\n", master(object, RCString)->baseString);
+    if(master(object, RString) != nil) {
+        RPrintf("\"%s\"\n", master(object, RString)->data);
     } else {
         RPrintf("error nil\n");
     }
@@ -55,8 +55,8 @@ constMethod(RCompareFlags, compareWith, RClassNamePair), RClassNamePair *checkPa
                 return equals;
             }
         }
-        if(master(checkPair, RCString) != nil && master(object, RCString) != nil) {
-            return $(master(object, RCString), m(compareWith, RCString)), master(checkPair, RCString));
+        if(master(checkPair, RString) != nil && master(object, RString) != nil) {
+            return $(master(object, RString), m(compareWith, RString)), master(checkPair, RString));
         }
     } else {
         RWarning("RClassNamePair. Name and Id (or Object), is nil.", object);

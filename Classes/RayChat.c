@@ -35,8 +35,8 @@ ChatData *createEmpty(size_t count) {
 
 rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator) {
     if(ContextChatData != nil) {
-        if($(ContextChatData->chatRoom,     m(isEqualTo, RCString)), context->chatRoom)) {
-            if($(ContextChatData->nickname, m(isEqualTo, RCString)), context->nickname)) {
+        if($(ContextChatData->chatRoom,     m(isEqualTo, RString)), context->chatRoom)) {
+            if($(ContextChatData->nickname, m(isEqualTo, RString)), context->nickname)) {
                 return no;
             }
         }
@@ -46,7 +46,7 @@ rbool nickNameFinder(ChatData *context, RTCPDataStruct *object, size_t iterator)
 
 rbool ChatRoomPredicate(RString *context, RTCPDataStruct *object, size_t iterator) {
     if(ContextChatData != nil) {
-        if($(ContextChatData->chatRoom, m(isEqualTo, RCString)), context)) {
+        if($(ContextChatData->chatRoom, m(isEqualTo, RString)), context)) {
             return yes;
         }
     }
@@ -58,10 +58,10 @@ rbool ChatRoomListEnumerator(RString *list, RTCPDataStruct *object, size_t itera
         if(ContextChatData->nickname != nil) {
             RString *number = stringWithFormat("%lu", iterator);
 
-            $(list, m(concatenate, RCString)), number);
-            $(list, m(concatenate, RCString)), RS(" - "));
-            $(list, m(concatenate, RCString)), ContextChatData->nickname);
-            $(list, m(concatenate, RCString)), RS("\n"));
+            $(list, m(concatenate, RString)), number);
+            $(list, m(concatenate, RString)), RS(" - "));
+            $(list, m(concatenate, RString)), ContextChatData->nickname);
+            $(list, m(concatenate, RString)), RS("\n"));
 
             deleter(number, RString);
         }
@@ -83,18 +83,18 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
     chatRoomPredicate.virtualEnumerator = (EnumeratorDelegate) ChatRoomPredicate;
     chatRoomPredicate.context           = context->chatRoom;
 
-    if($(command, m(startsOn, RCString)), RS("set nickname "))) {
+    if($(command, m(startsOn, RString)), RS("set nickname "))) {
         REnumerateDelegate nickNameEnumerator;
         RFindResult result;
 
-        RString  *newNickName = $(command, m(substringInRange, RCString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
+        RString  *newNickName = $(command, m(substringInRange, RString)), makeRRange(RS("set nickname ")->size, command->size - RS("set nickname ")->size));
 
         if(newNickName != nil) {
             ChatData forCompare;
-            $(newNickName, m(deleteAllCharacters, RCString)), '\r');
-            $(newNickName, m(deleteAllCharacters, RCString)), '\n');
-            $(newNickName, m(deleteAllCharacters, RCString)), '\t');
-            $(newNickName, m(deleteAllCharacters, RCString)), ' ');
+            $(newNickName, m(deleteAllCharacters, RString)), '\r');
+            $(newNickName, m(deleteAllCharacters, RString)), '\n');
+            $(newNickName, m(deleteAllCharacters, RString)), '\t');
+            $(newNickName, m(deleteAllCharacters, RString)), ' ');
 
             forCompare.nickname = newNickName;
             forCompare.chatRoom = context->chatRoom;
@@ -105,12 +105,12 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
             result = $(data->handler->arguments, m(enumerate, RArray)), &nickNameEnumerator, yes); // search duplicates in current chat room
 
             if(result.object == nil) {
-                RString *messageString = $(context->nickname, m(copy, RCString)));
-                $(messageString, m(concatenate, RCString)), RS(" changed nickname to "));
-                $(messageString, m(concatenate, RCString)), newNickName);
-                $(messageString, m(concatenate, RCString)), RS("\n"));
+                RString *messageString = $(context->nickname, m(copy, RString)));
+                $(messageString, m(concatenate, RString)), RS(" changed nickname to "));
+                $(messageString, m(concatenate, RString)), newNickName);
+                $(messageString, m(concatenate, RString)), RS("\n"));
 
-                $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size);
+                $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->data, messageString->size);
 
                 deleter(messageString, RString);
                 nilDeleter(context->nickname, RString);
@@ -123,32 +123,32 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
             }
         }
 
-    } else if($(command, m(startsOn, RCString)), RS("change chatroom "))) {
+    } else if($(command, m(startsOn, RString)), RS("change chatroom "))) {
 
-        RString *newChatRoom = $(command, m(substringInRange, RCString)), makeRRange(RS("change chatroom ")->size, command->size - RS("change chatroom ")->size));
-        RString *messageString = $(context->nickname, m(copy, RCString)));
+        RString *newChatRoom = $(command, m(substringInRange, RString)), makeRRange(RS("change chatroom ")->size, command->size - RS("change chatroom ")->size));
+        RString *messageString = $(context->nickname, m(copy, RString)));
 
-        $(messageString, m(concatenate, RCString)), RS(" leave room\n"));
+        $(messageString, m(concatenate, RString)), RS(" leave room\n"));
 
-        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size); // old chat room
+        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->data, messageString->size); // old chat room
 
-        $(messageString, m(trimTail,    RCString)), RS(" leave room\n")->size); // remove old message, store nickname
-        $(messageString, m(concatenate, RCString)), RS(" enter room\n"));
+        $(messageString, m(trimTail,    RString)), RS(" leave room\n")->size); // remove old message, store nickname
+        $(messageString, m(concatenate, RString)), RS(" enter room\n"));
 
         chatRoomPredicate.context = newChatRoom;
-        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->baseString, messageString->size); // new chat room
+        $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, messageString->data, messageString->size); // new chat room
 
         deleter(messageString,     RString);
         nilDeleter(context->chatRoom, RString);
 
         context->chatRoom = newChatRoom;
-    } else if($(command, m(startsOn, RCString)), RS("help"))) {
+    } else if($(command, m(startsOn, RString)), RS("help"))) {
         $(data->socket, m(sendString, RSocket)), RS("   change chatroom type \'--change chatroom %s\'\n"
                                                             "   change nickname      \'--set nickname %s\'\n"
                                                             "   chatroom members     \'--is anybody here?\'\n"
                                                             "   exit                 \'--exit\'\n"));
 
-    } else if($(command, m(startsOn, RCString)), RS("is anybody here?"))) {
+    } else if($(command, m(startsOn, RString)), RS("is anybody here?"))) {
         REnumerateDelegate listEnumerator;
         RArray  *chatRoomList;
         RString *resultList = RSC("");
@@ -166,14 +166,14 @@ void processCommandString(const RString *command, ChatData *context, RTCPDataStr
         }
 
         if(chatRoomList == nil
-           || $(resultList, m(isEqualTo, RCString)), RS(""))) {
+           || $(resultList, m(isEqualTo, RString)), RS(""))) {
             $(data->socket, m(sendString, RSocket)), RS("nobody\n"));
         } else {
             $(data->socket, m(sendString, RSocket)), resultList);
         }
         deleter(resultList, RString);
 
-    } else if($(command, m(startsOn, RCString)), RS("exit"))) {
+    } else if($(command, m(startsOn, RString)), RS("exit"))) {
 
         $(data->socket, m(sendString, RSocket)), RS("Bye-bye, Johnny.\n"));
         deleter(data->socket, RSocket); // close
@@ -205,7 +205,7 @@ pointer RayChatExec(RTCPDataStruct *data) {
                                "                               chatroom members \'--is anybody here?\'\n"
                                "                               exit             \'--exit\'\n"
                                "                               help             \'--help\'\n"
-                               "And follow the white rabbit.\n", chatData->nickname->baseString);
+                               "And follow the white rabbit.\n", chatData->nickname->data);
 
     resultFlag = $(data->socket, m(sendString, RSocket)), welcome);
     deleter(welcome, RString);
@@ -216,27 +216,27 @@ pointer RayChatExec(RTCPDataStruct *data) {
           && resultFlag != networkOperationErrorConst) {
 
         buffer[receivedSize] = 0;
-        temp.baseString = buffer;
+        temp.data = buffer;
         temp.size = receivedSize;
 
-        if(!$(&temp, m(startsOn, RCString)), RS("\n"))) { // empty msg
+        if(!$(&temp, m(startsOn, RString)), RS("\n"))) { // empty msg
 
-            RPrintf("    %s:%u[%u] %s:%s > %s", address, port, currentThread, chatData->chatRoom->baseString, chatData->nickname->baseString, buffer); // log
+            RPrintf("    %s:%u[%u] %s:%s > %s", address, port, currentThread, chatData->chatRoom->data, chatData->nickname->data, buffer); // log
 
-            if(!$(&temp, m(startsOn, RCString)), RS("--"))) {
+            if(!$(&temp, m(startsOn, RString)), RS("--"))) {
 
                 RString *stringToSend = RSC("");
-                $(stringToSend, m(concatenate, RCString)), ((ChatData *)data->context)->nickname);
-                $(stringToSend, m(concatenate, RCString)), RS(" : "));
-                $(stringToSend, m(concatenate, RCString)), &temp);
+                $(stringToSend, m(concatenate, RString)), ((ChatData *)data->context)->nickname);
+                $(stringToSend, m(concatenate, RString)), RS(" : "));
+                $(stringToSend, m(concatenate, RString)), &temp);
 
                 chatRoomPredicate.context = chatData->chatRoom;
 
-                $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, stringToSend->baseString, stringToSend->size);
+                $(data->handler, m(multicast, RTCPHandler)), &chatRoomPredicate, stringToSend->data, stringToSend->size);
 
                 deleter(stringToSend, RString);
             } else {
-                temp.baseString += 2; // remove --
+                temp.data += 2; // remove --
                 temp.size -= 3;       // remove \n
                 processCommandString(&temp, chatData, data);
             }
@@ -303,7 +303,7 @@ void startServer(RTCPHandler  **server,
                     if(connectionState == networkOperationSuccessConst) {
                         if(receivedSize > 8) {
                             buffer[receivedSize] = 0;
-                            ifMemEqual(buffer, password->baseString, password->size) {
+                            ifMemEqual(buffer, password->data, password->size) {
 
                                 ifMemEqual(buffer + password->size + 1, "shutdown", 8) {
                                     $(current, m(sendString, RSocket)), RS("Server will terminate\n"));

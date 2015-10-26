@@ -20,7 +20,7 @@
 
 #include "../RayFoundation/RSyntax.h"
 #include "../RayFoundation/RContainers/RArray.h"
-#include "../RayFoundation/RCString/RCString.h"
+#include "../RayFoundation/RString/RString.h"
 #include "../RayFoundation/RClassTable/RClassTable.h"
 
 class(RIterpreter)
@@ -50,7 +50,7 @@ class(RIterpreter)
     RArray *codeTokens;
 
 // string added when file is read
-    RCString *sourceFileString;
+    RString *sourceFileString;
 
 endOf(RInterpreter)
 
@@ -59,7 +59,7 @@ destructor  (RInterpreter);
 singleton   (RInterpreter);
 
 // Main method
-method(RCString*, convertRayToC,          RInterpreter),    const char *sourceFileName);
+method(RString*, convertRayToC,          RInterpreter),    const char *sourceFileName);
 
 #define RISingleton         singletonCall(RInterpreter)
 #define RayToC(fileName)    $(singletonCall(RInterpreter), m(convertRayToC, RInterpreter)), fileName)

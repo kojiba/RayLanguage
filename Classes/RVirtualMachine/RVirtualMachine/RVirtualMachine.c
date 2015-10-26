@@ -14,7 +14,7 @@
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
     if(object != nil) {
-        object->memory = allocator(RBytes);
+        object->memory = allocator(RData);
         if(object->memory != nil) {
             object->classId = registerClassOnce(toString(RVirtualMachine));
         }
@@ -212,7 +212,7 @@ method(void, setUpFunction, RVirtualMachine), RVirtualFunction *function) {
     object->dataRegister = object->memory->array;
 
     // set command to first byte of opcodes
-    object->functionStartAddress = master(object->functionExecuting, RBytes)->array;
+    object->functionStartAddress = master(object->functionExecuting, RData)->array;
     object->command              = object->functionStartAddress;
 }
 
@@ -247,11 +247,11 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     RPrintf("\nRVM. End Executing Function \"%s\"\n", function->name->baseString);
     RPrintf("Ticks count for executing is - %lu\n", object->tickCount);
     RPrintf("Memory snapshot : {\n");
-    $(object->memory, p(RBytes)) );
+    $(object->memory, p(RData)) );
     RPrintf("} end memory snapshot\n");
 
     // cleanup
-    d(RBytes)(object->memory);
+    d(RData)(object->memory);
 }
 
 singleton(RVirtualMachine) {

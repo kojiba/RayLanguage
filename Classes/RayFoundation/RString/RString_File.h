@@ -1,5 +1,5 @@
 /**
- * RCString_File.h
+ * RString_File.h
  * File i/o for strings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 8/10/15 Ukraine Kharkiv
@@ -16,22 +16,22 @@
 #ifndef __R_C_STRING_FILE_H__
 #define __R_C_STRING_FILE_H__
 
-#include "RCString.h"
+#include "RString.h"
 
-method(void, appendToFile, RCString), const char *filename);
-RCString* stringFromFile(const char *filename);
+method(void, appendToFile, RString), const char *filename);
+RString* stringFromFile(const char *filename);
 
 /*
  * Example
  *
  *  RPrintLn("Input some:");
- *  RCString *input = getInputString(); // all to '\n' symbol size is automatic
- *  p(RCString)(input);
- *  deleter(input, RCString);
+ *  RString *input = getInputString(); // all to '\n' symbol size is automatic
+ *  p(RString)(input);
+ *  deleter(input, RString);
  *
  *  Note: Reads string from stdin,
- *  returns created RCString which must be destructed.
+ *  returns created RString which must be destructed.
 */
-RCString * getInputString();
+RString * getInputString();
 
 #endif /*__R_C_STRING_FILE_H__*/

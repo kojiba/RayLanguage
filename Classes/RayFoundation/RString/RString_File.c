@@ -1,5 +1,5 @@
 /**
- * RCString_File.c
+ * RString_File.c
  * File i/o for strings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 8/10/15 Ukraine Kharkiv
@@ -13,40 +13,39 @@
  *         |__/
  **/
 
-#include "RCString_File.h"
-#include "RayFoundation/RMemoryOperations/RBytes.h"
+#include "RString_File.h"
 
-RCString* stringFromFile(const char *filename) {
-    RBytes   *content = contentOfFile(filename);
-    RCString *result = RSC((const char *)content->data);
-    deleter(content, RBytes);
+RString* stringFromFile(const char *filename) {
+    RData   *content = contentOfFile(filename);
+    RString *result = RSC((const char *)content->data);
+    deleter(content, RData);
     ifError(result == nil,
             RError1("stringFromFile. Can't create string from \"%s\".", result, filename)
     );
     return result;
 }
 
-method(void, appendToFile, RCString), const char *filename) {
+method(void, appendToFile, RString), const char *filename) {
     FILE *file = fopen(filename, "ab");
     if (file != nil) {
-    ssize_t result = fputs(object->baseString, file);
+    ssize_t result = fputs((const char *) object->data, file);
 
     ifError(result < 0,
-    RError("RCString. Failed save string to file.", object)
+    RError("RString. Failed save string to file.", object)
     );
 
     fclose(file);
 
     } elseError(
-            RError("RCString. appendToFile. Failed open file.", object)
+            RError("RString. appendToFile. Failed open file.", object)
     );
 }
 
 
-RCString * getInputString() {
-    RCString *result   = makeRCString();
-    char     *charBuff = arrayAllocator(char, baseInputStringSize);
-    size_t    empty    = baseInputStringSize;
+RString * getInputString() {
+    RString *result   = allocator(RString);
+    char    *charBuff = arrayAllocator(char, baseInputStringSize);
+    size_t   empty    = baseInputStringSize;
 
     if(result != nil
        && charBuff != nil) {
@@ -77,7 +76,7 @@ RCString * getInputString() {
             charBuff = RReAlloc(charBuff, arraySize(char, result->size + 1));
         }
 
-        result->baseString = charBuff;
+        result->data = charBuff;
         charBuff[result->size] = 0;
 
     } elseError(

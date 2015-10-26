@@ -18,7 +18,7 @@
 
 #include "RayFoundation/RayConfig.h"
 
-#include "RayFoundation/RMemoryOperations/RBytes.h"
+#include "RayFoundation/RMemoryOperations/RData.h"
 
 #ifndef RAY_EMBEDDED
     #include "RayFoundation/RNetwork/RSocket.h"
@@ -33,8 +33,8 @@ typedef struct PEConnectionContext PEConnectionContext;
 PEConnectionContext* initPEContext(uint64_t masterKey[8]); // master-key will be flushed
 destructor(PEConnectionContext);
 
-RBytes* encryptDataWithConnectionContext(const RBytes *data, PEConnectionContext* context);
-RBytes* decryptDataWithConnectionContext(      RBytes *data, PEConnectionContext* context);
+RData* encryptDataWithConnectionContext(const RData *data, PEConnectionContext* context);
+RData* decryptDataWithConnectionContext(      RData *data, PEConnectionContext* context);
 
 #pragma mark Connection
 
@@ -45,8 +45,8 @@ RBytes* decryptDataWithConnectionContext(      RBytes *data, PEConnectionContext
     destructor   (PEConnection);
 
     // main
-    byte          PEConnectionSend     (PEConnection *object, RBytes *toSend);
-    byte          PEConnectionReceive  (PEConnection *object, RBytes **result);
+    byte          PEConnectionSend     (PEConnection *object, RData *toSend);
+    byte          PEConnectionReceive  (PEConnection *object, RData **result);
 
     // wrappers
     extern

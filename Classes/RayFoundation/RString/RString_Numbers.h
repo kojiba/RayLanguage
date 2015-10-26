@@ -1,6 +1,6 @@
 /**
- * RCString_Numbers.h
- * Number additions to RCStrings.
+ * RString_Numbers.h
+ * Number additions to RStrings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -16,7 +16,7 @@
 #ifndef __R_C_STRING_NUMBERS_H__
 #define __R_C_STRING_NUMBERS_H__
 
-#include "RCString.h"
+#include "RString.h"
 
 // Basics
 static inline rbool isDecimalDigit (char character);
@@ -32,15 +32,15 @@ typedef enum RNumberSystemBase { //--------------------------
     RHex,
 } RNumberSystemBase; //--------------------------------------
 
-constMethod(RCString *,        toRCString, RNumberSystemBase));
+constMethod(RString *,        toRString, RNumberSystemBase));
 
 //-----------------------------------------------------------
 
-// RCString Additions
-constMethod(RNumberSystemBase, isNumber,       RCString));
+// RString Additions
+constMethod(RNumberSystemBase, isNumber,       RString));
 
-#define toUnsignedRCString(object) RStringToUnsigned(object->baseString, nil, 0)
-#define toIntRCString(object)      RStringToInt(object->baseString)
-#define toDoubleRCString(object)   RStringToDouble(object->baseString)
+#define toUnsignedRString(object) RStringToUnsigned(object->baseString, nil, 0)
+#define toIntRString(object)      RStringToInt(object->baseString)
+#define toDoubleRString(object)   RStringToDouble(object->baseString)
 
 #endif /*__R_C_STRING_NUMBERS_H__*/

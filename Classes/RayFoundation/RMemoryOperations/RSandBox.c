@@ -55,7 +55,7 @@ constructor (RSandBox), size_t sizeOfMemory, size_t descriptorsCount){
     object = allocator(RSandBox);
     if(object != nil) {
         object->descriptorTable = arrayAllocator(RControlDescriptor, descriptorsCount);
-        object->memPart         = c(RBytes)(nil, sizeOfMemory);
+        object->memPart         = makeRDataBytes(arrayAllocator(byte, sizeOfMemory), sizeOfMemory);
 
         if(object->memPart != nil && object->descriptorTable != nil) {
             object->classId               = 4;
@@ -88,7 +88,7 @@ destructor(RSandBox) {
 
             // totally fresh all to 0
             flushAllToByte(object->memPart->data, object->memPart->size, 0);
-            deleter(object->memPart, RBytes);
+            deleter(object->memPart, RData);
 
             flushAllToByte((byte *) object->descriptorTable, object->descriptorsTotal * sizeof(RControlDescriptor), 0);
             deallocator(object->descriptorTable);
@@ -96,7 +96,7 @@ destructor(RSandBox) {
             flushAllToByte((byte *) object, sizeof(RSandBox), 0);
     } else {
         // simple cleanup
-        deleter(object->memPart, RBytes);
+        deleter(object->memPart, RData);
         deallocator(object->descriptorTable);
     }
     RMutexUnlockSandbox();
@@ -375,19 +375,19 @@ method(void, free, RSandBox), pointer ptr) {
 
 #pragma mark Simple crypt
 
-method(void, XorCrypt, RSandBox), RBytes *key) {
+method(void, XorCrypt, RSandBox), RData *key) {
     Xor(object->memPart->data,  key, object->memPart->size, key->size);           // crypt memory chunk
-    Xor(object->memPart, key, sizeof(RBytes), key->size);                      // crypt memory ptr
+    Xor(object->memPart, key, sizeof(RData), key->size);                      // crypt memory ptr
     Xor(object->descriptorTable, key,
             object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // crypt descriptors table
     Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
 }
 
-method(void, XorDecrypt, RSandBox), RBytes *key) {
+method(void, XorDecrypt, RSandBox), RData *key) {
     Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
     Xor(object->descriptorTable, key,
             object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
-    Xor(object->memPart, key, sizeof(RBytes), key->size);                      // decrypt memory ptr
+    Xor(object->memPart, key, sizeof(RData), key->size);                      // decrypt memory ptr
     Xor(object->memPart->data,  key, object->memPart->size, key->size);           // decrypt memory chunk
 }
 

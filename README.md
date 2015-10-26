@@ -15,7 +15,7 @@ Containers:
 5.  ClassTable (for store pairs of number and string once, may be used like runtime enum etc.)  
   
 Strings:  
-1. Wide range of c-string processing operations (RCString)  
+1. Wide range of c-string processing operations (RString)
 2. Replacings  
 3. Find of substring or symbol  
 4. Delete characters/substrings  
@@ -43,7 +43,7 @@ Work with RArray:
 
 typedef struct ComplexStruct {
     size_t id;
-    RCString *fullName;
+    RString *fullName;
 } ComplexStruct;
 
 void printComplexStruct(ComplexStruct *some) {
@@ -51,7 +51,7 @@ void printComplexStruct(ComplexStruct *some) {
 }
 
 void complexDeleter(ComplexStruct *some) {
-    deleter(some->fullName, RCString);
+    deleter(some->fullName, RString);
     free(some);
 }
 
@@ -67,7 +67,7 @@ int main(int argc, const char *argv[]) {
         // create struct and add to array
         ComplexStruct *some = malloc(sizeof(ComplexStruct));
         some->id = iterator + 1;
-        some->fullName = stringWithFormat("Object # %lu", iterator + 1); // more string processing API in RCString.h
+        some->fullName = stringWithFormat("Object # %lu", iterator + 1); // more string processing API in RString.h
         $(array, m(addObject, RArray)), some);
     }
     // print
@@ -79,17 +79,17 @@ int main(int argc, const char *argv[]) {
     // some syntaxic sugar see initFromArray, initFromArrayWithSizes, arrayFromArray
 
     // create array of strings
-    RCString *uniqTok = RS("Unique token");
+    RString *uniqTok = RS("Unique token");
     array = RA(RS("Token 1"), RS("Token 2"), uniqTok, nil); // must be NULL terminated
 
-    array->printerDelegate = (PrinterDelegate) p(RCString);
+    array->printerDelegate = (PrinterDelegate) p(RString);
     array->destructorDelegate = free;
 
     printerOfRArray(array);
 
     RCompareDelegate delegate;
     delegate.etaloneObject = uniqTok;
-    delegate.virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareWithRCString;
+    delegate.virtualCompareMethod = (RCompareFlags (*)(pointer, pointer)) compareWithRString;
 
     RFindResult result = findObjectWithDelegateRArray(array, &delegate); // search
 

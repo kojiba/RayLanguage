@@ -16,10 +16,10 @@
 #ifndef __R_CLASS_NAME_PAIR_H__
 #define __R_CLASS_NAME_PAIR_H__
 
-#include "RayFoundation/RCString/RCString.h"
+#include "RayFoundation/RString/RString.h"
 
 class(RClassNamePair)
-    discipleOf(RCString)
+    discipleOf(RString)
 
     size_t idForClassName;
 endOf(RClassNamePair)

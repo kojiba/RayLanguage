@@ -46,8 +46,8 @@ RDictionary* stringConstantsTable() {
     return instance;
 }
 
-const RCString * constantRString(const char *string) {
-    RCString *resultString = nil;
+const RString * constantRString(const char *string) {
+    RString *resultString = nil;
     // comparator for only compile-time constants
     RCompareDelegate delegate;
     tableMutexLock();
@@ -58,9 +58,10 @@ const RCString * constantRString(const char *string) {
 
     // add some if not found
     if(result.object == nil) {
-        RCString *constant = makeRCString();
+        RString *constant = allocator(RString);
         if(constant != nil) {
-            $(constant, m(setConstantString, RCString)), string);
+            constant->data = (byte *) string;
+            constant->size = strlen(string);
             if($(stringConstantsTable()->keys, m(addObject, RArray)), (char *)string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
                     tableMutexUnlock();

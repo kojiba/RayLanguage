@@ -21,7 +21,7 @@
 #ifndef RAY_EMBEDDED
 
 #include "RayFoundation/RMemoryOperations/RByteOperations.h"
-#include "RayFoundation/RCString/RString.h"
+#include "RayFoundation/RString/RString_UTF8.h"
 
 #ifndef __WIN32
     #include <sys/socket.h>
@@ -95,7 +95,7 @@ method(byte, receive,             RSocket),    pointer buffer, size_t bufferSize
 method(byte, receiveFrom,         RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
 
 extern
-method(RCString *, receiveString, RSocket));  // receives string must be destroyed, buff up to 1500
+method(RString *, receiveString, RSocket));  // receives string must be destroyed, buff up to 1500
 
 #endif
 

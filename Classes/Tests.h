@@ -12,9 +12,9 @@ int RClassNamePairTest(void);
 int RClassTableTest(void);
 int RDictionaryTest(void);
 int StringArrayTest(void);
-int RBytesTest(void);
+int RDataTest(void);
 int RBufferTest(void);
-int RCStringTest(void);
+int RStringTest(void);
 
 #ifdef  __cplusplus
 }

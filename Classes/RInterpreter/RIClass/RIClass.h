@@ -3,7 +3,7 @@
 
 #include "../../RayFoundation/RSyntax.h"
 #include "../../RayFoundation/RContainers/RArray.h"
-#include "../../RayFoundation/RCString/RCString.h"
+#include "../../RayFoundation/RString/RString.h"
 #include "../../RayFoundation/RClassTable/RClassTable.h"
 
 class(RayClass)
@@ -12,7 +12,7 @@ class(RayClass)
     RArray  *properties;
     RArray  *masterClasses;
     RArray  *statics;
-    RCString *name;
+    RString *name;
 endOf(RayClass)
 
 constructor (RayClass));
@@ -20,6 +20,6 @@ destructor  (RayClass);
 printer     (RayClass);
 
 // Try to deserialize start source
-method(RCString*, deserializeFromCode,         RayClass),    RCString *code);
+method(RString*, deserializeFromCode,         RayClass),    RString *code);
 
 #endif /*__RAY_CLASS_H__*/

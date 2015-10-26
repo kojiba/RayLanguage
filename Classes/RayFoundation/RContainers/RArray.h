@@ -181,7 +181,7 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // i
  *  RArray* array = arrayFromArray(
  *          RS("hello"), RS("omg"), RS("lol"), nil
  *  );
- *  array->printerDelegate = (void (*)(pointer)) p(RCString);
+ *  array->printerDelegate = (void (*)(pointer)) p(RString);
  *  array->destructorDelegate = RFree;
  *  p(RArray)(array);
  *  deleter(array, RArray);

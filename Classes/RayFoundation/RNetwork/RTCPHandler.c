@@ -107,7 +107,7 @@ method(void, privateStartInMode, RTCPHandler)) {
         } else {
             selfCleanup = no;
             if(object->connectionsCount != 0) {
-                socketInProcess = socketConnectedTo(object->ipAddress->baseString, object->port);
+                socketInProcess = socketConnectedTo(object->ipAddress->data, object->port);
                 --object->connectionsCount;
             } else {
                 return; // stop opening connections
@@ -169,7 +169,7 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
     if(object->delegate != nil
         && object->delegate->delegateFunction != nil
         && address != nil
-        && address->baseString != nil
+        && address->data != nil
         && connectionsCount > 0
         && connectionsCount < (65536 - 1000)) {
 
@@ -190,7 +190,7 @@ method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t con
                 RMutexUnlock(&object->mutex);
 
             } elseError(
-                RError1("RTCPHandler. startWithHost. Bad host address string %s", object, address->baseString)
+                RError1("RTCPHandler. startWithHost. Bad host address string %s", object, address->data)
             )
         } elseWarning(
                 RWarning("RTCPHandler. startWithHost. Handler already running.", object)
@@ -227,7 +227,7 @@ method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const point
     if(predicate != nil && predicate->virtualEnumerator != nil) { // multicast
         resultGroup = $(object->arguments, m(subarrayWithPredicate, RArray)), predicate);
     }
-    object->multicastEnumerator.context = RCStringInit(buffer, size);
+    object->multicastEnumerator.context = makeRData(buffer, size, RDataTypeASCII);
     $(resultGroup, m(enumerate, RArray)), &object->multicastEnumerator, yes);
 
     if(resultGroup != object->arguments) {
@@ -242,7 +242,7 @@ method(void, multicast, RTCPHandler), REnumerateDelegate *predicate, const point
 
 inline
 method(void, broadcast, RTCPHandler), RString *string) {
-    $(object, m(multicast, RTCPHandler)), nil, string->baseString, string->size);
+    $(object, m(multicast, RTCPHandler)), nil, string->data, string->size);
 }
 
 #endif /* RAY_EMBEDDED */

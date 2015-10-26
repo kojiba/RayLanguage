@@ -16,13 +16,13 @@
 #ifndef __PURGE_EVASION_UTILS_RAY__
 #define __PURGE_EVASION_UTILS_RAY__
 
-#include "RayFoundation/RCString/RString.h"
-#include "RayFoundation/RMemoryOperations/RBytes.h"
+#include "RayFoundation/RString/RString_UTF8.h"
+#include "RayFoundation/RMemoryOperations/RData.h"
 
 // use long keys, at least 256 bit or keys evasion hashes
-constMethod(RBytes *, encryptPurgeEvasion, RBytes), const RBytes *key); // Key size more than 512 bit, use first 512
-constMethod(RBytes *, decryptPurgeEvasion, RBytes), const RBytes *key);
-constMethod(RBytes *, evasionHash,         RBytes));
+constMethod(RData *, encryptPurgeEvasion, RData), const RData *key); // Key size more than 512 bit, use first 512
+constMethod(RData *, decryptPurgeEvasion, RData), const RData *key);
+constMethod(RData *, evasionHash,         RData));
 
 extern constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key); // result will be base64'zed
 extern constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key); // Key size more than 512 bit, use first 512, firstly - deBase64, than decrypt

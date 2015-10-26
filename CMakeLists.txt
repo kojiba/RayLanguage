@@ -36,7 +36,7 @@ set(HEADER_FILES # Worker headers
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.h
-                 Classes/RayFoundation/RMemoryOperations/RBytes.h
+                 Classes/RayFoundation/RMemoryOperations/RData.h
                  Classes/RayFoundation/RMemoryOperations/RSandBox.h
                  Classes/RayFoundation/RMemoryOperations/RAutoPool.h
 
@@ -49,12 +49,12 @@ set(HEADER_FILES # Worker headers
                  Classes/RayFoundation/RContainers/RBuffer.h
 
                  # Strings
-                 Classes/RayFoundation/RCString/RCString.h
-                 Classes/RayFoundation/RCString/RCString_Char.h
-                 Classes/RayFoundation/RCString/RCString_File.h
-                 Classes/RayFoundation/RCString/RCString_Numbers.h
-                 Classes/RayFoundation/RCString/RString.h
-                 Classes/RayFoundation/RCString/RString_Consts.h
+                 Classes/RayFoundation/RString/RString.h
+                 Classes/RayFoundation/RString/RString_Char.h
+                 Classes/RayFoundation/RString/RString_File.h
+                 Classes/RayFoundation/RString/RString_Numbers.h
+                 Classes/RayFoundation/RString/RString_UTF8.h
+                 Classes/RayFoundation/RString/RString_Consts.h
 
 
                  # Encoding
@@ -95,17 +95,17 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
 
                  # Memory operations
                  Classes/RayFoundation/RMemoryOperations/RByteOperations.c
-                 Classes/RayFoundation/RMemoryOperations/RBytes.c
+                 Classes/RayFoundation/RMemoryOperations/RData.c
                  Classes/RayFoundation/RMemoryOperations/RSandBox.c
                  Classes/RayFoundation/RMemoryOperations/RAutoPool.c
 
                  # Strings
-                 Classes/RayFoundation/RCString/RCString.c
-                 Classes/RayFoundation/RCString/RCString_Char.c
-                 Classes/RayFoundation/RCString/RCString_File.c
-                 Classes/RayFoundation/RCString/RCString_Numbers.c
-                 Classes/RayFoundation/RCString/RString.c
-                 Classes/RayFoundation/RCString/RString_Consts.c
+                 Classes/RayFoundation/RString/RString.c
+                 Classes/RayFoundation/RString/RString_Char.c
+                 Classes/RayFoundation/RString/RString_File.c
+                 Classes/RayFoundation/RString/RString_Numbers.c
+                 Classes/RayFoundation/RString/RString_UTF8.c
+                 Classes/RayFoundation/RString/RString_Consts.c
 
                  # Encoding
                  Classes/RayFoundation/REncoding/RBase64.c

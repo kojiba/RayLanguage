@@ -65,7 +65,7 @@ typedef enum RVirtualCodes {
 static const size_t memorySizeOfRVM = 1024; // in bytes
 
 class(RVirtualMachine)
-    RBytes       *memory;               // memory 1 kB size
+    RData       *memory;               // memory 1 kB size
     RVirtualFunction *functionExecuting;    // pointer to function
 
     byte           *dataRegister;         // pointer to memory element               (data    segment)

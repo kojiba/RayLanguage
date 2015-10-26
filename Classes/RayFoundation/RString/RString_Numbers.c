@@ -1,6 +1,6 @@
 /**
- * RCString_Numbers.c
- * Number additions to RCStrings.
+ * RString_Numbers.c
+ * Number additions to RStrings.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include "RCString_Numbers.h"
+#include "RString_Numbers.h"
 #include "RString_Consts.h"
 
 #pragma mark Basics
@@ -54,7 +54,7 @@ static inline rbool isBinaryDigit(char character) {
 
 #pragma mark RNumberSystemBase
 
-constMethod(RCString *, toRCString, RNumberSystemBase)) {
+constMethod(RString *, toRString, RNumberSystemBase)) {
     switch (*object) {
         case RNotNumber : {
             return RS(toString(RNotNumber));
@@ -79,31 +79,31 @@ constMethod(RCString *, toRCString, RNumberSystemBase)) {
     return nil;
 }
 
-#pragma mark RCString Additions
+#pragma mark RString Additions
 
-constMethod(RNumberSystemBase, isNumber, RCString)) {
+constMethod(RNumberSystemBase, isNumber, RString)) {
     size_t iterator;
     // not too large
     if(object->size < 200) {
         // it may be hex, or octal, or binary
-        if(object->baseString[0] == '0') {
+        if(object->data[0] == '0') {
 
             // if hex
-            if(object->baseString[1] == 'x'
-                    || object->baseString[1] == 'X') {
+            if(object->data[1] == 'x'
+                    || object->data[1] == 'X') {
                 // check symbols
                 for(iterator = 2; iterator < object->size; ++iterator) {
-                    if(isHexDigit(object->baseString[iterator]) == no) {
+                    if(isHexDigit(object->data[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
                 return RHex;
 
             // binary
-            } else if (object->baseString[0] == 'b'){
+            } else if (object->data[0] == 'b'){
                 // check symbols
                 for(iterator = 1; iterator < object->size; ++iterator) {
-                    if(isBinaryDigit(object->baseString[iterator]) == no) {
+                    if(isBinaryDigit(object->data[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
@@ -112,7 +112,7 @@ constMethod(RNumberSystemBase, isNumber, RCString)) {
             } else {
                 // check symbols
                 for(iterator = 2; iterator < object->size; ++iterator) {
-                    if(isOctalDigit(object->baseString[iterator]) == no) {
+                    if(isOctalDigit(object->data[iterator]) == no) {
                         return RNotNumber;
                     }
                 }
@@ -122,7 +122,7 @@ constMethod(RNumberSystemBase, isNumber, RCString)) {
         // decimal
         } else {
             forAll(iterator, object->size) {
-                if (isDecimalDigit(object->baseString[iterator]) == no) {
+                if (isDecimalDigit(object->data[iterator]) == no) {
                     return RNotNumber;
                 }
             }

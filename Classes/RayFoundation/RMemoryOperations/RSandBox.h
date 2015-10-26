@@ -20,7 +20,7 @@
 #ifndef __R_SAND_BOX_H__
 #define __R_SAND_BOX_H__
 
-#include "RBytes.h"
+#include "RData.h"
 
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     #include "RayFoundation/RThread/RThread.h"

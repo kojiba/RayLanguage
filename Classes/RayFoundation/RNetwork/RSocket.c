@@ -281,7 +281,7 @@ method(byte, sendTo, RSocket), const pointer buffer, size_t size) {
 
 
 inline method(byte, sendString, RSocket), const RString *string) {
-    return $(object, m(send, RSocket)), string->baseString, string->size);
+    return $(object, m(send, RSocket)), string->data, string->size);
 }
 
 method(byte, receive, RSocket), pointer buffer, size_t bufferSize, size_t *receivedSize) {
@@ -320,7 +320,7 @@ method(byte, receiveFrom, RSocket), pointer buffer, size_t bufferSize, size_t *r
     }
 }
 
-inline method(RCString *, receiveString, RSocket)) {
+inline method(RString *, receiveString, RSocket)) {
     char *buffer = arrayAllocator(char, 1500);
     size_t size;
     if(buffer != nil) {

@@ -4,9 +4,9 @@
 #include <RayFoundation/RayFoundation.h>
 
 class(RVirtualFunction)
-    discipleOf(RBytes)
+    discipleOf(RData)
 
-    RCString   *name;
+    RString   *name;
 endOf(RVirtualFunction)
 
 constructor (RVirtualFunction));

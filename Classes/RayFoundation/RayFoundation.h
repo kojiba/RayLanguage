@@ -37,15 +37,16 @@ extern "C" {
 #include "RContainers/RDictionary.h"
 
 // Strings
-#include "RCString/RCString.h"
-#include "RCString/RCString_Char.h"
-#include "RCString/RCString_Numbers.h"
-#include "RCString/RString.h"
-#include "RCString/RString_Consts.h"
-#include "RCString/RCString_File.h"
+#include "RString/RString.h"
+#include "RString/RString_Char.h"
+#include "RString/RString_Numbers.h"
+#include "RString/RString_UTF8.h"
+#include "RString/RString_Consts.h"
+#include "RString/RString_File.h"
 
 // Memory operations
 #include "RMemoryOperations/RByteOperations.h"
+#include "RMemoryOperations/RData.h"
 #include "RMemoryOperations/RSandBox.h"
 #include "RMemoryOperations/RAutoPool.h"
 

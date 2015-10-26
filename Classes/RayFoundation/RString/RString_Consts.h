@@ -17,10 +17,10 @@
  *         |__/
  **/
 
-#include "RString.h"
+#include "RString_UTF8.h"
 #include "RayFoundation/RContainers/RDictionary.h"
 
 RDictionary * stringConstantsTable();
-const RCString *    constantRString(const char *string);
+const RString * constantRString(const char *string);
 
 #define RS(cstring) constantRString(cstring)

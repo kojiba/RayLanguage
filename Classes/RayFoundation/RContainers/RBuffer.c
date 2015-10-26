@@ -32,8 +32,8 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
     RBuffer *object = allocator(RBuffer);
     if(object != nil) {
         // allocation of buffer
-        master(object, RBytes) = c(RBytes)(nil, startSize);
-        if(master(object, RBytes) != nil) {
+        master(object, RData) = makeRDataBytes(arrayAllocator(byte, startSize), startSize);
+        if(master(object, RData) != nil) {
 
             // allocation of sizes array
             object->sizesArray = arrayAllocator(RRange, objectCount);
@@ -48,10 +48,10 @@ RBuffer* makeRBufferOptions(size_t startSize, size_t objectCount) {
 #endif
             } else {
                 RError("RBuffer. Allocation of sizes array failed.", object);
-                deleter(master(object, RBytes), RBytes);
+                deleter(master(object, RData), RData);
             }
         } else {
-            RError("RBuffer. Allocation of master RBytes failed.", object);
+            RError("RBuffer. Allocation of master RData failed.", object);
             deallocator(object);
             object = nil;
         }
@@ -66,7 +66,7 @@ inline constructor(RBuffer)) {
 destructor(RBuffer) {
     RMutexLockBuffer();
     // kills buffer
-    deleter(master(object, RBytes), RBytes);
+    deleter(master(object, RData), RData);
     // kills sizes
     deallocator(object->sizesArray);
     RMutexUnlockBuffer();
@@ -79,13 +79,13 @@ printer(RBuffer) {
     size_t iterator;
     RMutexLockBuffer();
     RPrintf("%s object - %p {\n", toString(RBuffer), object);
-    RPrintf("\t Total   size : %lu (bytes)\n", master(object, RBytes)->size);
+    RPrintf("\t Total   size : %lu (bytes)\n", master(object, RData)->size);
     RPrintf("\t Placed  size : %lu (bytes)\n", object->totalPlaced);
     RPrintf("\t Free  places : %lu\n", object->freePlaces);
     RPrintf("\t Count objcts : %lu\n\n", object->count);
     forAll(iterator, object->count) {
         RPrintf("\t\t %lu : size - %lu\n", iterator, object->sizesArray[iterator].size);
-        printByteArrayInHex(master(object, RBytes)->data + object->sizesArray[iterator].start, object->sizesArray[iterator].size);
+        printByteArrayInHex(master(object, RData)->data + object->sizesArray[iterator].start, object->sizesArray[iterator].size);
         RPrintf("\n");
     }
     RPrintf("} %s object - %p\n", toString(RBuffer), object);
@@ -108,18 +108,18 @@ method(RRange*, addSizeToSizes, RBuffer), size_t newSize) {
     return object->sizesArray;
 }
 
-method(RBytes*, addSizeToMem, RBuffer), size_t newSize) {
+method(RData*, addSizeToMem, RBuffer), size_t newSize) {
     RMutexLockBuffer();
     if(newSize > (object->totalPlaced)) {
-        master(object, RBytes)->data = RReAlloc(master(object, RBytes)->data, newSize);
-        if (master(object, RBytes)->data != nil) {
+        master(object, RData)->data = RReAlloc(master(object, RData)->data, newSize);
+        if (master(object, RData)->data != nil) {
             // set newSize
-            master(object, RBytes)->size = newSize;
+            master(object, RData)->size = newSize;
         }
     } elseError( RError("RBuffer. Bad new size for memory", object) );
 
     RMutexUnlockBuffer();
-    return master(object, RBytes);
+    return master(object, RData);
 }
 
 method(void, flush, RBuffer)) {
@@ -132,9 +132,9 @@ method(void, flush, RBuffer)) {
 
 method(RBuffer*, sizeToFit, RBuffer)) {
     RMutexLockBuffer();
-    master(object, RBytes)->data = RReAlloc(master(object, RBytes)->data, object->totalPlaced);
-    if(master(object, RBytes)->data != nil) {
-        master(object, RBytes)->size = object->totalPlaced;
+    master(object, RData)->data = RReAlloc(master(object, RData)->data, object->totalPlaced);
+    if(master(object, RData)->data != nil) {
+        master(object, RData)->size = object->totalPlaced;
         object->sizesArray = RReAlloc(object->sizesArray, arraySize(RRange, object->count));
         if(object->sizesArray != nil) {
             object->freePlaces = 0;
@@ -175,17 +175,17 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
         $(object, m(addSizeToSizes, RBuffer)), object->count * sizeMultiplierOfRBufferDefault);
     }
     size_t counter = 1;
-    while(sizeInBytes > master(object, RBytes)->size - object->totalPlaced) {
+    while(sizeInBytes > master(object, RData)->size - object->totalPlaced) {
         // add free to buffer
         $(object, m(addSizeToMem, RBuffer)), object->totalPlaced * sizeMultiplierOfRBufferDefault * counter);
         ++counter;
     }
 
-    if(master(object, RBytes)->data != nil
+    if(master(object, RData)->data != nil
             && object->sizesArray != nil) {
 
         // add object
-        RMemCpy(master(object, RBytes)->data + object->totalPlaced, data, sizeInBytes);
+        RMemCpy(master(object, RData)->data + object->totalPlaced, data, sizeInBytes);
         object->sizesArray[object->count].start = object->totalPlaced;
         object->sizesArray[object->count].size = sizeInBytes;
 
@@ -200,7 +200,7 @@ constMethod(pointer, getDataReference, RBuffer), size_t index) {
     RMutexLockBuffer();
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
         RMutexUnlockBuffer();
-        return (master(object, RBytes)->data + object->sizesArray[index].start);
+        return (master(object, RData)->data + object->sizesArray[index].start);
     } else {
         RMutexUnlockBuffer();
         return nil;
@@ -226,8 +226,8 @@ method(void, deleteDataAt, RBuffer), size_t index) {
     RMutexLockBuffer();
     if($(object, m(checkIndexWithError, RBuffer)), index) == yes) {
 
-        RMemMove(master(object, RBytes)->data + object->sizesArray[index].start,
-                 master(object, RBytes)->data + object->sizesArray[index].start + object->sizesArray[index].size,
+        RMemMove(master(object, RData)->data + object->sizesArray[index].start,
+                 master(object, RData)->data + object->sizesArray[index].start + object->sizesArray[index].size,
                  object->totalPlaced - object->sizesArray[index].size);
 
         RMemMove(object->sizesArray + index,
@@ -252,20 +252,20 @@ constMethod(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rboo
         RMutexLockBuffer();
         if(isFromLeft) {
             forAll(iterator, object->count) {
-                if(delegate->virtualEnumerator(delegate->context, master(object, RBytes)->data + object->sizesArray[iterator].start, iterator) == yes) {
+                if(delegate->virtualEnumerator(delegate->context, master(object, RData)->data + object->sizesArray[iterator].start, iterator) == yes) {
                     break;
                 }
             }
         } else {
             for(iterator = object->count - 1; iterator != 0; --iterator) {
-                if(delegate->virtualEnumerator(delegate->context, master(object, RBytes)->data + object->sizesArray[iterator].start, iterator) == yes) {
+                if(delegate->virtualEnumerator(delegate->context, master(object, RData)->data + object->sizesArray[iterator].start, iterator) == yes) {
                     break;
                 }
             }
         }
         if(iterator != object->count) {
             result.index = iterator;
-            result.object = master(object, RBytes)->data + object->sizesArray[iterator].start;
+            result.object = master(object, RData)->data + object->sizesArray[iterator].start;
         }
         RMutexUnlockBuffer();
     } elseWarning(
@@ -311,7 +311,7 @@ constMethod(RArray *, toRArray, RBuffer)) {
 
 RBuffer* RBufferFromFile(const char *filename) {
     ssize_t  fileSize;
-    RBytes *buffer  = contentOfFile(filename);
+    RData *buffer  = contentOfFile(filename);
     RBuffer    *result = nil;
 
     if(buffer != nil) {
@@ -341,17 +341,17 @@ RBuffer* RBufferFromFile(const char *filename) {
                 ++iterator;
                 sumBytes += sizesArray[iterator];
             }
-            RBytes *array = allocator(RBytes);
+            RData *array = allocator(RData);
             if (array != nil) {
                 array->size = sumBytes;
                 array->data = buffer->data + 1 + (buffer->data[0] * (iterator + 1));
 
                 // processing
-                result = $(array, m(serializeToBuffer, RBytes)), (size_t*)sizesArray);
+                result = $(array, m(serializeToBuffer, RData)), (size_t*)sizesArray);
 
                 // cleanup
                 deallocator(array);
-                deleter(buffer, RBytes);
+                deleter(buffer, RData);
             }
         }
 
@@ -399,7 +399,7 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
             ifError(result != 1, RError("RBuffer. Failed save last sizes \'\\0\' to file.", object) );
 
             // dump body
-            result = RFWrite(master(object, RBytes)->data, object->totalPlaced, 1, file);
+            result = RFWrite(master(object, RData)->data, object->totalPlaced, 1, file);
 
             ifError(result != 1, RError("RBuffer. Failed save RBuffer body to file.", object) );
 
@@ -412,9 +412,9 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
     } elseError( RError("RBuffer. Failed save string to file, cant open file.", object) );
 }
 
-#pragma mark Addition to RBytes
+#pragma mark Addition to RData
 
-constMethod(RBuffer *, serializeToBuffer, RBytes), size_t *sizesArray) {
+constMethod(RBuffer *, serializeToBuffer, RData), size_t *sizesArray) {
     size_t iterator = 0;
 
     // search end 0, compute length
@@ -425,8 +425,8 @@ constMethod(RBuffer *, serializeToBuffer, RBytes), size_t *sizesArray) {
     if(iterator != 0) {
         RBuffer *result = allocator(RBuffer);
         if(result != nil) {
-            master(result, RBytes) = $(object, m(copy, RBytes)));
-            if(master(result, RBytes) != nil) {
+            master(result, RData) = $(object, m(copy, RData)));
+            if(master(result, RData) != nil) {
                 result->count = iterator;
 
                 RRange *newSizesArray = arrayAllocator(RRange, result->count);

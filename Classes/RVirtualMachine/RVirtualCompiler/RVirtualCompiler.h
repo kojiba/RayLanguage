@@ -6,7 +6,7 @@
 
 class(RVirtualCompiler)
 
-    RCString   *code;          // copy of source-code
+    RString   *code;          // copy of source-code
 
     // iterators for counting
     size_t      lines;
@@ -25,7 +25,7 @@ class(RVirtualCompiler)
     // for store open brackets places
     RArray     *brakets;
 
-    RBytes *body;          // pointer to byte-code, that will be returned
+    RData *body;          // pointer to byte-code, that will be returned
 
 endOf(RVirtualCompiler)
 
@@ -34,7 +34,7 @@ destructor  (RVirtualCompiler);
 singleton   (RVirtualCompiler);
 
 // brainfuck lang
-method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler),    const RCString *sourceCode); // copies source
+method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler),    const RString *sourceCode); // copies source
 
 #define RVC singletonCall(RVirtualCompiler)
 

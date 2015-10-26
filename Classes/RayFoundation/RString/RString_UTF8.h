@@ -16,7 +16,7 @@
 #ifndef __R_STRING_H__
 #define __R_STRING_H__
 
-#include "RCString.h"
+#include "RString.h"
 
 rbool utf8GetNextCharacter(const byte     *string,
                                  size_t    stringSize,

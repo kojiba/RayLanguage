@@ -74,7 +74,7 @@ constMethod(size_t, getIdentifierByClassNameWorker, RClassTable), char *name) {
     RClassNamePair *pair = $(nil, c(RClassNamePair)));
     printDebugTrace();
     if(pair != nil) {
-        $(master(pair, RCString), m(setConstantString, RCString)), name);
+        $(master(pair, RString), m(setConstantString, RString)), name);
         master(object, RCompareDelegate)->etaloneObject = pair;
         RFindResult foundedObject = $(master(object, RArray), m(findObjectWithDelegate, RArray)), master(object, RCompareDelegate));
 
@@ -105,7 +105,7 @@ method(size_t, registerClassWithName, RClassTable), char *name) {
         if(result == 0) {
             RClassNamePair *pair = $(nil, c(RClassNamePair)));
             if (pair != nil) {
-                $(master(pair, RCString), m(setConstantString, RCString)), name);
+                $(master(pair, RString), m(setConstantString, RString)), name);
                 pair->idForClassName = master(object, RArray)->count;
 
                 // successfully register new class
@@ -152,12 +152,12 @@ method(size_t, getIdentifierByClassName, RClassTable), char *name) {
     return result;
 }
 
-method(RCString*, getClassNameByIdentifier, RClassTable), size_t id) {
+method(RString*, getClassNameByIdentifier, RClassTable), size_t id) {
     RMutexLockTable();
     if(id <= master(object, RArray)->count) {
         RClassNamePair *temp = $(master(object, RArray), m(objectAtIndex, RArray)), id);
         RMutexUnlockTable();
-        return master(temp, RCString);
+        return master(temp, RString);
     } else {
         RMutexUnlockTable();
         return nil;
@@ -174,13 +174,13 @@ singleton(RClassTable) {
         if(instance != nil) {
             // register classes static (only this singleton)
             $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
-            $(instance, m(registerClassWithName, RClassTable)), toString(RCString));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RString));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
             $(instance, m(registerClassWithName, RClassTable)), toString(RSandBox));
             $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
             $(instance, m(registerClassWithName, RClassTable)), toString(RThread));
-            $(instance, m(registerClassWithName, RClassTable)), toString(RBytes));
+            $(instance, m(registerClassWithName, RClassTable)), toString(RData));
         }
 
 #ifdef RAY_SHORT_DEBUG

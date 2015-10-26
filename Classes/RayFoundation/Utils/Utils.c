@@ -14,16 +14,16 @@
  **/
 
 #include "Utils.h"
-#include "RayFoundation/RCString/RString_Consts.h"
-#include "RayFoundation/RCString/RCString_File.h"
+#include "RayFoundation/RString/RString_Consts.h"
+#include "RayFoundation/RString/RString_File.h"
 
 rbool processLine(pointer context, pointer string, size_t iterator) {
-    $(string, m(trimAfterString, RCString)), RS("//")); // trim comment
-    if(((RCString*)string)->size != 0) { // if not fully comment
-        RArray *keyValue = $(string, m(separatedByStringWithShield, RCString)), RS(" = "), RS("\\"));
+    $(string, m(trimAfterString, RString)), RS("//")); // trim comment
+    if(((RString*)string)->size != 0) { // if not fully comment
+        RArray *keyValue = $(string, m(separatedByStringWithShield, RString)), RS(" = "), RS("\\"));
         if(keyValue != nil) {
-            RCString *key   = $(keyValue, m(objectAtIndex, RArray)), 0);
-            RCString *value = $(keyValue, m(lastObject, RArray)));
+            RString *key   = $(keyValue, m(objectAtIndex, RArray)), 0);
+            RString *value = $(keyValue, m(lastObject, RArray)));
 
             // adding
             $(context, m(setObjectForKey, RDictionary)), value, key);
@@ -36,7 +36,7 @@ rbool processLine(pointer context, pointer string, size_t iterator) {
 }
 
 RDictionary * stringDictionaryFromFile(char *filename) {
-    RCString *locales = stringFromFile(filename);
+    RString *locales = stringFromFile(filename);
 
     if(locales != nil) {
         RDictionary *result = makeRDictionary();
@@ -46,20 +46,20 @@ RDictionary * stringDictionaryFromFile(char *filename) {
             delegate.virtualEnumerator = processLine;
             delegate.context = result;
             // delegates
-            $(result, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RCString));
-            $(result->keys,   m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RString));
-            $(result->keys,   m(setDestructorDelegate, RArray)), (DestructorDelegate) stringDeleter);
-            $(result->values, m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RString));
-            $(result->values, m(setDestructorDelegate, RArray)), (DestructorDelegate) stringDeleter);
+            $(result, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RString));
+            $(result->keys,   m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RData));
+            $(result->keys,   m(setDestructorDelegate, RArray)), (DestructorDelegate) RDataDeleter);
+            $(result->values, m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RData));
+            $(result->values, m(setDestructorDelegate, RArray)), (DestructorDelegate) RDataDeleter);
 
-            $(locales, m(removeRepetitionsOfString, RCString)), RS("\n"));                  // trim some newlines
-            RArray *temp = $(locales, m(substringsSeparatedByString, RCString)), RS("\n")); // get lines
+            $(locales, m(removeRepetitionsOfString, RString)), RS("\n"));                  // trim some newlines
+            RArray *temp = $(locales, m(substringsSeparatedByString, RString)), RS("\n")); // get lines
 
             if(temp != nil) {
                 $(temp, m(enumerate, RArray)), &delegate, yes);
                 deleter(temp, RArray);
             }
-            deleter(locales, RCString);
+            deleter(locales, RString);
         }
         return result;
     }

@@ -19,8 +19,7 @@
 #include "RayFoundation/RContainers/RArray.h"
 
 // Memory operations
-void           Xor (      byte* data, const byte* key,       size_t  sizeOfData,        size_t  sizeOfKey);
-
+void           Xor (byte* data, const byte* key, size_t sizeOfData, size_t sizeOfKey);
 byte*  flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
 size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
 
@@ -41,7 +40,7 @@ size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
 #define rotateRight8(data, shift) rotateRightU(data, shift, 8)
 
 #define isMemEqual(one, another, size) (compareMemory(one, another, size) == 0)
-#define ifMemEqual(one, another, size) if(compareMemory(one, another, size))
+#define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
 
 // Basics
 void           printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
@@ -53,6 +52,7 @@ byte*          getByteArrayCopy           (const byte *array,   size_t size);
 size_t indexOfFirstByte(const byte *array, size_t size, byte symbol);
 size_t indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize);
 size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
+extern rbool isContainsByte(const byte *array, size_t size, byte symbol);
 extern rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 rbool isEndsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);

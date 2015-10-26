@@ -18,7 +18,7 @@
 #define __R_BUFFER_H__
 
 #include "RayFoundation/RSyntax.h"
-#include "RayFoundation/RMemoryOperations/RBytes.h"
+#include "RayFoundation/RMemoryOperations/RData.h"
 
 #ifdef RAY_BUFFER_THREAD_SAFE
     #include "RayFoundation/RThread/RThread.h"
@@ -30,7 +30,7 @@
 
 
 class(RBuffer) // -------------------
-    discipleOf(RBytes)
+    discipleOf(RData)
 
     // sizes array info
     size_t  freePlaces;
@@ -56,7 +56,7 @@ printer     (RBuffer);
 
 // Reallocation
 method(RRange *,          addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
-method(RBytes *,      addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RBytes, store data, returns self, newsize in bytes
+method(RData *,      addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RData, store data, returns self, newsize in bytes
 method(void,              flush,          RBuffer));                             // flushes buffer, returns self
 method(RBuffer *,         sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
@@ -83,8 +83,8 @@ RBuffer* RBufferFromFile (const char *filename); // will be size-to-fit
 constMethod(void,         saveToFile,         RBuffer),    const char* filename); // rewrite file
 
 
-// Additions to RBytes
-constMethod(RBuffer *,    serializeToBuffer,  RBytes),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
+// Additions to RData
+constMethod(RBuffer *,    serializeToBuffer,  RData),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
 
 // Additions to RArray
 constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);                  // if all object one sized

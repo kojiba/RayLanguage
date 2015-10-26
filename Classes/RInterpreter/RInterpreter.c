@@ -55,7 +55,7 @@ constructor(RInterpreter)) {
 }
 
 destructor(RInterpreter) {
-    nilDeleter(object->sourceFileString, RCString)
+    nilDeleter(object->sourceFileString, RString)
     nilDeleter(object->rayTokens, RArray)
     nilDeleter(object->codeTokens, RArray)
     nilDeleter(object->stringConsts, RArray)
@@ -71,30 +71,30 @@ singleton(RInterpreter) {
     return instance;
 }
 
-method(RCString*, fileNameFromSourceName, RInterpreter), const RCString *sourceFileName) {
-    RCString *oldExtension = RS(".ray");
-    RCString *fileExtension = $(sourceFileName, m(substringInRange, RCString)), makeRRange(sourceFileName->size - oldExtension->size, oldExtension->size));
-    if($(fileExtension, m(compareWith, RCString)), oldExtension) != equals) {
+method(RString*, fileNameFromSourceName, RInterpreter), const RString *sourceFileName) {
+    RString *oldExtension = RS(".ray");
+    RString *fileExtension = $(sourceFileName, m(substringInRange, RString)), makeRRange(sourceFileName->size - oldExtension->size, oldExtension->size));
+    if($(fileExtension, m(compareWith, RString)), oldExtension) != equals) {
         RError("RInterpreter. Filetype is not a \'.ray\'", object);
         deallocator(oldExtension);
-        deleter(fileExtension, RCString);
+        deleter(fileExtension, RString);
         return nil;
     }
-    RCString *result = $(sourceFileName, m(copy, RCString)) );
-    $(result, m(deleteInRange, RCString)), makeRRange(sourceFileName->size - oldExtension->size + 1, oldExtension->size - 1));
+    RString *result = $(sourceFileName, m(copy, RString)) );
+    $(result, m(deleteInRange, RString)), makeRRange(sourceFileName->size - oldExtension->size + 1, oldExtension->size - 1));
 
     // append .c extension
-    $(result, m(append, RCString)), 'c');
+    $(result, m(append, RString)), 'c');
 
     // cleanup
     deallocator(oldExtension);
-    deleter(fileExtension, RCString);
+    deleter(fileExtension, RString);
     return result;
 }
 
 method(void, initContainers, RInterpreter)) {
     // create source file string
-    nilDeleter(object->sourceFileString, RCString)
+    nilDeleter(object->sourceFileString, RString)
 
     // create source rayTokens
     nilDeleter(object->codeTokens, RArray)
@@ -112,10 +112,10 @@ method(void, parseClass, RInterpreter), size_t iterator) {
     RayClass *rayClass = c(RayClass)(nil);
 
     // add name
-    rayClass->name = copyRCString($(object->rayTokens, m(objectAtIndex, RArray)), iterator - 1));
+    rayClass->name = copyRString($(object->rayTokens, m(objectAtIndex, RArray)), iterator - 1));
 
     for(inner = iterator; inner <  object->rayTokens->count; ++inner) {
-        RCString *token = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
+        RString *token = (RString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
         switch(token->baseString[0]) {
             case 'p' : {
                 // properties begin
@@ -149,16 +149,16 @@ method(void, parseTokens, RInterpreter)) {
         size_t iterator;
         // for all rayTokens
         forAll(iterator, object->rayTokens->count) {
-            RCString *token = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), iterator);
+            RString *token = (RString*) $(object->rayTokens, m(objectAtIndex, RArray)), iterator);
             switch(token->baseString[0]) {
                 case '#': {
                     if(RMemCmp(token->baseString + 1, "include", token->size - 1) == 0) {
                         // add include
-                        $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RCString))) );
+                        $(object->codeTokens, m(addObject, RArray)), $(token, m(copy, RString))) );
 
                         // add include name
-                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
-                        $(object->codeTokens, m(addObject, RArray)), $(name, m(copy, RCString))) );
+                        RString *name = (RString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
+                        $(object->codeTokens, m(addObject, RArray)), $(name, m(copy, RString))) );
 
                     } else if (RMemCmp(token->baseString + 1, "define", token->size - 1) == 0) {
                         // add define
@@ -173,7 +173,7 @@ method(void, parseTokens, RInterpreter)) {
                 case 'c' : {
                     if(RMemCmp(token->baseString + 1, "lass", token->size - 1) == 0) {
                         // register new class
-                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
+                        RString *name = (RString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {
@@ -191,7 +191,7 @@ method(void, parseTokens, RInterpreter)) {
                 case 't' : {
                     if(RMemCmp(token->baseString + 1, "ypedef", token->size - 1) == 0) {
                         // register new type
-                        RCString *name = (RCString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
+                        RString *name = (RString*) $(object->rayTokens, m(objectAtIndex, RArray)), ++iterator);
                         size_t identifier = $(object->typesTable, m(getIdentifierByClassName, RClassTable)), name->baseString);
 
                         if(identifier == 0) {
@@ -231,25 +231,25 @@ method(size_t, endOfProcessingString, RInterpreter)) {
 
 #pragma mark Main method
 
-method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
-    RCString *sourceName = RString(sourceFileName);
-    RCString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), sourceName);
+method(RString*, convertRayToC, RInterpreter), const char *sourceFileName) {
+    RString *sourceName = RString(sourceFileName);
+    RString *resultName = $(object, m(fileNameFromSourceName, RInterpreter)), sourceName);
 
     if(resultName != nil) {
         $(object, m(initContainers, RInterpreter)) );
 
-        object->sourceFileString = RCStringFromFile(sourceFileName);
+        object->sourceFileString = RStringFromFile(sourceFileName);
 
         rbool isBeginOfConst = no;
-        RCString *basicSeparatorString = RString(" \n");
+        RString *basicSeparatorString = RString(" \n");
         while(object->sourceFileString != nil) {
 
             size_t    endOfProcessingSubstring;
-            RCString *processingSubstring = nil;
+            RString *processingSubstring = nil;
 
             // get Processing Substring
             endOfProcessingSubstring = $(object, m(endOfProcessingString,  RInterpreter)));
-            processingSubstring = $(object->sourceFileString, m(substringInRange, RCString)),
+            processingSubstring = $(object->sourceFileString, m(substringInRange, RString)),
                     makeRRange(0, endOfProcessingSubstring));
 
             if(processingSubstring != nil) {
@@ -261,9 +261,9 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
                         deleter(object->rayTokens, RArray);
                     }
                     object->rayTokens = $(processingSubstring,
-                            m(substringsSeparatedBySymbols, RCString)), basicSeparatorString);
+                            m(substringsSeparatedBySymbols, RString)), basicSeparatorString);
 
-                    deleter(processingSubstring, RCString);
+                    deleter(processingSubstring, RString);
 
                     // go next, if have some rayTokens
                     $(object, m(parseTokens, RInterpreter)) );
@@ -275,10 +275,10 @@ method(RCString*, convertRayToC, RInterpreter), const char *sourceFileName) {
 
                 if(object->sourceFileString->size != endOfProcessingSubstring) {
                     // trim source string
-                    $(object->sourceFileString, m(trimHead, RCString)),  endOfProcessingSubstring + 1);
+                    $(object->sourceFileString, m(trimHead, RString)),  endOfProcessingSubstring + 1);
                 } else {
                     // delete at all
-                    deleter(object->sourceFileString, RCString);
+                    deleter(object->sourceFileString, RString);
                     object->sourceFileString = nil;
                 }
             }

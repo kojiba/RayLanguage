@@ -1,18 +1,18 @@
 #include <time.h>
 #include <RayFoundation/RayFoundation.h>
 
-int RBytesTest(void) {
+int RDataTest(void) {
     size_t i;
     size_t j;
     for(i = 0; i < 32; ++i) {
-        RBytes *array = c(RBytes)(nil, i);
+        RData *array = allocator(RData);
         if(i == 31) {
             for(j = 0; j < 31; ++j) {
                 array->data[j] = (byte) j;
             }
-            RAY_TEST(array->size != 31, "RBytesTest. Bad array size", -1);
+            RAY_TEST(array->size != 31, "RDataTest. Bad array size", -1);
         }
-        deleter(array, RBytes);
+        deleter(array, RData);
     }
     return 0;
 }
@@ -20,7 +20,7 @@ int RBytesTest(void) {
 int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
-    stringArray->destructorDelegate = (void (*)(pointer)) stringDeleter;
+    stringArray->destructorDelegate = RDataDeleter;
     for(i = 0; i < 10; ++i) {
          $(stringArray, m(addObject, RArray)), stringWithFormat("Temp string %i", i));
     }
@@ -72,7 +72,7 @@ int RClassTableTest(void){
 int RClassNamePairTest(void){
     RClassNamePair *pair = $(nil, c(RClassNamePair)) );
     if(pair != nil) {
-        $(master(pair, RCString), m(setConstantString, RCString)), "RClassNamePairTest");
+        $(master(pair, RString), m(setConstantString, RString)), "RClassNamePairTest");
         pair->idForClassName = 4;
         deleter(pair, RClassNamePair);
     }
@@ -116,8 +116,8 @@ int RBufferTest(void) {
     RBuffer *buffer = $(nil, c(RBuffer)));
 
     forAll(iterator, 20) {
-        RCString *temp = randomRCString();
-        $(buffer, m(addData, RBuffer)), temp->baseString, temp->size + 1);
+        RString *temp = randomASCIIString();
+        $(buffer, m(addData, RBuffer)), temp->data, temp->size + 1);
         sum += temp->size + 1;
         if(iterator == 0) {
             first_size = temp->size;
@@ -125,7 +125,7 @@ int RBufferTest(void) {
         RAY_TEST(((buffer->count != iterator + 1) || buffer->totalPlaced != sum),
                 "RBuffer. Test error, bad size or size", -1);
 
-        deleter(temp, RCString);
+        deleter(temp, RString);
     }
     char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
 
@@ -212,8 +212,8 @@ int RThreadTest(void) {
     return 0;
 }
 
-int RCStringTest(void) {
-    RCString *testString = RSC(
+int RStringTest(void) {
+    RString *testString = RSC(
             "Warcraft II: Tides of Darkness is a fantasy-themed real-time strategy (RTS)"
                     "game published by Blizzard Entertainment and first released for DOS in 1995 and for Mac OS in 1996. The main game, "
                     "Warcraft II: Tides of Darkness, earned enthusiastic reviews, won most of the major PC gaming awards in 1996, and sold over 2 million copies. \n"
@@ -237,22 +237,22 @@ int RCStringTest(void) {
                     "Warcraft III: Reign of Chaos, released in 2002, used parts of Warcraft Adventures' characters and storyline and extended the gameplay used in Warcraft II."
     );
 
-    RArray *words = $(testString, m(substringsSeparatedBySymbols, RCString)), RS(".,:; /-!@=+?\n\t&"));
+    RArray *words = $(testString, m(substringsSeparatedBySymbols, RString)), RS(".,:; /-!@=+?\n\t&"));
 
-    RAY_TEST(words == nil, "RCString. Words array wasn't created.", -1);
-    RAY_TEST(words->count != 393, "RCString. Bad text words count.", -2);
+    RAY_TEST(words == nil, "RString. Words array wasn't created.", -1);
+    RAY_TEST(words->count != 393, "RString. Bad text words count.", -2);
 
     deleter(words, RArray);
 
-    $(testString, m(deleteAllCSubstrings, RCString)), "\n");
-    $(testString, m(removeRepetitionsOf, RCString)), ' ');
+    $(testString, m(deleteAllCSubstrings, RString)), "\n");
+    $(testString, m(removeRepetitionsOf, RString)), ' ');
 
-    RArray *sents = $(testString, m(substringsSeparatedByCSymbols, RCString)), ".");
+    RArray *sents = $(testString, m(substringsSeparatedByCSymbols, RString)), ".");
     if(sents != nil) {
-        RAY_TEST(sents->count != 15, "RCString. Bad text sentances count.", -2);
+        RAY_TEST(sents->count != 15, "RString. Bad text sentances count.", -2);
         deleter(sents, RArray);
     }
-    deleter(testString, RCString);
+    deleter(testString, RString);
     return 0;
 }
 
@@ -268,9 +268,9 @@ void ComplexTest() {
         && !RClassTableTest()
         && !RDictionaryTest()
         && !StringArrayTest()
-        && !RBytesTest()
+        && !RDataTest()
         && !RBufferTest()
-        && !RCStringTest()
+        && !RStringTest()
         && !RThreadTest()
     ) {
         RPrintLn("All tests passed successfully\n");

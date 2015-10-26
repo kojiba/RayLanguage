@@ -44,41 +44,41 @@ printer(RayProperty) {
     RPrintf("} - %p\n", object);
 }
 
-static RCString *stored = nil;
-static RCString *qualifierString = nil;
+static RString *stored = nil;
+static RString *qualifierString = nil;
 static size_t   totalCount = 0;
 
 rbool nameEnumerator(pointer object, size_t iterator) {
-    RCString *tempName = $(qualifierString, m(copy, RCString)));
-    $(tempName, m(concatenate, RCString)), (RCString*)object);
-    $(stored, m(concatenate, RCString)), tempName);
+    RString *tempName = $(qualifierString, m(copy, RString)));
+    $(tempName, m(concatenate, RString)), (RString*)object);
+    $(stored, m(concatenate, RString)), tempName);
 
     if(iterator != totalCount) {
-        $(stored, m(appendString, RCString)), ", ");
+        $(stored, m(appendString, RString)), ", ");
     } else {
-        $(stored, m(append, RCString)), ';');
+        $(stored, m(append, RString)), ';');
     }
 
-    deleter(tempName, RCString);
+    deleter(tempName, RString);
     return yes;
 };
 
-method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
-    RCString *result = RSC("");
+method(RString *, serializeToCType, RayProperty), RClassTable *delegate) {
+    RString *result = RSC("");
     if(result != nil) {
         REnumerateDelegate enumerator;
         enumerator.virtualCheckObject = nameEnumerator;
 
         // add type declaration
-        RCString *type = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->memSizeType);
-        $(result, m(concatenate, RCString)), type);
+        RString *type = $(delegate, m(getClassNameByIdentifier, RClassTable)), object->memSizeType);
+        $(result, m(concatenate, RString)), type);
 
         // add space
-        $(result, m(append, RCString)), ' ');
+        $(result, m(append, RString)), ' ');
 
         // add prefix to names
-        RCString *propertyString = RSC(PropertyTypeToString(object->type));
-        $(propertyString, m(appendString, RCString)), property_type_prefix_postfix);
+        RString *propertyString = RSC(PropertyTypeToString(object->type));
+        $(propertyString, m(appendString, RString)), property_type_prefix_postfix);
 
         qualifierString = propertyString;
 
@@ -92,14 +92,14 @@ method(RCString *, serializeToCType, RayProperty), RClassTable *delegate) {
         totalCount = 0;
 
         // cleanup
-        deleter(propertyString, RCString);
+        deleter(propertyString, RString);
     }
     return result;
 }
 
-RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
+RayProperty* ParsePropertyString(RString *code, RClassTable *delegate) {
     RayProperty *property = $(nil, c(RayProperty)));
-    RCString    *errorString = nil;
+    RString    *errorString = nil;
 
     if(property != nil) {
         char *codeIterator = code->baseString;
@@ -155,11 +155,11 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
         }
 
         // next must be names separated
-        RCString *tempCode = RCStringInit(codeIterator, codeSize);
-        RCString *tempSeparator = RString(property_names_separator_string);
+        RString *tempCode = RStringInit(codeIterator, codeSize);
+        RString *tempSeparator = RString(property_names_separator_string);
 
         // parse names
-        RArray *names = $(tempCode, m(substringsSeparatedByString, RCString)), tempSeparator);
+        RArray *names = $(tempCode, m(substringsSeparatedByString, RString)), tempSeparator);
 
         if(names != nil) {
             property->names = names;
@@ -168,7 +168,7 @@ RayProperty* ParsePropertyString(RCString *code, RClassTable *delegate) {
         } else {
             property->names = makeRArrayOptions(1, 2, nil);
             if(property->names != nil) {
-                $(property->names, m(addObject, RArray)), $(tempCode, m(copy, RCString))));
+                $(property->names, m(addObject, RArray)), $(tempCode, m(copy, RString))));
             } else {
                 errorString = RSC("Bad property names array.");
                 goto error;
@@ -187,7 +187,7 @@ error:
     if(errorString != nil) {
         deallocator(property);
         RErrStr "Error. ParsePropertyString. %s\n", errorString->baseString);
-        deleter(errorString, RCString);
+        deleter(errorString, RString);
         property = nil;
     }
 
@@ -196,7 +196,7 @@ error:
 
 inline
 RayProperty* ParsePropertyCString(char *code, RClassTable *delegate) {
-    RCString *source = RString(code);
+    RString *source = RString(code);
     RayProperty *result = ParsePropertyString(source, delegate);
     deallocator(source);
     return result;

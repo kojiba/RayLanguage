@@ -1,6 +1,6 @@
 /**
  * RString.h
- * Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
+ * Sized strings with encoding.
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
@@ -18,7 +18,7 @@
 
 #include "RayFoundation/RBasics/RBasics.h"
 #include "RayFoundation/RContainers/RArray.h"
-#include "RayFoundation/RMemoryOperations/RBytes.h"
+#include "RayFoundation/RMemoryOperations/RData.h"
 
 #define baseInputStringSize 40 // defines default buffer for getInputString
 
@@ -34,13 +34,15 @@ char *     vcstringWithFormat            (const char *format, va_list list);
 
 // Constructor - Destructor - Reallocation
 
-#define c(RString) makeRData(nil, size, RDataTypeASCII)
-#define d(RString) d(RBytes)
+#define constructorOfRString makeRData(nil, size, RDataTypeASCII)
 
-#define printer(RString) printer(RData)
+extern destructor(RString);
+extern printer(RString);
 
 RString * stringWithFormat(char *format, ...); // ASCII
 #define RStringDeleter RDataDeleter
+
+method(void, setConstantString, RString), char *nullTerminatedString);
 
 // Replace
 method(void, replaceCharacters, RString), char characterToReplace, char replacer);
@@ -79,8 +81,6 @@ method(RString *,          insertSubstringAt,            RString),    RString *s
 
 constMethod(RString *,     substringToSymbol,            RString),    char symbol);                             // or nil
 constMethod(RString *,     substringInRange,             RString),    RRange range);                            // substring is a copy, basic method, that uses others
-constMethod(RString *,     substringByBounds,            RString),    RBounds bounds);                          // substring is a copy, by nesting (search first and last)
-constMethod(RArray *,      substringsSeparatedBySymbol,  RString),    char symbol);                             // or nil, RArray is sizeToFit, subs are copies
 constMethod(RArray *,      substringsSeparatedBySymbols, RString),    const RString * const separatorsString); // or nil, RArray is sizeToFit, subs are copies
 constMethod(RArray *,      substringsSeparatedByString,  RString),    const RString * const separatorString);  // separatorString length > 1, not use for one symbol
 constMethod(RArray *,      separatedByStringWithShield,  RString),    const RString * const separatorString, const RString * const shield);

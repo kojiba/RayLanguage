@@ -13,7 +13,7 @@
  *         |__/
  **/
 
-#include "RString.h"
+#include "RString_UTF8.h"
 
 #define isTrail(c) (c > (byte)0x7F && c < (byte)0xC0)
 
@@ -126,14 +126,9 @@ rbool utf8GetNextCharacter(const byte     *string,
     return yes;
 }
 
-destructor(RString) {
-    deallocator(object->baseString);
-    object->size = 0;
-}
-
 inline
 method(size_t, length, RString)) {
-    return utf8Length((byte *) object->baseString, object->size);
+    return utf8Length((byte *) object->data, object->size);
 }
 
 method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
@@ -146,11 +141,11 @@ method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
     result.index = object->size;
     result.object = nil;
     if(enumerator != nil) {
-        while (utf8GetNextCharacter((byte const *) object->baseString, object->size, &nextPosition, &isValid,
+        while (utf8GetNextCharacter((byte const *) object->data, object->size, &nextPosition, &isValid,
                                     &codePoint)) {
             if (isValid == yes) {
                 RString string;
-                string.baseString = object->baseString + position;
+                string.data = object->data + position;
                 string.size       = nextPosition - position;
 
                 if (enumerator(string, iterator) == no) {
