@@ -88,10 +88,13 @@ inline printer(RString) {
     p(RData)(object);
 }
 
-method(void, setConstantString, RString), char *nullTerminatedString) {
-    object->data = nullTerminatedString;
-    object->size = strlen(nullTerminatedString);
-    object->type = RDataTypeASCII;
+method(RString*, setConstantString, RString), char *nullTerminatedString) {
+    if(object != nil) {
+        object->data = (byte *) nullTerminatedString;
+        object->size = RStringLength(nullTerminatedString);
+        object->type = RDataTypeASCII;
+    }
+    return object;
 }
 
 #pragma mark Replace

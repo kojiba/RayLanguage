@@ -174,13 +174,11 @@ singleton(RClassTable) {
         if(instance != nil) {
             // register classes static (only this singleton)
             $(instance, m(registerClassWithName, RClassTable)), toString(RArray));
-            $(instance, m(registerClassWithName, RClassTable)), toString(RString));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassNamePair));
             $(instance, m(registerClassWithName, RClassTable)), toString(RClassTable));
             $(instance, m(registerClassWithName, RClassTable)), toString(RSandBox));
             $(instance, m(registerClassWithName, RClassTable)), toString(RAutoPool));
             $(instance, m(registerClassWithName, RClassTable)), toString(RThread));
-            $(instance, m(registerClassWithName, RClassTable)), toString(RData));
         }
 
 #ifdef RAY_SHORT_DEBUG

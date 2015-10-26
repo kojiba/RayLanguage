@@ -32,8 +32,9 @@ typedef struct RData { // basic sized data struct used for store bytes arrays an
     byte   type;
 } RData;
 
-RData* makeRData(byte *array, size_t size, byte type);
+RData* makeRData(const byte *array, size_t size, byte type);
 #define makeRDataBytes(array, size) makeRData(array, size, RDataTypeBytes)
+#define makeRDataAllocated(size) makeRData(arrayAllocator(byte, size), size, RDataTypeBytes)
 
 destructor(RData);
 void RDataDeleter(RData* object);
@@ -43,9 +44,9 @@ printer(RData);
      method(RData*, flushAllToByte, RData),    byte symbol);
 constMethod(RData*, copy,           RData));
 
-constMethod(RArray*, dataSeparatedByBytes,           RData), RData *separatorsArray);
-constMethod(RArray*, dataSeparatedByArray,           RData), RData *separator);
-constMethod(RArray*, dataSeparatedByArrayWithShield, RData), RData *separator, RData *shield);
+constMethod(RArray*, dataSeparatedByBytes,           RData), const RData *separatorsArray);
+constMethod(RArray*, dataSeparatedByArray,           RData), const RData *separator);
+constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separator, const RData *shield);
 
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
 

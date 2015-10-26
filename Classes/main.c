@@ -17,38 +17,11 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
-#include <unistd.h>
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
-
-    char string[] = "|lol|lol|lol|";
-
-    size_t size = sizeof(string) - 1;
-    byte *data = getByteArrayCopy((const byte *) string, size);
-
-    char substring[] = "lol";
-    size_t subSize = sizeof(substring) - 1;
-
-    deleteAllSubArrays(data, &size, substring, subSize);
-
-    data[size] = 0;
-    RPrintf("%s\n", data);
-
-    deleteRepetitionsOfByte(data, &size, '|');
-    data[size] = 0;
-    RPrintf("%s\n", data);
-
-//    deleteRepetitionsOfSubArray(data, &size, (const byte *) "bro", sizeof("bro") - 1);
-
-//    data[size] = 0;
-//    RPrintf("%s\n", data);
-
-
-
-    deallocator(data);
 
     endRay();
 }

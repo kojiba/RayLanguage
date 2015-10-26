@@ -16,12 +16,12 @@
 
 #pragma mark RData
 
-RData* makeRData(byte *array, size_t size, byte type)  {
+RData* makeRData(const byte *array, size_t size, byte type)  {
     RData *object = nil;
     if(array != nil) {
         object = allocator(RData);
         if(object != nil) {
-            object->data = array;
+            object->data = (byte *) array;
             object->size = size;
             object->type = type;
         }
@@ -43,6 +43,9 @@ printer(RData) {
         } else {
             // write string full
             fwrite(object->data, object->size, 1, stdout);
+            if(object->type == RDataTypeASCII){
+                fwrite("\n", sizeof("\n") - 1, 1, stdout);
+            }
         }
     } else {
         RPrintf("nil");
@@ -99,7 +102,7 @@ RData *contentOfFile(const char *filename) {
     return nil;
 }
 
-constMethod(RArray*, dataSeparatedByBytes, RData), RData *separatorsArray) {
+constMethod(RArray*, dataSeparatedByBytes, RData), const RData *separatorsArray) {
     size_t  iterator;
     size_t  endOfSubstring   = 0;
     size_t  startOfSubstring = 0;
@@ -110,7 +113,7 @@ constMethod(RArray*, dataSeparatedByBytes, RData), RData *separatorsArray) {
     forAll(iterator, object->size) {
 
         // check if separator
-        if (isContainsByte(separatorsArray, separatorsArray->size, object->data[iterator])) {
+        if (isContainsByte(separatorsArray->data, separatorsArray->size, object->data[iterator])) {
             // if first separator set end of substring
             if (isFirst) {
                 endOfSubstring = iterator;
@@ -163,7 +166,7 @@ constMethod(RArray*, dataSeparatedByBytes, RData), RData *separatorsArray) {
     return result;
 }
 
-constMethod(RArray*, dataSeparatedByArrayWithShield, RData), RData *separator, RData *shield) {
+constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separator, const RData *shield) {
     RArray *result = nil;
     if(object->size >= separator->size) {
         size_t iterator;
@@ -234,7 +237,7 @@ constMethod(RArray*, dataSeparatedByArrayWithShield, RData), RData *separator, R
     return result;
 }
 
-constMethod(RArray*, dataSeparatedByArray, RData), RData *separator) {
+constMethod(RArray*, dataSeparatedByArray, RData), const RData *separator) {
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separator, nil);
 }
 

@@ -42,7 +42,7 @@ extern printer(RString);
 RString * stringWithFormat(char *format, ...); // ASCII
 #define RStringDeleter RDataDeleter
 
-method(void, setConstantString, RString), char *nullTerminatedString);
+method(RString*, setConstantString, RString), char *nullTerminatedString);
 
 // Replace
 method(void, replaceCharacters, RString), char characterToReplace, char replacer);
@@ -104,8 +104,8 @@ method(RString *,          toLowerCase,                  RString)); // returns r
 
 //----------------------------------------------------------------------------------
 
-#define RCS(CString)               makeRData((byte*)CString, sizeof(CString), RDataTypeASCII) // makes weak reference, need to be deallocated, but not destructed
-#define RSC(CString)               makeRData(getByteArrayCopy((byte*)CString, sizeof(CString)), sizeof(CString), RDataTypeASCII) // makes copy from constant string
+#define RCS(CString)               $(allocator(RData), m(setConstantString, RString)), CString) // makes weak reference, need to be deallocated, but not destructed
+#define RSC(CString)               makeRData(getByteArrayCopy((byte*)CString, sizeof(CString) - 1), sizeof(CString) - 1, RDataTypeASCII) // makes copy from constant string
 
 #define stringDelegates(array)     $(array, m(setPrinterDelegate,    RArray)), (PrinterDelegate) p(RString)); \
                                    $(array, m(setDestructorDelegate, RArray)), (DestructorDelegate) stringDeleter)

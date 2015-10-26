@@ -5,7 +5,7 @@ int RDataTest(void) {
     size_t i;
     size_t j;
     for(i = 0; i < 32; ++i) {
-        RData *array = allocator(RData);
+        RData *array = makeRDataAllocated(i);
         if(i == 31) {
             for(j = 0; j < 31; ++j) {
                 array->data[j] = (byte) j;
@@ -20,7 +20,7 @@ int RDataTest(void) {
 int StringArrayTest(void) {
     unsigned i;
     RArray *stringArray = makeRArray();
-    stringArray->destructorDelegate = RDataDeleter;
+    stringArray->destructorDelegate = (DestructorDelegate) RDataDeleter;
     for(i = 0; i < 10; ++i) {
          $(stringArray, m(addObject, RArray)), stringWithFormat("Temp string %i", i));
     }
@@ -112,24 +112,20 @@ int RDynamicArrayTest(void){
 int RBufferTest(void) {
     size_t iterator;
     size_t sum = 0;
-    size_t first_size = 0;
     RBuffer *buffer = $(nil, c(RBuffer)));
 
     forAll(iterator, 20) {
         RString *temp = randomASCIIString();
-        $(buffer, m(addData, RBuffer)), temp->data, temp->size + 1);
-        sum += temp->size + 1;
-        if(iterator == 0) {
-            first_size = temp->size;
-        }
+        $(buffer, m(addData, RBuffer)), temp->data, temp->size);
+        sum += temp->size;
         RAY_TEST(((buffer->count != iterator + 1) || buffer->totalPlaced != sum),
                 "RBuffer. Test error, bad size or size", -1);
 
         deleter(temp, RString);
     }
-    char *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
+    byte *temp = $(buffer, m(getDataCopy, RBuffer)), 0);
 
-    RAY_TEST(RStringLength(temp) != first_size, "RBuffer. Bad getDataCopy", -2);
+    RAY_TEST(temp == nil, "RBuffer. Bad getDataCopy", -2);
 
     deleter(buffer, RBuffer);
     deallocator(temp);
@@ -214,33 +210,17 @@ int RThreadTest(void) {
 
 int RStringTest(void) {
     RString *testString = RSC(
-            "Warcraft II: Tides of Darkness is a fantasy-themed real-time strategy (RTS)"
-                    "game published by Blizzard Entertainment and first released for DOS in 1995 and for Mac OS in 1996. The main game, "
-                    "Warcraft II: Tides of Darkness, earned enthusiastic reviews, won most of the major PC gaming awards in 1996, and sold over 2 million copies. \n"
-                    "\n"
-                    "Later in 1996 Blizzard released an expansion pack Warcraft II: Beyond the Dark Portal for DOS and Mac OS, and a compilation Warcraft II: "
-                    "The Dark Saga for the Sony PlayStation and Sega Saturn. The BattleNet Edition, released in 1999, provided Blizzard's online gaming service, "
-                    "Battle.net, and replaced the MS-DOS version with a Windows one.\n"
-                    "\n"
-                    "Players must collect resources, and produce buildings and units in order to defeat an opponent in combat on the ground, in the air and in some "
-                    "maps at sea. The more advanced combat units are produced at the same buildings as the basic units but also need the assistance of other buildings, "
-                    "or must be produced at buildings that have prerequisite buildings. The majority of the main screen shows the part of the territory on which the player "
-                    "is currently operating, and the minimap can select another location to appear in the larger display. The fog of war completely hides all territory which "
-                    "the player has not explored, and shows only terrain but hides opponents' units and buildings if none of the player's units are present.\n"
-                    "\n"
-                    "Warcraft II 's predecessor Warcraft: Orcs & Humans, released in 1994, gained good reviews, collected three awards and was a finalist for three others, "
-                    "and achieved solid commercial success. The game was the first typical RTS to be presented in a medieval setting and, by bringing multiplayer facilities "
-                    "to a wider audience, made this mode essential for future RTS titles. Warcraft: Orcs & Humans laid the ground for Blizzard's style of RTS, which emphasized "
-                    "personality and storyline. Although Blizzard's very successful StarCraft, first released in 1998, was set in a different universe, it was very similar to "
-                    "Warcraft II in gameplay and in attention to personality and storyline. In 1996 Blizzard announced Warcraft Adventures: Lord of the Clans, an adventure game "
-                    "in the Warcraft universe, but canceled the game in 1998. "
-                    "Warcraft III: Reign of Chaos, released in 2002, used parts of Warcraft Adventures' characters and storyline and extended the gameplay used in Warcraft II."
+        "Warcraft II in gameplay and in attention to personality and storyline." //11
+        "In 1996 Blizzard announced Warcraft Adventures: Lord of the Clans, an adventure game." //13
+        "But canceled the game in 1998." // 6
+        "Warcraft III: Reign of Chaos, released in 2002, used parts of Warcraft Adventures characters and storyline and extended the gameplay used in Warcraft II." //24
     );
 
     RArray *words = $(testString, m(substringsSeparatedBySymbols, RString)), RS(".,:; /-!@=+?\n\t&"));
 
     RAY_TEST(words == nil, "RString. Words array wasn't created.", -1);
-    RAY_TEST(words->count != 393, "RString. Bad text words count.", -2);
+    RAY_TEST(words->count != 54, "RString. Bad text words count.", -2);
+
 
     deleter(words, RArray);
 
@@ -248,8 +228,9 @@ int RStringTest(void) {
     $(testString, m(removeRepetitionsOf, RString)), ' ');
 
     RArray *sents = $(testString, m(substringsSeparatedByCSymbols, RString)), ".");
+    RAY_TEST(sents == nil, "RString. Sentances array wasn't created.", -3);
     if(sents != nil) {
-        RAY_TEST(sents->count != 15, "RString. Bad text sentances count.", -2);
+        RAY_TEST(sents->count != 4, "RString. Bad text sentances count.", -4);
         deleter(sents, RArray);
     }
     deleter(testString, RString);
