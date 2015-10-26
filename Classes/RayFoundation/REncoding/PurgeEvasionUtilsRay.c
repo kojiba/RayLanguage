@@ -86,58 +86,38 @@ constMethod(RData *, evasionHash, RData)) {
 
 inline
 constMethod(RString *, encryptPurgeEvasionBase64, RString), const RString *key) {
-    RData *temp = makeRDataBytes((byte *) key->data, key->size),
-               *tempObject = makeRDataBytes((byte *) object->data, object->size),
-               *tempResult;
-    RString    *result = nil;
-
-    if(temp != nil
-       && tempObject != nil) {
-        tempResult = $(tempObject, m(encryptPurgeEvasion, RData)), temp);
-        if(tempResult != nil) {
-            result = $(tempResult, m(encodeBase64, RData)));
-            deleter(tempResult, RData);
-        }
-        deallocator(temp);
-        deallocator(tempObject);
+    RData  *temp;
+    RString *result = nil;
+    temp = $(object, m(encryptPurgeEvasion, RData)), temp);
+    if(temp != nil) {
+        result = $(temp, m(encodeBase64, RData)));
+        result->type = RDataTypeASCII;
+        deleter(temp, RData);
     }
     return result;
 }
 
 inline
 constMethod(RString *, decryptPurgeEvasionBase64, RString), const RString *key) {
-    RData *tempKey = makeRDataBytes((byte *) key->data, key->size),
-               *tempObject = nil,
-               *tempResult = nil;
-    RString    *result = nil;
+    RData *tempResult;
+    RString *result = nil;
+    tempResult = $(object, m(decodeBase64, RString)));
+    if(tempResult != nil) {
+        result = $(tempResult, m(decryptPurgeEvasion, RData)), key);
 
-    if(tempKey != nil) {
-        tempResult = $(object, m(decodeBase64ToBytes, RString)));
-        if(tempResult != nil) {
-            tempObject = $(tempResult, m(decryptPurgeEvasion, RData)), tempKey);
-            if(tempObject != nil) {
-                result = RCS((const char*)tempObject->data);
-                result->data = RReAlloc(result->data, result->size + 1);
-                result->data [tempObject->size] = 0;
-                deallocator(tempObject);
-            }
-            deleter(tempResult, RData);
-        }
-        deallocator(tempKey);
+        result->type = RDataTypeASCII;
+        deleter(tempResult, RData);
     }
     return result;
 }
 
 constMethod(RString *, evasionHashBase64, RString)) {
-    RData *tempObject = makeRDataBytes((byte *) object->data, object->size);
     RString    *result     = nil;
-    if(tempObject != nil) {
-        RData *hash = $(tempObject, m(evasionHash, RData)));
-        if(hash != nil) {
-            result = $(hash, m(encodeBase64, RData)));
-            deleter(hash, RData);
-        }
-        deallocator(tempObject);
+    RData *hash = $(object, m(evasionHash, RData)));
+    if(hash != nil) {
+        result = $(hash, m(encodeBase64, RData)));
+        result->type = RDataTypeASCII;
+        deleter(hash, RData);
     }
     return result;
 }

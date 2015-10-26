@@ -54,14 +54,13 @@ size_t base64decodeLength (const char *base64Buffer);
 extern inline
 size_t base64encodeLength (size_t length);
 
-size_t encodeBase64 (char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
-size_t decodeBase64 (pointer destination, const pointer encodedData);             // destination will be 0-terminated
+size_t encodeBase64(char   **destination, const char *data, size_t sizeInBytes); // destination will return allocated block or nil and be '\0' terminated
+size_t decodeBase64(pointer  destination, const pointer encodedData);             // destination will be 0-terminated
 
 // Additions
 // RString
 constMethod(RString*,    encodeBase64,        RString));
-constMethod(RString*,    decodeBase64,        RString));
-constMethod(RData*,      decodeBase64ToBytes, RString));
+constMethod(RData*,      decodeBase64,        RString));
 
 // RData
 constMethod(RString*,    encodeBase64, RData));

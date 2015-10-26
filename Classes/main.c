@@ -18,11 +18,19 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include "Tests.h"
-#include "RayChat.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
+
+    RString* result = $(RS("hello"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
+    $(result, p(RString)));
+
+    RString *hash = $(result, m(evasionHashBase64, RString)));
+    p(RString)(hash);
+
+    deleter(hash, RString);
+    deleter(result, RString);
 
 
     endRay();
