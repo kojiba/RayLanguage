@@ -373,24 +373,6 @@ method(void, free, RSandBox), pointer ptr) {
 }
 
 
-#pragma mark Simple crypt
-
-method(void, XorCrypt, RSandBox), RData *key) {
-    Xor(object->memPart->data,  key, object->memPart->size, key->size);           // crypt memory chunk
-    Xor(object->memPart, key, sizeof(RData), key->size);                      // crypt memory ptr
-    Xor(object->descriptorTable, key,
-            object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // crypt descriptors table
-    Xor(object, key, sizeof(RSandBox), key->size); // crypt pointers
-}
-
-method(void, XorDecrypt, RSandBox), RData *key) {
-    Xor(object, key, sizeof(RSandBox), key->size); // decrypt pointers
-    Xor(object->descriptorTable, key,
-            object->descriptorsTotal * sizeof(RControlDescriptor), key->size); // decrypt descriptors table
-    Xor(object->memPart, key, sizeof(RData), key->size);                      // decrypt memory ptr
-    Xor(object->memPart->data,  key, object->memPart->size, key->size);           // decrypt memory chunk
-}
-
 #pragma mark Switch
 
 

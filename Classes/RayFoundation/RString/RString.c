@@ -107,7 +107,7 @@ method(void, replaceCharacters, RString), char characterToReplace, char replacer
     );
 }
 
-method(void, replaceSubstrings, RString), RString *toReplace, RString *replacer) {
+method(void, replaceSubstrings, RString), const RString *toReplace, const RString *replacer) {
     replaceBytesWithBytes(object->data, &object->size, toReplace->data, toReplace->size, replacer->data, replacer->size);
 }
 
@@ -125,7 +125,7 @@ inline constMethod(rbool, isContains, RString), char character) {
    return indexOfFirstByte(object->data, object->size, (byte) character) == RNotFound ? no : yes;
 }
 
-inline constMethod(rbool, isContainsSubstring, RString), RString *string) {
+inline constMethod(rbool, isContainsSubstring, RString), const RString *string) {
     return indexOfFirstSubArray(object->data, object->size, string->data, string->size) == RNotFound ? no : yes;
 }
 
@@ -133,7 +133,7 @@ inline constMethod(size_t, numberOfLines, RString)) {
     return numberOfBytes(object->data, object->size, '\n');
 }
 
-constMethod(size_t, indexOfSubstring, RString), RString *string) {
+constMethod(size_t, indexOfSubstring, RString), const RString *string) {
     return indexOfFirstSubArray(object->data, object->size, string->data, string->size);
 }
 
@@ -183,23 +183,23 @@ method(void, trimHead, RString), size_t size) {
 }
 
 inline
-method(void, trimAfterString, RString), RString *string) {
+method(void, trimAfterString, RString), const RString *string) {
     object->data = trimAfterSubArray(object->data, &object->size, string->data, string->size);
 }
 
 inline
-method(void, trimToString, RString), RString *string) {
+method(void, trimToString, RString), const RString *string) {
     object->data = trimBeforeSubArray(object->data, &object->size, string->data, string->size);
 }
 
 #pragma mark Subs and Copies
 
-method(RString *, setSubstringInRange, RString), RRange range, RString *substring) {
+method(RString *, setSubstringInRange, RString), RRange range, const RString *substring) {
     object->data = setSubArrayInRange(object->data, object->size, substring->data, substring->size, range);
     return object;
 }
 
-method(RString *, insertSubstringAt, RString), RString *substring, size_t place) {
+method(RString *, insertSubstringAt, RString), const RString *substring, size_t place) {
     object->data = insertSubArray(object->data, &object->size, substring->data, substring->size, place);
     return object;
 }

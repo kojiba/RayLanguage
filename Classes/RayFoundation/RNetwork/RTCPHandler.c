@@ -107,7 +107,7 @@ method(void, privateStartInMode, RTCPHandler)) {
         } else {
             selfCleanup = no;
             if(object->connectionsCount != 0) {
-                socketInProcess = socketConnectedTo(object->ipAddress->data, object->port);
+                socketInProcess = socketConnectedTo((const char *const) object->ipAddress->data, object->port);
                 --object->connectionsCount;
             } else {
                 return; // stop opening connections

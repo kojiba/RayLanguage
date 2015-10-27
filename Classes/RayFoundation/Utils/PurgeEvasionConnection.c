@@ -54,7 +54,7 @@ PEConnectionContext* initPEContext(uint64_t masterKey[8]) {
 
             RMemCpy(object->masterKey, masterKey, purgeBytesCount);
             evasionHashData(masterKey, purgeBytesCount, masterKey);
-            flushAllToByte(masterKey, purgeBytesCount, 0xFF);
+            flushAllToByte((byte *) masterKey, purgeBytesCount, 0xFF);
         }
     }
     return object;
@@ -79,7 +79,7 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
     size_t index = $(context->packetNumbers, m(indexOfObject, RArray)), (pointer) packetNo); // todo not only for x64
     if(index == context->packetNumbers->count) { // not find
 
-        flushAllToByte(context->currentRandom, evasionBytesCount,  0xFF);
+        flushAllToByte((byte *) context->currentRandom, evasionBytesCount, 0xFF);
 
         forAll(index, packetNo) { // get random manyTimes from pure array
             evasionRand(context->currentRandom);
@@ -124,7 +124,7 @@ RData* encryptDataWithConnectionContext(const RData *data, PEConnectionContext* 
             result = $(data, m(encryptPurgeEvasion, RData)), tempKey);
 
             // add packetNo stamp in front
-            insertSubArray(result->data, result->size, &currentPacketNo, sizeof(uint64_t), 0);
+            insertSubArray(result->data, &result->size, (const byte *) &currentPacketNo, sizeof(uint64_t), 0);
 
             // add size
             result->size += sizeof(uint64_t);
@@ -214,7 +214,7 @@ static inline
 void PEConnectionPrepareBuffer(RData *array) {
     static RString fake;
     if(array != nil) {
-        fake.data = (char *) array->data;
+        fake.data = array->data;
         fake.size = array->size;
         $(&fake, m(replaceCSubstrings, RString)), (char *) packetEndString, (char *) packetEndShieldString); // shield strings
     }
@@ -224,7 +224,7 @@ static inline
 void PEConnectionRestoreBuffer(RData *array) {
     static RString fake;
     if(array != nil) {
-        fake.data = (char *) array->data;
+        fake.data = array->data;
         fake.size = array->size;
         $(&fake, m(replaceCSubstrings, RString)), (char *) packetEndShieldString, (char *) packetEndString); // shield strings
     }

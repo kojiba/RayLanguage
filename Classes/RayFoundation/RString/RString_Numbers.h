@@ -32,7 +32,7 @@ typedef enum RNumberSystemBase { //--------------------------
     RHex,
 } RNumberSystemBase; //--------------------------------------
 
-constMethod(RString *,        toRString, RNumberSystemBase));
+constMethod(const RString *,        toRString, RNumberSystemBase));
 
 //-----------------------------------------------------------
 

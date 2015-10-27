@@ -85,10 +85,6 @@ method(pointer, realloc,        RSandBox),    pointer ptr, size_t newSize);
 method(pointer, calloc,         RSandBox),    size_t blockCount, size_t blockSize);
 method(void,    free,           RSandBox),    pointer ptr);
 
-// Simple crypt
-method(void,    XorCrypt,       RSandBox),    RData *key);
-method(void,    XorDecrypt,     RSandBox),    RData *key);
-
 // change malloc, realloc, calloc, free pointers to sandBox
 void enableSandBox(RSandBox *sandBox);
 void disableSandBox(RSandBox *sandBox);

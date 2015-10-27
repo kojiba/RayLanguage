@@ -209,7 +209,7 @@ method(int, listen, RSocket), int queueCount) {
 method(RSocket *, accept, RSocket)) {
     RSocket *result = allocator(RSocket);
     if(result != nil) {
-        flushAllToByte(result, sizeof(RSocket), 0);
+        flushAllToByte((byte *) result, sizeof(RSocket), 0);
         result->socket = accept(object->socket,
                                 (SocketAddress*) &result->address,
                                                  &result->addressLength);

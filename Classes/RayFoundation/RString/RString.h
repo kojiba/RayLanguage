@@ -42,16 +42,16 @@ method(RString*, setConstantString, RString), const char *nullTerminatedString);
 
 // Replace
 method(void, replaceCharacters, RString), char characterToReplace, char replacer);
-method(void, replaceSubstrings, RString),      RString *toReplace,      RString *replacer);
+method(void, replaceSubstrings, RString), const RString *toReplace, const RString *replacer);
 
 // Info - universal encoding
 constMethod(size_t,        numberOfCharacters,           RString),    char character);
 constMethod(size_t,        numberOfSubstrings,           RString),    const RString * const string);
 constMethod(rbool,         isContains,                   RString),    char character);
-constMethod(rbool,         isContainsSubstring,          RString),    RString *string);
+constMethod(rbool,         isContainsSubstring,          RString),    const RString *string);
 extern
 constMethod(size_t,        numberOfLines,                RString));
-constMethod(size_t,        indexOfSubstring,             RString),    RString *string);
+constMethod(size_t,        indexOfSubstring,             RString),    const RString *string);
 
 // Deletions
 method(RString *,          deleteAllCharacters,          RString),    char character);            // returns reference (not copy!)
@@ -67,13 +67,13 @@ method(void,               trimTail,                     RString),    size_t siz
 extern
 method(void,               trimHead,                     RString),    size_t size);
 extern
-method(void,               trimAfterString,              RString),    RString *string);
+method(void,               trimAfterString,              RString),    const RString *string);
 extern
-method(void,               trimToString,                 RString),    RString *string);
+method(void,               trimToString,                 RString),    const RString *string);
 
 // Subs and Copies
-method(RString *,          setSubstringInRange,          RString),    RRange range, RString *substring); // returns reference (not copy!)
-method(RString *,          insertSubstringAt,            RString),    RString *substring, size_t place);       // returns reference (not copy!)
+method(RString *,          setSubstringInRange,          RString),    RRange range, const RString *substring); // returns reference (not copy!)
+method(RString *,          insertSubstringAt,            RString),    const RString *substring, size_t place);       // returns reference (not copy!)
 
 constMethod(RString *,     substringToSymbol,            RString),    char symbol);                             // or nil
 constMethod(RString *,     substringInRange,             RString),    RRange range);                            // substring is a copy, basic method, that uses others

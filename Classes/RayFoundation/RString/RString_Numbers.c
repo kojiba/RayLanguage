@@ -54,7 +54,7 @@ static inline rbool isBinaryDigit(char character) {
 
 #pragma mark RNumberSystemBase
 
-constMethod(RString *, toRString, RNumberSystemBase)) {
+constMethod(const RString *, toRString, RNumberSystemBase)) {
     switch (*object) {
         case RNotNumber : {
             return RS(toString(RNotNumber));
