@@ -97,15 +97,19 @@ inline void printByteArrayInHex(const byte *array, size_t size) {
     printByteArrayInHexWithScreenSize(array, size, 32);
 }
 
-void printByteArrayInHexWithScreenSize(const byte *array, size_t size, size_t screenSize) {
+void printByteArrayInHexWithScreenSizeFile(const byte *array, size_t size, size_t screenSize, FILE *file) {
     size_t iterator;
     forAll(iterator, size) {
         if (iterator % screenSize == 0 && iterator != 0) {
-            RPrintf("\n");
+            RFPrintf(file, "\n");
         }
-        RPrintf("%02X ", array[iterator]);
+        RFPrintf(file, "%02X ", array[iterator]);
     }
-    RPrintf("\n");
+    RFPrintf(file, "\n");
+}
+
+inline void printByteArrayInHexWithScreenSize(const byte *array, size_t size, size_t screenSize) {
+    printByteArrayInHexWithScreenSizeFile(array, size, screenSize, stdout);
 }
 
 void printByteArrayInBin(const byte *array, size_t size) {

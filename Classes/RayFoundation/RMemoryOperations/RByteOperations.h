@@ -43,7 +43,8 @@ size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
 #define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
 
 // Basics
-void           printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
+void           printByteArrayInHexWithScreenSizeFile(const byte *array, size_t size, size_t screenSize, FILE *file);
+extern void    printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
 extern void    printByteArrayInHex        (const byte *array,   size_t size);
 void           printByteArrayInBin        (const byte *array,   size_t size);
 

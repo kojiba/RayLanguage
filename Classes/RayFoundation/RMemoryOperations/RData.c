@@ -33,23 +33,27 @@ destructor(RData) {
     deallocator(object->data);
 }
 
-printer(RData) {
+constMethod(void, printInFile, RData), FILE *file) {
     if(object != nil && object->data != nil) {
         if (object->type == RDataTypeBytes
             || object->type == RDataTypeOther) {
-            RPrintf("RData object - %p [%lu] {\n", object, object->size);
-            printByteArrayInHex(object->data, object->size);
-            RPrintf("} - %p \n\n", object);
+            RFPrintf(file, "RData object - %p [%lu] {\n", object, object->size);
+            printByteArrayInHexWithScreenSizeFile(object->data, object->size, 32, file);
+            RFPrintf(file, "} - %p \n\n", object);
         } else {
             // write string full
-            fwrite(object->data, object->size, 1, stdout);
+            fwrite(object->data, object->size, 1, file);
             if(object->type == RDataTypeASCII){
-                fwrite("\n", sizeof("\n") - 1, 1, stdout);
+                fwrite("\n", sizeof("\n") - 1, 1, file);
             }
         }
     } else {
-        RPrintf("nil");
+        RFPrintf(file,"nil");
     }
+}
+
+inline printer(RData) {
+    $(object, m(printInFile, RData)), stdout);
 }
 
 void RDataDeleter(RData* object) {

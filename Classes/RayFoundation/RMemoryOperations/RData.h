@@ -39,7 +39,9 @@ RData* makeRData(const byte *array, size_t size, byte type);
 destructor(RData);
 void RDataDeleter(RData* object);
 
-printer(RData);
+extern printer(RData);
+
+constMethod(void, printInFile,           RData), FILE *file);
 
      method(RData*, flushAllToByte, RData),    byte symbol);
 constMethod(RData*, copy,           RData));
