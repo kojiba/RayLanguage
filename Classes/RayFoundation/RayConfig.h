@@ -28,8 +28,10 @@
 
 #pragma mark Clang blocks
 
-#if __has_extension(blocks)
-//    #define RAY_BLOCKS_ON    ///< adds clang blocks extensions (^{})
+#if __clang__cla
+    #if __has_extension(blocks)
+    //    #define RAY_BLOCKS_ON    ///< adds clang blocks extensions (^{})
+    #endif
 #endif
 
 #pragma mark Embedded Cut
