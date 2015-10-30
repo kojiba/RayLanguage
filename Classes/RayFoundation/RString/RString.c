@@ -97,6 +97,16 @@ method(RString*, setConstantString, RString), const char *nullTerminatedString) 
     return object;
 }
 
+method(void, validateToASCII, RString)) {
+    size_t iterator;
+    forAll(iterator, object->size) {
+        if(object->data[iterator] < 32 || object->data[iterator] > 126) {
+            deleteAtIndex(object->data, &object->size, iterator);
+            --iterator;
+        }
+    }
+}
+
 #pragma mark Replace
 
 method(void, replaceCharacters, RString), char characterToReplace, char replacer) {

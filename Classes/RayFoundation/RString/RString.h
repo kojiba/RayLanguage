@@ -40,6 +40,8 @@ RString * stringWithFormat(char *format, ...); // ASCII
 
 method(RString*, setConstantString, RString), const char *nullTerminatedString);
 
+method(void, validateToASCII, RString)); // remove all non ascii-chars
+
 // Replace
 method(void, replaceCharacters, RString), char characterToReplace, char replacer);
 method(void, replaceSubstrings, RString), const RString *toReplace, const RString *replacer);
