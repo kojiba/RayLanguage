@@ -284,7 +284,7 @@ byte PEConnectionReceive(PEConnection *object, RData** result) {
                 }
 
                 if(storage != nil) {
-                    $(storage, m(addData, RBuffer)), buffer, received);
+                    $(storage, m(addBytes, RBuffer)), buffer, received);
                 } else {
                     RError("PEConnectionReceive. Can't allocate buffer.", object);
                     RMutexUnlock(cmutex);

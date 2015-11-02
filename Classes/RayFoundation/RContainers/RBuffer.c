@@ -168,7 +168,7 @@ constMethod(rbool, checkIndexWithError, RBuffer), size_t index) {
 
 #pragma mark Data operations
 
-method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
+method(void, addBytes, RBuffer), const pointer data, size_t sizeInBytes) {
     RMutexLockBuffer();
     while(object->freePlaces == 0) {
         // add free to sizes
@@ -194,6 +194,10 @@ method(void, addData, RBuffer), pointer data, size_t sizeInBytes) {
         --object->freePlaces;
     }
     RMutexUnlockBuffer();
+}
+
+inline method(void, addData, RBuffer), const RData *data) {
+    $(object, m(addBytes, RBuffer)), data->data, data->size);
 }
 
 constMethod(pointer, getDataReference, RBuffer), size_t index) {
@@ -460,7 +464,7 @@ constMethod(RBuffer *, serializeToBuffer, RArray), size_t size) {
     RBuffer *result = $(nil, c(RBuffer)));
     if(result != nil) {
         forAll(iterator, object->count) {
-            $(result, m(addData, RBuffer)),
+            $(result, m(addBytes, RBuffer)),
                     $(object, m(objectAtIndex, RArray)), iterator), size);
         }
         return $(result, m(sizeToFit, RBuffer)));
@@ -474,7 +478,7 @@ constMethod(RBuffer *, serializeToBufferSizes, RArray), size_t *sizesArray) {
     if(result != nil) {
         // while size not 0
         for(;sizesArray[iterator] != 0; ++iterator) {
-            $(result, m(addData, RBuffer)),
+            $(result, m(addBytes, RBuffer)),
                     $(object, m(objectAtIndex, RArray)), iterator), sizesArray[iterator]);
         }
         return $(result, m(sizeToFit, RBuffer)));

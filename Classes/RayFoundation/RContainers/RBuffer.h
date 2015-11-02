@@ -56,13 +56,14 @@ printer     (RBuffer);
 
 // Reallocation
 method(RRange *,          addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
-method(RData *,      addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RData, store data, returns self, newsize in bytes
+method(RData *,           addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RData, store data, returns self, newsize in bytes
 method(void,              flush,          RBuffer));                             // flushes buffer, returns self
 method(RBuffer *,         sizeToFit,      RBuffer));                             // make without free places, store data, returns self
 
 // Data operations
 // setters
-method(void,              addData,            RBuffer),    pointer data, size_t sizeInBytes);   // copies data
+method(void,              addBytes,           RBuffer),    const pointer data, size_t sizeInBytes);   // copies data
+extern method(void,       addData,            RBuffer),    const RData *data);   // copies data
 
 // getters
 constMethod(pointer,      getDataReference,   RBuffer),    size_t index);                       // return pointer

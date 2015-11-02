@@ -22,24 +22,15 @@
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
-//
-//    RString* result = $(RS("hello"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
-//    $(result, p(RString)));
-//
-//    RString *hash = $(result, m(evasionHashBase64, RString)));
-//    p(RString)(hash);
-//
-//    deleter(hash, RString);
-//    deleter(result, RString);
 
-    RString *some = RSC("hello");
-    some->data[1] = 0;
-    some->data[4] = (byte) -56;
+    RString* result = $(RS("hello"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
+    $(result, p(RString)));
 
-    $(some, m(validateToASCII, RString)));
-    p(RString)(some);
+    RString *hash = $(result, m(evasionHashBase64, RString)));
+    p(RString)(hash);
 
-
+    deleter(hash, RString);
+    deleter(result, RString);
 
     endRay();
 }

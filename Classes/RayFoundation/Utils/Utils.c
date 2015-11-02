@@ -84,7 +84,7 @@ constMethod(RBuffer *, serializeToBufferDelegate, RArray), REnumerateDelegate *d
                     prtToSized      = nextComplexPart->serializePtrStart;
 
                     if(currentSize != 0 && prtToSized != nil) {
-                        $(result, m(addData, RBuffer)), prtToSized, currentSize);
+                        $(result, m(addBytes, RBuffer)), prtToSized, currentSize);
                     }
                     nextComplexPart = ((SerializerData *)delegate->context)->next;
                 }

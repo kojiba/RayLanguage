@@ -116,7 +116,7 @@ int RBufferTest(void) {
 
     forAll(iterator, 20) {
         RString *temp = randomASCIIString();
-        $(buffer, m(addData, RBuffer)), temp->data, temp->size);
+        $(buffer, m(addBytes, RBuffer)), temp->data, temp->size);
         sum += temp->size;
         RAY_TEST(((buffer->count != iterator + 1) || buffer->totalPlaced != sum),
                 "RBuffer. Test error, bad size or size", -1);
