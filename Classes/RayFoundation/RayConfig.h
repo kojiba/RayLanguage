@@ -28,7 +28,7 @@
 
 #pragma mark Clang blocks
 
-#if __clang__cla
+#if __clang__
     #if __has_extension(blocks)
     //    #define RAY_BLOCKS_ON    ///< adds clang blocks extensions (^{})
     #endif
