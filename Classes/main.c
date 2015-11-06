@@ -28,7 +28,8 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    const RString *source = RS("Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+    const RString *source = RS("Hard Hello world : "
+                               "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
                                " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
                                " ------.--------.>+.>.");
 

@@ -9,10 +9,6 @@
 typedef enum RVirtualCodes {
 
     r_end,                  // work-end-code
-    r_function_begin,
-    r_const_start,
-    r_const_end,
-    r_error,
 
 // algebra operations (address 1, address 2)
     r_addition,
@@ -20,11 +16,15 @@ typedef enum RVirtualCodes {
     r_multiplication,
     r_division,
 
+    r_copy,
+
 // binary operations (address 1, address 2)
     r_xor,
     r_and,
     r_or,
 
+    r_rotate_left,
+    r_rotate_right,
 
 // one arg (dataRegister)
     r_increment,
@@ -69,8 +69,11 @@ class(RVirtualMachine)
     RVirtualFunction *functionExecuting;    // pointer to function
 
     byte           *dataRegister;         // pointer to memory element               (data    segment)
-    byte           *command;              // pointer to rasm byte-code               (command segment)
-    byte           *functionStartAddress; // pointer to place, where function starts (program segment)
+
+
+
+    byte           *command;              // pointer to rasm byte-code               (command ptr)
+    byte           *functionStartAddress; // pointer to place, where function starts (program ptr)
 
     size_t          tickCount;
     rbool           breakFlag;              // for stop

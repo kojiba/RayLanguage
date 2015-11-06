@@ -128,6 +128,11 @@ method(size_t, executeCode, RVirtualMachine)) {
             }
         } break;
 
+        case r_no : {
+            *object->dataRegister = ~(*object->dataRegister);
+            ++object->command;
+        } break;
+
 // debug
         case r_break : {
             object->breakFlag = yes;
