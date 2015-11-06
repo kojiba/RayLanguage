@@ -14,7 +14,7 @@
 constructor(RVirtualMachine)) {
     object = allocator(RVirtualMachine);
     if(object != nil) {
-        object->memory = allocator(RData);
+        object->memory = makeRDataAllocated(memorySizeOfRVM);
         if(object->memory != nil) {
             object->classId = registerClassOnce(toString(RVirtualMachine));
         }
@@ -23,21 +23,17 @@ constructor(RVirtualMachine)) {
 }
 
 destructor(RVirtualMachine) {
-    if(object != nil) {
-        deallocator(object->memory);
-    }
+    deleter(object->memory, RData);
 }
 
 method(void, setUpDataBlock, RVirtualMachine)) {
     if(object->functionExecuting != nil) {
         // set-up break flag
         object->breakFlag = no;
-
-        object->memory->array = makeFlushedBytes(memorySizeOfRVM, 0x00);
-        object->memory->size  = memorySizeOfRVM;
-    } else {
-        RPrintf("ERROR. RVM. Set-up function is nil.");
-    }
+        $(object->memory, m(flushAllToByte, RData)), 0x00);
+    } elseWarning(
+        RWarning("RVM. Set-up function is nil.", object)
+    )
 }
 
 method(size_t, executeCode, RVirtualMachine)) {
@@ -89,8 +85,8 @@ method(size_t, executeCode, RVirtualMachine)) {
         case r_move_forward : {
             // increment pointer
             ++object->dataRegister;
-            if(object->dataRegister == (object->memory->array + object->memory->size - 1)) {
-                object->dataRegister = object->memory->array;
+            if(object->dataRegister == (object->memory->data + object->memory->size - 1)) {
+                object->dataRegister = object->memory->data;
             }
             ++object->command;
         } break;
@@ -98,8 +94,8 @@ method(size_t, executeCode, RVirtualMachine)) {
         case r_move_backward : {
             // decrement pointer
             --object->dataRegister;
-            if(object->dataRegister < object->memory->array) {
-                object->dataRegister = object->memory->array + object->memory->size - 1;
+            if(object->dataRegister < object->memory->data) {
+                object->dataRegister = object->memory->data + object->memory->size - 1;
             }
             ++object->command;
         } break;
@@ -179,10 +175,10 @@ method(void, visualize, RVirtualMachine), rbool end) {
 
     forAll(iterator, object->memory->size) {
     #ifdef COLORED
-        wattron(outputWindow, COLOR_PAIR(object->memory->array[iterator] + 1));
+        wattron(outputWindow, COLOR_PAIR(object->memory->data[iterator] + 1));
         wprintw(outputWindow, "# ");
     #else
-        wprintw(outputWindow, "%02X", object->memory->array[iterator]);
+        wprintw(outputWindow, "%02X", object->memory->data[iterator]);
     #endif
     }
 #ifdef COLORED
@@ -205,14 +201,13 @@ method(void, setUpFunction, RVirtualMachine), RVirtualFunction *function) {
     // set tick size is 0
     object->tickCount = 0;
 
-    // set-up data block
     $(object, m(setUpDataBlock, RVirtualMachine)) );
 
     // set data register as pointer to first element of memory
-    object->dataRegister = object->memory->array;
+    object->dataRegister = object->memory->data;
 
     // set command to first byte of opcodes
-    object->functionStartAddress = master(object->functionExecuting, RData)->array;
+    object->functionStartAddress = master(object->functionExecuting, RData)->data;
     object->command              = object->functionStartAddress;
 }
 
@@ -222,7 +217,9 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(object, m(setUpFunction, RVirtualMachine)), function);
 
     // function name label
-    RPrintf("RVM. Start Executing Function \"%s\"\n\n", function->name->baseString);
+    RPrintf("RVM. Start Executing Function - ");
+    p(RString)(function->name);
+    RPrintf("\n");
 
     // execute first code, that starts processing
     // execute next code while not flag
@@ -244,14 +241,14 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     $(object, m(visualize, RVirtualMachine)), yes);
 
     // at end of processing print analytics
-    RPrintf("\nRVM. End Executing Function \"%s\"\n", function->name->baseString);
+    RPrintf("\nRVM. End Executing Function - ");
+    p(RString)(function->name);
+    RPrintf("\n");
+
     RPrintf("Ticks count for executing is - %lu\n", object->tickCount);
     RPrintf("Memory snapshot : {\n");
     $(object->memory, p(RData)) );
     RPrintf("} end memory snapshot\n");
-
-    // cleanup
-    d(RData)(object->memory);
 }
 
 singleton(RVirtualMachine) {

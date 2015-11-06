@@ -17,20 +17,30 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+
+#include <RVirtualMachine/RVirtualFunction/RVirtualFunction.h>
+#include <RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h>
+#include <RVirtualMachine/RVirtualMachine/RVirtualMachine.h>
+
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest();
 
-    RString* result = $(RS("hello"), m(encryptPurgeEvasionBase64, RString)), RS("key"));
-    $(result, p(RString)));
+    const RString *source = RS("Hard Hello world : ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++\n"
+                               " .>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.\n"
+                               " ------.--------.>+.>.");
 
-    RString *hash = $(result, m(evasionHashBase64, RString)));
-    p(RString)(hash);
 
-    deleter(hash, RString);
-    deleter(result, RString);
+    // brainfuck hard(with [, ]) hello world on RVM
+    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)), source );
+
+    executeRay(function);
+
+    deleter(function, RVirtualFunction);
+    deleter(RVC, RVirtualCompiler);
+    deleter(RVM, RVirtualMachine);
 
     endRay();
 }

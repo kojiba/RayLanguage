@@ -61,7 +61,7 @@ void RDataDeleter(RData* object) {
 }
 
 method(RData *, flushAllToByte, RData), byte symbol) {
-    object->data = flushAllToByte(object->data, object->size, symbol);
+    flushAllToByte(object->data, object->size, symbol);
     return object;
 }
 

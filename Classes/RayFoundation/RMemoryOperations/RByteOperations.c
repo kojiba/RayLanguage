@@ -38,7 +38,7 @@ void Xor(      byte   *data,
     }
 }
 
-byte* flushAllToByte(byte *array, size_t size, byte symbol) {
+void flushAllToByte(byte *array, size_t size, byte symbol) {
     size_t iterator;
     if(size <= sizeof(size_t)) {
         forAll(iterator, size) {
@@ -59,9 +59,8 @@ byte* flushAllToByte(byte *array, size_t size, byte symbol) {
         }
         iterator *= sizeof(size_t);
         // byte-to-byte
-        return flushAllToByte(array + iterator, size - iterator, symbol);
+        flushAllToByte(array + iterator, size - iterator, symbol);
     }
-    return array;
 }
 
 size_t compareMemory(const byte *array, const byte *toCompare, size_t size) {
@@ -137,6 +136,17 @@ size_t indexOfFirstByte(const byte *array, size_t size, byte symbol) {
         if (array[iterator] == symbol) {
             return iterator;
         }
+    }
+    return RNotFound;
+}
+
+size_t indexOfLastByte(const byte *array, size_t size, byte symbol) {
+    --size;
+    while(size != SIZE_MAX) {
+        if(array[size] == symbol) {
+            return size;
+        }
+        --size;
     }
     return RNotFound;
 }

@@ -17,12 +17,13 @@ destructor(RVirtualFunction) {
 printer(RVirtualFunction) {
     size_t iterator;
     RPrintf("%s object - %p : \n", toString(RVirtualFunction), object);
-    RPrintf("Name : \"%s\" \n", object->name->baseString);
+    RPrintf("Name : ");
+    p(RString)(object->name);
     RPrintf("Byte Code : \n");
 
     forAll(iterator, master(object, RData)->size) {
         RPrintf("\t %lu - ",iterator);
-        switch (master(object, RData)->array[iterator]) {
+        switch (master(object, RData)->data[iterator]) {
 
             case r_increment : {
                 RPrintLn("incr");
@@ -47,7 +48,7 @@ printer(RVirtualFunction) {
 
             case r_if : {
                 size_t whereGoTo;
-                memcpy(&whereGoTo, &master(object, RData)->array[iterator += 2], sizeof(size_t));
+                memcpy(&whereGoTo, &master(object, RData)->data[iterator += 2], sizeof(size_t));
 
                 RPrintLn("if");
                 RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
@@ -57,7 +58,7 @@ printer(RVirtualFunction) {
 
             case r_if_not : {
                 size_t whereGoTo;
-                memcpy(&whereGoTo, &master(object, RData)->array[iterator += 2], sizeof(size_t));
+                memcpy(&whereGoTo, &master(object, RData)->data[iterator += 2], sizeof(size_t));
 
                 RPrintLn("if NOT");
                 RPrintf("\t\tfalse : goto %lu (%lu byte address)\n", whereGoTo, sizeof(size_t));
@@ -66,7 +67,7 @@ printer(RVirtualFunction) {
             } break;
 
             case r_goto_address : {
-                RPrintf("goto %u\n", master(object, RData)->array[++iterator]);
+                RPrintf("goto %u\n", master(object, RData)->data[++iterator]);
             } break;
 
             case r_end : {
@@ -74,7 +75,7 @@ printer(RVirtualFunction) {
             } break;
 
             default: {
-                RPrintf("unknown - %u", master(object, RData)->array[iterator]);
+                RPrintf("unknown - %u", master(object, RData)->data[iterator]);
             } break;
         }
     }

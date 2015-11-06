@@ -19,9 +19,9 @@
 #include "RayFoundation/RContainers/RArray.h"
 
 // Memory operations
-void           Xor (byte* data, const byte* key, size_t sizeOfData, size_t sizeOfKey);
-byte*  flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
-size_t compareMemory(const byte *array, const byte *toCompare, size_t size);
+void              Xor(byte* data, const byte* key, size_t sizeOfData, size_t sizeOfKey);
+void  flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
+size_t  compareMemory(const byte *array, const byte *toCompare, size_t size);
 
 
 #define rotateLeftU(data,  shift, capasity) (((data) << shift) | ((data) >> (capasity - shift)))
@@ -51,6 +51,7 @@ void           printByteArrayInBin        (const byte *array,   size_t size);
 byte*          getByteArrayCopy           (const byte *array,   size_t size);
 
 size_t indexOfFirstByte(const byte *array, size_t size, byte symbol);
+size_t indexOfLastByte(const byte *array, size_t size, byte symbol);
 size_t indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize);
 size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
 extern rbool isContainsByte(const byte *array, size_t size, byte symbol);

@@ -32,10 +32,10 @@ method(RString *, getFunctionName, RVirtualCompiler)) {
         size_t place;
 
         // finding to startSymbol
-        place = indexOfFirstCharacterCString(object->code->baseString, object->code->size, ':');
+        place = $(object->code, m(indexOfSubstring, RString)), RS(":"));
 
         // if there is ':'
-        if(place != object->code->size) {
+        if(place != RNotFound) {
 
             // get copy of substring
             RString *name = $(object->code, m(substringInRange, RString)), makeRRange(0, place));
@@ -54,7 +54,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
     static rbool isOpenedBracket = no;
     byte byteCode;
 
-    switch (object->code->baseString[object->iterator]) {
+    switch (object->code->data[object->iterator]) {
 
         case '+': {
             byteCode = r_increment;
@@ -87,15 +87,15 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
                     currSubSize  = object->code->size - object->deltaToNext,
                    currSubStart = object->iterator + object->iteratorShift + 1;
 
-            object->deltaToNext = indexOfLastCharacterCString(&object->code->baseString[currSubStart], currSubSize, ']');
-            deltaToFirstBack    = indexOfFirstCharacterCString(&object->code->baseString[currSubStart], currSubSize, ']');
+            object->deltaToNext = indexOfLastByte(&object->code->data[currSubStart], currSubSize, ']');
+            deltaToFirstBack    = indexOfFirstByte(&object->code->data[currSubStart], currSubSize, ']');
 
-            if(deltaToFirstBack != currSubSize
+            if(deltaToFirstBack != RNotFound
                     && deltaToFirstBack != object->deltaToNext) {
-                size_t deltaToFirstFront   = indexOfFirstCharacterCString(&object->code->baseString[currSubStart], currSubSize, '[');
+                size_t deltaToFirstFront = indexOfFirstByte(&object->code->data[currSubStart], currSubSize, '[');
 
                 // while we see code like - [ []  []  [] ]
-                if(deltaToFirstFront != currSubSize &&
+                if(deltaToFirstFront != RNotFound &&
                         deltaToFirstFront > deltaToFirstBack) {
                     object->deltaToNext = deltaToFirstBack;
                 }
@@ -106,7 +106,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
             object->body->data[object->iterator + object->iteratorShift]     = r_if;
             object->body->data[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            memcpy(object->body->data + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
+            RMemCpy(object->body->data + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
 
             --object->forwardRepetitions;
 
@@ -133,7 +133,7 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 
             object->body->data[object->iterator + object->iteratorShift]     = r_if_not;
             object->body->data[object->iterator + object->iteratorShift + 1] = r_goto_address;
-            memcpy(object->body->data + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
+            RMemCpy(object->body->data + object->iterator + object->iteratorShift + 2, &realPath, sizeof(size_t));
 
             object->iteratorShift += 1 + sizeof(size_t);
             byteCode = r_ignore;
@@ -163,9 +163,8 @@ method(byte, brainFuckSourceToByteCode, RVirtualCompiler)) {
 }
 
 method(RData *, getBrainFuckFunctionBody, RVirtualCompiler)) {
-    RData *body;
-    byte        character;
-    size_t      sizeOfByteCode;
+    byte   character;
+    size_t sizeOfByteCode;
 
     // delete spaces
     $(object->code, m(deleteAllCharacters, RString)), ' ');
@@ -183,26 +182,22 @@ method(RData *, getBrainFuckFunctionBody, RVirtualCompiler)) {
     // removing all '\n' start byte-code, +1 to r_end
     sizeOfByteCode = object->code->size - object->numberOfLines + 1 + (1 + sizeof(size_t)) * (object->forwardRepetitions + object->backwardRepetitions);
 
-    body = allocator(RData);
-    body->data = nil;
-    body->size = sizeOfByteCode;
-
     // set pointer to body
-    object->body = body;
+    object->body = makeRDataAllocated(sizeOfByteCode);
 
     while(object->iterator < object->code->size) {
         character = $(object, m(brainFuckSourceToByteCode, RVirtualCompiler)));
 
         if(character != r_ignore) {
-            body->data[object->iterator + object->iteratorShift] = character;
+            object->body->data[object->iterator + object->iteratorShift] = character;
         }
 
         ++object->iterator;
     }
 
-    body->data[object->iterator + object->iteratorShift] = r_end;
+    object->body->data[object->iterator + object->iteratorShift] = r_end;
 
-    return body;
+    return object->body;
 }
 
 method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompiler), const RString *sourceCode) {
@@ -221,8 +216,8 @@ method(RVirtualFunction *, createFunctionFromBrainFuckSourceCode, RVirtualCompil
         $(object->brakets, m(flush, RArray)));
 
         // set name and body
-        function->name               = $(object, m(getFunctionName,          RVirtualCompiler)) );
-        master(function, RData) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)) );
+        function->name          = $(object, m(getFunctionName,          RVirtualCompiler)));
+        master(function, RData) = $(object, m(getBrainFuckFunctionBody, RVirtualCompiler)));
 
         if(function->name == nil) {
             function->name = RSC("Unnamed");
