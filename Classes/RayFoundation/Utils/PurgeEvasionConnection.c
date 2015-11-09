@@ -253,7 +253,7 @@ RData * PEConnectionReceive(PEConnection *object, byte *status) {
     size_t received;
     RBuffer *storage = nil;
     RData temp;
-    RData *result;
+    RData *result = nil;
     byte resultFlag = networkOperationSuccessConst;
 
     RMutexLock(cmutex);
@@ -288,33 +288,34 @@ RData * PEConnectionReceive(PEConnection *object, byte *status) {
         }
 
     }
-
-    temp.data = storage->masterRDataObject->data; // makes better
-    temp.size = storage->totalPlaced;
-
-#ifdef PE_CONNECTION_VERBOSE_DEBUG
-    RPrintf("Unrestored data\n");
-    p(RData)(&temp);
-#endif
-
-    // restore
-    PEConnectionRestoreBuffer(&temp);
+    if(storage) {
+        temp.data = storage->masterRDataObject->data; // makes better
+        temp.size = storage->totalPlaced;
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
-    RPrintf("Restored buffer\n");
-    p(RData)(&temp);
+        RPrintf("Unrestored data\n");
+        p(RData)(&temp);
 #endif
 
-    // decrypt
-    result = decryptDataWithConnectionContext(&temp, object->connectionContext);
-    if(result == nil) {
-        if(status != nil) {
-            *status = networkOperationErrorCryptConst;
+        // restore
+        PEConnectionRestoreBuffer(&temp);
+
+#ifdef PE_CONNECTION_VERBOSE_DEBUG
+        RPrintf("Restored buffer\n");
+        p(RData)(&temp);
+#endif
+
+        // decrypt
+        result = decryptDataWithConnectionContext(&temp, object->connectionContext);
+        if (result == nil) {
+            if (status != nil) {
+                *status = networkOperationErrorCryptConst;
+            }
         }
+        // cleanup
+        deleter(storage, RBuffer);
+        RMutexUnlock(cmutex);
     }
-    // cleanup
-    deleter(storage, RBuffer);
-    RMutexUnlock(cmutex);
     return result;
 }
 
