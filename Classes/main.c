@@ -25,17 +25,17 @@ void receive() {
     uint64_t masterKey[8] = {};
     RSocket *listener = openListenerOnPort(3000, 10);
     while(listener != nil) {
-        RPrintf("Listen\n");
+        RPrintLn("Listen");
         RSocket *client = acceptRSocket(listener);
 
         if(client != nil) {
-            RPrintf("Accepted \n");
+            RPrintLn("Accepted");
             RData *result;
             PEConnection *connection = PEConnectionInit(client, initPEContext(masterKey));
             PEConnectionReceive(connection, &result);
 
             if(result != nil) {
-                RPrintf("Received bufffer\n");
+                RPrintLn("Received bufffer");
                 p(RData)(result);
 
                 $(result, m(validateToASCII, RString)));
@@ -44,10 +44,11 @@ void receive() {
                 deleter(result, RData);
 
             } else {
-                RPrintf("Error receive\n");
+                RPrintLn("Error receive");
             }
 
             deleter(connection, PEConnection);
+            deleter(listener, RSocket);
         } else {
             break;
         }
@@ -68,7 +69,7 @@ int main(int argc, const char *argv[]) {
     sleep(1);
 
     RSocket *socket = socketConnectedTo("127.0.0.1", 3000);
-    RPrintf("Connected\n");
+    RPrintLn("Connected");
     PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
 
     if(connection != nil) {
@@ -80,7 +81,7 @@ int main(int argc, const char *argv[]) {
         toSend->type = RDataTypeBytes;
 
         PEConnectionSend(connection, toSend);
-        RPrintf("Sended\n");
+        RPrintLn("Sended");
         p(RData)(toSend);
         deleter(toSend, RData);
         deleter(connection, PEConnection);
