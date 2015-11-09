@@ -105,6 +105,7 @@ method(void, validateToASCII, RString)) {
             --iterator;
         }
     }
+    object->type = RDataTypeASCII;
 }
 
 #pragma mark Replace

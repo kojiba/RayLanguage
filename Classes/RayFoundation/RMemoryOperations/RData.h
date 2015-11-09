@@ -43,6 +43,8 @@ extern printer(RData);
 
 constMethod(void, printInFile,           RData), FILE *file);
 
+
+     method(void,   insert,         RData),    const RData *data, size_t place);
      method(RData*, flushAllToByte, RData),    byte symbol);
 constMethod(RData*, copy,           RData));
 

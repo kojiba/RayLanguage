@@ -124,10 +124,7 @@ RData* encryptDataWithConnectionContext(const RData *data, PEConnectionContext* 
             result = $(data, m(encryptPurgeEvasion, RData)), tempKey);
 
             // add packetNo stamp in front
-            insertSubArray(result->data, &result->size, (const byte *) &currentPacketNo, sizeof(uint64_t), 0);
-
-            // add size
-            result->size += sizeof(uint64_t);
+            result->data = insertSubArray(result->data, &result->size, (const byte *) &currentPacketNo, sizeof(uint64_t), 0);
 
             // cleanup
             deallocator(tempKey);
@@ -212,26 +209,17 @@ destructor(PEConnection) {
 
 static inline
 void PEConnectionPrepareBuffer(RData *array) {
-    static RString fake;
-    if(array != nil) {
-        fake.data = array->data;
-        fake.size = array->size;
-        $(&fake, m(replaceCSubstrings, RString)), (char *) packetEndString, (char *) packetEndShieldString); // shield strings
-    }
+    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndString, 24, packetEndShieldString, 48);
 }
 
 static inline
 void PEConnectionRestoreBuffer(RData *array) {
-    static RString fake;
-    if(array != nil) {
-        fake.data = array->data;
-        fake.size = array->size;
-        $(&fake, m(replaceCSubstrings, RString)), (char *) packetEndShieldString, (char *) packetEndString); // shield strings
-    }
+    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndShieldString, 48, packetEndString, 24);
+    array->size -= 24; // remove endpacked bytes
 }
 
 
-byte PEConnectionSend(PEConnection *object, RData *toSend) {
+byte PEConnectionSend(PEConnection *object, const RData *toSend) {
     RData *encrypted;
     byte result = networkOperationErrorCryptConst;
     RMutexLock(cmutex);
@@ -249,10 +237,10 @@ byte PEConnectionSend(PEConnection *object, RData *toSend) {
         RPrintf("Prepared data\n");
         p(RData)(encrypted);
 #endif
-        result = $(object->socket, m(send, RSocket)), encrypted->data, encrypted->size);
+        result = $(object->socket, m(sendData, RSocket)), encrypted);
         if(result == networkOperationSuccessConst) {
             // send transmission end
-            result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, sizeof(packetEndString));
+            result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, 24);
         }
         deleter(encrypted, RData);
     }
@@ -290,9 +278,9 @@ byte PEConnectionReceive(PEConnection *object, RData** result) {
                     RMutexUnlock(cmutex);
                     return networkOperationErrorAllocationConst;
                 }
-//            if(isContainsSubBytes(buffer, received, (byte *) packetEndString, 24)) {
-//                break;
-//            }
+            if(isContainsSubArray(storage->masterRDataObject->data, received, (byte *) packetEndString, 24)) {
+                break;
+            }
         }
 
     }

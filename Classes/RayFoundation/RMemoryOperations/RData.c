@@ -65,6 +65,10 @@ method(RData *, flushAllToByte, RData), byte symbol) {
     return object;
 }
 
+method(void, insert, RData), const RData *data, size_t place) {
+    object->data = insertSubArray(object->data, &object->size, data->data, data->size, place);
+}
+
 constMethod(RData *, copy, RData)) {
     return makeRData(getByteArrayCopy(object->data, object->size), object->size, object->type);
 }

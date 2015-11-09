@@ -284,6 +284,10 @@ inline method(byte, sendString, RSocket), const RString *string) {
     return $(object, m(send, RSocket)), string->data, string->size);
 }
 
+inline method(byte, sendData, RSocket), const RData *data) {
+    return $(object, m(send, RSocket)), data->data, data->size);
+}
+
 method(byte, receive, RSocket), pointer buffer, size_t bufferSize, size_t *receivedSize) {
     ssize_t messageLength = recv(object->socket,
                                  buffer,
