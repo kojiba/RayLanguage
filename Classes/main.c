@@ -60,8 +60,6 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    size_t iterator;
-
     uint64_t masterKey[8] = {};
 
     RThread receiver = makeRThread((RThreadFunction) receive);

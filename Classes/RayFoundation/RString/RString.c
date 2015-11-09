@@ -100,7 +100,8 @@ method(RString*, setConstantString, RString), const char *nullTerminatedString) 
 method(void, validateToASCII, RString)) {
     size_t iterator;
     forAll(iterator, object->size) {
-        if(object->data[iterator] < 32 || object->data[iterator] > 126) {
+        if((object->data[iterator] < 32 || object->data[iterator] > 126)
+                && object->data[iterator] != 10) {
             deleteAtIndex(object->data, &object->size, iterator);
             --iterator;
         }
