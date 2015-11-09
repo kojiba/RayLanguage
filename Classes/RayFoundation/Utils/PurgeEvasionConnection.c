@@ -248,11 +248,12 @@ byte PEConnectionSend(PEConnection *object, const RData *toSend) {
     return result;
 }
 
-byte PEConnectionReceive(PEConnection *object, RData** result) {
+RData * PEConnectionReceive(PEConnection *object, byte *status) {
     byte buffer[TCP_MTU_SIZE];
     size_t received;
     RBuffer *storage = nil;
     RData temp;
+    RData *result;
     byte resultFlag = networkOperationSuccessConst;
 
     RMutexLock(cmutex);
@@ -276,7 +277,10 @@ byte PEConnectionReceive(PEConnection *object, RData** result) {
                 } else {
                     RError("PEConnectionReceive. Can't allocate buffer.", object);
                     RMutexUnlock(cmutex);
-                    return networkOperationErrorAllocationConst;
+                    if(status != nil) {
+                        *status = networkOperationErrorAllocationConst;
+                    }
+                    return nil;
                 }
             if(isContainsSubArray(storage->masterRDataObject->data, received, (byte *) packetEndString, 24)) {
                 break;
@@ -302,14 +306,16 @@ byte PEConnectionReceive(PEConnection *object, RData** result) {
 #endif
 
     // decrypt
-    *result = decryptDataWithConnectionContext(&temp, object->connectionContext);
-    if(*result == nil) {
-        resultFlag = networkOperationErrorCryptConst;
+    result = decryptDataWithConnectionContext(&temp, object->connectionContext);
+    if(result == nil) {
+        if(status != nil) {
+            *status = networkOperationErrorCryptConst;
+        }
     }
     // cleanup
     deleter(storage, RBuffer);
     RMutexUnlock(cmutex);
-    return resultFlag;
+    return result;
 }
 
 #pragma mark Wrappers

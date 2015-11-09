@@ -26,15 +26,13 @@ void receive() {
     RSocket *listener = openListenerOnPort(3000, 10);
     while(listener != nil) {
         RPrintLn("Listen");
-        RSocket *client = acceptRSocket(listener);
+        RData *result;
+        PEConnection *connection = PEConnectionInit(acceptRSocket(listener), initPEContext(masterKey));
 
-        if(client != nil) {
-            RPrintLn("Accepted");
-            RData *result;
-            PEConnection *connection = PEConnectionInit(client, initPEContext(masterKey));
-            PEConnectionReceive(connection, &result);
+        if(connection != nil) {
+            result = PEConnectionReceive(connection, nil);
 
-            if(result != nil) {
+            if (result != nil) {
                 RPrintLn("Received bufffer");
                 p(RData)(result);
 
@@ -49,8 +47,7 @@ void receive() {
 
             deleter(connection, PEConnection);
             deleter(listener, RSocket);
-        } else {
-            break;
+            listener = nil;
         }
     }
 
@@ -75,15 +72,15 @@ int main(int argc, const char *argv[]) {
                              "Hello world from crypto maniac 2!\n"
                              "Hello world from crypto maniac 3!\n"
                              "Hello world from crypto maniac 4!\n"
-                                     "Hello world from crypto maniac 5!\n"
-                                     "Hello world from crypto maniac 6!\n"
-                                     "Hello world from crypto maniac 7!\n"
-                                     "Hello world from crypto maniac 8!\n"
-                                     "Hello world from crypto maniac 9!\n"
-                                     "Hello world from crypto maniac 10!\n"
-                                     "Hello world from crypto maniac 11!\n"
-                                     "Hello world from crypto maniac 12!\n"
-                                     "Hello world from crypto maniac 13!\n"
+                             "Hello world from crypto maniac 5!\n"
+                             "Hello world from crypto maniac 6!\n"
+                             "Hello world from crypto maniac 7!\n"
+                             "Hello world from crypto maniac 8!\n"
+                             "Hello world from crypto maniac 9!\n"
+                             "Hello world from crypto maniac 10!\n"
+                             "Hello world from crypto maniac 11!\n"
+                             "Hello world from crypto maniac 12!\n"
+                             "Hello world from crypto maniac 13!\n"
 
         ), m(copy, RData)));
 

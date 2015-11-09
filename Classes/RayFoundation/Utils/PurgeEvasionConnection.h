@@ -46,7 +46,7 @@ RData* decryptDataWithConnectionContext(      RData *data, PEConnectionContext* 
 
     // main
     byte          PEConnectionSend     (PEConnection *object, const RData *toSend);
-    byte          PEConnectionReceive  (PEConnection *object, RData **result);
+    RData *       PEConnectionReceive  (PEConnection *object, byte *status);
 
     // wrappers
     extern
