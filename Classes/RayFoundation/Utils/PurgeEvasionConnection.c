@@ -177,8 +177,8 @@ struct PEConnection {
 const byte networkOperationErrorCryptConst = 2;
 const byte networkOperationErrorAllocationConst = 3;
 
-const char packetEndString[24]       = "PEPacketEND PEPacketEND ";
-const char packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
+const byte packetEndString[24]       = "PEPacketEND PEPacketEND ";
+const byte packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
 
 PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
     PEConnection *object = allocator(PEConnection);

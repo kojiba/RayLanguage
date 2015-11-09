@@ -74,7 +74,18 @@ int main(int argc, const char *argv[]) {
         RData *toSend = $(RS("Hello world from crypto maniac 1!\n"
                              "Hello world from crypto maniac 2!\n"
                              "Hello world from crypto maniac 3!\n"
-                             "Hello world from crypto maniac 4!\n"), m(copy, RData)));
+                             "Hello world from crypto maniac 4!\n"
+                                     "Hello world from crypto maniac 5!\n"
+                                     "Hello world from crypto maniac 6!\n"
+                                     "Hello world from crypto maniac 7!\n"
+                                     "Hello world from crypto maniac 8!\n"
+                                     "Hello world from crypto maniac 9!\n"
+                                     "Hello world from crypto maniac 10!\n"
+                                     "Hello world from crypto maniac 11!\n"
+                                     "Hello world from crypto maniac 12!\n"
+                                     "Hello world from crypto maniac 13!\n"
+
+        ), m(copy, RData)));
 
         toSend->type = RDataTypeBytes;
 

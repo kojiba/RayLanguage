@@ -394,7 +394,7 @@ byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replace
     return array;
 }
 
-byte* replaceBytesWithBytes(byte *array, size_t *size, byte *toReplace, size_t toReplaceSize, byte *replacer, size_t replacerSize) {
+byte* replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, size_t toReplaceSize, const byte *replacer, size_t replacerSize) {
     size_t index = indexOfFirstSubArray(array, *size, toReplace, toReplaceSize);
 
     while(index != RNotFound) {

@@ -78,7 +78,7 @@ extern byte* trimAfterSubArray(byte *array, size_t *size, const byte *sub, size_
 extern byte* trimBeforeSubArray(byte *array, size_t *size,const byte *sub, size_t subSize);
 
 byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer);
-byte* replaceBytesWithBytes(byte *array, size_t *size, byte *toReplace, size_t toReplaceSize, byte *replacer, size_t replacerSize);
+byte* replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, size_t toReplaceSize, const byte *replacer, size_t replacerSize);
 
 byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place);
 
