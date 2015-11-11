@@ -13,9 +13,24 @@
  *         |__/
  **/
 
-#include <RayFoundation/REncoding/purge.h>
+#include "RayFoundation/REncoding/purge.h"
 #include "PurgeEvasionTCPHandler.h"
-#include "PurgeEvasionConnection.h"
+
+RTCPDataStructPE* RTCPDataStructPEWithSession(PEConnection *connection){
+    if(connection != nil) {
+        RTCPDataStructPE *result = allocator(RTCPDataStructPE);
+        if(result) {
+            result->connection = connection;
+        }
+    }
+}
+
+void RTCPDataStructPEWithSessionDeleter(RTCPDataStructPE *data) {
+    PEConnectionDeleter(data->connection);
+    if(data->context != nil && data->dataStructContextDestructor != nil) {
+        data->dataStructContextDestructor(data->context);
+    }
+}
 
 pointer startPESessionOnConnection(RTCPDataStruct *data) {
     uint64_t blankKey[8] = {};
@@ -31,10 +46,13 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
                 RError1("RTCPHandlerPE. Bad session key data, cancelling session identifier %lu", peHandler, data->identifier);
                 return nil;
             }
-            data->context = PEConnectionInit(data->socket, initPEContext((uint64_t *) sessionKey->data));
+
+            data->context = RTCPDataStructPEWithSession(PEConnectionInit(data->socket, initPEContext((uint64_t *) sessionKey->data)));
         } else {
-            data->context = PEConnectionInit(data->socket, initPEContext(blankKey));
+            data->context = RTCPDataStructPEWithSession(PEConnectionInit(data->socket, initPEContext(blankKey)));
         }
+
+        ((RTCPDataStructPE *)data->context)->dataStructContextDestructor = peHandler->dataStructContextDestructor;
 
         return peHandler->delegate->delegateFunction(data);
 
@@ -48,7 +66,7 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
 
 rbool RTCPHandlerPEMulticastEnumerator(RString *context, RTCPDataStruct *data, size_t iterator) {
     if(data->socket != nil) {
-        PEConnectionSendString(data->context, context);
+        PEConnectionSendString(((RTCPDataStructPE*)data->context)->connection, context);
     }
     return yes;
 }
@@ -59,10 +77,11 @@ constructor(RTCPHandlerPE)) {
         object->handler = c(RTCPHandler)(nil);
         if(object->handler != nil) {
             object->keyGeneratorDelegate = nil;
+            object->dataStructContextDestructor = nil;
 
             object->selfDelegate.context = object;
             object->selfDelegate.delegateFunction = startPESessionOnConnection;
-            object->handler->dataStructContextDestructor = PEConnectionDeleter;
+            object->handler->dataStructContextDestructor = (DestructorDelegate) RTCPDataStructPEWithSessionDeleter;
             $(object->handler, m(set_delegate, RTCPHandler)), &object->selfDelegate);
             object->handler->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerPEMulticastEnumerator;
 

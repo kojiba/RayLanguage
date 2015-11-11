@@ -18,6 +18,7 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <unistd.h>
+#include <RayFoundation/Utils/PurgeEvasionTCPHandler.h>
 #include "Tests.h"
 
 
@@ -53,49 +54,48 @@ void receive() {
 
 }
 
+RData* EmptyKeyForConnectionData(RTCPDataStruct *connectionData, pointer context) {
+    return nil;
+}
+
+pointer TempExec(RTCPDataStruct *data) {
+    RPrintf("one connected");
+}
+
+void startPEServer(){
+    RTCPHandlerPE **server;
+    RTCPDelegate **delegate;
+    PEKeyGeneratorDelegate **keyGenerator;
+
+    *keyGenerator = allocator(PEKeyGeneratorDelegate);
+    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
+
+    *server = c(RTCPHandlerPE)(nil);
+
+    if(*server != nil) {
+
+        $((*server), m(set_keyGeneratorDelegate, RTCPHandlerPE)), *keyGenerator);
+
+        (*server)->dataStructContextDestructor = nil;
+
+
+        *delegate = allocator(RTCPDelegate);
+        if(*delegate != nil) {
+            (*delegate)->delegateFunction = TempExec;
+            (*delegate)->context          = nil;
+
+            $(*server,  m(set_delegate, RTCPHandlerPE)), *delegate);
+            $(*server,  m(startOnPort,  RTCPHandlerPE)), 3000);
+
+            RPrintf("RTCPHandlerPE server started %p on port %u\n", *server, 3000);
+        }
+    }
+}
+
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    uint64_t masterKey[8] = {};
-
-    RThread receiver = makeRThread((RThreadFunction) receive);
-
-    sleep(1);
-
-    RSocket *socket = socketConnectedTo("127.0.0.1", 3000);
-    RPrintLn("Connected");
-    PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
-
-    if(connection != nil) {
-        RData *toSend = $(RS("Hello world from crypto maniac 1!\n"
-                             "Hello world from crypto maniac 2!\n"
-                             "Hello world from crypto maniac 3!\n"
-                             "Hello world from crypto maniac 4!\n"
-                             "Hello world from crypto maniac 5!\n"
-                             "Hello world from crypto maniac 6!\n"
-                             "Hello world from crypto maniac 7!\n"
-                             "Hello world from crypto maniac 8!\n"
-                             "Hello world from crypto maniac 9!\n"
-                             "Hello world from crypto maniac 10!\n"
-                             "Hello world from crypto maniac 11!\n"
-                             "Hello world from crypto maniac 12!\n"
-                             "Hello world from crypto maniac 13!\n"
-
-        ), m(copy, RData)));
-
-        toSend->type = RDataTypeBytes;
-
-        PEConnectionSend(connection, toSend);
-        RPrintLn("Sended");
-        p(RData)(toSend);
-        deleter(toSend, RData);
-        deleter(connection, PEConnection);
-
-        RThreadJoin(receiver);
-    }
-
-    RThreadCancel(receiver);
 
     endRay();
 }

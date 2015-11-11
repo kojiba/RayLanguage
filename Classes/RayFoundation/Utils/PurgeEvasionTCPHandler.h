@@ -17,8 +17,15 @@
 #define __PURGE_EVASION_TCP_HANDLER__
 
 #include "RayFoundation/RNetwork/RTCPHandler.h"
+#include "PurgeEvasionConnection.h"
 
 #ifndef RAY_EMBEDDED
+
+typedef struct RTCPDataStructPE {
+    pointer context;
+    PEConnection *connection;
+    DestructorDelegate dataStructContextDestructor;
+} RTCPDataStructPE;
 
 protocol(PEKeyGeneratorDelegate)
     RData* (*keyForConnectionData)(RTCPDataStruct *connectionData, pointer context);
@@ -28,8 +35,10 @@ class(RTCPHandlerPE)
     RTCPDelegate selfDelegate;
     RTCPHandler *handler;
 
-    RTCPDelegate *delegate;
+    RTCPDelegate           *delegate;
     PEKeyGeneratorDelegate *keyGeneratorDelegate;
+
+    DestructorDelegate   dataStructContextDestructor; // RTCPDataStruct->context->context
 endOf(RTCPHandlerPE)
 
 constructor(RTCPHandlerPE));
