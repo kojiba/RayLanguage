@@ -207,6 +207,11 @@ destructor(PEConnection) {
     RMutexDestroy(cmutex);
 }
 
+void PEConnectionDeleter(pointer connection) {
+    deleter(connection, PEConnection);
+    deallocator(connection);
+}
+
 static inline
 void PEConnectionPrepareBuffer(RData *array) {
     array->data = replaceBytesWithBytes(array->data, &array->size, packetEndString, 24, packetEndShieldString, 48);

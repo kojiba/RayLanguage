@@ -43,6 +43,7 @@ RData* decryptDataWithConnectionContext(      RData *data, PEConnectionContext* 
 
     PEConnection* PEConnectionInit     (RSocket *socket,      PEConnectionContext *context);
     destructor   (PEConnection);
+    void PEConnectionDeleter(pointer connection);
 
     // main
     byte          PEConnectionSend     (PEConnection *object, const RData *toSend);

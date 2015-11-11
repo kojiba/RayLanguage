@@ -21,13 +21,15 @@
 #ifndef RAY_EMBEDDED
 
 protocol(PEKeyGeneratorDelegate)
-    RData* (*keyForConnectionData)(RTCPDataStruct *connectionData);
+    RData* (*keyForConnectionData)(RTCPDataStruct *connectionData, pointer context);
 endOf(PEKeyGeneratorDelegate)
 
 class(RTCPHandlerPE)
-    RTCPHandler *handler;
     RTCPDelegate selfDelegate;
-    PEKeyGeneratorDelegate *delegate;
+    RTCPHandler *handler;
+
+    RTCPDelegate *delegate;
+    PEKeyGeneratorDelegate *keyGeneratorDelegate;
 endOf(RTCPHandlerPE)
 
 constructor(RTCPHandlerPE));
@@ -38,14 +40,15 @@ printer(RTCPHandlerPE);
 getter(delegate, RTCPDelegate *, RTCPHandlerPE);
 setter(delegate, RTCPDelegate *, RTCPHandlerPE);
 
-method(void, startOnPort,    RTCPHandlerPE),    uint16_t port);
-method(void, startWithHost,  RTCPHandlerPE),    RString *address, u16 port, size_t connectionsCount);
-method(void, waitConnectors, RTCPHandlerPE));
-method(void, terminate,      RTCPHandlerPE));
-method(void, multicast,      RTCPHandlerPE),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
+getter(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
+setter(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
 
-extern
-method(void, broadcast,     RTCPHandlerPE), RString *string);
+extern method(void, startOnPort,    RTCPHandlerPE),    uint16_t port);
+extern method(void, startWithHost,  RTCPHandlerPE),    RString *address, u16 port, size_t connectionsCount);
+extern method(void, waitConnectors, RTCPHandlerPE));
+extern method(void, terminate,      RTCPHandlerPE));
+extern method(void, multicast,      RTCPHandlerPE),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
+extern method(void, broadcast,      RTCPHandlerPE), RString *string);
 
 #endif /* RAY_EMBEDDED */
 

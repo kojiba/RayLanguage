@@ -13,14 +13,58 @@
  *         |__/
  **/
 
+#include <RayFoundation/REncoding/purge.h>
 #include "PurgeEvasionTCPHandler.h"
+#include "PurgeEvasionConnection.h"
+
+pointer startPESessionOnConnection(RTCPDataStruct *data) {
+    uint64_t blankKey[8] = {};
+    RTCPHandlerPE* peHandler = ((RTCPHandlerPE*)data->delegate->context);
+    RData *sessionKey = nil;
+    if(peHandler) {
+        sessionKey = peHandler->keyGeneratorDelegate->keyForConnectionData(data, peHandler->keyGeneratorDelegate->context);
+        if(sessionKey) {
+            if(sessionKey->size != purgeBytesCount) {
+                RWarning1("RTCPHandlerPE. Weak session key, size in bytes %lu", peHandler, sessionKey->size);
+            }
+            if(sessionKey->data == nil) {
+                RError1("RTCPHandlerPE. Bad session key data, cancelling session identifier %lu", peHandler, data->identifier);
+                return nil;
+            }
+            data->context = PEConnectionInit(data->socket, initPEContext((uint64_t *) sessionKey->data));
+        } else {
+            data->context = PEConnectionInit(data->socket, initPEContext(blankKey));
+        }
+
+        return peHandler->delegate->delegateFunction(data);
+
+
+    } else {
+        nilDeleter(data->socket, RSocket);
+    }
+
+    return nil;
+}
+
+rbool RTCPHandlerPEMulticastEnumerator(RString *context, RTCPDataStruct *data, size_t iterator) {
+    if(data->socket != nil) {
+        PEConnectionSendString(data->context, context);
+    }
+    return yes;
+}
 
 constructor(RTCPHandlerPE)) {
     object = allocator(RTCPHandlerPE);
     if(object != nil) {
         object->handler = c(RTCPHandler)(nil);
         if(object->handler != nil) {
+            object->keyGeneratorDelegate = nil;
+
+            object->selfDelegate.context = object;
+            object->selfDelegate.delegateFunction = startPESessionOnConnection;
+            object->handler->dataStructContextDestructor = PEConnectionDeleter;
             $(object->handler, m(set_delegate, RTCPHandler)), &object->selfDelegate);
+            object->handler->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerPEMulticastEnumerator;
 
         } else {
             deallocator(object);
@@ -30,18 +74,58 @@ constructor(RTCPHandlerPE)) {
     return object;
 }
 
-destructor(RTCPHandlerPE);
+destructor(RTCPHandlerPE) {
+    deleter(object->handler, RTCPHandler);
+}
 
-printer(RTCPHandlerPE);
+printer(RTCPHandlerPE) {
+    $(object->handler, p(RTCPHandler)));
+}
 
-getter(delegate, RTCPDelegate *, RTCPHandlerPE);
-setter(delegate, RTCPDelegate *, RTCPHandlerPE);
+getterImpl(delegate, RTCPDelegate *, RTCPHandlerPE);
+setterImpl(delegate, RTCPDelegate *, RTCPHandlerPE);
 
-method(void, startOnPort,    RTCPHandlerPE),    uint16_t port);
-method(void, startWithHost,  RTCPHandlerPE),    RString *address, u16 port, size_t connectionsCount);
-method(void, waitConnectors, RTCPHandlerPE));
-method(void, terminate,      RTCPHandlerPE));
-method(void, multicast,      RTCPHandlerPE),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
+getterImpl(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
+setterImpl(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
 
-extern
-method(void, broadcast,     RTCPHandlerPE), RString *string);
+method(rbool, checkDelegates, RTCPHandlerPE)) {
+    if(object->keyGeneratorDelegate == nil) {
+        RWarning("RTCPHandlerPE. Key generator delegate is nil, What do you want to start?!", object);
+        return no;
+    }
+    return yes;
+}
+
+inline
+method(void, startOnPort, RTCPHandlerPE), uint16_t port) {
+    if($(object, m(checkDelegates, RTCPHandlerPE)))){
+        $(object->handler, m(startOnPort, RTCPHandler)), port);
+    }
+}
+
+inline
+method(void, startWithHost, RTCPHandlerPE), RString *address, u16 port, size_t connectionsCount) {
+    if($(object, m(checkDelegates, RTCPHandlerPE)))){
+        $(object->handler, m(startWithHost, RTCPHandler)), address, port, connectionsCount);
+    }
+}
+
+inline
+method(void, waitConnectors, RTCPHandlerPE)) {
+    $(object->handler, m(waitConnectors, RTCPHandler)));
+}
+
+inline
+method(void, terminate, RTCPHandlerPE)) {
+    $(object->handler, m(terminate, RTCPHandler)));
+}
+
+inline
+method(void, multicast, RTCPHandlerPE), REnumerateDelegate *predicate, const pointer buffer, size_t size) {
+    $(object->handler, m(multicast, RTCPHandler)), predicate, buffer, size);
+}
+
+inline
+method(void, broadcast, RTCPHandlerPE), RString *string) {
+    $(object->handler, m(broadcast, RTCPHandler)), string);
+}
