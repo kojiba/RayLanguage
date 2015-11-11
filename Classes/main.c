@@ -33,7 +33,7 @@ void receive() {
             result = PEConnectionReceive(connection, nil);
 
             if (result != nil) {
-                RPrintLn("Received bufffer");
+                RPrintLn("Received buffer");
                 p(RData)(result);
 
                 $(result, m(validateToASCII, RString)));
@@ -57,45 +57,51 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    uint64_t masterKey[8] = {};
+//    uint64_t masterKey[8] = {};
+//
+//    RThread receiver = makeRThread((RThreadFunction) receive);
+//
+//    sleep(1);
+//
+//    RSocket *socket = socketConnectedTo("127.0.0.1", 3000);
+//    RPrintLn("Connected");
+//    PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
+//
+//    if(connection != nil) {
+//        RData *toSend = $(RS("Hello world from crypto maniac 1!\n"
+//                             "Hello world from crypto maniac 2!\n"
+//                             "Hello world from crypto maniac 3!\n"
+//                             "Hello world from crypto maniac 4!\n"
+//                             "Hello world from crypto maniac 5!\n"
+//                             "Hello world from crypto maniac 6!\n"
+//                             "Hello world from crypto maniac 7!\n"
+//                             "Hello world from crypto maniac 8!\n"
+//                             "Hello world from crypto maniac 9!\n"
+//                             "Hello world from crypto maniac 10!\n"
+//                             "Hello world from crypto maniac 11!\n"
+//                             "Hello world from crypto maniac 12!\n"
+//                             "Hello world from crypto maniac 13!\n"
+//
+//        ), m(copy, RData)));
+//
+//        toSend->type = RDataTypeBytes;
+//
+//        PEConnectionSend(connection, toSend);
+//        RPrintLn("Sended");
+//        p(RData)(toSend);
+//        deleter(toSend, RData);
+//        deleter(connection, PEConnection);
+//
+//        RThreadJoin(receiver);
+//    }
+//
+//    RThreadCancel(receiver);
 
-    RThread receiver = makeRThread((RThreadFunction) receive);
+    RString *temp = RSC("øˆ˙(+397)¬ˆ˙¥ˆ¥œ∑∂");
+    $(temp, m(deleteAllSubstrings, RString)), RS("(+397)"));
+    p(RString)(temp);
 
-    sleep(1);
-
-    RSocket *socket = socketConnectedTo("127.0.0.1", 3000);
-    RPrintLn("Connected");
-    PEConnection *connection = PEConnectionInit(socket, initPEContext(masterKey));
-
-    if(connection != nil) {
-        RData *toSend = $(RS("Hello world from crypto maniac 1!\n"
-                             "Hello world from crypto maniac 2!\n"
-                             "Hello world from crypto maniac 3!\n"
-                             "Hello world from crypto maniac 4!\n"
-                             "Hello world from crypto maniac 5!\n"
-                             "Hello world from crypto maniac 6!\n"
-                             "Hello world from crypto maniac 7!\n"
-                             "Hello world from crypto maniac 8!\n"
-                             "Hello world from crypto maniac 9!\n"
-                             "Hello world from crypto maniac 10!\n"
-                             "Hello world from crypto maniac 11!\n"
-                             "Hello world from crypto maniac 12!\n"
-                             "Hello world from crypto maniac 13!\n"
-
-        ), m(copy, RData)));
-
-        toSend->type = RDataTypeBytes;
-
-        PEConnectionSend(connection, toSend);
-        RPrintLn("Sended");
-        p(RData)(toSend);
-        deleter(toSend, RData);
-        deleter(connection, PEConnection);
-
-        RThreadJoin(receiver);
-    }
-
-    RThreadCancel(receiver);
+    deleter(temp, RString);
 
     endRay();
 }
