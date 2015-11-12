@@ -209,7 +209,6 @@ destructor(PEConnection) {
 
 void PEConnectionDeleter(pointer connection) {
     deleter(connection, PEConnection);
-    deallocator(connection);
 }
 
 static inline

@@ -53,11 +53,11 @@ getter(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
 setter(keyGeneratorDelegate, PEKeyGeneratorDelegate *, RTCPHandlerPE);
 
 extern method(void, startOnPort,    RTCPHandlerPE),    uint16_t port);
-extern method(void, startWithHost,  RTCPHandlerPE),    RString *address, u16 port, size_t connectionsCount);
+extern method(void, startWithHost,  RTCPHandlerPE),    const RString *address, u16 port, size_t connectionsCount);
 extern method(void, waitConnectors, RTCPHandlerPE));
 extern method(void, terminate,      RTCPHandlerPE));
 extern method(void, multicast,      RTCPHandlerPE),    REnumerateDelegate *predicate, const pointer buffer, size_t size);
-extern method(void, broadcast,      RTCPHandlerPE), RString *string);
+extern method(void, broadcast,      RTCPHandlerPE),    RString *string);
 
 #endif /* RAY_EMBEDDED */
 

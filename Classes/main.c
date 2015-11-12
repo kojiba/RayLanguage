@@ -21,51 +21,41 @@
 #include <RayFoundation/Utils/PurgeEvasionTCPHandler.h>
 #include "Tests.h"
 
-
-void receive() {
-    uint64_t masterKey[8] = {};
-    RSocket *listener = openListenerOnPort(3000, 10);
-    while(listener != nil) {
-        RPrintLn("Listen");
-        RData *result;
-        PEConnection *connection = PEConnectionInit(acceptRSocket(listener), initPEContext(masterKey));
-
-        if(connection != nil) {
-            result = PEConnectionReceive(connection, nil);
-
-            if (result != nil) {
-                RPrintLn("Received buffer");
-                p(RData)(result);
-
-                $(result, m(validateToASCII, RString)));
-                p(RData)(result);
-
-                deleter(result, RData);
-
-            } else {
-                RPrintLn("Error receive");
-            }
-
-            deleter(connection, PEConnection);
-            deleter(listener, RSocket);
-            listener = nil;
-        }
-    }
-
-}
-
 RData* EmptyKeyForConnectionData(RTCPDataStruct *connectionData, pointer context) {
     return nil;
 }
 
 pointer TempExec(RTCPDataStruct *data) {
-    RPrintf("one connected");
+    RPrintf("%lu connected\n", data->identifier);
+
+    RData *received = PEConnectionReceive(((RTCPDataStructPE*)data->context)->connection, nil);
+
+    if(received) {
+        received->type = RDataTypeASCII;
+        p(RData)(received);
+    }
+    nilDeleter(received, RData);
+
+    PEConnectionDeleter(((RTCPDataStructPE*)data->context)->connection);
+    ((RTCPDataStructPE*)data->context)->connection = nil;
+    data->socket = nil;
+    data->context = nil;
+
+    return nil;
 }
 
+RTCPHandlerPE *globalHandler;
+RTCPDelegate *globalDelegate;
+
 void startPEServer(){
-    RTCPHandlerPE **server;
-    RTCPDelegate **delegate;
-    PEKeyGeneratorDelegate **keyGenerator;
+
+    RTCPHandlerPE *server1;
+    RTCPDelegate *delegate1;
+    PEKeyGeneratorDelegate *keyGenerator1;
+
+    RTCPHandlerPE **server = &globalHandler;
+    RTCPDelegate **delegate = &globalDelegate;
+    PEKeyGeneratorDelegate **keyGenerator = &keyGenerator1;
 
     *keyGenerator = allocator(PEKeyGeneratorDelegate);
     (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
@@ -92,10 +82,72 @@ void startPEServer(){
     }
 }
 
+pointer TempExec2(RTCPDataStruct *data) {
+    RPrintf("%lu connecting...\n", data->identifier);
+
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
+    data->socket = nil;
+
+    return nil;
+}
+
+void startPEClient(){
+    RTCPHandlerPE *server1;
+    RTCPDelegate *delegate1;
+    PEKeyGeneratorDelegate *keyGenerator1;
+
+    RTCPHandlerPE **server = &server1;
+    RTCPDelegate **delegate = &delegate1;
+    PEKeyGeneratorDelegate **keyGenerator = &keyGenerator1;
+
+    *keyGenerator = allocator(PEKeyGeneratorDelegate);
+    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
+
+    *server = c(RTCPHandlerPE)(nil);
+
+    if(*server != nil) {
+
+        $((*server), m(set_keyGeneratorDelegate, RTCPHandlerPE)), *keyGenerator);
+
+        (*server)->dataStructContextDestructor = nil;
+
+
+        *delegate = allocator(RTCPDelegate);
+        if(*delegate != nil) {
+            (*delegate)->delegateFunction = TempExec2;
+            (*delegate)->context          = nil;
+
+            $(*server,  m(set_delegate, RTCPHandlerPE)), *delegate);
+            $(*server,  m(startWithHost,  RTCPHandlerPE)), RS("127.0.0.1"), 3000, 5);
+
+            RPrintf("RTCPHandlerPE connector started %p on port %u\n", *server, 3000);
+
+            $(*server, m(waitConnectors, RTCPHandlerPE)));
+
+
+            deleter(*server, RTCPHandlerPE);
+            deallocator(*delegate);
+            deallocator(*keyGenerator);
+        }
+    }
+}
+
+
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
+    RThread thread = makeRThread((RThreadFunction) startPEServer);
+    sleep(2);
+
+    RThread threadConnector = makeRThread((RThreadFunction) startPEClient);
+
+    RThreadJoin(threadConnector);
+
+    $(globalHandler, m(terminate, RTCPHandlerPE)));
+    deleter(globalHandler, RTCPHandlerPE);
+
+    deallocator(globalDelegate);
 
     endRay();
 }

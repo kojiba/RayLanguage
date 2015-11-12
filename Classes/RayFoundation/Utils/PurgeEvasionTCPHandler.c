@@ -21,12 +21,17 @@ RTCPDataStructPE* RTCPDataStructPEWithSession(PEConnection *connection){
         RTCPDataStructPE *result = allocator(RTCPDataStructPE);
         if(result) {
             result->connection = connection;
+            return result;
         }
     }
+    return nil;
 }
 
 void RTCPDataStructPEWithSessionDeleter(RTCPDataStructPE *data) {
-    PEConnectionDeleter(data->connection);
+    if(data->connection != nil) {
+        PEConnectionDeleter(data->connection);
+    }
+
     if(data->context != nil && data->dataStructContextDestructor != nil) {
         data->dataStructContextDestructor(data->context);
     }
@@ -53,12 +58,14 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
         }
 
         ((RTCPDataStructPE *)data->context)->dataStructContextDestructor = peHandler->dataStructContextDestructor;
+        ((RTCPDataStructPE *)data->context)->context = peHandler->delegate->context;
 
         return peHandler->delegate->delegateFunction(data);
 
 
     } else {
         nilDeleter(data->socket, RSocket);
+        data->socket = nil;
     }
 
     return nil;
@@ -123,7 +130,7 @@ method(void, startOnPort, RTCPHandlerPE), uint16_t port) {
 }
 
 inline
-method(void, startWithHost, RTCPHandlerPE), RString *address, u16 port, size_t connectionsCount) {
+method(void, startWithHost, RTCPHandlerPE), const RString *address, u16 port, size_t connectionsCount) {
     if($(object, m(checkDelegates, RTCPHandlerPE)))){
         $(object->handler, m(startWithHost, RTCPHandler)), address, port, connectionsCount);
     }

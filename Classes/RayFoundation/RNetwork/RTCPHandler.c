@@ -165,7 +165,7 @@ method(void, startOnPort, RTCPHandler), uint16_t port) {
     );
 }
 
-method(void, startWithHost, RTCPHandler), RString *address, u16 port, size_t connectionsCount) {
+method(void, startWithHost, RTCPHandler), const RString *address, u16 port, size_t connectionsCount) {
     if(object->delegate != nil
         && object->delegate->delegateFunction != nil
         && address != nil
