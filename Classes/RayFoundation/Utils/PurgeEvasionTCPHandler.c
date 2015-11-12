@@ -13,6 +13,7 @@
  *         |__/
  **/
 
+#include <RayFoundation/RClassTable/RClassTable.h>
 #include "RayFoundation/REncoding/purge.h"
 #include "PurgeEvasionTCPHandler.h"
 
@@ -35,6 +36,7 @@ void RTCPDataStructPEWithSessionDeleter(RTCPDataStructPE *data) {
     if(data->context != nil && data->dataStructContextDestructor != nil) {
         data->dataStructContextDestructor(data->context);
     }
+    deallocator(data);
 }
 
 pointer startPESessionOnConnection(RTCPDataStruct *data) {
@@ -92,6 +94,7 @@ constructor(RTCPHandlerPE)) {
             $(object->handler, m(set_delegate, RTCPHandler)), &object->selfDelegate);
             object->handler->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerPEMulticastEnumerator;
 
+            object->classId = registerClassOnce(toString(RTCPHandlerPE));
         } else {
             deallocator(object);
             object = nil;

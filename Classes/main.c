@@ -39,23 +39,22 @@ pointer TempExec(RTCPDataStruct *data) {
     PEConnectionDeleter(((RTCPDataStructPE*)data->context)->connection);
     ((RTCPDataStructPE*)data->context)->connection = nil;
     data->socket = nil;
-    data->context = nil;
 
     return nil;
 }
 
 RTCPHandlerPE *globalHandler;
 RTCPDelegate *globalDelegate;
+PEKeyGeneratorDelegate *globalKeyGenerator;
 
 void startPEServer(){
-
-    RTCPHandlerPE *server1;
-    RTCPDelegate *delegate1;
-    PEKeyGeneratorDelegate *keyGenerator1;
+//    RTCPHandlerPE *server1;
+//    RTCPDelegate *delegate1;
+//    PEKeyGeneratorDelegate *keyGenerator1;
 
     RTCPHandlerPE **server = &globalHandler;
     RTCPDelegate **delegate = &globalDelegate;
-    PEKeyGeneratorDelegate **keyGenerator = &keyGenerator1;
+    PEKeyGeneratorDelegate **keyGenerator = &globalKeyGenerator;
 
     *keyGenerator = allocator(PEKeyGeneratorDelegate);
     (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
@@ -132,22 +131,20 @@ void startPEClient(){
     }
 }
 
-
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    RThread thread = makeRThread((RThreadFunction) startPEServer);
+    startPEServer();
     sleep(2);
 
-    RThread threadConnector = makeRThread((RThreadFunction) startPEClient);
-
-    RThreadJoin(threadConnector);
+    startPEClient();
 
     $(globalHandler, m(terminate, RTCPHandlerPE)));
-    deleter(globalHandler, RTCPHandlerPE);
 
+    deleter(globalHandler, RTCPHandlerPE);
     deallocator(globalDelegate);
+    deallocator(globalKeyGenerator);
 
     endRay();
 }
