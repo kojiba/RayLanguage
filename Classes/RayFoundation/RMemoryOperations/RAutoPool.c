@@ -79,7 +79,7 @@
 void poolPrinter(pointer some) {
 #ifdef R_POOL_DETAILED
     RPoolDescriptor* temp = some;
-    RPrintf("%p [s: %lu] (tuid: %lu)", temp->ptr, temp->size, (unsigned long) temp->allocatorThread);
+    RPrintf("%p  |  [s: %lu] (tuid: %lu)", temp->ptr, temp->size, (unsigned long) temp->allocatorThread);
     #ifdef R_POOL_META_ALLOC
         if(temp->tipString != nil) {
             RPrintf(" - %s", temp->tipString);

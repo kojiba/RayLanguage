@@ -1,5 +1,6 @@
 /**
  * PurgeEvasionSocket.c
+ * TCP connection with encryption
  * Author Kucheruavyu Ilya (kojiba@ro.ru)
  * 9/14/15 Ukraine Kharkiv
  *  _         _ _ _
@@ -13,6 +14,7 @@
  **/
 
 #include <RayFoundation/RString/RString_Consts.h>
+#include <RayFoundation/RMemoryOperations/RAutoPool.h>
 #include "PurgeEvasionConnection.h"
 
 
@@ -23,7 +25,6 @@
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
 
 #ifndef RAY_EMBEDDED
-    #include "RayFoundation/RString/RString_Char.h"
     #include "RayFoundation/RContainers/RBuffer.h"
 #endif
 

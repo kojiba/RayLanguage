@@ -25,6 +25,8 @@ typedef struct RTCPDataStructPE {
     pointer context;
     PEConnection *connection;
     DestructorDelegate dataStructContextDestructor;
+
+    RTCPDataStruct *ownerData;
 } RTCPDataStructPE;
 
 protocol(PEKeyGeneratorDelegate)
@@ -33,7 +35,7 @@ endOf(PEKeyGeneratorDelegate)
 
 class(RTCPHandlerPE)
     RTCPDelegate selfDelegate;
-    RTCPHandler *handler;
+    RTCPHandler    *handler;
 
     RTCPDelegate           *delegate;
     PEKeyGeneratorDelegate *keyGeneratorDelegate;

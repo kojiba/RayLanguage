@@ -57,6 +57,7 @@ void startPEServer(){
     PEKeyGeneratorDelegate **keyGenerator = &globalKeyGenerator;
 
     *keyGenerator = allocator(PEKeyGeneratorDelegate);
+    (*keyGenerator)->context = nil;
     (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
 
     *server = c(RTCPHandlerPE)(nil);
@@ -85,7 +86,6 @@ pointer TempExec2(RTCPDataStruct *data) {
     RPrintf("%lu connecting...\n", data->identifier);
 
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
-    data->socket = nil;
 
     return nil;
 }
@@ -123,6 +123,7 @@ void startPEClient(){
 
             $(*server, m(waitConnectors, RTCPHandlerPE)));
 
+            p(RTCPHandlerPE)(*server);
 
             deleter(*server, RTCPHandlerPE);
             deallocator(*delegate);
@@ -140,11 +141,17 @@ int main(int argc, const char *argv[]) {
 
     startPEClient();
 
-    $(globalHandler, m(terminate, RTCPHandlerPE)));
+    sleep(2);
 
-    deleter(globalHandler, RTCPHandlerPE);
-    deallocator(globalDelegate);
-    deallocator(globalKeyGenerator);
+    if(globalHandler) {
+
+        p(RTCPHandlerPE)(globalHandler);
+        $(globalHandler, m(terminate, RTCPHandlerPE)));
+
+        deleter(globalHandler, RTCPHandlerPE);
+        deallocator(globalDelegate);
+        deallocator(globalKeyGenerator);
+    }
 
     endRay();
 }

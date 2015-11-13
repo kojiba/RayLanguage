@@ -84,10 +84,14 @@ setterImpl(delegate, RTCPDelegate *, RTCPHandler)
 
 printer(RTCPHandler) {
     RPrintf("RTCPHandler %p -----------\n", object);
-#ifndef _WIN32
+    RPrintf("\tMode: ");
+    if(object->connectorMode) {
+        RPrintf("Connector\n");
+    } else {
+        RPrintf("Server\n");
+    }
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(object->runningThread));
-#endif
-    RPrintf("------ Arguments ------");
+    RPrintf("------ Arguments : ");
     p(RArray)(object->arguments);
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }

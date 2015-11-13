@@ -31,6 +31,8 @@ RTCPDataStructPE* RTCPDataStructPEWithSession(PEConnection *connection){
 void RTCPDataStructPEWithSessionDeleter(RTCPDataStructPE *data) {
     if(data->connection != nil) {
         PEConnectionDeleter(data->connection);
+        data->connection = nil;
+        data->ownerData->socket = nil;
     }
 
     if(data->context != nil && data->dataStructContextDestructor != nil) {
@@ -61,6 +63,7 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
 
         ((RTCPDataStructPE *)data->context)->dataStructContextDestructor = peHandler->dataStructContextDestructor;
         ((RTCPDataStructPE *)data->context)->context = peHandler->delegate->context;
+        ((RTCPDataStructPE *)data->context)->ownerData = data;
 
         return peHandler->delegate->delegateFunction(data);
 
