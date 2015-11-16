@@ -64,6 +64,8 @@ class(RTCPHandler)
     u16                 port;
     size_t              connectionsCount;
 
+    RThreadFunction     handlerStartedNotifier;
+
     RMutex              mutex;
 endOf(RTCPHandler)
 

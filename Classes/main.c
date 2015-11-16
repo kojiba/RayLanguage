@@ -47,11 +47,21 @@ RTCPHandlerPE *globalHandler;
 RTCPDelegate *globalDelegate;
 PEKeyGeneratorDelegate *globalKeyGenerator;
 
-void startPEServer(){
-//    RTCPHandlerPE *server1;
-//    RTCPDelegate *delegate1;
-//    PEKeyGeneratorDelegate *keyGenerator1;
+RThread clientThread;
 
+void startPEClient();
+
+void startedNotifier(RTCPHandler *handler) {
+    if(handler == globalHandler->handler) {
+        RPrintf("RTCPHandlerPE server started %p on port %u\n", handler, 3000);
+
+        clientThread = makeRThread((RThreadFunction) startPEClient);
+    } else {
+        RPrintf("RTCPHandlerPE connector started %p on port %u\n", handler, 3000);
+    }
+}
+
+void startPEServer(){
     RTCPHandlerPE **server = &globalHandler;
     RTCPDelegate **delegate = &globalDelegate;
     PEKeyGeneratorDelegate **keyGenerator = &globalKeyGenerator;
@@ -74,10 +84,9 @@ void startPEServer(){
             (*delegate)->delegateFunction = TempExec;
             (*delegate)->context          = nil;
 
+            (*server)->handler->handlerStartedNotifier = (RThreadFunction) startedNotifier;
             $(*server,  m(set_delegate, RTCPHandlerPE)), *delegate);
             $(*server,  m(startOnPort,  RTCPHandlerPE)), 3000);
-
-            RPrintf("RTCPHandlerPE server started %p on port %u\n", *server, 3000);
         }
     }
 }
@@ -117,13 +126,12 @@ void startPEClient(){
             (*delegate)->context          = nil;
 
             $(*server,  m(set_delegate, RTCPHandlerPE)), *delegate);
+            (*server)->handler->handlerStartedNotifier = (RThreadFunction) startedNotifier;
             $(*server,  m(startWithHost,  RTCPHandlerPE)), RS("127.0.0.1"), 3000, 5);
-
-            RPrintf("RTCPHandlerPE connector started %p on port %u\n", *server, 3000);
 
             $(*server, m(waitConnectors, RTCPHandlerPE)));
 
-            p(RTCPHandlerPE)(*server);
+//            p(RTCPHandlerPE)(*server);
 
             deleter(*server, RTCPHandlerPE);
             deallocator(*delegate);
@@ -137,15 +145,13 @@ int main(int argc, const char *argv[]) {
     ComplexTest(); // lib test
 
     startPEServer();
-    sleep(2);
 
-    startPEClient();
-
-    sleep(2);
+    sleep(1);
+    RThreadJoin(clientThread);
 
     if(globalHandler) {
 
-        p(RTCPHandlerPE)(globalHandler);
+//        p(RTCPHandlerPE)(globalHandler);
         $(globalHandler, m(terminate, RTCPHandlerPE)));
 
         deleter(globalHandler, RTCPHandlerPE);

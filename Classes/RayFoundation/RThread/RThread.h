@@ -29,19 +29,13 @@
     typedef pthread_mutex_t        RMutex;
     typedef pthread_mutexattr_t    RMutexAttributes;
 
-    typedef pthread_cond_t         RCondition;
     typedef uint64_t               RThreadId;
     typedef pointer             (* RThreadFunction)(pointer);
+    typedef pthread_cond_t         RCondition;
 
     #ifdef RAY_BLOCKS_ON
         typedef pointer (^RThreadBlock)(pointer);
     #endif
-
-
-    #define RMutexAttributeInit              pthread_mutexattr_init
-    #define RMutexAttributeSetType           pthread_mutexattr_settype
-    #define RConditionSignal                 pthread_cond_signal
-    #define RConditionWait                   pthread_cond_wait
 
     // initializers
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
@@ -67,6 +61,7 @@
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
     typedef DWORD            (WINAPI* RThreadFunction)(pointer);
     typedef DWORD                     RThreadId;
+    typedef CONDITION_VARIABLE        RCondition;
 
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
     #define RMutexAttributeInit              pthread_mutexattr_init
@@ -112,6 +107,17 @@ extern int RMutexLock    (RMutex *mutex);
 extern int RMutexUnlock  (RMutex *mutex);
 extern int RMutexTryLock (RMutex *mutex);
 extern int RMutexDestroy (RMutex *mutex);
+
+#pragma mark Conditions
+
+extern int RConditionInit      (RCondition *condition);
+extern int RConditionSignal    (RCondition *condition);
+extern int RConditionBroadcast (RCondition *condition);
+extern int RConditionWait      (RCondition *condition, RMutex *mutex);
+extern int RConditionWaitTimed (RCondition *condition, RMutex *mutex, long milliseconds);
+extern int RConditionDestroy   (RCondition *condition);
+
+
 
 #endif /* RAY_EMBEDDED */
 

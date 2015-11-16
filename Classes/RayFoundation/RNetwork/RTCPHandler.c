@@ -103,6 +103,10 @@ method(void, privateStartInMode, RTCPHandler)) {
         $(object->listener, m(listen, RSocket)), RTCPHandlerListenerQueueSize);
     }
 
+    if(object->handlerStartedNotifier != nil) {
+        object->handlerStartedNotifier(object);
+    }
+
     while(!object->terminateFlag) {
         rbool selfCleanup = yes;
         RSocket *socketInProcess = nil;
