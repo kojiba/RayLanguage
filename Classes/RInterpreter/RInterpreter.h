@@ -2,7 +2,7 @@
  * RInterpreter.h
  * A ray of light in the realm of darkness.
  * Interpreter of Ray language to pure C.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12.11.2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

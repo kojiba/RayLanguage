@@ -1,7 +1,7 @@
 /**
  * RTCPHandler.h
  * Threaded TCP connection handler.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 6/16/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

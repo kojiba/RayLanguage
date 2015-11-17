@@ -3,7 +3,7 @@
  * Data cipher based on purge encryption
  * and evasion in mode pseudo-rand generator.
  * Data hash based on evasion
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 06/02/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

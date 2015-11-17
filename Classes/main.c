@@ -29,10 +29,14 @@ pointer TempExec(RTCPDataStruct *data) {
     RPrintf("%lu connected\n", data->identifier);
 
     RData *received = PEConnectionReceive(((RTCPDataStructPE*)data->context)->connection, nil);
-
-    if(received) {
-        received->type = RDataTypeASCII;
-        p(RData)(received);
+    while($(received, m(compareWith, RData)), RS("Hello")) != equals) {
+        if (received) {
+            received->type = RDataTypeASCII;
+            p(RData)(received);
+            deleter(received, RData);
+            received = nil;
+        }
+        received = PEConnectionReceive(((RTCPDataStructPE*)data->context)->connection, nil);
     }
     nilDeleter(received, RData);
 
@@ -53,7 +57,7 @@ void startPEClient();
 
 void startedNotifier(RTCPHandler *handler) {
     if(handler == globalHandler->handler) {
-        RPrintf("RTCPHandlerPE server started %p on port %u\n", handler, 3000);
+        RPrintf("RTCPHandlerPE server    started %p on port %u\n", handler, 3000);
 
         clientThread = makeRThread((RThreadFunction) startPEClient);
     } else {
@@ -95,6 +99,7 @@ pointer TempExec2(RTCPDataStruct *data) {
     RPrintf("%lu connecting...\n", data->identifier);
 
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello"));
 
     return nil;
 }

@@ -1,7 +1,7 @@
 /**
  * @file RayBase.h
  * @brief Defines basic c-functions, to may re-format it if needed.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 9/23/2014 Ukraine Kharkiv
  *
  *//*

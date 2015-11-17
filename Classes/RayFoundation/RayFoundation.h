@@ -3,7 +3,7 @@
  * A ray of light in the realm of darkness.
  * Some additions to C.
  * If You don't like it, You can preprocess files, to get pure-C code.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

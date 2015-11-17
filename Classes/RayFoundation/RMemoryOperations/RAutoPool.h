@@ -3,7 +3,7 @@
  * Memory management instrument.
  * Self-longs array, stores malloc-calloc-realloced pointers.
  * Free it if needs.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/1/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

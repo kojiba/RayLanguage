@@ -1,7 +1,7 @@
 /**
  * RString.h
  * Realization of wrapper on '\0' - terminated C-strings, in Ray additions.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -249,31 +249,10 @@ constMethod(RString *, copy, RString)) {
 #pragma mark Comparator
 
 constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
-    if(checkString == nil || object == nil) {
-        RWarning("RString. One of compare strings is empty.", object);
-        return not_equals;
-    } else {
-        if (checkString == object) {
-            return equals;
-        } else {
-            if (checkString->size == object->size) {
-                if(compareMemory(object->data, checkString->data, object->size) == REquals) {
-                    return equals;
-                } else {
-                    return not_equals;
-                }
-            } else {
-                if(checkString->size > object->size) {
-                    return shorter;
-                } else {
-                    return longer;
-                }
-            }
-        }
-    }
+    return $(object, m(compareWith, RData)), checkString);
 }
 
-extern
+inline
 constMethod(rbool, isEqualTo, RString), const RString *checkString) {
     return (rbool)($(object, m(compareWith, RString)), checkString) == equals);
 }

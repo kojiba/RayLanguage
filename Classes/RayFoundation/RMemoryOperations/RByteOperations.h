@@ -1,7 +1,7 @@
 /**
  * RByteOperations.h
  * Realization of some operations on bytes array, like getSubArray, etc.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2.10.14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

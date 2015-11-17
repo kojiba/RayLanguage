@@ -5,7 +5,7 @@
  * Once allocated than reused. Use RS() macro.
  * Not need to be deallocated.
  *
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 04/28/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

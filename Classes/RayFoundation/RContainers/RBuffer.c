@@ -2,7 +2,7 @@
  * RBuffer.c
  * Realization of C dynamic memory buffer, in Ray additions.
  * May use like array of sized elements.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

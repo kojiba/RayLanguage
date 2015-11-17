@@ -1,7 +1,7 @@
 /**
  * RThread.c
  * Simple compile-based wrapper posix and winapi thread dependency.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/16/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -25,6 +25,9 @@
     #include <sys/signal.h>
     #include <sys/types.h>
     #include <sys/syscall.h>
+    #include <sys/errno.h>
+#else
+    #include <sys/errno.h>
 #endif
 
 #ifdef RAY_BLOCKS_ON
@@ -220,6 +223,20 @@ inline int RMutexDestroy(RMutex *mutex) {
 #else
     return CloseHandle(mutex->handle);
 #endif
+}
+
+inline rbool lockOrDeadlocked(RMutex *mutex) {
+    if(RMutexLock(mutex)
+       #ifndef _WIN32
+        == EDEADLK
+       #else
+        != WAIT_OBJECT_0
+       #endif
+    ) {
+        return no;
+    } else {
+        return yes;
+    }
 }
 
 #pragma mark Conditions

@@ -1,7 +1,7 @@
 /**
  * RString_File.c
  * File i/o for strings.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 8/10/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -1,7 +1,7 @@
 /**
  * RayChat.c
  * Simple chat on RTCPHandler.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 9/11/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -1,7 +1,7 @@
 /**
  * evasion.h
  * 512-bit block pseudo-rand gen
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 06/02/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

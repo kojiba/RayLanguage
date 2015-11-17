@@ -1,7 +1,7 @@
 /**
  * RString.h
  * Realization of wrapper on '\0' - terminated utf8 strings.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 04/23/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

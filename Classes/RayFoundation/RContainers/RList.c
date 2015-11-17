@@ -2,7 +2,7 @@
  * RList.h
  * Realization of C dynamic
  * double-linked list, in Ray additions.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 1/23/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

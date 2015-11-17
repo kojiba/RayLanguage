@@ -1,6 +1,6 @@
 /**
  * RayBase.c
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/10/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -1,7 +1,7 @@
 /**
  * RString_Char.c
  * Inlines for (char *) strings of RString API.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 05/11/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

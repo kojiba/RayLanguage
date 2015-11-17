@@ -1,7 +1,7 @@
 /**
  * RArray_Parallel.c
  * Threaded optimisation for RArray functions.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2/27/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

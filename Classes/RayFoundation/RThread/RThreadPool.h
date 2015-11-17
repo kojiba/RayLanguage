@@ -1,7 +1,7 @@
 /**
  * RThreadPool.h
  * Thread pool realization.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 1/29/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

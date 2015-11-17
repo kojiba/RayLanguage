@@ -1,7 +1,7 @@
 /**
  * purge.h
  * 512-bit block encryption algorithm
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 05/27/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -2,7 +2,7 @@
  * RArray_Parallel.h
  * Threaded optimisation for RArray functions.
  * Operations is synchronous.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2/27/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

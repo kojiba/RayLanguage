@@ -1,7 +1,7 @@
 /**
  * RThread.h
  * Simple compile-based wrapper posix and winapi thread dependency.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/16/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -107,6 +107,8 @@ extern int RMutexLock    (RMutex *mutex);
 extern int RMutexUnlock  (RMutex *mutex);
 extern int RMutexTryLock (RMutex *mutex);
 extern int RMutexDestroy (RMutex *mutex);
+
+extern rbool lockOrDeadlocked(RMutex *mutex); // no if deadlocked
 
 #pragma mark Conditions
 

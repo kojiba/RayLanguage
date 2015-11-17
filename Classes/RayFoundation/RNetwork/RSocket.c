@@ -1,7 +1,7 @@
 /**
  * RSocket.h
  * Sockets simple wrapper.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 4/8/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

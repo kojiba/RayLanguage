@@ -1,7 +1,7 @@
 /**
  * PurgeEvasionTCPHandler.h
  * RTCPHandler with PESessions
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 11/10/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

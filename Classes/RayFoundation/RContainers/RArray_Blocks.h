@@ -1,6 +1,6 @@
 /**
  * RArray_Blocks.h
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 9/29/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

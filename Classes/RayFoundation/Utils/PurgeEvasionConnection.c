@@ -1,7 +1,7 @@
 /**
  * PurgeEvasionSocket.c
  * TCP connection with encryption
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 9/14/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -1,7 +1,7 @@
 /**
  * Utils.c
  * Some useful applicable of libRay.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 05/05/2015 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -3,7 +3,7 @@
  * @brief Defines configuration flags (compile-time)
  * thread-safety of components, single platform additions,
  * compiler features, etc.
- * @author Kucheruavyu Ilya (kojiba@ro.ru)
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 1/19/2014
  * @par Ukraine Kharkiv
  *

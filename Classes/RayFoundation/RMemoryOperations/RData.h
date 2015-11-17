@@ -1,7 +1,7 @@
 /**
  * RData.h
  * Realization of some operations on bytes array, like getSubArray, etc.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 10/7/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -51,6 +51,9 @@ constMethod(RData*, copy,           RData));
 constMethod(RArray*, dataSeparatedByBytes,           RData), const RData *separatorsArray);
 constMethod(RArray*, dataSeparatedByArray,           RData), const RData *separator);
 constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separator, const RData *shield);
+
+constMethod(RCompareFlags, compareWith, RData),    const RData *checkData);
+constMethod(rbool,         isEqualTo,   RData),    const RData *checkData);
 
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
 

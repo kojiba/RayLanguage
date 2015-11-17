@@ -1,6 +1,6 @@
 /**
  * RData.c
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 10/7/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -247,6 +247,33 @@ constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separa
 
 constMethod(RArray*, dataSeparatedByArray, RData), const RData *separator) {
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separator, nil);
+}
+
+constMethod(RCompareFlags, compareWith, RData), const RData *checkData) {
+    if (checkData == object) {
+        return equals;
+    } else {
+        if(object->type != checkData->type) {
+            RWarning1("RData. Compare different data types with %p.", object, checkData);
+        }
+        if (checkData->size == object->size) {
+            if (compareMemory(object->data, checkData->data, object->size) == REquals) {
+                return equals;
+            } else {
+                return not_equals;
+            }
+        } else {
+            if (checkData->size > object->size) {
+                return shorter;
+            } else {
+                return longer;
+            }
+        }
+    }
+}
+
+constMethod(rbool, isEqualTo, RData), const RData *checkData) {
+    return (rbool)($(object, m(compareWith, RData)), checkData) == equals);
 }
 
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize) {

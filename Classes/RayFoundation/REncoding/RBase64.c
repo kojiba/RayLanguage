@@ -1,7 +1,7 @@
 /**
  * RBase64.c
  * Base64 encoding and decoding for bytes buffers.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/3/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

@@ -1,7 +1,7 @@
 /**
  * PurgeEvasionIUtilsRay.c
  * Utils for work with cipher for libRay.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 8/26/15 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

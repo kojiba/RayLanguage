@@ -4,7 +4,7 @@
  * with random pointer allocation, deallocation,
  * encryption and management table, etc.
  * May be used like auto-release pool in obj-c.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 30.10.14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |

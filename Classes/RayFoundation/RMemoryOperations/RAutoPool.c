@@ -3,7 +3,7 @@
  * Memory management instrument.
  * Self-longs array, stores malloc-calloc-realloced pointers.
  * Free it if needs.
- * Author Kucheruavyu Ilya (kojiba@ro.ru)
+ * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 12/1/14 2014 Ukraine Kharkiv
  *  _         _ _ _
  * | |       (_|_) |
@@ -34,12 +34,7 @@
     #define RMutexLockPool()   RMutexLock(poolMutex)
     #define RMutexUnlockPool() RMutexUnlock(poolMutex)
 
-    #ifndef _WIN32
-        #include <sys/errno.h>
-        #define isMutexDeadLocked RMutexLockPool() == EDEADLK
-    #else
-        #define isMutexDeadLocked RMutexLockPool() != WAIT_OBJECT_0
-    #endif
+    #define isMutexDeadLocked !lockOrDeadlocked(poolMutex)
 #else
 
     #define storePoolPtrs()   storePtrs()
