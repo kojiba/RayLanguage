@@ -89,25 +89,46 @@ RData *contentOfFile(const char *filename) {
                     RFClose(file);
                     return makeRDataBytes(buffer, (size_t) fileSize);
                 } else {
-                    RError2("contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
+                    RError2("RData. contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
                             nil, filename, fileSize);
                     RFClose(file);
                 }
 
             } elseError(
-                    RError2("contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
+                    RError2("RData. contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
                             nil, filename, fileSize
                     ));
 
         } elseError(
-                RError1("contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
+                RError1("RData. contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
         );
 
     } elseError(
-            RError1("contentOfFile. Cannot open file \"%s\".\n", nil, filename)
+            RError1("RData. contentOfFile. Cannot open file \"%s\".\n", nil, filename)
     );
 
     return nil;
+}
+
+constMethod(rbool, saveToFile, RData), const char* filename) {
+    rbool result = no;
+    FILE *file = fopen(filename, "r");
+    if (file != nil) {
+        if (remove(filename) != 0) {
+            RError("RData. Can't delete existing file with buffer", object);
+        }
+    }
+
+    file = fopen(filename, "wb+");
+    if(file != nil) {
+        size_t writed = RFWrite(object->data, 1, object->size, file);
+        if(writed != object->size) {
+            RError2("RData. Failed save string to file, write only part %lu of %lu.", object, writed, object->size);
+        } else {
+            result = yes;
+        }
+    } elseError( RError("RData. Failed save string to file, cant open file.", object) );
+    return result;
 }
 
 constMethod(RArray*, dataSeparatedByBytes, RData), const RData *separatorsArray) {

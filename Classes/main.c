@@ -29,13 +29,12 @@ pointer TempExec(RTCPDataStruct *data) {
     RPrintf("%lu connected\n", data->identifier);
 
     RData *received = PEConnectionReceive(((RTCPDataStructPE*)data->context)->connection, nil);
-    while($(received, m(compareWith, RData)), RS("Hello")) != equals) {
-        if (received) {
-            received->type = RDataTypeASCII;
-            p(RData)(received);
-            deleter(received, RData);
-            received = nil;
-        }
+
+    while(received != nil && $(received, m(compareWith, RData)), RS("Hello")) != equals) {
+        received->type = RDataTypeASCII;
+        p(RData)(received);
+        deleter(received, RData);
+
         received = PEConnectionReceive(((RTCPDataStructPE*)data->context)->connection, nil);
     }
     nilDeleter(received, RData);
@@ -99,6 +98,7 @@ pointer TempExec2(RTCPDataStruct *data) {
     RPrintf("%lu connecting...\n", data->identifier);
 
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
+    sleep(1);
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello"));
 
     return nil;
@@ -149,19 +149,59 @@ int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-    startPEServer();
+//    startPEServer();
+//
+//    sleep(1);
+//    RThreadJoin(clientThread);
+//
+//    if(globalHandler) {
+//
+////        p(RTCPHandlerPE)(globalHandler);
+//        $(globalHandler, m(terminate, RTCPHandlerPE)));
+//
+//        deleter(globalHandler, RTCPHandlerPE);
+//        deallocator(globalDelegate);
+//        deallocator(globalKeyGenerator);
+//    }
 
-    sleep(1);
-    RThreadJoin(clientThread);
+    rbool decrypt = yes;
 
-    if(globalHandler) {
+    RPrintf("Enter filename\n");
+    RString *input = getInputString();
+    RString *name = input;
+    if(input != nil) {
+        RData *data = contentOfFile((const char *) name->data);
+        if(data != nil) {
+            RPrintf("Enter key\n");
+            input = getInputString();
+            input = $(input, m(evasionHash, RData)));
 
-//        p(RTCPHandlerPE)(globalHandler);
-        $(globalHandler, m(terminate, RTCPHandlerPE)));
+            if(decrypt) {
+                RData *decrypted = $(data, m(decryptPurgeEvasion, RData)), input);
+                if(decrypted != nil) {
+                    $(name, m(trimHead, RString)), 5); // remove .purge
+                    name->data[name->size - 1] = 0;
 
-        deleter(globalHandler, RTCPHandlerPE);
-        deallocator(globalDelegate);
-        deallocator(globalKeyGenerator);
+                    if($(decrypted, m(saveToFile, RData)), (const char *) name->data)){
+                        RPrintf("Saved\n");
+                    }
+
+                    deleter(decrypted, RData);
+                }
+            } else {
+                RData *encrypted = $(data, m(encryptPurgeEvasion, RData)), input);
+                if(encrypted != nil) {
+                    $(name, m(concatenate, RString)), RS(".purge"));
+
+                    if($(encrypted, m(saveToFile, RData)), (const char *) name->data)){
+                        RPrintf("Saved\n");
+                    }
+
+                    deleter(encrypted, RData);
+                }
+            }
+            deleter(data, RData);
+        }
     }
 
     endRay();

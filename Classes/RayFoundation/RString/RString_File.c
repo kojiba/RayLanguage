@@ -16,13 +16,9 @@
 #include "RString_File.h"
 
 RString* stringFromFile(const char *filename) {
-    RData   *content = contentOfFile(filename);
-    RString *result = RSC((const char *)content->data);
-    deleter(content, RData);
-    ifError(result == nil,
-            RError1("stringFromFile. Can't create string from \"%s\".", result, filename)
-    );
-    return result;
+    RData *content = contentOfFile(filename);
+    $(content, m(validateToASCII, RString)));
+    return content;
 }
 
 method(void, appendToFile, RString), const char *filename) {

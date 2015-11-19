@@ -58,6 +58,7 @@ constMethod(rbool,         isEqualTo,   RData),    const RData *checkData);
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
 
 RData* contentOfFile(const char *filename);
+constMethod(rbool, saveToFile, RData), const char* filename);
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
 RArray* DataSeparatedByArrayWithShield(const byte *array, size_t size, const byte *separatorArray, size_t separatorSize, const byte *shield, size_t shieldSize);
 extern
