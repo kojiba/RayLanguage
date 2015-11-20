@@ -41,6 +41,8 @@ int main(int argc, const char *argv[]) {
             input = getInputString();
             key = $(input, m(evasionHash, RData)));
 
+            decrypt = $(name, m(endsOn, RString)), RS(".purge"));
+
             if(decrypt) {
 
                 RData *decrypted = $(data, m(decryptPurgeEvasion, RData)), key);
