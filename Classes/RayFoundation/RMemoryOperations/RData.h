@@ -34,7 +34,7 @@ typedef struct RData { // basic sized data struct used for store bytes arrays an
 
 RData* makeRData(const byte *array, size_t size, byte type);
 #define makeRDataBytes(array, size) makeRData(array, size, RDataTypeBytes)
-#define makeRDataAllocated(size) makeRData(arrayAllocator(byte, size), size, RDataTypeBytes)
+#define makeRDataAllocated(size)    makeRData(arrayAllocator(byte, size), size, RDataTypeBytes)
 
 destructor(RData);
 void RDataDeleter(RData* object);
@@ -48,20 +48,21 @@ constMethod(void, printInFile,           RData), FILE *file);
      method(RData*, flushAllToByte, RData),    byte symbol);
 constMethod(RData*, copy,           RData));
 
+constMethod(RCompareFlags, compareWith, RData),    const RData *checkData);
+constMethod(rbool,         isEqualTo,   RData),    const RData *checkData);
+
 constMethod(RArray*, dataSeparatedByBytes,           RData), const RData *separatorsArray);
 constMethod(RArray*, dataSeparatedByArray,           RData), const RData *separator);
 constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separator, const RData *shield);
 
-constMethod(RCompareFlags, compareWith, RData),    const RData *checkData);
-constMethod(rbool,         isEqualTo,   RData),    const RData *checkData);
 
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
-
-RData* contentOfFile(const char *filename);
-constMethod(rbool, saveToFile, RData), const char* filename);
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize);
 RArray* DataSeparatedByArrayWithShield(const byte *array, size_t size, const byte *separatorArray, size_t separatorSize, const byte *shield, size_t shieldSize);
 extern
 RArray* DataSeparatedByArray(const byte *array, size_t size, const byte *separatorArray, size_t separatorSize);
+
+RData* contentOfFile(const char *filename);
+constMethod(rbool, saveToFile, RData), const char* filename);
 
 #endif /*__R_BYTES__*/

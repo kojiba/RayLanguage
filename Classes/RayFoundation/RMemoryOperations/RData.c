@@ -73,63 +73,34 @@ constMethod(RData *, copy, RData)) {
     return makeRData(getByteArrayCopy(object->data, object->size), object->size, object->type);
 }
 
-RData *contentOfFile(const char *filename) {
-    FILE *file = RFOpen(filename, "rb");
-    byte *buffer;
-    ssize_t fileSize;
 
-    if (file != nil) {
-        RFSeek(file, 0, SEEK_END);
-        fileSize = RFTell(file);
-        if (fileSize > 0) {
-            RRewind(file);
-            buffer = arrayAllocator(byte, (fileSize + 1));
-            if (buffer != nil) {
-                if (RFRead(buffer, sizeof(byte), (size_t) fileSize, file) > 0) {
-                    RFClose(file);
-                    return makeRDataBytes(buffer, (size_t) fileSize);
-                } else {
-                    RError2("RData. contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
-                            nil, filename, fileSize);
-                    RFClose(file);
-                }
-
-            } elseError(
-                    RError2("RData. contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
-                            nil, filename, fileSize
-                    ));
-
-        } elseError(
-                RError1("RData. contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
-        );
-
-    } elseError(
-            RError1("RData. contentOfFile. Cannot open file \"%s\".\n", nil, filename)
-    );
-
-    return nil;
-}
-
-constMethod(rbool, saveToFile, RData), const char* filename) {
-    rbool result = no;
-    FILE *file = fopen(filename, "r");
-    if (file != nil) {
-        if (remove(filename) != 0) {
-            RError("RData. Can't delete existing file with buffer", object);
+constMethod(RCompareFlags, compareWith, RData), const RData *checkData) {
+    if (checkData == object) {
+        return equals;
+    } else {
+        if(object->type != checkData->type) {
+            RWarning1("RData. Compare different data types with %p.", object, checkData);
+        }
+        if (checkData->size == object->size) {
+            if (compareMemory(object->data, checkData->data, object->size) == REquals) {
+                return equals;
+            } else {
+                return not_equals;
+            }
+        } else {
+            if (checkData->size > object->size) {
+                return shorter;
+            } else {
+                return longer;
+            }
         }
     }
-
-    file = fopen(filename, "wb+");
-    if(file != nil) {
-        size_t writed = RFWrite(object->data, 1, object->size, file);
-        if(writed != object->size) {
-            RError2("RData. Failed save string to file, write only part %lu of %lu.", object, writed, object->size);
-        } else {
-            result = yes;
-        }
-    } elseError( RError("RData. Failed save string to file, cant open file.", object) );
-    return result;
 }
+
+constMethod(rbool, isEqualTo, RData), const RData *checkData) {
+    return (rbool)($(object, m(compareWith, RData)), checkData) == equals);
+}
+
 
 constMethod(RArray*, dataSeparatedByBytes, RData), const RData *separatorsArray) {
     size_t  iterator;
@@ -270,33 +241,6 @@ constMethod(RArray*, dataSeparatedByArray, RData), const RData *separator) {
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separator, nil);
 }
 
-constMethod(RCompareFlags, compareWith, RData), const RData *checkData) {
-    if (checkData == object) {
-        return equals;
-    } else {
-        if(object->type != checkData->type) {
-            RWarning1("RData. Compare different data types with %p.", object, checkData);
-        }
-        if (checkData->size == object->size) {
-            if (compareMemory(object->data, checkData->data, object->size) == REquals) {
-                return equals;
-            } else {
-                return not_equals;
-            }
-        } else {
-            if (checkData->size > object->size) {
-                return shorter;
-            } else {
-                return longer;
-            }
-        }
-    }
-}
-
-constMethod(rbool, isEqualTo, RData), const RData *checkData) {
-    return (rbool)($(object, m(compareWith, RData)), checkData) == equals);
-}
-
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize) {
     RArray* result;
     RData *temp = makeRData(array, size, RDataTypeBytes);
@@ -325,4 +269,62 @@ RArray* DataSeparatedByArrayWithShield(const byte *array, size_t size, const byt
 
 inline RArray* DataSeparatedByArray(const byte *array, size_t size, const byte *separatorArray, size_t separatorSize) {
     return DataSeparatedByArrayWithShield(array, size, separatorArray, separatorSize, nil , 0);
+}
+
+RData *contentOfFile(const char *filename) {
+    FILE *file = RFOpen(filename, "rb");
+    byte *buffer;
+    ssize_t fileSize;
+
+    if (file != nil) {
+        RFSeek(file, 0, SEEK_END);
+        fileSize = RFTell(file);
+        if (fileSize > 0) {
+            RRewind(file);
+            buffer = arrayAllocator(byte, (fileSize + 1));
+            if (buffer != nil) {
+                if (RFRead(buffer, sizeof(byte), (size_t) fileSize, file) > 0) {
+                    RFClose(file);
+                    return makeRDataBytes(buffer, (size_t) fileSize);
+                } else {
+                    RError2("RData. contentOfFile. Can't read file \"%s\" of size \"%lu\".\n",
+                            nil, filename, fileSize);
+                    RFClose(file);
+                }
+
+            } elseError(
+                    RError2("RData. contentOfFile. Bad allocation buffer for file \"%s\" of size \"%lu\".\n",
+                            nil, filename, fileSize
+                    ));
+
+        } elseError(
+                RError1("RData. contentOfFile. Error read (ftell) file \"%s\".\n", nil, filename)
+        );
+
+    } elseError(
+            RError1("RData. contentOfFile. Cannot open file \"%s\".\n", nil, filename)
+    );
+
+    return nil;
+}
+
+constMethod(rbool, saveToFile, RData), const char* filename) {
+    rbool result = no;
+    FILE *file = fopen(filename, "r");
+    if (file != nil) {
+        if (remove(filename) != 0) {
+            RError("RData. Can't delete existing file with buffer", object);
+        }
+    }
+
+    file = fopen(filename, "wb+");
+    if(file != nil) {
+        size_t writed = RFWrite(object->data, 1, object->size, file);
+        if(writed != object->size) {
+            RError2("RData. Failed save string to file, write only part %lu of %lu.", object, writed, object->size);
+        } else {
+            result = yes;
+        }
+    } elseError( RError("RData. Failed save string to file, cant open file.", object) );
+    return result;
 }

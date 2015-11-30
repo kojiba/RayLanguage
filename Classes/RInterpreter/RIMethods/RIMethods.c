@@ -131,7 +131,7 @@ method(RString*, CName, RayMethod)) {
         }
 
         return result;
-    } elseRError("RayMethod. CName, unknown method type.", object)
+    } elseError( RError("RayMethod. CName, unknown method type.", object));
 
     return nil;
 }
@@ -144,7 +144,7 @@ rbool argumentsEnumerator(pointer argument, size_t iterator) {
         $(stored, m(concatenate, RString)), type);
         // add space
         $(stored, m(append, RString)), ' ');
-    } elseRError("RayMethod. Argument enumerator. Unknown argument type.", temp)
+    } elseError( RError("RayMethod. Argument enumerator. Unknown argument type.", temp));
 
     // add name
     $(stored, m(concatenate, RString)), master(temp, RString));
@@ -228,7 +228,7 @@ RayMethod* ParseMethodString(RString *code, RClassTable *delegate) {
 
     char   *codeIterator = code->baseString;
     size_t  codeSize     = code->size;
-    size_t  tokenEnd     = indexOfFirstCharacterCString(codeIterator, codeSize,
+    size_t  tokenEnd     = indexOfFirstByte(codeIterator, codeSize,
                                                      method_type_separator);
 
     // found return type qualifier

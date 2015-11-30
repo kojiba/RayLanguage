@@ -18,6 +18,8 @@
 
 #include "RString.h"
 
+#define baseInputStringSize 40 // defines default buffer for getInputString
+
 method(void, appendToFile, RString), const char *filename);
 RString* stringFromFile(const char *filename);
 

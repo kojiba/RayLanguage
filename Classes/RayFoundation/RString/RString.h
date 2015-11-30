@@ -20,8 +20,6 @@
 #include "RayFoundation/RContainers/RArray.h"
 #include "RayFoundation/RMemoryOperations/RData.h"
 
-#define baseInputStringSize 40 // defines default buffer for getInputString
-
 typedef RData RString;
 
 RString * randomASCIIString(void); // uses rand(), string [10; 50] length, uses randomCharacter
