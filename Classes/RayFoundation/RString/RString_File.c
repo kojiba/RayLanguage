@@ -71,7 +71,8 @@ RString * getInputString() {
         }
 
         if(empty > 0) { // size to fit
-            charBuff = RReAlloc(charBuff, arraySize(char, result->size));
+            charBuff = RReAlloc(charBuff, arraySize(char, result->size + 1));
+            charBuff[result->size] = 0;
         }
 
         result->data = (byte *) charBuff;

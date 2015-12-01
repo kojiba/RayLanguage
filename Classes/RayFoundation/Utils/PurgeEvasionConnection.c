@@ -69,6 +69,7 @@ destructor(PEConnectionContext) {
     deallocator(object->masterKey);
     deallocator(object->connectionKey);
     deallocator(object->currentRandom);
+
     deleter(object->packetNumbers, RArray);
 
     object->masterKey     = nil;
