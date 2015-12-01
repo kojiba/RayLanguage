@@ -48,7 +48,7 @@ constMethod(void, printInFile, RData), FILE *file) {
             }
         }
     } else {
-        RFPrintf(file,"nil");
+        RFPrintf(file, "(nil)");
     }
 }
 
@@ -56,23 +56,26 @@ inline printer(RData) {
     $(object, m(printInFile, RData)), stdout);
 }
 
-void RDataDeleter(RData* object) {
+inline void RDataDeleter(RData* object) {
     deleter(object, RData);
 }
 
-method(RData *, flushAllToByte, RData), byte symbol) {
+inline method(RData *, flushAllToByte, RData), byte symbol) {
     flushAllToByte(object->data, object->size, symbol);
     return object;
 }
 
-method(void, insert, RData), const RData *data, size_t place) {
+inline method(void, insert, RData), const RData *data, size_t place) {
     object->data = insertSubArray(object->data, &object->size, data->data, data->size, place);
 }
 
-constMethod(RData *, copy, RData)) {
+inline constMethod(RData *, copy, RData)) {
     return makeRData(getByteArrayCopy(object->data, object->size), object->size, object->type);
 }
 
+inline constMethod(RData*, subArrayInRange, RData), RRange range) {
+    return makeRData(subArrayInRange(object->data, object->size, range), object->size, object->type);
+}
 
 constMethod(RCompareFlags, compareWith, RData), const RData *checkData) {
     if (checkData == object) {

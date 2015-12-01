@@ -36,17 +36,18 @@ RData* makeRData(const byte *array, size_t size, byte type);
 #define makeRDataBytes(array, size) makeRData(array, size, RDataTypeBytes)
 #define makeRDataAllocated(size)    makeRData(arrayAllocator(byte, size), size, RDataTypeBytes)
 
-destructor(RData);
-void RDataDeleter(RData* object);
+extern destructor(RData);
+extern void RDataDeleter(RData* object);
 
 extern printer(RData);
 
 constMethod(void, printInFile,           RData), FILE *file);
 
 
-     method(void,   insert,         RData),    const RData *data, size_t place);
-     method(RData*, flushAllToByte, RData),    byte symbol);
-constMethod(RData*, copy,           RData));
+extern      method(void,   insert,          RData),    const RData *data, size_t place);
+extern      method(RData*, flushAllToByte,  RData),    byte symbol);
+extern constMethod(RData*, copy,            RData));
+extern constMethod(RData*, subArrayInRange, RData), RRange range);
 
 constMethod(RCompareFlags, compareWith, RData),    const RData *checkData);
 constMethod(rbool,         isEqualTo,   RData),    const RData *checkData);

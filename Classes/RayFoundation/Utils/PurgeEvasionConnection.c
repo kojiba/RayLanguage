@@ -167,6 +167,8 @@ RData* decryptDataWithConnectionContext(RData *data, PEConnectionContext* contex
 
 struct PEConnection {
     PEConnectionContext *connectionContext;
+    RBuffer             *buffer;
+    RData               *lastReceived;
     RSocket             *socket;
     RMutex               mutex;
 };
@@ -178,13 +180,20 @@ struct PEConnection {
 const byte networkOperationErrorCryptConst = 2;
 const byte networkOperationErrorAllocationConst = 3;
 
-const byte packetEndString[24]       = "PEPacketEND PEPacketEND ";
-const byte packetEndShieldString[48] = "PEPacketEND PEPacketEND PEPacketEND PEPacketEND ";
+const byte packetEndSize = 24;
+const byte packetEndShieldSize = 12;
+
+
+const byte packetEndString[packetEndSize]       = "PEPacketEND PEPacketEND ";
+const byte packetEndShieldString[packetEndShieldSize] = "PEPacketEND ";
 
 PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
     PEConnection *object = allocator(PEConnection);
     if(object != nil) {
         if(socket != nil && context != nil) {
+            object->buffer = nil;
+            object->lastReceived = nil;
+
             object->socket = socket;
             object->connectionContext = context;
             mutexWithType(cmutex, RMutexNormal);
@@ -204,6 +213,7 @@ destructor(PEConnection) {
     RMutexLock(cmutex);
     deleter(object->socket, RSocket);
     deleter(object->connectionContext, PEConnectionContext);
+    nilDeleter(object->lastReceived, RData);
     RMutexUnlock(cmutex);
     RMutexDestroy(cmutex);
 }
@@ -214,15 +224,13 @@ void PEConnectionDeleter(pointer connection) {
 
 static inline
 void PEConnectionPrepareBuffer(RData *array) {
-    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndString, 24, packetEndShieldString, 48);
+    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndString, packetEndSize, packetEndShieldString, packetEndShieldSize);
 }
 
 static inline
 void PEConnectionRestoreBuffer(RData *array) {
-    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndShieldString, 48, packetEndString, 24);
-    array->size -= 24; // remove endpacked bytes
+    array->data = replaceBytesWithBytes(array->data, &array->size, packetEndShieldString, packetEndShieldSize, packetEndString, packetEndSize);
 }
-
 
 byte PEConnectionSend(PEConnection *object, const RData *toSend) {
     RData *encrypted;
@@ -245,7 +253,7 @@ byte PEConnectionSend(PEConnection *object, const RData *toSend) {
         result = $(object->socket, m(sendData, RSocket)), encrypted);
         if(result == networkOperationSuccessConst) {
             // send transmission end
-            result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, 24);
+            result = $(object->socket, m(send, RSocket)), (pointer const) packetEndString, packetEndSize);
         }
         deleter(encrypted, RData);
     }
@@ -253,49 +261,68 @@ byte PEConnectionSend(PEConnection *object, const RData *toSend) {
     return result;
 }
 
+size_t checkIfBufferContainsEnd(PEConnection *object) {
+    size_t index = indexOfFirstSubArray(object->buffer->masterRDataObject->data, object->buffer->totalPlaced, (byte *) packetEndString, 24);
+    if(index != RNotFound) {
+        if(index + packetEndSize < object->buffer->totalPlaced) { // store additional chunk
+            object->lastReceived = $(object->buffer->masterRDataObject,
+                                     m(subArrayInRange, RData)),
+                    makeRRangeTo(index + packetEndSize, object->buffer->totalPlaced));
+        }
+    }
+    return index;
+}
+
+size_t PEConnectionInitStore(PEConnection *object, byte *status) {
+    if(object->buffer == nil) {
+        object->buffer = c(RBuffer)(nil);
+        if(object->buffer == nil) {
+            RError("PEConnectionInitStoreOnce. Can't allocate buffer.", object);
+            if(status != nil) {
+                *status = networkOperationErrorAllocationConst;
+                return RNotFound;
+            }
+        } else {
+            if(object->lastReceived != nil) {
+                $(object->buffer, m(addData, RBuffer)), object->lastReceived);
+                deleter(object->lastReceived, RData);
+                object->lastReceived = nil;
+
+                return checkIfBufferContainsEnd(object);
+            }
+        }
+        return RNotFound;
+    }
+}
+
 RData * PEConnectionReceive(PEConnection *object, byte *status) {
     byte buffer[TCP_MTU_SIZE];
     size_t received;
-    RBuffer *storage = nil;
     RData temp;
     RData *result = nil;
+    size_t index;
     byte resultFlag = networkOperationSuccessConst;
 
     RMutexLock(cmutex);
-    while(resultFlag != networkConnectionClosedConst
-          && resultFlag != networkOperationErrorConst) {
+    index = PEConnectionInitStore(object, &resultFlag);
+
+
+    while(resultFlag == networkOperationSuccessConst && index == RNotFound) {
         resultFlag = $(object->socket, m(receive, RSocket)), buffer, TCP_MTU_SIZE, &received);
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
         RPrintf("Received some data\n");
         printByteArrayInHex(buffer, received);
 #endif
-
         if(resultFlag == networkOperationSuccessConst) {
-
-                if(storage == nil) {
-                    storage = c(RBuffer)(nil);
-                }
-
-                if(storage != nil) {
-                    $(storage, m(addBytes, RBuffer)), buffer, received);
-                } else {
-                    RError("PEConnectionReceive. Can't allocate buffer.", object);
-                    RMutexUnlock(cmutex);
-                    if(status != nil) {
-                        *status = networkOperationErrorAllocationConst;
-                    }
-                    return nil;
-                }
-            if(isContainsSubArray(storage->masterRDataObject->data, received, (byte *) packetEndString, 24)) {
-                break;
-            }
+            $(object->buffer, m(addBytes, RBuffer)), buffer, received);
+            index = checkIfBufferContainsEnd(object);
         }
-
     }
-    if(storage) {
-        temp.data = storage->masterRDataObject->data; // makes better
-        temp.size = storage->totalPlaced;
+
+    if(object->buffer && index != RNotFound) {
+        temp.data = object->buffer->masterRDataObject->data; // makes better
+        temp.size = index;
 
 #ifdef PE_CONNECTION_VERBOSE_DEBUG
         RPrintf("Unrestored data\n");
@@ -318,9 +345,11 @@ RData * PEConnectionReceive(PEConnection *object, byte *status) {
             }
         }
         // cleanup
-        deleter(storage, RBuffer);
-        RMutexUnlock(cmutex);
+        deleter(object->buffer, RBuffer);
+        object->buffer = nil;
     }
+
+    RMutexUnlock(cmutex);
     return result;
 }
 
