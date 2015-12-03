@@ -106,12 +106,12 @@ constMethod(rbool, isEqualTo, RData), const RData *checkData) {
 
 
 constMethod(RArray*, dataSeparatedByBytes, RData), const RData *separatorsArray) {
-    size_t  iterator;
-    size_t  endOfSubstring   = 0;
-    size_t  startOfSubstring = 0;
-    rbool   isFirst          = yes;
+     size_t iterator;
+     size_t endOfSubstring   = 0;
+     size_t startOfSubstring = 0;
+      rbool isFirst          = yes;
     RArray *result           = nil;
-    RData *subArray;
+     RData *subArray;
 
     forAll(iterator, object->size) {
 
@@ -245,9 +245,9 @@ constMethod(RArray*, dataSeparatedByArray, RData), const RData *separator) {
 }
 
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize) {
-    RArray* result;
-    RData *temp = makeRData(array, size, RDataTypeBytes);
-    RData *tempSeparator = makeRData(separatorsArray, separatorsSize, RDataTypeBytes);
+    RArray *result;
+     RData *temp = makeRData(array, size, RDataTypeBytes);
+     RData *tempSeparator = makeRData(separatorsArray, separatorsSize, RDataTypeBytes);
     result = $(temp, m(dataSeparatedByBytes, RData)), tempSeparator);
     deallocator(temp);
     deallocator(tempSeparator);
@@ -256,10 +256,10 @@ RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separat
 
 
 RArray* DataSeparatedByArrayWithShield(const byte *array, size_t size, const byte *separatorArray, size_t separatorSize, const byte *shield, size_t shieldSize) {
-    RArray* result;
-    RData *temp = makeRData(array, size, RDataTypeBytes);
-    RData *tempSeparator = makeRData(separatorArray, separatorSize, RDataTypeBytes);
-    RData *tempShield = nil;
+    RArray *result;
+     RData *temp = makeRData(array, size, RDataTypeBytes);
+     RData *tempSeparator = makeRData(separatorArray, separatorSize, RDataTypeBytes);
+     RData *tempShield = nil;
     if(shield != nil) {
         RData *tempShield = makeRData(shield, shieldSize, RDataTypeBytes);
     }
