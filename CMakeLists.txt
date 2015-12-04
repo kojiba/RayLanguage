@@ -6,7 +6,7 @@ set(EXECUTABLE_OUTPUT_PATH ${RayLanguage_SOURCE_DIR}/bin)
 
 
 # sub-sources flags
-set(RVM            NO)
+set(RVM            YES)
 set(RayInterpreter NO)
 set(DebugFlag      NO) # NO - for build library
 set(copyResources  NO)
@@ -208,7 +208,7 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
 
                                                  target_link_libraries(
                                                          ${EXECUTABLE_NAME}
-#                                                         curses              #fixme when unused
+                                                         curses              #fixme when unused
                                                      )
 
 if(copyResources)

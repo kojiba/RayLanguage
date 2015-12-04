@@ -50,7 +50,7 @@ typedef enum RVirtualCodes {
     r_get,
 
 // if (dataRegister)
-    r_if,                  // if (false_instruction, reserved byte, true_instruction) value == 0,
+    r_if,                  // if (false_instruction, reserved size_t, true_instruction) value == 0,
                            // then false_instruction, else true_instruction
 
     r_if_not,               // if_not (false_instruction , true_instruction) value != 0,
@@ -62,18 +62,16 @@ typedef enum RVirtualCodes {
 
 } RInstructions;
 
-static const size_t memorySizeOfRVM = 1024; // in bytes
+static const size_t memorySizeOfRVM = 4096; // in bytes
 
 class(RVirtualMachine)
     RData            *memory;               // memory 1 kB size
     RVirtualFunction *functionExecuting;    // pointer to function
 
-    byte           *dataRegister;         // pointer to memory element               (data    segment)
+    byte             *dataRegister;         // pointer to memory element               (data    segment)
 
-
-
-    byte           *command;              // pointer to rasm byte-code               (command ptr)
-    byte           *functionStartAddress; // pointer to place, where function starts (program ptr)
+    byte            *command;              // pointer to rasm byte-code               (command ptr)
+    byte            *functionStartAddress; // pointer to place, where function starts (program ptr)
 
     size_t          tickCount;
     rbool           breakFlag;              // for stop

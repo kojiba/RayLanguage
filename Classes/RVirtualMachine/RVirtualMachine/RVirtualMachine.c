@@ -1,6 +1,6 @@
 #include "RVirtualMachine.h"
 
-//#define VISUALIZE
+#define VISUALIZE
 #ifdef VISUALIZE
     #include "ncurses.h"
 
@@ -173,7 +173,7 @@ method(void, visualize, RVirtualMachine), rbool end) {
     #endif
 
         // set up initial windows
-        outputWindow = newwin(32,64, 0, 0);
+        outputWindow = newwin(64,128, 0, 0);
         initialized = yes;
     }
     wmove(outputWindow, 0, 0);

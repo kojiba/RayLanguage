@@ -274,7 +274,7 @@ byte* deleteAllBytes(byte *array, size_t *size, byte symbol) {
     while(index != RNotFound) {
         deleteInRange(array, size, makeRRange(storedIndex + index, 1));
         storedIndex += index;
-        index = indexOfFirstByte(array + index, *size, symbol);
+        index = indexOfFirstByte(array + storedIndex, *size, symbol);
     }
     return array;
 }
