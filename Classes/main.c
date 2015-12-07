@@ -20,9 +20,32 @@
 
 #include "Tests.h"
 
+void some(int *trains) {
+    printf("cho, chooo, motherfucked\n");
+    ++*trains;
+}
+
+void endSome() {}
+
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
+
+
+    size_t sizeOfSome = (size_t)&endSome - (size_t)&some;
+
+    unsigned char *body = malloc(sizeOfSome);
+    memcpy(body, some, sizeOfSome);
+    RData *function = makeRData(body, sizeOfSome, RDataTypeBytes);
+
+    p(RData)(function);
+
+    RString *baseHash = $(function, m(evasionHashBase64, RString)));
+    baseHash->type = RDataTypeASCII;
+    p(RString)(baseHash);
+
+    deleter(baseHash, RString);
+    deleter(function, RData);
 
 
     endRay();
