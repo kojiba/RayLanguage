@@ -18,27 +18,12 @@
 
 #include <RayFoundation/RayFoundation.h>
 
-#include <RVirtualMachine/RVirtualMachine/RVirtualMachine.h>
-#include <RVirtualMachine/RVirtualCompiler/RVirtualCompiler.h>
-
 #include "Tests.h"
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
-
-    RVirtualFunction *function = $(RVC, m(createFunctionFromBrainFuckSourceCode, RVirtualCompiler)),
-            RS("+[>+++ >>>++ >>+ >>>++]")
-    );
-
-    p(RVirtualFunction)(function);
-
-    executeRay(function);
-
-    deleter(function, RVirtualFunction);
-    deleter(RVM, RVirtualMachine);
-    deleter(RVC, RVirtualCompiler);
 
     endRay();
 }

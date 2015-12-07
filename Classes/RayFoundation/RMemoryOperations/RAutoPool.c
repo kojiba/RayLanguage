@@ -409,10 +409,18 @@ method(void, drain, RAutoPool)) {
 
 void enablePool(RAutoPool *object) {
     RMutexLockPool();
-    setRMalloc (object->selfMalloc);
-    setRCalloc (object->selfCalloc);
-    setRRealloc(object->selfRealloc);
-    setRFree   (object->selfFree);
+    if(getRMalloc() != object->selfMalloc) {
+        setRMalloc (object->selfMalloc);
+    }
+    if(getRCalloc () != object->selfCalloc) {
+        setRCalloc (object->selfCalloc);
+    }
+    if(getRRealloc() != object->selfRealloc) {
+        setRRealloc(object->selfRealloc);
+    }
+    if(getRFree   () != object->selfFree) {
+        setRFree   (object->selfFree);
+    }
     RMutexUnlockPool();
 }
 

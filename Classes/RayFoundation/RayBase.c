@@ -33,9 +33,15 @@
 
     static unsigned char onceStoreFlag = 1;
 
+    autoPoolNamed(PreloadPool, startSizeOfRPoolDefault, sizeMultiplierOfRPoolDefault);
+
     void printRPoolAtExitInjection() {
-        p(RAutoPool)(RPool);
-        deleter(RPool, RAutoPool);
+        p(RAutoPool)(PreloadPool());
+        deleter(PreloadPool(), RAutoPool);
+    }
+
+    void printPool(int signum) {
+        p(RAutoPool)(PreloadPool());
     }
 
     void initLibPtrs() {
@@ -59,36 +65,57 @@
             RFreePtr = RTrueFree;
         }
         atexit(printRPoolAtExitInjection);
+
+        signal(SIGUSR1, printPool);
+        signal(SIGTERM, printPool);
+        signal(SIGKILL, printPool);
+        signal(SIGQUIT, printPool);
+
+
         onceStoreFlag = 0;
-        enablePool(RPool);
+        enablePool(PreloadPool());
     }
 
     void* malloc(size_t size) {
-        RPrintf("Malloc %lu\n", size);
         if(onceStoreFlag) {
             initLibPtrs();
         }
-        return RMallocPtr(size);
+        pointer ptr = RMallocPtr(size);
+    #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR_TRACE
+        RPrintf("malloc %p [%lu]\n", ptr, size);
+    #endif
+        return ptr;
     }
 
     void* calloc(size_t size1, size_t size2) {
         if(onceStoreFlag) {
             initLibPtrs();
         }
-        return RCallocPtr(size1, size2);
+        pointer ptr = RCallocPtr(size1, size2);
+    #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR_TRACE
+        RPrintf("calloc %p [%lu x %lu]\n", ptr, size1, size2);
+    #endif
+        return ptr;
     }
 
     void* realloc(void* ptr, size_t size) {
         if(onceStoreFlag) {
             initLibPtrs();
         }
-        return RReallocPtr(ptr, size);
+        pointer ptr2 = RReallocPtr(ptr, size);
+    #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR_TRACE
+        RPrintf("realloc %p to %p [%lu]\n", ptr, ptr2, size);
+    #endif
+        return ptr2;
     }
 
     void  free(void* ptr) {
         if(onceStoreFlag) {
             initLibPtrs();
         }
+    #ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR_TRACE
+        RPrintf("free %p\n", ptr);
+    #endif
         return RFreePtr(ptr);
     }
 

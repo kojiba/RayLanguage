@@ -67,28 +67,21 @@ extern "C" {
 #include "Utils/Utils.h"
 #include "Utils/PurgeEvasionConnection.h"
 
-#ifdef RAY_LIBRARY_PRELOAD_ALLOCATOR
-    #define endRay() deleter(stringConstantsTable(), RDictionary);\
-                     deleter(RCTSingleton, RClassTable); \
-                     stopConsole();\
-                     return 0
-#else
-    #ifdef RAY_BLOCKS_ON
-        #define endRay() deleter(stringConstantsTable(), RDictionary);\
+#ifdef RAY_BLOCKS_ON
+#define endRay() deleter(stringConstantsTable(), RDictionary);\
                          deleter(RCTSingleton, RClassTable); \
                          deleter(singleBlockPool(), RAutoPool); \
                          p(RAutoPool)(RPool); \
                          deleter(RPool, RAutoPool); \
                          stopConsole();\
                          return 0
-    #else
-        #define endRay() deleter(stringConstantsTable(), RDictionary);\
+#else
+#define endRay() deleter(stringConstantsTable(), RDictionary);\
                          deleter(RCTSingleton, RClassTable); \
                          p(RAutoPool)(RPool); \
                          deleter(RPool, RAutoPool); \
                          stopConsole();\
                          return 0
-    #endif
 #endif
 
 #ifdef  __cplusplus
