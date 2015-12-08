@@ -118,9 +118,6 @@ void* encryptPurgeEvasionParallel(const void *text, uint64_t size, uint64_t key[
                 evasionRand((uint64_t *) workerKey);
             }
 
-//            RPrintf("hash\n");
-//            printByteArrayInHexWithScreenSize((const byte *) hash, evasionBytesCount, 64);
-
             // crypt hash by last key
             purgeEncrypt(hash, (uint64_t *) workerKey); // encrypt hash
             memset(workerKey, 0, purgeBytesCount);

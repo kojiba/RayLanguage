@@ -27,7 +27,7 @@ int main(int argc, const char *argv[]) {
     ComplexTest(); // lib test
 
     uint64_t key[8] = {};
-    const uint64_t messageSize = 2048 * 16;
+    const uint64_t messageSize = 1024 * 16;
     uint64_t messageTemp[messageSize] = {};
     uint64_t resultSize;
 
