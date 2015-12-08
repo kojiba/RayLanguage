@@ -27,7 +27,7 @@ constMethod(RData *, encryptPurgeEvasion, RData), const RData *key) {
     } else {
         // set and cpy must have one calculating speed
         memcpy(&tempKey, key->data, key->size);
-        memset(&tempKey, 0,               purgeBytesCount - key->size); // add some zeros
+        memset(&tempKey, 0,         purgeBytesCount - key->size); // add some zeros
     }
     if(result != nil) {
         result->data = encryptPurgeEvasion(object->data,

@@ -82,9 +82,9 @@ inline unsigned processorsCount() {
 #pragma mark Thread
 
 inline int RThreadCreate(RThread *thread,
-                  RThreadAttributes attributes,
-                  RThreadFunction function,
-                  pointer argument ) {
+                         RThreadAttributes attributes,
+                         RThreadFunction function,
+                         pointer argument ) {
 #ifndef __WIN32
     return pthread_create(thread, attributes, function, argument);
 #else

@@ -81,7 +81,8 @@ set(HEADER_FILES # Worker headers
                  # Utils
                  Classes/RayFoundation/Utils/Utils.h
                  Classes/RayFoundation/Utils/PurgeEvasionConnection.h
-                 Classes/RayFoundation/Utils/PurgeEvasionTCPHandler.h)
+                 Classes/RayFoundation/Utils/PurgeEvasionTCPHandler.h
+                 Classes/RayFoundation/Utils/PurgeEvasionParallel.h)
 
 set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  Classes/RayFoundation/RBasics/RBasics.c
@@ -129,7 +130,8 @@ set(SOURCE_FILES Classes/RayFoundation/RayBase.c
                  # Utils
                  Classes/RayFoundation/Utils/Utils.c
                  Classes/RayFoundation/Utils/PurgeEvasionConnection.c
-                 Classes/RayFoundation/Utils/PurgeEvasionTCPHandler.c)
+                 Classes/RayFoundation/Utils/PurgeEvasionTCPHandler.c
+                 Classes/RayFoundation/Utils/PurgeEvasionParallel.c)
 
 if(NOT ${DebugFlag})
     add_library(

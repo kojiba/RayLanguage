@@ -17,35 +17,47 @@
  **/
 
 #include <RayFoundation/RayFoundation.h>
+#include <RayFoundation/REncoding/PurgeEvasionUtils.h>
+#include <RayFoundation/Utils/PurgeEvasionParallel.h>
 
 #include "Tests.h"
-
-void some(int *trains) {
-    printf("cho, chooo, motherfucked\n");
-    ++*trains;
-}
-
-void endSome() {}
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
     ComplexTest(); // lib test
 
+    uint64_t key[8] = {};
+    uint64_t messageTemp[2048] = {};
+    uint64_t resultSize;
 
-    size_t sizeOfSome = (size_t)&endSome - (size_t)&some;
+    byte* encrypted = encryptPurgeEvasion(messageTemp,
+                                       2048,
+                                       (uint64_t *) &key,
+                                       &resultSize);
 
-    unsigned char *body = malloc(sizeOfSome);
-    memcpy(body, some, sizeOfSome);
-    RData *function = makeRData(body, sizeOfSome, RDataTypeBytes);
 
-    p(RData)(function);
+    RPrintf("Simple \n");
+    printByteArrayInHexWithScreenSize(encrypted, resultSize, 64);
 
-    RString *baseHash = $(function, m(evasionHashBase64, RString)));
-    baseHash->type = RDataTypeASCII;
-    p(RString)(baseHash);
 
-    deleter(baseHash, RString);
-    deleter(function, RData);
+    deallocator(encrypted);
+
+
+    RPrintf("\nParallel \n\n");
+
+    uint64_t key2[8] = {};
+    uint64_t messageTemp2[2048] = {};
+    uint64_t resultSize2;
+
+
+    byte* encryptedParallel = encryptPurgeEvasionParallel(messageTemp2,
+                                                          2048,
+                                                          (uint64_t *) &key2,
+                                                          &resultSize2, processorsCount());
+
+    printByteArrayInHexWithScreenSize(encryptedParallel, resultSize2, 64);
+
+    deallocator(encryptedParallel);
 
 
     endRay();
