@@ -27,31 +27,34 @@ int main(int argc, const char *argv[]) {
     ComplexTest(); // lib test
 
     uint64_t key[8] = {};
-    uint64_t messageTemp[2048] = {};
+    const uint64_t messageSize = 2048 * 16;
+    uint64_t messageTemp[messageSize] = {};
     uint64_t resultSize;
 
+    initRClock();
     byte* encrypted = encryptPurgeEvasion(messageTemp,
-                                       2048,
+                                       messageSize,
                                        (uint64_t *) &key,
                                        &resultSize);
 
+    tickRClock();
 
     RPrintf("Simple [%llu]\n", resultSize);
     printByteArrayInHexWithScreenSize(encrypted, resultSize, 64);
 
-
     deallocator(encrypted);
 
-
     uint64_t key2[8] = {};
-    uint64_t messageTemp2[2048] = {};
+    uint64_t messageTemp2[messageSize] = {};
     uint64_t resultSize2;
 
+    tickRClock();
 
     byte* encryptedParallel = encryptPurgeEvasionParallel(messageTemp2,
-                                                          2048,
+                                                          messageSize,
                                                           (uint64_t *) &key2,
                                                           &resultSize2, processorsCount());
+    tickRClock();
 
     RPrintf("\nParallel [%llu]\n\n", resultSize2);
     printByteArrayInHexWithScreenSize(encryptedParallel, resultSize2, 64);
