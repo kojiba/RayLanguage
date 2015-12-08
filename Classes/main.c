@@ -36,14 +36,12 @@ int main(int argc, const char *argv[]) {
                                        &resultSize);
 
 
-    RPrintf("Simple \n");
+    RPrintf("Simple [%llu]\n", resultSize);
     printByteArrayInHexWithScreenSize(encrypted, resultSize, 64);
 
 
     deallocator(encrypted);
 
-
-    RPrintf("\nParallel \n\n");
 
     uint64_t key2[8] = {};
     uint64_t messageTemp2[2048] = {};
@@ -55,6 +53,7 @@ int main(int argc, const char *argv[]) {
                                                           (uint64_t *) &key2,
                                                           &resultSize2, processorsCount());
 
+    RPrintf("\nParallel [%llu]\n\n", resultSize2);
     printByteArrayInHexWithScreenSize(encryptedParallel, resultSize2, 64);
 
     deallocator(encryptedParallel);

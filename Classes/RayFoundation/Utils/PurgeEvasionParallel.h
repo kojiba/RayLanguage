@@ -21,7 +21,7 @@
 
 #include "RayFoundation/REncoding/PurgeEvasionUtilsRay.h"
 
-void* encryptPurgeEvasionParallel(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize, unsigned workers);
+void* encryptPurgeEvasionParallel(const void *text, uint64_t size, uint64_t key[8], uint64_t *cryptedSize, unsigned workers); // key and data not changed
 
 #endif /* RAY_EMBEDDED */
 #endif /*__PURGE_EVASION_PARALLEL__*/

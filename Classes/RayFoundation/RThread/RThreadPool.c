@@ -103,14 +103,21 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                 arg->context          = object;
 
                 RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
-                $(object->threads,   m(addObject, RArray)), newOne);
-                $(object->arguments, m(addObject, RArray)), arg);
-
+                if(RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg) >= 0){
+                    $(object->threads,   m(addObject, RArray)), newOne);
+                    $(object->arguments, m(addObject, RArray)), arg);
+                } elseError(
+                        RError("RThreadPool. Error create worker thread.", object);
+                )
             } elseError(
                     RError("RThreadPool. Add with arg bad arg allocation.", object)
             );
         } else {
-            RThreadCreate(&newOne, nil, object->delegateFunction, argumentForNewWorker);
+            if(RThreadCreate(&newOne, nil, object->delegateFunction, argumentForNewWorker) >= 0){
+                $(object->threads,m(addObject, RArray)), newOne);
+            } elseError(
+                    RError("RThreadPool. Error create worker thread.", object);
+            )
         }
         RMutexUnlock(threadPoolMutex);
     }

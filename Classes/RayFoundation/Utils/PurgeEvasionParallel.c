@@ -21,19 +21,17 @@
 #ifndef RAY_EMBEDDED
 
 typedef struct PrivatePEWokerData {
-    uint8_t keyTemp[purgeBytesCount];
-    uint8_t *partStart;
-
-    uint64_t partSize;
+     uint8_t keyTemp[purgeBytesCount];
     uint64_t cipherCount;
+     uint8_t *partStart;
 
 } PrivatePEWokerData;
 
 void privatePEEncryptPart(PrivatePEWokerData *worker) {
     uint64_t iterator;
-    uint8_t   keyTemp[purgeBytesCount];
+     uint8_t keyTemp[purgeBytesCount];
 
-    forAll(iterator, worker->cipherCount){
+    forAll(iterator, worker->cipherCount) {
         evasionRand((uint64_t *) worker->keyTemp);
         memcpy(keyTemp, worker->keyTemp, purgeBytesCount);
         purgeEncrypt((uint64_t *) (worker->partStart + iterator * purgeBytesCount), (uint64_t *) keyTemp);
@@ -85,14 +83,18 @@ void* encryptPurgeEvasionParallel(const void *text, uint64_t size, uint64_t key[
                 if(arg != nil){
 
                     // setup part key
-                    forAll(keyIterator, ciphersForWorker) {
-                        evasionRand((uint64_t *) workerKey);
+                    if(iterator != 0) {
+                        forAll(keyIterator, ciphersForWorker) {
+                            evasionRand((uint64_t *) workerKey);
+                        }
+                    } else {
+                        memcpy(workerKey, key, purgeBytesCount);
                     }
 
                     memcpy(arg->keyTemp, workerKey, purgeBytesCount);
                     arg->partStart = result + iterator * ciphersForWorker * purgeBytesCount;
 
-                    if(iterator == workers -1) {
+                    if(iterator == workers - 1) {
                         arg->cipherCount = ciphersForWorker + additionalForLastWorker;
                     } else {
                         arg->cipherCount = ciphersForWorker;
@@ -115,6 +117,9 @@ void* encryptPurgeEvasionParallel(const void *text, uint64_t size, uint64_t key[
             forAll(keyIterator, ciphersForWorker + additionalForLastWorker + 1) {
                 evasionRand((uint64_t *) workerKey);
             }
+
+//            RPrintf("hash\n");
+//            printByteArrayInHexWithScreenSize((const byte *) hash, evasionBytesCount, 64);
 
             // crypt hash by last key
             purgeEncrypt(hash, (uint64_t *) workerKey); // encrypt hash
