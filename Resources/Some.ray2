@@ -1,0 +1,124 @@
+usign modules {
+    standart.print
+}
+
+/*
+    u64
+    u32
+    u16
+    u8
+
+    i64
+    i32
+    i16
+    i8
+
+    double
+    float
+
+    void
+    pointer
+
+    string - remove from primitives
+*/
+
+module Own {
+    namespace Person {
+
+        struct Person {
+            string name, surname
+            u8 age
+        }
+
+        interface Person {
+        properties:
+            readonly string fullName
+            u8 age
+        functions:
+            pointer Create
+            void print
+        }
+
+        pointer Person.Create {
+            object = new Person()
+            object.name = 'Name'
+            object.surname = 'Surname'
+            object.age = 1
+            return object
+        }
+
+
+        struct Worker contains Person {
+            string position
+            u32 salary
+        }
+
+        pointer Worker.Create {
+            object = new Worker() // calls Person.Create
+            .Person = new Person()
+            .position = 'Simple Worker' // dot notation
+            .salary = 300 // dot notation
+            return object
+        }
+
+        void Worker.print {
+            print('Worker: %s %u32\n', object.position, object.salary)
+            object.Person.print()
+        }
+
+        void Worker.startWork(with Object some) {
+
+        }
+
+        const Worker.Chief {
+            .position = 'Chief'
+            .slary = 100500
+        }
+
+        void Worker.comeGetSome {
+            print('come, get some!')
+        }
+
+    } namespace Person
+} module Own
+
+use namespace Person
+
+void main() {
+    Worker a = new Worker
+    Worker c = new Person.Worker
+    a.print
+
+    Array<Worker> b = new Array of 50 Worker
+
+    for(Worker worker in b) {
+        worker.print()
+    }
+
+    mapFunction(Worker.comeGetSome to Worker.print)
+
+    for(Worker worker in b) {
+        worker.print()
+    }
+
+    switch (b[0]) {
+        bool yongerThan75 { return .age < 75 }
+
+        case b.Person.fullname.contains('Jerry') {
+            print('sounds like Jerry\n')
+        }
+        case b.Person.age > 2 {
+            print('must be soo old...\n')
+        }
+        case Worker.Chief {
+            print('omg, its a BOSS!!!\n')
+        }
+        case yongerThan75{
+            printf('Life only begins\n')
+        }
+    }
+
+
+}
+
+

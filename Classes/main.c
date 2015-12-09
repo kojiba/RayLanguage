@@ -27,9 +27,13 @@ int main(int argc, const char *argv[]) {
     ComplexTest(); // lib test
 
     uint64_t key[8] = {};
-    const uint64_t messageSize = 1024 * 16;
-    uint64_t messageTemp[messageSize] = {};
+    const uint64_t messageSize = 1024 * 1024 * 16; // 16 mib
+//    uint64_t messageTemp[messageSize] = {};
     uint64_t resultSize;
+
+    byte *messageTemp = malloc(messageSize);
+    flushAllToByte(messageTemp, messageSize, 0);
+
 
     initRClock();
     byte* encrypted = encryptPurgeEvasion(messageTemp,
@@ -40,26 +44,27 @@ int main(int argc, const char *argv[]) {
     tickRClock();
 
     RPrintf("Simple [%llu]\n", resultSize);
-    printByteArrayInHexWithScreenSize(encrypted, resultSize, 64);
+//    printByteArrayInHexWithScreenSize(encrypted, resultSize, 64);
 
     deallocator(encrypted);
 
     uint64_t key2[8] = {};
-    uint64_t messageTemp2[messageSize] = {};
     uint64_t resultSize2;
 
     tickRClock();
 
-    byte* encryptedParallel = encryptPurgeEvasionParallel(messageTemp2,
+    byte* encryptedParallel = encryptPurgeEvasionParallel(messageTemp,
                                                           messageSize,
                                                           (uint64_t *) &key2,
-                                                          &resultSize2, processorsCount());
+                                                          &resultSize2, processorsCount() * 8);
     tickRClock();
 
     RPrintf("\nParallel [%llu]\n\n", resultSize2);
-    printByteArrayInHexWithScreenSize(encryptedParallel, resultSize2, 64);
+//    printByteArrayInHexWithScreenSize(encryptedParallel, resultSize2, 64);
 
     deallocator(encryptedParallel);
+
+    deallocator(messageTemp);
 
 
     endRay();
