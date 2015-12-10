@@ -65,39 +65,36 @@ RSocket * socketBindToPort  (int socketType,             int protocolType, u16 p
 RSocket * openListenerOnPort(u16 port,                   int queueCount);
 RSocket * socketConnectedTo (const char * const address, u16 port);
 
-extern
-constructor (RSocket));
-destructor  (RSocket);
-printer     (RSocket);
+extern constructor (RSocket));
+       destructor  (RSocket);
+       printer     (RSocket);
 
 // Setters
-method(rbool, bindPort,           RSocket),    u16 port); // for receiver
-method(void,  setPort,            RSocket),    u16 port); // for sender
+       method(rbool, bindPort,           RSocket),    u16 port); // for receiver
+       method(void,  setPort,            RSocket),    u16 port); // for sender
 
-method(rbool, enableBroadCast,    RSocket),    rbool enable);
+       method(rbool, enableBroadCast,    RSocket),    rbool enable);
 
-method(rbool, joinMulticastGroup, RSocket),    const char * const address);
-method(void,  setAddress,         RSocket),    const char * const address);
-method(void,  reuseAddress,       RSocket));
+       method(rbool, joinMulticastGroup, RSocket),    const char * const address);
+       method(void,  setAddress,         RSocket),    const char * const address);
+       method(void,  reuseAddress,       RSocket));
 
-method(int,       listen,         RSocket),    int queueCount);
-method(RSocket *, accept,         RSocket));
-method(rbool,     connect,        RSocket));
+       method(int,       listen,         RSocket),    int queueCount);
+       method(RSocket *, accept,         RSocket));
+       method(rbool,     connect,        RSocket));
 
 // Main methods
-method(byte, send,                RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
-method(byte, sendTo,              RSocket),    const pointer buffer, size_t size);
+       method(byte,      send,           RSocket),    const pointer buffer, size_t size);  // sends to receiver size bytes
+       method(byte,      sendTo,         RSocket),    const pointer buffer, size_t size);
 
-extern
-method(byte, sendString,          RSocket),    const RString *string);  // sends to receiver size bytes
-extern
-method(byte, sendData,            RSocket),    const RData *data);  // sends to receiver size bytes
+extern method(byte,      sendString,     RSocket),    const RString *string);  // sends to receiver size bytes
+extern method(byte,      sendData,       RSocket),    const RData *data);  // sends to receiver size bytes
 
-method(byte, receive,             RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
-method(byte, receiveFrom,         RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);  // buffer must be pre allocated at least 1500 bytes, return 255 if fails, 1 if received some
+// buffer must be pre allocated at least 1500 bytes, returns network consts
+       method(byte,      receive,        RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);
+       method(byte,      receiveFrom,    RSocket),    pointer buffer, size_t bufferSize, size_t *receivedSize);
 
-extern
-method(RString *, receiveString, RSocket));  // receives string must be destroyed, buff up to 1500
+extern method(RString *, receiveString, RSocket));  // receives string must be destroyed, buff up to 1500
 
 #endif
 

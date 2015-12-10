@@ -17,14 +17,14 @@
 
 extern      method(void,          replaceCSubstrings,            RString),    char *toReplace, char *replacer);
 
-extern constMethod(size_t,        numberOfCSubstrings,           RString),    const char * string);
+extern constMethod(size_t,        numberOfCSubstrings,           RString),    const char *string);
 extern constMethod(rbool,         isContainsCSubstring,          RString),    char *string);
 
-extern      method(RString *,    deleteAllCSubstrings,          RString),    const char *substring);
+extern      method(RString *,     deleteAllCSubstrings,          RString),    const char *substring);
 
 extern constMethod(RArray *,      substringsSeparatedByCSymbols, RString),    const char * const separatorsString); // or nil, RArray is sizeToFit, subs are copies
 
-extern constMethod(RCompareFlags, compareWithC,                  RString),    const char *const checkString);
-extern constMethod(rbool,         startsOnC,                     RString),    const char *const checkString);
-extern constMethod(rbool,         endsOnC,                       RString),    const char *const checkString);
+extern constMethod(RCompareFlags, compareWithC,                  RString),    const char * const checkString);
+extern constMethod(rbool,         startsOnC,                     RString),    const char * const checkString);
+extern constMethod(rbool,         endsOnC,                       RString),    const char * const checkString);
 extern      method(void,          appendString,                  RString),    const char *string);

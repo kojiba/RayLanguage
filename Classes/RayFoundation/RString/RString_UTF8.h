@@ -13,8 +13,8 @@
  *         |__/
  **/
 
-#ifndef __R_STRING_H__
-#define __R_STRING_H__
+#ifndef __R_STRING_UTF8_H__
+#define __R_STRING_UTF8_H__
 
 #include "RString.h"
 
@@ -41,4 +41,4 @@ method(size_t, length, RString));
  */
 method(RFindResult, enumerate, RString), rbool (*enumerator)(RString string, size_t iterator));
 
-#endif /*__R_STRING_H__*/
+#endif /*__R_STRING_UTF8_H__*/

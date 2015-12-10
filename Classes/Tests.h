@@ -7,14 +7,14 @@ extern "C" {
 
 void ComplexTest();
 
-int RDynamicArrayTest(void);
+int RDynamicArrayTest (void);
 int RClassNamePairTest(void);
-int RClassTableTest(void);
-int RDictionaryTest(void);
-int StringArrayTest(void);
-int RDataTest(void);
-int RBufferTest(void);
-int RStringTest(void);
+int RClassTableTest   (void);
+int RDictionaryTest   (void);
+int StringArrayTest   (void);
+int RDataTest         (void);
+int RBufferTest       (void);
+int RStringTest       (void);
 
 #ifdef  __cplusplus
 }

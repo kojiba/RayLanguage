@@ -86,7 +86,7 @@ method(pointer, calloc,         RSandBox),    size_t blockCount, size_t blockSiz
 method(void,    free,           RSandBox),    pointer ptr);
 
 // change malloc, realloc, calloc, free pointers to sandBox
-void enableSandBox(RSandBox *sandBox);
+void enableSandBox (RSandBox *sandBox);
 void disableSandBox(RSandBox *sandBox);
 
 //---------------------------------------------------------------------------------

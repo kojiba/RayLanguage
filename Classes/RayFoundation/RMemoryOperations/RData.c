@@ -104,7 +104,6 @@ constMethod(rbool, isEqualTo, RData), const RData *checkData) {
     return (rbool)($(object, m(compareWith, RData)), checkData) == equals);
 }
 
-
 constMethod(RArray*, dataSeparatedByBytes, RData), const RData *separatorsArray) {
      size_t iterator;
      size_t endOfSubstring   = 0;

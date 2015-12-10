@@ -87,9 +87,9 @@ rbool utf8GetNextCharacter(const byte     *string,
             *isValid = no;
             position += 2;
         } else {
-            *codePoint = ((string[position] & (byte)0x1F) << 12)
-                         | ((string[position + 1] & (byte)0x3F) << 6)
-                         | (string[position + 2] & (byte)0x3F);
+            *codePoint = ((string[position]     & (byte)0x1F) << 12)
+                       | ((string[position + 1] & (byte)0x3F) << 6)
+                       |  (string[position + 2] & (byte)0x3F);
             *isValid = yes;
             position += 3;
         }
@@ -109,10 +109,10 @@ rbool utf8GetNextCharacter(const byte     *string,
             *isValid = no;
             position += 3;
         } else {
-            *codePoint =   ((string[position]     & (byte)0x7) << 18)
-                         | ((string[position + 1] & (byte)0x3F) << 12)
-                         | ((string[position + 2] & (byte)0x3F) << 6)
-                         |  (string[position + 3] & (byte)0x3F);
+            *codePoint = ((string[position]     & (byte)0x7 ) << 18)
+                       | ((string[position + 1] & (byte)0x3F) << 12)
+                       | ((string[position + 2] & (byte)0x3F) << 6)
+                       |  (string[position + 3] & (byte)0x3F);
             *isValid = yes;
             position += 4;
         }
@@ -146,7 +146,7 @@ method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
             if (isValid == yes) {
                 RString string;
                 string.data = object->data + position;
-                string.size       = nextPosition - position;
+                string.size = nextPosition - position;
 
                 if (enumerator(string, iterator) == no) {
                     result.index = iterator;

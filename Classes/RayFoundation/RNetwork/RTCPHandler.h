@@ -70,9 +70,8 @@ class(RTCPHandler)
 endOf(RTCPHandler)
 
 constructor(RTCPHandler));
-destructor(RTCPHandler);
-
-printer(RTCPHandler);
+destructor (RTCPHandler);
+printer    (RTCPHandler);
 
 getter(delegate, RTCPDelegate *, RTCPHandler);
 setter(delegate, RTCPDelegate *, RTCPHandler);

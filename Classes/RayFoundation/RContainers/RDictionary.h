@@ -31,13 +31,12 @@ endOf(RDictionary) //--------------------------
 
 constructor (RDictionary));
 destructor  (RDictionary);
+printer     (RDictionary);
 
      method(void,            initDelegate,        RDictionary),    ComparatorDelegate comparator); // comparator for keys
      method(void,            setObjectForKey,     RDictionary),    pointer value, pointer key);
      method(void,            sizeToFit,           RDictionary));
 constMethod(pointer,         getObjectForKey,     RDictionary),    pointer key);
-
-printer(RDictionary);
 
 #pragma mark Init from scratch
 

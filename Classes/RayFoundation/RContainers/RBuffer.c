@@ -448,7 +448,7 @@ constMethod(RBuffer *, serializeToBuffer, RData), size_t *sizesArray) {
                     result->sizesArray  = newSizesArray;
                     result->totalPlaced = object->size;
                     result->freePlaces  = 0;
-                    result->classId = registerClassOnce(toString(RBuffer));
+                    result->classId     = registerClassOnce(toString(RBuffer));
                 }
             }
         }

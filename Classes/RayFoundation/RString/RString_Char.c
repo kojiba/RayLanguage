@@ -85,7 +85,7 @@ inline constMethod(rbool, endsOnStr, RString), const char *const checkString) {
 method(void, appendString, RString), const char *string) {
     if(string != nil) {
         size_t stringSize = RStringLength(string);
-        object->data = RReAlloc(object->data, arraySize(char, stringSize + object->size + 1));
+             object->data = RReAlloc(object->data, arraySize(char, stringSize + object->size + 1));
         if(object->data != nil) {
             RMemMove(object->data + object->size, string, stringSize);
             object->data[stringSize + object->size] = 0;

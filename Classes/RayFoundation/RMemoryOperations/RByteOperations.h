@@ -43,47 +43,47 @@ size_t  compareMemory(const byte *array, const byte *toCompare, size_t size);
 #define ifMemEqual(one, another, size) if(isMemEqual(one, another, size))
 
 // Basics
-void           printByteArrayInHexWithScreenSizeFile(const byte *array, size_t size, size_t screenSize, FILE *file);
-extern void    printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
-extern void    printByteArrayInHex        (const byte *array,   size_t size);
-void           printByteArrayInBin        (const byte *array,   size_t size);
+void         printByteArrayInHexWithScreenSizeFile(const byte *array, size_t size, size_t screenSize, FILE *file);
+extern void  printByteArrayInHexWithScreenSize(const byte *array,   size_t size, size_t screenSize);
+extern void  printByteArrayInHex        (const byte *array,   size_t size);
+void         printByteArrayInBin        (const byte *array,   size_t size);
 
-byte*          getByteArrayCopy           (const byte *array,   size_t size);
+byte*        getByteArrayCopy           (const byte *array,   size_t size);
 
-size_t indexOfFirstByte(const byte *array, size_t size, byte symbol);
-size_t indexOfLastByte(const byte *array, size_t size, byte symbol);
-size_t indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize);
-size_t indexOfFirstSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
-extern rbool isContainsByte(const byte *array, size_t size, byte symbol);
-extern rbool isContainsSubArray(const byte *array, size_t size, const byte *sub, size_t subSize);
-rbool isStartsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);
-rbool isEndsOnArray(const byte *array, size_t size, const byte *sub, size_t subSize);
+size_t       indexOfFirstByte       (const byte *array, size_t size, byte symbol);
+size_t       indexOfLastByte        (const byte *array, size_t size, byte symbol);
+size_t       indexOfFirstByteFromSet(const byte *array, size_t size, byte *set, size_t setSize);
+size_t       indexOfFirstSubArray   (const byte *array, size_t size, const byte *sub, size_t subSize);
+extern rbool isContainsByte         (const byte *array, size_t size, byte symbol);
+extern rbool isContainsSubArray     (const byte *array, size_t size, const byte *sub, size_t subSize);
+rbool        isStartsOnArray        (const byte *array, size_t size, const byte *sub, size_t subSize);
+rbool        isEndsOnArray          (const byte *array, size_t size, const byte *sub, size_t subSize);
 
-size_t numberOfBytes(const byte *array, size_t size, byte symbol);
-size_t numberOfSubArrays(const byte *array, size_t size, const byte *sub, size_t subSize);
+size_t       numberOfBytes          (const byte *array, size_t size, byte symbol);
+size_t       numberOfSubArrays      (const byte *array, size_t size, const byte *sub, size_t subSize);
 
-byte* deleteInRange(byte *array, size_t *size, RRange range);
+byte*        deleteInRange(byte *array, size_t *size, RRange range);
 extern byte* deleteAtIndex(byte *array, size_t *size, size_t index);
 
-byte* deleteAllBytes(byte *array, size_t *size, byte symbol);
-byte* deleteRepetitionsOfByte(byte *array, size_t *size, const byte symbol);
+byte*        deleteAllBytes         (byte *array, size_t *size, byte symbol);
+byte*        deleteRepetitionsOfByte(byte *array, size_t *size, const byte symbol);
 
-byte* deleteAllSubArrays(byte *array, size_t *size, const byte *sub, size_t subSize);
-byte* deleteRepetitionsOfSubArray(byte *array, size_t *size, const byte *sub, size_t subSize);
+byte*        deleteAllSubArrays         (byte *array, size_t *size, const byte *sub, size_t subSize);
+byte*        deleteRepetitionsOfSubArray(byte *array, size_t *size, const byte *sub, size_t subSize);
 
 extern byte* trimTail(byte *array, size_t *size, size_t count);
 extern byte* trimHead(byte *array, size_t *size, size_t count);
 
-extern byte* trimAfterSubArray(byte *array, size_t *size, const byte *sub, size_t subSize);
+extern byte* trimAfterSubArray (byte *array, size_t *size, const byte *sub, size_t subSize);
 extern byte* trimBeforeSubArray(byte *array, size_t *size,const byte *sub, size_t subSize);
 
-byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer);
-byte* replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, size_t toReplaceSize, const byte *replacer, size_t replacerSize);
+byte*        replaceByteWithByte  (byte *array, size_t size, byte toReplace, byte replacer);
+byte*        replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, size_t toReplaceSize, const byte *replacer, size_t replacerSize);
 
-byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place);
+byte*        insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place);
 
-byte* subArrayInRange(const byte *array, size_t size, RRange range);
-byte* setSubArrayInRange(byte *array, size_t size, const byte *sub, size_t subSize, RRange range);
-void  appendArray(byte **array, size_t *size, const byte *sub, size_t subSize);
+byte*        subArrayInRange   (const byte  *array,  size_t size, RRange range);
+byte*        setSubArrayInRange      (byte  *array,  size_t size, const byte *sub, size_t subSize, RRange range);
+void         appendArray             (byte **array, size_t *size, const byte *sub, size_t subSize);
 
 #endif /*__R_BYTE_OPERATIONS_H__*/

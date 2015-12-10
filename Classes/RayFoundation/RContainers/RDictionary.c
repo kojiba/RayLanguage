@@ -51,6 +51,29 @@ destructor(RDictionary) {
     deleter(object->values, RArray);
 }
 
+printer(RDictionary){
+    size_t iterator;
+    RPrintf("\n%s object %p: { \n", toString(RDictionary), object);
+    RPrintf(" Count : %lu \n", object->keys->count);
+    RPrintf(" Free  : %lu \n", object->keys->freePlaces);
+    forAll(iterator, object->keys->count) {
+        RPrintf("\t %lu - ", iterator);
+        if(object->keys->printerDelegate != nil) {
+            object->keys->printerDelegate($(object->keys, m(objectAtIndex, RArray)),   iterator));
+        } else {
+            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
+        }
+        RPrintf(" : ");
+        if(object->values->printerDelegate != nil) {
+            object->values->printerDelegate($(object->values, m(objectAtIndex, RArray)), iterator));
+        } else {
+            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
+        }
+        RPrintLn("");
+    }
+    RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
+}
+
 method(void, initDelegate, RDictionary), ComparatorDelegate comparator) {
     object->comparator = comparator;
 }
@@ -89,29 +112,6 @@ constMethod(pointer, getObjectForKey, RDictionary), pointer key) {
         return $(object->values, m(objectAtIndex, RArray)), findResult.index);
     }
     return nil;
-}
-
-printer(RDictionary){
-    size_t iterator;
-    RPrintf("\n%s object %p: { \n", toString(RDictionary), object);
-    RPrintf(" Count : %lu \n", object->keys->count);
-    RPrintf(" Free  : %lu \n", object->keys->freePlaces);
-    forAll(iterator, object->keys->count) {
-        RPrintf("\t %lu - ", iterator);
-        if(object->keys->printerDelegate != nil) {
-            object->keys->printerDelegate($(object->keys, m(objectAtIndex, RArray)),   iterator));
-        } else {
-            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
-        }
-        RPrintf(" : ");
-        if(object->values->printerDelegate != nil) {
-        object->values->printerDelegate($(object->values, m(objectAtIndex, RArray)), iterator));
-        } else {
-            RPrintf("%p ", $(object->keys, m(objectAtIndex, RArray)),   iterator));
-        }
-        RPrintLn("");
-    }
-    RPrintf("} end of %s object %p \n\n", toString(RDictionary), object);
 }
 
 #pragma mark Init from scratch

@@ -55,19 +55,19 @@ destructor  (RBuffer);
 printer     (RBuffer);
 
 // Reallocation
-method(RRange *,          addSizeToSizes, RBuffer),    size_t newSize);          // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
-method(RData *,           addSizeToMem,   RBuffer),    size_t newSize);          // adds some size to RData, store data, returns self, newsize in bytes
-method(void,              flush,          RBuffer));                             // flushes buffer, returns self
-method(RBuffer *,         sizeToFit,      RBuffer));                             // make without free places, store data, returns self
+method(RRange *,          addSizeToSizes, RBuffer),    size_t newSize);    // adds some size to Sizes array, store data, returns self, newsize in sizeof(size_t)
+method(RData *,           addSizeToMem,   RBuffer),    size_t newSize);    // adds some size to RData, store data, returns self, newsize in bytes
+method(void,              flush,          RBuffer));                       // flushes buffer, returns self
+method(RBuffer *,         sizeToFit,      RBuffer));                       // make without free places, store data, returns self
 
 // Data operations
 // setters
-method(void,              addBytes,           RBuffer),    const pointer data, size_t sizeInBytes);   // copies data
-extern method(void,       addData,            RBuffer),    const RData *data);   // copies data
+       method(void,       addBytes,           RBuffer),    const pointer data, size_t sizeInBytes);    // copies data
+extern method(void,       addData,            RBuffer),    const RData *data);    // copies data
 
 // getters
-constMethod(pointer,      getDataReference,   RBuffer),    size_t index);                       // return pointer
-constMethod(pointer,      getDataCopy,        RBuffer),    size_t index);                       // return copy
+constMethod(pointer,      getDataReference,   RBuffer),    size_t index);    // return pointer
+constMethod(pointer,      getDataCopy,        RBuffer),    size_t index);    // return copy
 
 // deleters
 method(void,              deleteDataAt,       RBuffer),    size_t index);
@@ -76,8 +76,8 @@ method(void,              deleteDataAt,       RBuffer),    size_t index);
 constMethod(RFindResult,  enumerate,          RBuffer), REnumerateDelegate *delegate, rbool isFromLeft);
 
 // casts
-constMethod(RArray *,     toReferencesRArray, RBuffer)); // using data reference from RBuffer, delegates not set, size to fit
-constMethod(RArray *,     toRArray,           RBuffer)); // copy, delete delegateFunction is free, size to fit
+constMethod(RArray *,     toReferencesRArray, RBuffer));    // using data reference from RBuffer, delegates not set, size to fit
+constMethod(RArray *,     toRArray,           RBuffer));    // copy, delete delegateFunction is free, size to fit
 
 // file i/o
 RBuffer* RBufferFromFile (const char *filename); // will be size-to-fit
@@ -85,10 +85,10 @@ constMethod(void,         saveToFile,         RBuffer),    const char* filename)
 
 
 // Additions to RData
-constMethod(RBuffer *,    serializeToBuffer,  RData),    size_t *sizesArray);        // return created RBuffer, sizesArray must ends on 0
+constMethod(RBuffer *,    serializeToBuffer,  RData),    size_t *sizesArray);         // return created RBuffer, sizesArray must ends on 0
 
 // Additions to RArray
-constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);                  // if all object one sized
-constMethod(RBuffer *,    serializeToBufferSizes,    RArray),    size_t *sizesArray);           // return created RBuffer, sizesArray must ends on 0
+constMethod(RBuffer *,    serializeToBuffer,         RArray),    size_t size);        // if all object one sized
+constMethod(RBuffer *,    serializeToBufferSizes,    RArray),    size_t *sizesArray); // return created RBuffer, sizesArray must ends on 0
 
 #endif /*__R_BUFFER_H__*/

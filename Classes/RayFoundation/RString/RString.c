@@ -14,7 +14,6 @@
  **/
 
 #include "RString_UTF8.h"
-#include "RString_Char.h"
 #include <stdarg.h>
 
 #pragma mark Basics
@@ -119,17 +118,17 @@ method(void, replaceCharacters, RString), char characterToReplace, char replacer
     );
 }
 
-method(void, replaceSubstrings, RString), const RString *toReplace, const RString *replacer) {
+inline method(void, replaceSubstrings, RString), const RString *toReplace, const RString *replacer) {
     replaceBytesWithBytes(object->data, &object->size, toReplace->data, toReplace->size, replacer->data, replacer->size);
 }
 
 #pragma mark Info
 
-constMethod(size_t, numberOfCharacters, RString), char character) {
+inline constMethod(size_t, numberOfCharacters, RString), char character) {
     return numberOfBytes(object->data, object->size, (byte) character);
 }
 
-constMethod(size_t, numberOfSubstrings, RString), const RString * const string) {
+inline constMethod(size_t, numberOfSubstrings, RString), const RString * const string) {
     return numberOfSubArrays(object->data, object->size, string->data, string->size);
 }
 
@@ -145,27 +144,27 @@ inline constMethod(size_t, numberOfLines, RString)) {
     return numberOfBytes(object->data, object->size, '\n');
 }
 
-constMethod(size_t, indexOfSubstring, RString), const RString *string) {
+inline constMethod(size_t, indexOfSubstring, RString), const RString *string) {
     return indexOfFirstSubArray(object->data, object->size, string->data, string->size);
 }
 
 #pragma mark Deletions
 
-method(RString *, deleteAllCharacters, RString), char character) {
+inline method(RString *, deleteAllCharacters, RString), char character) {
     object->data = deleteAllBytes(object->data, &object->size, (byte) character);
     return object;
 }
 
-method(void, removeRepetitionsOf, RString), char character) {
+inline method(void, removeRepetitionsOf, RString), char character) {
     object->data = deleteRepetitionsOfByte(object->data, &object->size, (byte) character);
 }
 
-method(RString *, deleteAllSubstrings, RString), const RString *substring) {
+inline method(RString *, deleteAllSubstrings, RString), const RString *substring) {
     object->data = deleteAllSubArrays(object->data, &object->size, substring->data, substring->size);
     return object;
 }
 
-method(void, removeRepetitionsOfString, RString), const RString *substring) {
+inline method(void, removeRepetitionsOfString, RString), const RString *substring) {
     object->data = deleteRepetitionsOfSubArray(object->data, &object->size, substring->data, substring->size);
 }
 
@@ -180,43 +179,39 @@ method(RString *, deleteCharacterAt, RString), size_t index) {
     return object;
 }
 
-method(void, deleteInRange, RString), RRange range) {
+inline method(void, deleteInRange, RString), RRange range) {
     object->data = deleteInRange(object->data, &object->size, range);
 }
 
-inline
-method(void, trimTail, RString), size_t size) {
+inline method(void, trimTail, RString), size_t size) {
     object->data = trimTail(object->data, &object->size, size);
 }
 
-inline
-method(void, trimHead, RString), size_t size) {
+inline method(void, trimHead, RString), size_t size) {
     object->data = trimHead(object->data, &object->size, size);
 }
 
-inline
-method(void, trimAfterString, RString), const RString *string) {
+inline method(void, trimAfterString, RString), const RString *string) {
     object->data = trimAfterSubArray(object->data, &object->size, string->data, string->size);
 }
 
-inline
-method(void, trimToString, RString), const RString *string) {
+inline method(void, trimToString, RString), const RString *string) {
     object->data = trimBeforeSubArray(object->data, &object->size, string->data, string->size);
 }
 
 #pragma mark Subs and Copies
 
-method(RString *, setSubstringInRange, RString), RRange range, const RString *substring) {
+inline method(RString *, setSubstringInRange, RString), RRange range, const RString *substring) {
     object->data = setSubArrayInRange(object->data, object->size, substring->data, substring->size, range);
     return object;
 }
 
-method(RString *, insertSubstringAt, RString), const RString *substring, size_t place) {
+inline method(RString *, insertSubstringAt, RString), const RString *substring, size_t place) {
     object->data = insertSubArray(object->data, &object->size, substring->data, substring->size, place);
     return object;
 }
 
-constMethod(RString *, substringInRange, RString), RRange range) {
+inline constMethod(RString *, substringInRange, RString), RRange range) {
     return makeRData(subArrayInRange(object->data, object->size, range), range.size, object->type);
 }
 
@@ -229,49 +224,48 @@ constMethod(RString *, substringToSymbol, RString), char symbol) {
     }
 }
 
-constMethod(RArray *, substringsSeparatedBySymbols, RString), const RString * const separatorsString) {
+inline constMethod(RArray *, substringsSeparatedBySymbols, RString), const RString * const separatorsString) {
     return $(object, m(dataSeparatedByBytes, RData)), separatorsString);
 }
 
-constMethod(RArray *, substringsSeparatedByString, RString), const RString * const separatorString) {
+inline constMethod(RArray *, substringsSeparatedByString, RString), const RString * const separatorString) {
     return $(object, m(dataSeparatedByArray ,RData)), separatorString);
 }
 
-constMethod(RArray *, separatedByStringWithShield, RString), const RString * const separatorString, const RString * const shield) {
+inline constMethod(RArray *, separatedByStringWithShield, RString), const RString * const separatorString, const RString * const shield) {
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separatorString, shield);
 }
 
-constMethod(RString *, copy, RString)) {
+inline constMethod(RString *, copy, RString)) {
     RString *copy = $(object, m(substringInRange, RString)), makeRRange(0, object->size));
     return copy;
 }
 
 #pragma mark Comparator
 
-constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
+inline constMethod(RCompareFlags, compareWith, RString), const RString *checkString) {
     return $(object, m(compareWith, RData)), checkString);
 }
 
-inline
-constMethod(rbool, isEqualTo, RString), const RString *checkString) {
+inline constMethod(rbool, isEqualTo, RString), const RString *checkString) {
     return (rbool)($(object, m(compareWith, RString)), checkString) == equals);
 }
 
-constMethod(rbool, startsOn, RString), const RString *const checkString) {
+inline constMethod(rbool, startsOn, RString), const RString *const checkString) {
     return isStartsOnArray(object->data, object->size, checkString->data, checkString->size);
 }
 
-constMethod(rbool, endsOn, RString), const RString *const checkString) {
+inline constMethod(rbool, endsOn, RString), const RString *const checkString) {
     return isEndsOnArray(object->data, object->size, checkString->data, checkString->size);
 }
 
 #pragma mark Concatenate
 
-method(void, concatenate, RString), const RString *string) {
+inline method(void, concatenate, RString), const RString *string) {
     appendArray(&object->data, &object->size, string->data, string->size);
 }
 
-method(void, append, RString), const char character) {
+inline method(void, append, RString), const char character) {
     appendArray(&object->data, &object->size, (const byte *) &character, 1);
 }
 

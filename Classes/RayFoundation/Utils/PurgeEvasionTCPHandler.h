@@ -44,9 +44,8 @@ class(RTCPHandlerPE)
 endOf(RTCPHandlerPE)
 
 constructor(RTCPHandlerPE));
-destructor(RTCPHandlerPE);
-
-printer(RTCPHandlerPE);
+destructor (RTCPHandlerPE);
+printer    (RTCPHandlerPE);
 
 getter(delegate, RTCPDelegate *, RTCPHandlerPE);
 setter(delegate, RTCPDelegate *, RTCPHandlerPE);

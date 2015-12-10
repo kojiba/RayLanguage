@@ -65,14 +65,14 @@ endOf(RAutoPool)
 RAutoPool* makeRAutoPool(size_t startSize, size_t multiplier);
 
 extern constructor (RAutoPool));
-destructor  (RAutoPool);
-printer     (RAutoPool);
-singleton   (RAutoPool);
+       destructor  (RAutoPool);
+       printer     (RAutoPool);
+       singleton   (RAutoPool);
 
 method(pointer, malloc,         RAutoPool),    size_t sizeInBytes);
 
 #ifdef R_POOL_META_ALLOC
-    method(pointer, metaAlloc,      RAutoPool),    size_t sizeInBytes, char *tipString);
+method(pointer, metaAlloc,      RAutoPool),    size_t sizeInBytes, char *tipString);
 #endif
 
 method(pointer, realloc,        RAutoPool),    pointer ptr, size_t newSize);
@@ -81,7 +81,7 @@ method(void,    free,           RAutoPool),    pointer ptr);
 
 method(void,    drain,          RAutoPool)); // cleanup pointers only for that thread, not all if R_AUTO_POOL_DETAILED macro defined
 
-void enablePool(RAutoPool *pool);
+void enablePool (RAutoPool *pool);
 void disablePool(RAutoPool *pool);
 
 #ifdef RAY_BLOCKS_ON
