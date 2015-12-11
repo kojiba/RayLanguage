@@ -37,11 +37,11 @@ endOf(RTCPDelegate)
 
 
 struct RTCPDataStruct {
-    pointer            context;
-    RSocket            *socket;
-    RTCPDelegate       *delegate;
     struct RTCPHandler *handler;
-    size_t identifier;
+          RTCPDelegate *delegate;
+               RSocket *socket;
+               pointer  context;
+                size_t  identifier;
 };
 
 
@@ -61,12 +61,12 @@ class(RTCPHandler)
     RArray              *arguments;
 
     const RString       *ipAddress;
-    u16                 port;
-    size_t              connectionsCount;
+    u16                  port;
+    size_t               connectionsCount;
 
-    RThreadFunction     handlerStartedNotifier;
+    RThreadFunction      handlerStartedNotifier;
 
-    RMutex              mutex;
+    RMutex               mutex;
 endOf(RTCPHandler)
 
 constructor(RTCPHandler));

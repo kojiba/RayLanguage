@@ -19,7 +19,8 @@
 
 #include "RayFoundation/RClassTable/RClassTable.h"
 
-protocol(PrivateThreadArgument)
+typedef struct PrivateThreadArgument{
+        RThreadPool* context;
     RThreadFunction  delegateFunction;
             pointer  threadArgument;
 endOf(PrivateThreadArgument)
@@ -37,9 +38,10 @@ struct RThreadPool {
 };
 
 pointer privateThreadExecutor(PrivateThreadArgument *arg) {
+    RPrintf("privateThreadExecutor for %p\n", arg);
     pointer result = arg->delegateFunction(arg->threadArgument);
     $(arg->context, m(deleteWorker, RThreadPool)), currentThread());
-    $(((RThreadPool*)arg->context)->arguments, m(deleteObjectFast, RArray)), arg);
+    $(arg->context->arguments, m(deleteObjectFast, RArray)), arg);
     return result;
 }
 
@@ -47,7 +49,7 @@ constructor(RThreadPool)) {
     object = allocator(RThreadPool);
     if(object != nil) {
 
-        object->threads   = makeRArray();
+        object->  threads = makeRArray();
         object->arguments = makeRArray();
 
         if(object->threads != nil && object->arguments != nil) {
@@ -98,14 +100,15 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
             PrivateThreadArgument *arg = allocator(PrivateThreadArgument);
             if(arg != nil) {
 
-                arg->threadArgument   = argumentForNewWorker;
                 arg->delegateFunction = object->delegateFunction;
-                arg->context          = object;
+                arg->  threadArgument = argumentForNewWorker;
+                arg->         context = object;
 
                 RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
                 if(RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg) >= 0){
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
+                    RPrintf("Async create newOne %p with arg %p\n", newOne, arg);
                 } elseError(
                         RError("RThreadPool. Error create worker thread.", object);
                 )
@@ -159,8 +162,8 @@ rbool cancelThreadCheck(pointer context, pointer thread, size_t iterator) {
 method(void, cancel, RThreadPool)) {
     RMutexLock(threadPoolMutex);
     object->enumerator.virtualEnumerator = cancelThreadCheck;
-    $(object->threads,   m(enumerate, RArray)), &object->enumerator, yes);
-    $(object->threads,   m(flush,     RArray)));
+    $(object->  threads, m(enumerate, RArray)), &object->enumerator, yes);
+    $(object->  threads, m(flush,     RArray)));
     $(object->arguments, m(flush,     RArray)));
     RMutexUnlock(threadPoolMutex);
 }

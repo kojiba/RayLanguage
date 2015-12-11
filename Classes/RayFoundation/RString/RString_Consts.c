@@ -21,7 +21,7 @@
 #ifndef RAY_EMBEDDED
     RMutex mutex;
 
-    #define tableMutexLock() RMutexLock(&mutex);
+    #define tableMutexLock()   RMutexLock(&mutex);
     #define tableMutexUnlock() RMutexUnlock(&mutex);
 #else
     #define tableMutexLock()
@@ -36,9 +36,8 @@ RDictionary* stringConstantsTable() {
 #ifndef RAY_EMBEDDED
             mutexWithType(&mutex, RMutexNormal);
 #endif
-            $(instance->keys, m(setPrinterDelegate, RArray)), (PrinterDelegate) RPrintf);
-
-            $(instance->values, m(setDestructorDelegate, RArray)), RFree); // only dealloc
+            $(instance->  keys, m(setPrinterDelegate,    RArray)), (PrinterDelegate) RPrintf);
+            $(instance->values, m(setDestructorDelegate, RArray)),                   getRFree()); // only dealloc
         } elseError(
             RError("Can't allocate array of RStrings constants", nil)
         );
@@ -50,19 +49,20 @@ const RString * constantRString(const char *string) {
     RString *resultString = nil;
     // comparator for only compile-time constants
     RCompareDelegate delegate;
-    tableMutexLock();
     delegate.virtualCompareMethod = defaultComparator;
     delegate.etaloneObject = (char *)string;
 
+    tableMutexLock();
     RFindResult result = $(stringConstantsTable()->keys, m(findObjectWithDelegate, RArray)), &delegate);
+    tableMutexUnlock();
 
     // add some if not found
     if(result.object == nil) {
         RString *constant = RCS(string);
         if(constant != nil) {
+            tableMutexLock();
             if($(stringConstantsTable()->keys, m(addObject, RArray)), (char *)string) == no_error) {
                 if($(stringConstantsTable()->values, m(addObject, RArray)), constant) == no_error) {
-                    tableMutexUnlock();
                     resultString = constant;
                 } else {
                     $(stringConstantsTable()->keys, m(deleteLast, RArray)));
@@ -71,13 +71,16 @@ const RString * constantRString(const char *string) {
             } else {
                 RError1("RString_Consts. Can't add key \"%s\"", stringConstantsTable(), string);
             }
+            tableMutexUnlock();
         } else {
             RError1("RString_Consts. Can't allocate constant RString for string \"%s\"", nil, string);
         }
     } else {
+        tableMutexLock();
         resultString = $(stringConstantsTable()->values, m(objectAtIndex, RArray)), result.index);
+        tableMutexUnlock();
     }
-    tableMutexUnlock();
+
     return resultString;
 }
 

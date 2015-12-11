@@ -108,9 +108,9 @@ uint64_t* PESessionPacketKey(PEConnectionContext* context, uint64_t packetNo) { 
 /**
  * Data format is
  *
- *    +-----------------------------------------+
- *    | packetNo (8 bytes) |   encrypted part   |
- *    +-----------------------------------------+
+ *    +-------------------------------------+
+ *    | packetNo (8 bytes) | encrypted part |
+ *    +-------------------------------------+
  *
  **/
 
@@ -212,9 +212,9 @@ PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
 
 destructor(PEConnection) {
     RMutexLock(cmutex);
-    deleter(object->socket, RSocket);
-    deleter(object->connectionContext, PEConnectionContext);
-    nilDeleter(object->lastReceived, RData);
+       deleter(object->socket,            RSocket);
+       deleter(object->connectionContext, PEConnectionContext);
+    nilDeleter(object->lastReceived,      RData);
     RMutexUnlock(cmutex);
     RMutexDestroy(cmutex);
 }
@@ -294,6 +294,7 @@ size_t PEConnectionInitStore(PEConnection *object, byte *status) {
         }
         return RNotFound;
     }
+    return RNotFound;
 }
 
 RData * PEConnectionReceive(PEConnection *object, byte *status) {

@@ -64,6 +64,8 @@ constructor(RTCPHandler)) {
                 object->multicastEnumerator.virtualEnumerator = (EnumeratorDelegate) RTCPHandlerMulticastEnumerator;
 
                 object->terminateFlag = no;
+                object->connectorMode = no;
+                object->runningThread = nil;
                 mutexWithType(&object->mutex, RMutexNormal);
             }
         }
@@ -75,7 +77,7 @@ destructor(RTCPHandler) {
     RMutexLock(&object->mutex);
     deleter(object->threads,   RThreadPool);
     deleter(object->arguments, RArray);
-    RMutexUnlock(&object->mutex);
+    RMutexUnlock (&object->mutex);
     RMutexDestroy(&object->mutex);
 }
 
@@ -125,15 +127,15 @@ method(void, privateStartInMode, RTCPHandler)) {
         if(socketInProcess != nil) {
             RTCPDataStruct *argument = allocator(RTCPDataStruct);
             if(argument != nil) {
-                argument->handler    = object;
-                argument->delegate   = object->delegate;
-                argument->context    = object->delegate->context;
-                argument->socket     = socketInProcess;
+                argument->   handler = object;
+                argument->  delegate = object->delegate;
+                argument->   context = object->delegate->context;
+                argument->    socket = socketInProcess;
                 argument->identifier = object->arguments->count;
 
-                $(object->arguments, m(addObject,  RArray)), argument);
+                $(object->arguments, m(addObject, RArray)), argument);
 
-                if(!object->connectorMode) {
+                if(object->connectorMode == no) {
                     // delete inactive worker arguments
                     if(object->arguments->count != 0
                        && (object->arguments->count % RTCPHandlerCheckCleanupAfter) == 0) {
@@ -187,9 +189,9 @@ method(void, startWithHost, RTCPHandler), const RString *address, u16 port, size
 
                 RMutexLock(&object->mutex);
                 object->connectionsCount = connectionsCount;
-                object->ipAddress = address;
-                object->port = port;
-                object->connectorMode = yes;
+                object->       ipAddress = address;
+                object->            port = port;
+                object->   connectorMode = yes;
 
                 RThreadCreate(&object->runningThread, nil, (RThreadFunction) m(privateStartInMode, RTCPHandler),
                               object);
@@ -222,7 +224,7 @@ method(void, terminate,  RTCPHandler)) {
             deleter(object->listener, RSocket);
         }
         $(object->threads,   m(cancel, RThreadPool)));
-        $(object->arguments, m(flush, RArray)));
+        $(object->arguments, m(flush,  RArray)));
         RMutexUnlock(&object->mutex);
     } elseWarning(
             RWarning("RTCPHandler. terminate. Nothing to terminate.", object)

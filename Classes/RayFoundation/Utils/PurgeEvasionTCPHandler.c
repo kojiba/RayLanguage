@@ -42,10 +42,12 @@ void RTCPDataStructPEWithSessionDeleter(RTCPDataStructPE *data) {
 }
 
 pointer startPESessionOnConnection(RTCPDataStruct *data) {
-    uint64_t blankKey[8] = {};
-    RTCPHandlerPE* peHandler = ((RTCPHandlerPE*)data->delegate->context);
-    RData *sessionKey = nil;
+    RTCPHandlerPE* peHandler   = ((RTCPHandlerPE*)data->delegate->context);
+         uint64_t  blankKey[8] = {};
+            RData* sessionKey  = nil;
+
     if(peHandler) {
+        RPrintf("startPESessionOnConnection %p\n", data);
         sessionKey = peHandler->keyGeneratorDelegate->keyForConnectionData(data, peHandler->keyGeneratorDelegate->context);
         if(sessionKey) {
             if(sessionKey->size != purgeBytesCount) {
