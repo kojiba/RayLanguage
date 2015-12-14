@@ -16,6 +16,8 @@
 #include "purge.h"
 #include <string.h>
 
+#define PURGE_DECRYPT_SPEEDUP // cause more memory usage, and attack on buffer with round keys
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
@@ -116,6 +118,7 @@ void roundKeyForStep(uint64_t key[8], uint8_t step) {
     memset(&iterator, 0, 1);
 }
 
+#ifndef PURGE_DECRYPT_SPEEDUP
 void decryptRoundKey(uint64_t key[8], uint8_t step) {
     byte iterator;
     uint64_t temp;
@@ -140,6 +143,7 @@ void decryptRoundKey(uint64_t key[8], uint8_t step) {
     }
     memset(&iterator, 0, 1);
 }
+#endif
 
 void purgeEncrypt(uint64_t data[8], uint64_t key[8]) {
     uint64_t temp;
@@ -176,10 +180,16 @@ void purgeEncrypt(uint64_t data[8], uint64_t key[8]) {
 void purgeDecrypt(uint64_t data[8], uint64_t key[8]) {
     uint64_t temp;
     byte iterator;
+#ifdef PURGE_DECRYPT_SPEEDUP
+    uint64_t roundKeys[purgeRoundsCount][8];
+#endif
 
     // get final key
     forAll(iterator, purgeRoundsCount) {
         roundKeyForStep(key, (uint8_t) (iterator + 1));
+#ifdef PURGE_DECRYPT_SPEEDUP
+        memcpy(roundKeys[iterator], key, purgeBytesCount);
+#endif
     }
 
     for(iterator = purgeRoundsCount - 1; iterator != 255; --iterator) {
@@ -191,9 +201,13 @@ void purgeDecrypt(uint64_t data[8], uint64_t key[8]) {
         data[6] = substitute(data[6], purgeReverseSubstitutionBlock);
 
         sawUnswap(data);
-        roundKeyXor(data, key);
 
+#ifdef PURGE_DECRYPT_SPEEDUP
+        roundKeyXor(data, roundKeys[iterator]);
+#else
+        roundKeyXor(data, key);
         decryptRoundKey(key, (uint8_t) (iterator + 1));
+#endif
 
         // round
         data[7] -= purgeMaskReverse;

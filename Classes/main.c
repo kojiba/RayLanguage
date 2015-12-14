@@ -18,167 +18,57 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <unistd.h>
-#include <RayFoundation/Utils/PurgeEvasionTCPHandler.h>
-#include "Tests.h"
-
-RData* EmptyKeyForConnectionData(RTCPDataStruct *connectionData, pointer context) {
-    return nil;
-}
-
-pointer TempExec(RTCPDataStruct *data) {
-
-    RPrintf("%lu connected %p \n", data->identifier, data);
-
-    rbool end = no;
-    do {
-        RData *received = PEConnectionReceive(((RTCPDataStructPE *) data->context)->connection, nil);
-
-        if (received) {
-            $(received, m(validateToASCII, RString)));
-//            received->type = RDataTypeASCII;
-            p(RData)(received);
-            end = $(received, m(isEqualTo, RString)), RS("End"));
-            deleter(received, RData);
-        } else {
-            end = yes;
-        }
-
-    } while(!end);
-
-    RPrintf("%lu disconnected\n", data->identifier);
-
-    if(((RTCPDataStructPE*)data->context)->connection != nil) {
-        PEConnectionDeleter(((RTCPDataStructPE *) data->context)->connection);
-        ((RTCPDataStructPE *) data->context)->connection = nil;
-    }
-    data->socket = nil;
-
-    return nil;
-}
-
-RTCPHandlerPE *globalHandler;
-RTCPDelegate  *globalDelegate;
-PEKeyGeneratorDelegate *globalKeyGenerator;
-
-RThread clientThread = nil;
-
-void startPEClient();
-
-void startedNotifier(RTCPHandler *handler) {
-    if(handler == globalHandler->handler) {
-        RPrintf("RTCPHandlerPE server started %p on port %u\n", handler, 3000);
-
-        if(clientThread == nil) {
-            clientThread = makeRThread((RThreadFunction) startPEClient);
-        }
-    } else {
-        RPrintf("RTCPHandlerPE connector started %p on port %u\n", handler, 3000);
-    }
-}
-
-void startPEServer(){
-    RTCPHandlerPE **server = &globalHandler;
-    RTCPDelegate **delegate = &globalDelegate;
-    PEKeyGeneratorDelegate **keyGenerator = &globalKeyGenerator;
-
-     *keyGenerator = allocator(PEKeyGeneratorDelegate);
-    (*keyGenerator)->context = nil;
-    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
-
-    *server = c(RTCPHandlerPE)(nil);
-
-    if(*server != nil) {
-
-        $((*server), m(set_keyGeneratorDelegate, RTCPHandlerPE)), *keyGenerator);
-
-        (*server)->dataStructContextDestructor = nil;
-
-
-        *delegate = allocator(RTCPDelegate);
-        if(*delegate != nil) {
-            (*delegate)->delegateFunction = TempExec;
-            (*delegate)->context          = nil;
-
-            (*server)->handler->handlerStartedNotifier = (RThreadFunction) startedNotifier;
-            $(*server,  m(set_delegate, RTCPHandlerPE)), *delegate);
-            $(*server,  m(startOnPort,  RTCPHandlerPE)), 3000);
-        }
-    }
-}
-
-pointer TempExec2(RTCPDataStruct *data) {
-    RPrintf("%lu connecting...\n", data->identifier);
-
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
-
-    sleep(1);
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Come, get some!"));
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("End"));
-
-    return nil;
-}
-
-void startPEClient(){
-    RTCPHandlerPE *server1;
-    RTCPDelegate *delegate1;
-    PEKeyGeneratorDelegate *keyGenerator1;
-
-    RTCPHandlerPE **server = &server1;
-    RTCPDelegate **delegate = &delegate1;
-    PEKeyGeneratorDelegate **keyGenerator = &keyGenerator1;
-
-    *keyGenerator = allocator(PEKeyGeneratorDelegate);
-    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
-
-    *server = c(RTCPHandlerPE)(nil);
-
-    if(*server != nil) {
-
-        $((*server), m(set_keyGeneratorDelegate, RTCPHandlerPE)), *keyGenerator);
-
-        (*server)->dataStructContextDestructor = nil;
-
-
-        *delegate = allocator(RTCPDelegate);
-        if(*delegate != nil) {
-            (*delegate)->delegateFunction = TempExec2;
-            (*delegate)->context          = nil;
-
-            $(*server, m(set_delegate, RTCPHandlerPE)), *delegate);
-            (*server)->handler->handlerStartedNotifier = (RThreadFunction) startedNotifier;
-            $(*server, m(startWithHost,  RTCPHandlerPE)), RS("127.0.0.1"), 3000, 10);
-            $(*server, m(waitConnectors, RTCPHandlerPE)));
-
-            p(RTCPHandlerPE)(*server);
-
-            deleter(*server, RTCPHandlerPE);
-            deallocator(*delegate);
-            deallocator(*keyGenerator);
-        }
-    }
-}
+#include <RayFoundation/REncoding/purge.h>
 
 int main(int argc, const char *argv[]) {
     enablePool(RPool);
-    stringConstantsTable();
-    RCTSingleton;
 
-    ComplexTest(); // lib test
 
-    startPEServer();
-    sleep(2);
+    byte array[purgeBytesCount] = {};
+    byte key[purgeBytesCount] = {};
 
-    RThreadJoin(clientThread);
 
-    if(globalHandler) {
+    printByteArrayInHexWithScreenSize(array, purgeBytesCount, 32);
 
-        p(RTCPHandlerPE)(globalHandler);
-        $(globalHandler, m(terminate, RTCPHandlerPE)));
+    byte cipherText[purgeBytesCount] = {};
 
-        deleter(globalHandler, RTCPHandlerPE);
-        deallocator(globalDelegate);
-        deallocator(globalKeyGenerator);
-    }
+    initRClock();
+    purgeEncrypt((uint64_t *) array, (uint64_t *) key);
+    tickRClock();
+    printByteArrayInHexWithScreenSize(array, purgeBytesCount, 32);
+    memset(key, 0, purgeBytesCount);
+
+    tickRClock();
+    purgeDecrypt((uint64_t *) array, (uint64_t *) key);
+    tickRClock();
+    printByteArrayInHexWithScreenSize(array, purgeBytesCount, 32);
+
+    /* Etalon
+     *
+     * Encr Elapsed: 0.000053 seconds
+       Decr Elapsed: 0.000085 seconds
+
+     * 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       B8 FF E8 11 EB 46 0F FE 12 AE 7F 34 E7 7A 03 49 18 B8 F8 AA EA F4 D6 3D 1F A8 98 35 35 C7 5C 42
+       91 42 7E 4C CF EA E4 30 56 6E 4B 28 19 4D D0 FA 72 55 FE DB 48 D5 79 FA 5A 1D 9B 47 10 9D E1 7E
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     */
+
+    /* PURGE_DECRYPT_SPEEDUP
+     *
+     * Encr Elapsed: 0.000060 seconds
+       Decr Elapsed: 0.000061 seconds
+
+     * 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       B8 FF E8 11 EB 46 0F FE 12 AE 7F 34 E7 7A 03 49 18 B8 F8 AA EA F4 D6 3D 1F A8 98 35 35 C7 5C 42
+       91 42 7E 4C CF EA E4 30 56 6E 4B 28 19 4D D0 FA 72 55 FE DB 48 D5 79 FA 5A 1D 9B 47 10 9D E1 7E
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     */
+
 
     endRay();
 }
