@@ -66,6 +66,7 @@ constructor(RTCPHandler)) {
                 object->terminateFlag = no;
                 object->connectorMode = no;
                 object->runningThread = nil;
+                object->listener      = nil;
                 mutexWithType(&object->mutex, RMutexNormal);
             }
         }
@@ -75,8 +76,9 @@ constructor(RTCPHandler)) {
 
 destructor(RTCPHandler) {
     RMutexLock(&object->mutex);
-    deleter(object->threads,   RThreadPool);
-    deleter(object->arguments, RArray);
+    nilDeleter(object->listener,  RSocket)
+       deleter(object->threads,   RThreadPool);
+       deleter(object->arguments, RArray);
     RMutexUnlock (&object->mutex);
     RMutexDestroy(&object->mutex);
 }
@@ -91,6 +93,7 @@ printer(RTCPHandler) {
         RPrintf("Connector\n");
     } else {
         RPrintf("Server\n");
+        RPrintf("\tListener socket %p\n", object->listener);
     }
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(object->runningThread));
     RPrintf("------ Arguments : ");
@@ -222,6 +225,7 @@ method(void, terminate,  RTCPHandler)) {
         RMutexLock(&object->mutex);
         if(!object->connectorMode) {
             deleter(object->listener, RSocket);
+            object->listener = nil;
         }
         $(object->threads,   m(cancel, RThreadPool)));
         $(object->arguments, m(flush,  RArray)));
