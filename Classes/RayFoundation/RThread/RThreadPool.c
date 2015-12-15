@@ -38,7 +38,6 @@ struct RThreadPool {
 };
 
 pointer privateThreadExecutor(PrivateThreadArgument *arg) {
-    RPrintf("privateThreadExecutor for %p\n", arg);
     pointer result = arg->delegateFunction(arg->threadArgument);
     $(arg->context, m(deleteWorker, RThreadPool)), currentThread());
     $(arg->context->arguments, m(deleteObjectFast, RArray)), arg);
@@ -104,11 +103,9 @@ method(void, addWithArg, RThreadPool), pointer argumentForNewWorker, rbool selfD
                 arg->  threadArgument = argumentForNewWorker;
                 arg->         context = object;
 
-                RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg);
                 if(RThreadCreate(&newOne, nil, (RThreadFunction) privateThreadExecutor, arg) >= 0){
                     $(object->threads,   m(addObject, RArray)), newOne);
                     $(object->arguments, m(addObject, RArray)), arg);
-                    RPrintf("Async create newOne %p with arg %p\n", newOne, arg);
                 } elseError(
                         RError("RThreadPool. Error create worker thread.", object);
                 )
