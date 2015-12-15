@@ -185,7 +185,7 @@ const byte packetEndSize = 24;
 const byte packetEndShieldSize = 12;
 
 
-const byte packetEndString[packetEndSize]       = "PEPacketEND PEPacketEND ";
+const byte packetEndString[packetEndSize]             = "PEPacketEND PEPacketEND ";
 const byte packetEndShieldString[packetEndShieldSize] = "PEPacketEND ";
 
 PEConnection* PEConnectionInit(RSocket *socket, PEConnectionContext *context) {
@@ -215,6 +215,7 @@ destructor(PEConnection) {
        deleter(object->socket,            RSocket);
        deleter(object->connectionContext, PEConnectionContext);
     nilDeleter(object->lastReceived,      RData);
+    nilDeleter(object->buffer,            RBuffer);
     RMutexUnlock(cmutex);
     RMutexDestroy(cmutex);
 }
@@ -368,7 +369,7 @@ inline byte PEConnectionSendBytes(PEConnection *object, const pointer buffer, si
 }
 
 byte PEConnectionSendString(PEConnection *object, const RString *string) {
-    return PEConnectionSendBytes(object, string->data, string->size);
+    return PEConnectionSend(object, string);
 }
 
 #endif /* RAY_EMBEDDED */

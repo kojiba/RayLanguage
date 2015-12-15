@@ -204,7 +204,7 @@ method(RArrayFlags, addObject, RArray), pointer src) {
     // needs additional allocation of memory
     if (object->freePlaces == 0) {
 #ifdef RAY_SHORT_DEBUG
-        RPrintf("Needs additional allocation\n", object);
+        RPrintf("Needs additional allocation\n");
 #endif
         errors = $(object, m(addSize, RArray)), object->count * object->sizeMultiplier);
     }
@@ -426,7 +426,7 @@ constMethod(size_t, indexOfObject, RArray), pointer toFind) {
        || object->count == 0) {
         size_t iterator;
         RMutexLockArray();
-        printDebugTrace1("Object %p", toDelete);
+        printDebugTrace1("Object %p", toFind);
         forAll(iterator, object->count) {
             if(object->array[iterator] == toFind) {
                 break;

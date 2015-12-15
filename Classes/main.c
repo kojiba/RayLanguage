@@ -18,10 +18,19 @@
 
 #include <RayFoundation/RayFoundation.h>
 #include <unistd.h>
-#include <RayFoundation/Utils/PurgeEvasionTCPHandler.h>
 #include "Tests.h"
 
-RData* EmptyKeyForConnectionData(RTCPDataStruct *connectionData, pointer context) {
+RArray *keysForConnects;
+RArray *keysForConnects2;
+
+RData* KeyForConnectionData(RTCPDataStruct *connectionData, pointer context) {
+    if(connectionData != nil) {
+        if(context == (pointer) 1) {
+            return $(keysForConnects, m(objectAtIndex, RArray)), connectionData->identifier);
+        } else if(context == (pointer) 2) {
+            return $(keysForConnects2, m(objectAtIndex, RArray)), connectionData->identifier);
+        }
+    }
     return nil;
 }
 
@@ -82,8 +91,8 @@ void startPEServer(){
     PEKeyGeneratorDelegate **keyGenerator = &globalKeyGenerator;
 
     *keyGenerator = allocator(PEKeyGeneratorDelegate);
-    (*keyGenerator)->context = nil;
-    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
+    (*keyGenerator)->context = (pointer) 1;
+    (*keyGenerator)->keyForConnectionData = KeyForConnectionData;
 
     *server = c(RTCPHandlerPE)(nil);
 
@@ -128,7 +137,8 @@ void startPEClient(){
     PEKeyGeneratorDelegate **keyGenerator = &keyGenerator1;
 
     *keyGenerator = allocator(PEKeyGeneratorDelegate);
-    (*keyGenerator)->keyForConnectionData = EmptyKeyForConnectionData;
+    (*keyGenerator)->keyForConnectionData = KeyForConnectionData;
+    (*keyGenerator)->context = (pointer) 2;
 
     *server = c(RTCPHandlerPE)(nil);
 
@@ -146,7 +156,7 @@ void startPEClient(){
 
             $(*server, m(set_delegate, RTCPHandlerPE)), *delegate);
             (*server)->handler->handlerStartedNotifier = (RThreadFunction) startedNotifier;
-            $(*server, m(startWithHost,  RTCPHandlerPE)), RS("127.0.0.1"), 3000, 10);
+            $(*server, m(startWithHost,  RTCPHandlerPE)), RS("127.0.0.1"), 3000, 3);
             $(*server, m(waitConnectors, RTCPHandlerPE)));
 
             deleter(*server, RTCPHandlerPE);
@@ -163,17 +173,40 @@ int main(int argc, const char *argv[]) {
 
     ComplexTest(); // lib test
 
-    startPEServer();
-    sleep(2);
+    // use RSC cause of hashing sessions keys
+    keysForConnects = RA(RSC("                                                               1"),
+                         RSC("                                                               2"),
+                         RSC("                                                               3"), nil);
 
-    RThreadJoin(clientThread);
+    keysForConnects2 = RA(RSC("                                                               1"),
+                          RSC("                                                               2"),
+                          RSC("                                                               3"), nil);
 
-    if(globalHandler) {
-        $(globalHandler, m(terminate, RTCPHandlerPE)));
 
-        deleter(globalHandler, RTCPHandlerPE);
-        deallocator(globalDelegate);
-        deallocator(globalKeyGenerator);
+
+    if(keysForConnects && keysForConnects2) {
+        keysForConnects->printerDelegate = (PrinterDelegate) p(RData);
+        keysForConnects->destructorDelegate = (DestructorDelegate) RDataDeleter;
+
+        keysForConnects2->printerDelegate = (PrinterDelegate) p(RData);
+        keysForConnects2->destructorDelegate = (DestructorDelegate) RDataDeleter;
+
+        startPEServer();
+        sleep(2);
+
+        RThreadJoin(clientThread);
+
+        if(globalHandler) {
+            $(globalHandler, m(terminate, RTCPHandlerPE)));
+
+            p(RTCPHandlerPE)(globalHandler);
+            deleter(globalHandler, RTCPHandlerPE);
+            deallocator(globalDelegate);
+            deallocator(globalKeyGenerator);
+        }
+
+        deleter(keysForConnects, RArray);
+        deleter(keysForConnects2, RArray);
     }
 
     endRay();

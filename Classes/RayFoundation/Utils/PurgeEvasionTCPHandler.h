@@ -22,11 +22,10 @@
 #ifndef RAY_EMBEDDED
 
 typedef struct RTCPDataStructPE {
-    pointer context;
-    PEConnection *connection;
-    DestructorDelegate dataStructContextDestructor;
-
-    RTCPDataStruct *ownerData;
+    DestructorDelegate  dataStructContextDestructor;
+        RTCPDataStruct *ownerData;
+          PEConnection *connection;
+               pointer  context;
 } RTCPDataStructPE;
 
 protocol(PEKeyGeneratorDelegate)
@@ -34,9 +33,8 @@ protocol(PEKeyGeneratorDelegate)
 endOf(PEKeyGeneratorDelegate)
 
 class(RTCPHandlerPE)
-    RTCPDelegate selfDelegate;
-    RTCPHandler    *handler;
-
+    RTCPDelegate            selfDelegate;
+    RTCPHandler            *handler;
     RTCPDelegate           *delegate;
     PEKeyGeneratorDelegate *keyGeneratorDelegate;
 

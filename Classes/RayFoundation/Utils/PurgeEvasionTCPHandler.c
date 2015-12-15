@@ -14,6 +14,7 @@
  **/
 
 #include <RayFoundation/RClassTable/RClassTable.h>
+#include <RayFoundation/RMemoryOperations/RAutoPool.h>
 #include "RayFoundation/REncoding/purge.h"
 #include "PurgeEvasionTCPHandler.h"
 
@@ -53,7 +54,7 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
                 RWarning1("RTCPHandlerPE. Weak session key, size in bytes %lu", peHandler, sessionKey->size);
             }
             if(sessionKey->data == nil) {
-                RError1("RTCPHandlerPE. Bad session key data, cancelling session identifier %lu", peHandler, data->identifier);
+                RError1("RTCPHandlerPE. Bad session key data, canceling session identifier %lu", peHandler, data->identifier);
                 return nil;
             }
 
@@ -62,9 +63,15 @@ pointer startPESessionOnConnection(RTCPDataStruct *data) {
             data->context = RTCPDataStructPEWithSession(PEConnectionInit(data->socket, initPEContext(blankKey)));
         }
 
-        ((RTCPDataStructPE *)data->context)->dataStructContextDestructor = peHandler->dataStructContextDestructor;
-        ((RTCPDataStructPE *)data->context)->context = peHandler->delegate->context;
-        ((RTCPDataStructPE *)data->context)->ownerData = data;
+        RTCPDataStructPE *peContext = data->context;
+
+        if(peContext) {
+            peContext->dataStructContextDestructor = peHandler->dataStructContextDestructor;
+            peContext->                    context = peHandler->delegate->context;
+            peContext->                  ownerData = data;
+        } elseError(
+            RError1("RTCPHandlerPE. Error creating RTCPDataStructPE context %lu", peHandler, data->identifier);
+        )
 
         return peHandler->delegate->delegateFunction(data);
 
@@ -112,6 +119,7 @@ destructor(RTCPHandlerPE) {
 }
 
 printer(RTCPHandlerPE) {
+    RPrintf("PurgeEvasion %p ", object);
     $(object->handler, p(RTCPHandler)));
 }
 
