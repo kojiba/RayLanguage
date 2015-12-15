@@ -27,6 +27,7 @@ extern "C" {
 #include "RSyntax.h"
 #include "RColors.h"
 #include "RBasics/RBasics.h"
+#include "RClassTable/RClassTable.h"
 
 // Containers
 #include "RContainers/RArray.h"
@@ -63,25 +64,26 @@ extern "C" {
 #include "RThread/RThreadPool.h"
 
 // Others
-#include "RClassTable/RClassTable.h"
 #include "Utils/Utils.h"
 #include "Utils/PurgeEvasionConnection.h"
+#include "Utils/PurgeEvasionParallel.h"
+#include "Utils/PurgeEvasionTCPHandler.h"
 
 #ifdef RAY_BLOCKS_ON
 #define endRay() deleter(stringConstantsTable(), RDictionary);\
-                         deleter(RCTSingleton, RClassTable); \
-                         deleter(singleBlockPool(), RAutoPool); \
-                         p(RAutoPool)(RPool); \
-                         deleter(RPool, RAutoPool); \
-                         stopConsole();\
-                         return 0
+                 deleter(RCTSingleton, RClassTable); \
+                 deleter(singleBlockPool(), RAutoPool); \
+                 p(RAutoPool)(RPool); \
+                 deleter(RPool, RAutoPool); \
+                 stopConsole();\
+                 return 0
 #else
 #define endRay() deleter(stringConstantsTable(), RDictionary);\
-                         deleter(RCTSingleton, RClassTable); \
-                         p(RAutoPool)(RPool); \
-                         deleter(RPool, RAutoPool); \
-                         stopConsole();\
-                         return 0
+                 deleter(RCTSingleton, RClassTable); \
+                 p(RAutoPool)(RPool); \
+                 deleter(RPool, RAutoPool); \
+                 stopConsole();\
+                 return 0
 #endif
 
 #ifdef  __cplusplus

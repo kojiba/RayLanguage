@@ -237,23 +237,78 @@ int RStringTest(void) {
     return 0;
 }
 
+int RThreadPoolTest(void) {
+#if !defined(RAY_EMBEDDED) && defined(RAY_ARRAY_THREAD_SAFE)
+    arrayTest = makeRArray();
+    int i;
+    arrayTest->destructorDelegate = free;
+
+    RThreadPool * pool = c(RThreadPool)(nil);
+    $(pool, m(setDelegateFunction, RThreadPool)), func1);
+
+    forAll(i, TEST_COUNT) {
+        $(pool, m(addWithArg, RThreadPool)), "POOL self deletes", yes);
+    }
+
+    forAll(i, TEST_COUNT) {
+        $(arrayTest, m(addObject, RArray)), RCS("main"));
+    }
+
+    $(pool, m(joinSelfDeletes, RThreadPool)));
+
+    RAY_TEST(arrayTest->count != TEST_COUNT * (TEST_COUNT + 1), "RThreadPool self-deletes bad array count.", -1);
+
+    deleter(arrayTest, RArray);
+    deleter(pool, RThreadPool);
+
+    arrayTest = makeRArray();
+
+    arrayTest->destructorDelegate = free;
+
+    pool = c(RThreadPool)(nil);
+    $(pool, m(setDelegateFunction, RThreadPool)), func1);
+
+    forAll(i, TEST_COUNT) {
+        $(pool, m(addWithArg, RThreadPool)), "POOL simple", no);
+    }
+
+    forAll(i, TEST_COUNT) {
+        $(arrayTest, m(addObject, RArray)), RCS("main"));
+    }
+    $(pool, m(join, RThreadPool)));
+    RAY_TEST(arrayTest->count != TEST_COUNT * (TEST_COUNT + 1), "RThreadPool bad array count.", -2);
+
+    deleter(arrayTest, RArray);
+    deleter(pool, RThreadPool);
+
+
+#endif
+    return 0;
+}
+
 void ComplexTest() {
+    int code;
+    int testNumber = 0;
     srand((unsigned int) time(nil));
 
     RPrintSystemInfo();
 
     if(
-           !RDynamicArrayTest()
-        && !RListTest()
-        && !RClassNamePairTest()
-        && !RClassTableTest()
-        && !RDictionaryTest()
-        && !StringArrayTest()
-        && !RDataTest()
-        && !RBufferTest()
-        && !RStringTest()
-        && !RThreadTest()
+           !(++testNumber, code = RDynamicArrayTest())
+        && !(++testNumber, code = RListTest())
+        && !(++testNumber, code = RClassNamePairTest())
+        && !(++testNumber, code = RClassTableTest())
+        && !(++testNumber, code = RDictionaryTest())
+        && !(++testNumber, code = StringArrayTest())
+        && !(++testNumber, code = RDataTest())
+        && !(++testNumber, code = RBufferTest())
+        && !(++testNumber, code = RStringTest())
+        && !(++testNumber, code = RThreadTest())
+        && !(++testNumber, code = RThreadPoolTest())
     ) {
         RPrintLn("All tests passed successfully\n");
-    } elseError( RError("TESTS ERROR!", nil) );
+    } else {
+        RError("TESTS ERROR!", nil);
+        RPrintf("TESTS ERROR, code: %d , testNo: %d!\n\n", code, testNumber);
+    }
 }
