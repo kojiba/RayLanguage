@@ -19,6 +19,9 @@
 #include "RString_Consts.h"
 
 #ifndef RAY_EMBEDDED
+#ifndef RAY_ARRAY_THREAD_SAFE
+    #include "RayFoundation/RThread/RThread.h"
+#endif
     RMutex mutex;
 
     #define tableMutexLock()   RMutexLock(&mutex);

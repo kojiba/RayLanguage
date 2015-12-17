@@ -166,6 +166,10 @@ RData* decryptDataWithConnectionContext(RData *data, PEConnectionContext* contex
 
 #ifndef RAY_EMBEDDED
 
+#ifndef RAY_ARRAY_THREAD_SAFE
+    #include "RayFoundation/RThread/RThread.h"
+#endif
+
 struct PEConnection {
     PEConnectionContext *connectionContext;
     RBuffer             *buffer;

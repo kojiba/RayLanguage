@@ -96,7 +96,7 @@ printer(RTCPHandler) {
         RPrintf("\tListener socket %p\n", object->listener);
     }
     RPrintf("\tRunning thread tuid %u\n", (unsigned) RThreadIdOfThread(object->runningThread));
-    RPrintf("------ Arguments : ");
+    RPrintf("------ Active connections context : ");
     p(RArray)(object->arguments);
     RPrintf("RTCPHandler %p -----------\n\n", object);
 }

@@ -185,10 +185,10 @@ int main(int argc, const char *argv[]) {
 
 
     if(keysForConnects && keysForConnects2) {
-        keysForConnects->printerDelegate = (PrinterDelegate) p(RData);
+        keysForConnects->   printerDelegate = (PrinterDelegate)    p(RData);
         keysForConnects->destructorDelegate = (DestructorDelegate) RDataDeleter;
 
-        keysForConnects2->printerDelegate = (PrinterDelegate) p(RData);
+        keysForConnects2->   printerDelegate = (PrinterDelegate)    p(RData);
         keysForConnects2->destructorDelegate = (DestructorDelegate) RDataDeleter;
 
         startPEServer();

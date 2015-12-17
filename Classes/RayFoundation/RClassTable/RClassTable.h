@@ -20,7 +20,7 @@
 #include "RayFoundation/RContainers/RArray.h"
 
 #if defined(RAY_CLASS_TABLE_THREAD_SAFE) && !defined(RAY_ARRAY_THREAD_SAFE)
-    #include <RThread.h>
+    #include "RayFoundation/RThread/RThread.h"
 #endif
 
 class(RClassTable) //------------------------------------------------------------
