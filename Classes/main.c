@@ -118,11 +118,10 @@ void startPEServer(){
 pointer TempExec2(RTCPDataStruct *data) {
     RPrintf("%lu connecting...\n", data->identifier);
 
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Hello bro=)"));
-
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Happy merry christmas"));
     sleep(1);
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Come, get some!"));
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("End"));
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("And a happy new year!"));
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("2015-End =)"));
 
     return nil;
 }
