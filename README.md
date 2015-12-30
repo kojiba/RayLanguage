@@ -1,6 +1,8 @@
 RayLanguage
 ===========
 
+HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)  
+
 **If You have some ideas, or found bugs - create issues here on github or email me.**
 
 firstly:
