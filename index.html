@@ -31,42 +31,49 @@
       </header>
       <section>
         <h1>
-<a id="raylanguage" class="anchor" href="#raylanguage" aria-hidden="true"><span class="octicon octicon-link"></span></a>RayLanguage</h1>
+<a id="" class="anchor" href="#" aria-hidden="true"><span class="octicon octicon-link"></span></a><img src="https://raw.githubusercontent.com/kojiba/RayLanguage/master/foundation.logo.png" alt="RayFoundation" title="RayFoundation">
+</h1>
+
+<p>HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)  </p>
 
 <p><strong>If You have some ideas, or found bugs - create issues here on github or email me.</strong></p>
 
 <p>firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
-All based on defines.  </p>
+All based on defines and can use diff.  </p>
 
 <p>Containers:<br>
-1.  Array, List (dynamicly self-longs, store pointers to objects)<br>
-2.  Dictionary (NSDictionary, std::map analog, self-longs)<br>
-3.  Buffer (self-longs, sore full copy of objects)<br>
-5.  ClassTable (for store pairs of number and string once, may be used like runtime enum etc.)  </p>
+1.  Array, List - NSArray, std::vector, list analog<br>
+2.  Dictionary - NSDictionary, std::map analog<br>
+3.  Buffer - store full copy of objects<br>
+4.  Data - base sized data class for strings, and bytes  </p>
 
-<p>Strings:<br>
-1. Wide range of c-string processing operations (RCString)<br>
+<p>Strings and raw bytes:<br>
+1. Wide range of string processing operations (RString)<br>
 2. Replacings<br>
 3. Find of substring or symbol<br>
 4. Delete characters/substrings<br>
-5. Delete of duplicatings characters/substring<br>
+5. Delete of duplications characters/substring<br>
 6. Compares<br>
 7. Read from file/ apend to file<br>
-8. Tokenization into containeer Array<br>
+8. Tokenization into container Array<br>
 9. Base64 encoding/decoding<br>
 10. etc...  </p>
 
+<p>System dependent Utils (WINAPI + POSIX):<br>
+1. RThread and RThreadPool<br>
+2. RSocket (WINAPI + Berkley)<br>
+3. RTCPHandler - multi-threaded tcp server engine  </p>
+
 <p>Memory operations:<br>
-1. Self-code easy sandboxing and testing with logging.<br>
-2. Self-code management with RAutoPool. (Checking leaks)<br>
-3. Work with byte buffers<br>
-4. Work with memory chunks    </p>
+1. Easy sandboxing and testing with logging<br>
+2. Memory management with RAutoPool (Checking leaks, manage allocations)<br>
+3. Work with byte buffers and memory chunks  </p>
 
 <p>Some test projects based on RayFoundation:<br>
-1. Simple VM with Brainfuck compiler<br>
-2. Simple lang interpreter (unfinished)  </p>
+1. Simple VM with Brainfuck compiler and execution visualization in Curses<br>
+2. Simple TCP multi-threaded text-chat with 'nc' util client </p>
 
 <p>Work with RArray:  </p>
 
@@ -74,7 +81,7 @@ All based on defines.  </p>
 
 <span class="pl-k">typedef</span> <span class="pl-k">struct</span> ComplexStruct {
     <span class="pl-c1">size_t</span> id;
-    RCString *fullName;
+    RString *fullName;
 } ComplexStruct;
 
 <span class="pl-k">void</span> <span class="pl-en">printComplexStruct</span>(ComplexStruct *some) {
@@ -82,7 +89,7 @@ All based on defines.  </p>
 }
 
 <span class="pl-k">void</span> <span class="pl-en">complexDeleter</span>(ComplexStruct *some) {
-    <span class="pl-c1">deleter</span>(some-&gt;fullName, RCString);
+    <span class="pl-c1">deleter</span>(some-&gt;fullName, RString);
     <span class="pl-c1">free</span>(some);
 }
 
@@ -98,7 +105,7 @@ All based on defines.  </p>
         <span class="pl-c">// create struct and add to array</span>
         ComplexStruct *some = <span class="pl-c1">malloc</span>(<span class="pl-k">sizeof</span>(ComplexStruct));
         some-&gt;id = iterator + <span class="pl-c1">1</span>;
-        some-&gt;fullName = <span class="pl-c1">stringWithFormat</span>(<span class="pl-s"><span class="pl-pds">"</span>Object # <span class="pl-c1">%lu</span><span class="pl-pds">"</span></span>, iterator + <span class="pl-c1">1</span>); <span class="pl-c">// more string processing API in RCString.h</span>
+        some-&gt;fullName = <span class="pl-c1">stringWithFormat</span>(<span class="pl-s"><span class="pl-pds">"</span>Object # <span class="pl-c1">%lu</span><span class="pl-pds">"</span></span>, iterator + <span class="pl-c1">1</span>); <span class="pl-c">// more string processing API in RString.h</span>
         $(array, <span class="pl-c1">m</span>(addObject, RArray)), some);
     }
     <span class="pl-c">// print</span>
@@ -110,17 +117,17 @@ All based on defines.  </p>
     <span class="pl-c">// some syntaxic sugar see initFromArray, initFromArrayWithSizes, arrayFromArray</span>
 
     <span class="pl-c">// create array of strings</span>
-    RCString *uniqTok = <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Unique token<span class="pl-pds">"</span></span>);
+    RString *uniqTok = <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Unique token<span class="pl-pds">"</span></span>);
     array = <span class="pl-c1">RA</span>(<span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Token 1<span class="pl-pds">"</span></span>), <span class="pl-c1">RS</span>(<span class="pl-s"><span class="pl-pds">"</span>Token 2<span class="pl-pds">"</span></span>), uniqTok, nil); <span class="pl-c">// must be NULL terminated</span>
 
-    array-&gt;printerDelegate = (PrinterDelegate) <span class="pl-c1">p</span>(RCString);
+    array-&gt;printerDelegate = (PrinterDelegate) <span class="pl-c1">p</span>(RString);
     array-&gt;destructorDelegate = <span class="pl-c1">free</span>;
 
     <span class="pl-c1">printerOfRArray</span>(array);
 
     RCompareDelegate delegate;
     delegate.<span class="pl-smi">etaloneObject</span> = uniqTok;
-    delegate.<span class="pl-smi">virtualCompareMethod</span> = (<span class="pl-c1">RCompareFlags</span> (*)(pointer, pointer)) compareWithRCString;
+    delegate.<span class="pl-smi">virtualCompareMethod</span> = (<span class="pl-c1">RCompareFlags</span> (*)(pointer, pointer)) compareWithRString;
 
     RFindResult result = <span class="pl-c1">findObjectWithDelegateRArray</span>(array, &amp;delegate); <span class="pl-c">// search</span>
 
