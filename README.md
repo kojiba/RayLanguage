@@ -8,35 +8,39 @@ HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)
 firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
-All based on defines.  
+All based on defines and can use diff.  
   
 Containers:  
-1.  Array, List (dynamicly self-longs, store pointers to objects)  
-2.  Dictionary (NSDictionary, std::map analog, self-longs)  
-3.  Buffer (self-longs, sore full copy of objects)  
-5.  ClassTable (for store pairs of number and string once, may be used like runtime enum etc.)  
+1.  Array, List - NSArray, std::vector, list analog  
+2.  Dictionary - NSDictionary, std::map analog  
+3.  Buffer - store full copy of objects  
+4.  Data - base sized data class for strings, and bytes  
   
-Strings:  
-1. Wide range of c-string processing operations (RString)
+Strings and raw bytes:  
+1. Wide range of string processing operations (RString)  
 2. Replacings  
 3. Find of substring or symbol  
 4. Delete characters/substrings  
-5. Delete of duplicatings characters/substring  
+5. Delete of duplications characters/substring  
 6. Compares  
 7. Read from file/ apend to file  
-8. Tokenization into containeer Array  
+8. Tokenization into container Array  
 9. Base64 encoding/decoding  
 10. etc...  
   
+System dependent Utils (WINAPI + POSIX):  
+1. RThread and RThreadPool  
+2. RSocket (WINAPI + Berkley)  
+3. RTCPHandler - multi-threaded tcp server engine  
+  
 Memory operations:  
-1. Self-code easy sandboxing and testing with logging.   
-2. Self-code management with RAutoPool. (Checking leaks)   
-3. Work with byte buffers    
-4. Work with memory chunks    
+1. Easy sandboxing and testing with logging  
+2. Memory management with RAutoPool (Checking leaks, manage allocations)  
+3. Work with byte buffers and memory chunks  
 
 Some test projects based on RayFoundation:  
-1. Simple VM with Brainfuck compiler  
-2. Simple lang interpreter (unfinished)  
+1. Simple VM with Brainfuck compiler and execution visualization in Curses  
+2. Simple TCP multi-threaded text-chat with 'nc' util client 
 
 Work with RArray:  
 
