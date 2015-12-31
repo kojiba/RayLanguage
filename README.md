@@ -1,4 +1,4 @@
-![RayFoundation](https://github.com/kojiba/RayLanguage/blob/master/foundation.logo.png "RayFoundation")
+![RayFoundation](https://raw.githubusercontent.com/kojiba/RayLanguage/master/foundation.logo.png "RayFoundation")
 ===========
 
 HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)  
