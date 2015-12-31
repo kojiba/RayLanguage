@@ -8,7 +8,7 @@ HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)
 firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
-All based on defines and can use diff.  
+All based on defines and can use diff code style.  
   
 Containers:  
 1.  Array, List - NSArray, std::vector, list analog  
