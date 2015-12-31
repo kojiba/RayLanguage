@@ -5,18 +5,18 @@ HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)
 
 **If You have some ideas, or found bugs - create issues here on github or email me.**
 
-firstly:
+#### firstly:
 Ray additions to C language defines some C-based syntax, 
 that makes object-oriented life easier for C developers.
 All based on defines and can use diff code style.  
   
-Containers:  
+#### Containers:  
 1.  Array, List - NSArray, std::vector, list analog  
 2.  Dictionary - NSDictionary, std::map analog  
 3.  Buffer - store full copy of objects  
 4.  Data - base sized data class for strings, and bytes  
   
-Strings and raw bytes:  
+#### Strings and raw bytes:  
 1. Wide range of string processing operations (RString)  
 2. Replacings  
 3. Find of substring or symbol  
@@ -28,17 +28,17 @@ Strings and raw bytes:
 9. Base64 encoding/decoding  
 10. etc...  
   
-System dependent Utils (WINAPI + POSIX):  
+#### System dependent Utils (WINAPI + POSIX):  
 1. RThread and RThreadPool  
 2. RSocket (WINAPI + Berkley)  
 3. RTCPHandler - multi-threaded tcp server engine  
   
-Memory operations:  
+#### Memory operations:  
 1. Easy sandboxing and testing with logging  
 2. Memory management with RAutoPool (Checking leaks, manage allocations)  
 3. Work with byte buffers and memory chunks  
 
-Some test projects based on RayFoundation:  
+#### Some test projects based on RayFoundation:  
 1. Simple VM with Brainfuck compiler and execution visualization in Curses  
 2. Simple TCP multi-threaded text-chat with 'nc' util client 
 
