@@ -18,6 +18,7 @@ int RBufferTest       (void);
 int RStringTest       (void);
 int RThreadTest       (void);
 int RThreadPoolTest   (void);
+int RByteApiTest      (void);
 
 #ifdef  __cplusplus
 }

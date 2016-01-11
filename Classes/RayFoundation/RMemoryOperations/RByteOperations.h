@@ -20,7 +20,7 @@
 
 // Memory operations
 void              Xor(byte* data, const byte* key, size_t sizeOfData, size_t sizeOfKey);
-void  flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
+void   flushAllToByte(byte *array, size_t size, byte symbol); // returns reference
 size_t  compareMemory(const byte *array, const byte *toCompare, size_t size);
 
 

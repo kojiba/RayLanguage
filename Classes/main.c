@@ -121,7 +121,7 @@ pointer TempExec2(RTCPDataStruct *data) {
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("Happy merry christmas"));
     sleep(1);
     PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("And a happy new year!"));
-    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("2015-End =)"));
+    PEConnectionSend(((RTCPDataStructPE*)data->context)->connection, RS("End"));
 
     return nil;
 }

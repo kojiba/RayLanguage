@@ -286,6 +286,56 @@ int RThreadPoolTest(void) {
     return 0;
 }
 
+
+int RByteApiTest(void) {
+#define dataSizeTest 1024
+    size_t iterator;
+    RData *data = makeRDataAllocated(dataSizeTest);
+    RAY_TEST(data->size != dataSizeTest, "RByteApiTest bad array count.", -1);
+    flushAllToByte(data->data, dataSizeTest, 1);
+
+    forAll(iterator, dataSizeTest) {
+        RAY_TEST(data->data[iterator] != 1, "RByteApiTest bad flushed array value (1).", -2);
+    }
+
+    forAll(iterator, dataSizeTest) {
+        data->data[iterator] = (byte) (iterator % 16);
+    }
+
+    RAY_TEST(data->data[17] != 1, "RByteApiTest bad array setted.", -3);
+
+
+    // {0, 1, 2}
+    RData *separator = makeRDataBytes(subArrayInRange(data->data, data->size, makeRRange(0, 3)), 3);
+
+    RAY_TEST(separator == nil, "RByteApiTest bad subArrayInRange", -4);
+    RAY_TEST(separator->data == nil, "RByteApiTest bad subArrayInRange", -5);
+    RAY_TEST(separator->size != 3, "RByteApiTest bad subArrayInRange", -6);
+
+    replaceBytesWithBytes(data->data, &data->size, separator->data, separator->size, nil, 0);
+
+    RAY_TEST(data->size != dataSizeTest - dataSizeTest / 16 * 3, "RByteApiTest bad size after replaceBytesWithBytes", -7);
+
+    forAll(iterator, data->size) {
+        if(iterator % 13 == 0) {
+            RAY_TEST(data->data[iterator] != 3, "RByteApiTest bad byte at index after replaceBytesWithBytes", -8);
+        }
+    }
+
+    replaceByteWithByte(data->data, data->size, 3, 4);
+
+    forAll(iterator, data->size) {
+        if(iterator % 13 == 0) {
+            RAY_TEST(data->data[iterator] != 4, "RByteApiTest bad byte at index after replaceByteWithByte", -8);
+        }
+    }
+
+    deleter(separator, RData);
+    deleter(data, RData);
+
+    return 0;
+}
+
 void ComplexTest() {
     int code;
     int testNumber = 0;
@@ -305,6 +355,7 @@ void ComplexTest() {
         && !(++testNumber, code = RStringTest())
         && !(++testNumber, code = RThreadTest())
         && !(++testNumber, code = RThreadPoolTest())
+        && !(++testNumber, code = RByteApiTest())
     ) {
         RPrintLn("All tests passed successfully\n");
     } else {

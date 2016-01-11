@@ -387,26 +387,38 @@ inline byte* trimBeforeSubArray(byte *array, size_t *size, const byte *sub, size
 
 byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer) {
     size_t iterator = indexOfFirstByte(array, size, toReplace);
-    while(iterator != RNotFound) {
+    while(iterator != RNotFound
+            && size < iterator) {
         array[iterator] = replacer;
-        iterator = indexOfFirstByte(array + iterator, size - iterator, toReplace);
+        iterator += indexOfFirstByte(array + iterator, size - iterator, toReplace);
     }
     return array;
 }
 
 byte* replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, size_t toReplaceSize, const byte *replacer, size_t replacerSize) {
+    size_t storedIndex = 0;
     size_t index = indexOfFirstSubArray(array, *size, toReplace, toReplaceSize);
+    size_t sizeRemaining = *size;
 
-    while(index != RNotFound) {
-        array = insertSubArray(array, size, replacer, replacerSize, index);
-        array = deleteInRange(array, size, makeRRange(index + replacerSize, toReplaceSize));
-        index = indexOfFirstSubArray(array + index, *size, toReplace, toReplaceSize);
+    while(index != RNotFound
+            && storedIndex < *size
+            && sizeRemaining <= *size) {
+
+        array = insertSubArray(array, size, replacer, replacerSize, index + storedIndex);
+        storedIndex += index + replacerSize;
+
+        array = deleteInRange(array, size, makeRRange(storedIndex, toReplaceSize));
+        sizeRemaining -= index + toReplaceSize;
+
+        index = indexOfFirstSubArray(array + storedIndex, sizeRemaining, toReplace, toReplaceSize);
     }
+
     return array;
 }
 
 byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place) {
-    if(place <= *size) {
+    if(place <= *size
+            && subSize != nil) {
         array = RReAlloc(array, arraySize(byte, *size + subSize));
         RMemMove(array + place + subSize, array + place, *size - place);
         RMemCpy(array + place, sub, subSize);
