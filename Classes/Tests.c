@@ -326,9 +326,16 @@ int RByteApiTest(void) {
 
     forAll(iterator, data->size) {
         if(iterator % 13 == 0) {
-            RAY_TEST(data->data[iterator] != 4, "RByteApiTest bad byte at index after replaceByteWithByte", -8);
+            RAY_TEST(data->data[iterator] != 4, "RByteApiTest bad byte at index after replaceByteWithByte", -9);
         }
     }
+
+
+    byte sub[] = {0x4, 0x4};
+    deleteAllSubArrays(data->data, &data->size, sub, 2);
+    p(RData)(data);
+
+    RAY_TEST(data->size != dataSizeTest - dataSizeTest / 16 * (3 + 2), "RByteApiTest bad size after deleteAllSubArrays", -10);
 
     deleter(separator, RData);
     deleter(data, RData);

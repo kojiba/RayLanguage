@@ -386,11 +386,13 @@ inline byte* trimBeforeSubArray(byte *array, size_t *size, const byte *sub, size
 }
 
 byte* replaceByteWithByte(byte *array, size_t size, byte toReplace, byte replacer) {
-    size_t iterator = indexOfFirstByte(array, size, toReplace);
+    size_t iteratorSum = 0;
+    size_t iterator = 0;
     while(iterator != RNotFound
-            && size < iterator) {
-        array[iterator] = replacer;
-        iterator += indexOfFirstByte(array + iterator, size - iterator, toReplace);
+            && iteratorSum < size) {
+        iterator = indexOfFirstByte(array + iteratorSum, size - iteratorSum, toReplace);
+        array[iteratorSum + iterator] = replacer;
+        iteratorSum += iterator;
     }
     return array;
 }
