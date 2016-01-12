@@ -333,7 +333,6 @@ int RByteApiTest(void) {
 
     byte sub[] = {0x4, 0x4};
     deleteAllSubArrays(data->data, &data->size, sub, 2);
-    p(RData)(data);
 
     RAY_TEST(data->size != dataSizeTest - dataSizeTest / 16 * (3 + 2), "RByteApiTest bad size after deleteAllSubArrays", -10);
 

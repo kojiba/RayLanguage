@@ -392,7 +392,7 @@ method(RFindResult, findObjectWithDelegate, RArray), RCompareDelegate *delegate)
     size_t      iterator;
     RFindResult result;
     result.object = nil;
-    result.index = object->count;
+    result.index = RNotFound;
     printDebugTrace();
     if(delegate != nil
             && delegate->virtualCompareMethod != nil) {
@@ -435,7 +435,7 @@ constMethod(size_t, indexOfObject, RArray), pointer toFind) {
         RMutexUnlockArray();
         return iterator;
     }
-    return object->count;
+    return RNotFound;
 }
 
 method(RArray *, getSubarray, RArray), RRange range) {
@@ -495,7 +495,7 @@ inline constMethod(pointer, lastObject, RArray)) {
 method(RFindResult, enumerate, RArray), REnumerateDelegate *delegate, rbool isFromLeft){
     size_t iterator;
     RFindResult result;
-    result.index  = object->count;
+    result.index  = RNotFound;
     result.object = nil;
     printDebugTrace();
     if(delegate->virtualEnumerator != nil) {

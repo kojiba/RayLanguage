@@ -34,6 +34,6 @@ RString* stringFromFile(const char *filename);
  *  Note: Reads string from stdin,
  *  returns created RString which must be destructed.
 */
-RString * getInputString();
+RString* getInputString();
 
 #endif /*__R_C_STRING_FILE_H__*/

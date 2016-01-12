@@ -1,6 +1,7 @@
 /**
  * RArray_Parallel.h
  * Threaded optimisation for RArray functions.
+ * Not uses RThreadPool.
  * Operations is synchronous.
  * Author Kucheruavyu Ilya (kojiba@protonmail.com)
  * 2/27/15 Ukraine Kharkiv
