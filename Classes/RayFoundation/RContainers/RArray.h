@@ -393,16 +393,18 @@ method(void,              setDestructorDelegate,      RArray), DestructorDelegat
  *
  * Example:
  *
- * void printInt(pointer obj) {
- *    printf("%d\n", *(int*) obj);
- *}
+ * @code
+ *     void printInt(pointer obj) {
+ *        printf("%d\n", *(int*) obj);
+ *    }
  *
- * void PrintExample() {
- *    int array[10] = {1,2,3,4,5,6,7,8,9,0};
- *    RArray *dynamic = initFromArray(array, sizeof(int), 10);
- *    dynamic->printerDelegate = printInt;
- *    $(dynamic, p(RArray)));
- * }
+ *     void PrintExample() {
+ *        int array[10] = {1,2,3,4,5,6,7,8,9,0};
+ *        RArray *dynamic = initFromArray(array, sizeof(int), 10);
+ *        dynamic->printerDelegate = printInt;
+ *        $(dynamic, p(RArray)));
+ *     }
+ * @endcode
  *
  * @param pointerToArray    Pointer to source array, from will be copied ptrs.
  * @param stepToNextPtr     Offset to get nex ptr from ptr array.
@@ -417,19 +419,21 @@ RArray* initFromArray(pointer pointerToArray, size_t stepToNextPtr, size_t count
  *
  * Example:
  *
- * void printInt(pointer obj) {
- *    printf("%d\n", *(int*) obj);
- *}
+ * @code
+ *    void printInt(pointer obj) {
+ *        printf("%d\n", *(int*) obj);
+ *    }
  *
- * void PrintExample() {
- *    int array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
- *    size_t sizes[] = {sizeof(int), sizeof(int), sizeof(int), sizeof(int),
- *                      sizeof(int), sizeof(int), sizeof(int), sizeof(int),
- *                      sizeof(int), sizeof(int), 0};
- *    RArray *dynamic = initFromArrayWithSizes(array, sizes);
- *    dynamic->printerDelegate = printInt;
- *    $(dynamic, p(RArray)));
- * }
+ *    void PrintExample() {
+ *       int array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+ *       size_t sizes[] = {sizeof(int), sizeof(int), sizeof(int), sizeof(int),
+ *                         sizeof(int), sizeof(int), sizeof(int), sizeof(int),
+ *                         sizeof(int), sizeof(int), 0};
+ *       RArray *dynamic = initFromArrayWithSizes(array, sizes);
+ *       dynamic->printerDelegate = printInt;
+ *       $(dynamic, p(RArray)));
+ *    }
+ * @endcode
  *
  * @param pointerToArray    Pointer to source array, from will be copied ptrs.
  * @param sizesArray        Offset's array to next pointer, must be 0-terminated.
@@ -444,13 +448,15 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // i
  *
  * Example:
  *
- * RArray* array = arrayFromArray(
- *         RS("hello"), RS("omg"), RS("lol"), nil
- * );
- * array->printerDelegate = (void (*)(pointer)) p(RString);
- * array->destructorDelegate = RFree;
- * p(RArray)(array);
- * deleter(array, RArray);
+ * @code
+ *    RArray* array = arrayFromArray(
+ *            RS("hello"), RS("omg"), RS("lol"), nil
+ *    );
+ *    array->printerDelegate = (void (*)(pointer)) p(RString);
+ *    array->destructorDelegate = RFree;
+ *    p(RArray)(array);
+ *    deleter(array, RArray);
+ * @endcode
  *
  * @return Created RArray instance, and sizeToFit'ed.
 */
