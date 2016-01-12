@@ -18,6 +18,8 @@
 #include "RayFoundation/REncoding/purge.h"
 #include "PurgeEvasionTCPHandler.h"
 
+#ifndef RAY_EMBEDDED
+
 RTCPDataStructPE* RTCPDataStructPEWithSession(PEConnection *connection){
     if(connection != nil) {
         RTCPDataStructPE *result = allocator(RTCPDataStructPE);
@@ -170,3 +172,5 @@ inline
 method(void, broadcast, RTCPHandlerPE), RString *string) {
     $(object->handler, m(broadcast, RTCPHandler)), string);
 }
+
+#endif

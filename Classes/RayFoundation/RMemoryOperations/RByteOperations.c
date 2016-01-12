@@ -420,7 +420,7 @@ byte* replaceBytesWithBytes(byte *array, size_t *size, const byte *toReplace, si
 
 byte* insertSubArray(byte *array, size_t *size, const byte *sub, size_t subSize, size_t place) {
     if(place <= *size
-            && subSize != nil) {
+            && subSize != 0) {
         array = RReAlloc(array, arraySize(byte, *size + subSize));
         RMemMove(array + place + subSize, array + place, *size - place);
         RMemCpy(array + place, sub, subSize);

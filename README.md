@@ -1,20 +1,27 @@
 ![RayFoundation](https://raw.githubusercontent.com/kojiba/RayLanguage/master/foundation.logo.png "RayFoundation")
 ===========
 
-HAPPY MERRY CHRISTMAS AND A HAPPY NEW YEAR! =)  
+**If You have some ideas, or found bugs - create issues here, on Github, or email me.**
 
-**If You have some ideas, or found bugs - create issues here on github or email me.**
+#### Firstly:
+Runtime components, creates open and secure integrated library  
+for application development(like NextStep.CoreFoundation for POSIX + winAPI).  
 
-#### firstly:
-Ray additions to C language defines some C-based syntax, 
-that makes object-oriented life easier for C developers.
-All based on defines and can use diff code style.  
+#### Secondly:
+ONLY 120 KB 4all, CARL!  
+Use RayConfig.h to reduce size to 100KB, by removing warnings and error strings.  
+Can be compiled to use only CoreObjects like strings and containers using RAY_EMBEDDED 82KB!  
+
+#### Thirdly:
+Ray additions to C language defines some C-based syntax,  
+that makes object-oriented life easier for C developers.  
+All based on defines and can use diff code style (RSyntax.h).  
   
 #### Containers:  
-1.  Array, List - NSArray, std::vector, list analog  
-2.  Dictionary - NSDictionary, std::map analog  
-3.  Buffer - store full copy of objects  
-4.  Data - base sized data class for strings, and bytes  
+1. Array, List - NSArray, std::vector, list analog  
+2. Dictionary - NSDictionary, std::map analog  
+3. Buffer - store full copy of objects  
+4. Data - base sized data class for strings, and bytes  
   
 #### Strings and raw bytes:  
 1. Wide range of string processing operations (RString)  

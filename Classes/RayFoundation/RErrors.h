@@ -63,6 +63,7 @@
     #define elseWarning(warning)               else { warning; }
 #else
     #define RWarning(string, object)
+    #define RWarning1(string, object, arg1)
 
     #define ifWarning(condition, warning)
     #define elseWarning(warning)
