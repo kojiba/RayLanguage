@@ -250,7 +250,7 @@ method(void, deleteDataAt, RBuffer), size_t index) {
 constMethod(RFindResult, enumerate, RBuffer), REnumerateDelegate *delegate, rbool isFromLeft) {
     size_t iterator;
     RFindResult result;
-    result.index  = object->count;
+    result.index  = RNotFound;
     result.object = nil;
     if(delegate->virtualEnumerator != nil) {
         RMutexLockBuffer();

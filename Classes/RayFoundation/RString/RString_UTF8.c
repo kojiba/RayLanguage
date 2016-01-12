@@ -138,7 +138,7 @@ method(RFindResult, enumerate, RString), rbool (*enumerator)(RString, size_t)) {
     rbool     isValid = 0;
     unsigned  codePoint = 0;
     RFindResult result;
-    result.index = object->size;
+    result.index = RNotFound;
     result.object = nil;
     if(enumerator != nil) {
         while (utf8GetNextCharacter((byte const *) object->data, object->size, &nextPosition, &isValid,

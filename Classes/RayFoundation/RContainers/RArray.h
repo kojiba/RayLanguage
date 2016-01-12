@@ -61,7 +61,7 @@ class(RArray) //----------------------------------------------------------------
     pointer  *array;                          ///< array for store pointers
 
 #ifdef RAY_ARRAY_THREAD_SAFE
-    RMutex mutex;    ///< single thread lock (mutex)
+    RMutex mutex;    ///< single thread lock (mutex), recursive
 #endif
 
 endOf(RArray) //--------------------------------------------------------------------

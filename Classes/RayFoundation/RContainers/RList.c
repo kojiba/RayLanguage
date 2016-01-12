@@ -213,7 +213,7 @@ constMethod(RFindResult, enumerate, RList), REnumerateDelegate *delegate, rbool 
     RNode *iterator = object->tail;
     size_t numericIterator;
     RFindResult result;
-    result.index  = object->count;
+    result.index  = RNotFound;
     result.object = nil;
     if(delegate->virtualEnumerator != nil) {
         RMutexLockList();
