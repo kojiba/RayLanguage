@@ -46,11 +46,9 @@ class(RBuffer) // -------------------
 endOf(RBuffer) // -------------------
 
 
-
-extern inline
 RBuffer* makeRBufferOptions (size_t startSize, size_t objectCount);
 
-constructor (RBuffer));
+extern constructor (RBuffer));
 destructor  (RBuffer);
 printer     (RBuffer);
 

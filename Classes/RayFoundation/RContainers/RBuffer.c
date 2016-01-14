@@ -400,7 +400,7 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
             result = 0;
             result = RFWrite(&result, sizeof(size_t), 1, file);
 
-            ifError(result != 1, RError("RBuffer. Failed save last sizes \'\\0\' to file.", object) );
+            ifError(result != 1, RError("RBuffer. Failed save last sizes \'\\0\' terminator to file.", object) );
 
             // dump body
             result = RFWrite(master(object, RData)->data, object->totalPlaced, 1, file);
