@@ -711,6 +711,24 @@ RArray* arrayFromArray(pointer start, ...) {
     return array;
 }
 
+const RArray* initRArrayConst(const pointer *pointerToArray, const size_t count) {
+    RArray *object = allocator(RArray);
+    printDebugTrace2("CONST pointer %p, Size %lu", pointerToArray, count);
+    if(object) {
+        object->array = (pointer *) pointerToArray;
+        object->count = count;
+        object->classId = 0;
+        object->freePlaces = 0;
+        object->destructorDelegate = nil;
+        object->printerDelegate    = nil;
+        object->sizeMultiplier     = 1; // must be always 1
+#ifdef RAY_ARRAY_THREAD_SAFE
+        mutexWithType(&object->mutex, RMutexRecursive);
+#endif
+    }
+    return object;
+}
+
 #pragma mark Delegates
 inline
 method(PrinterDelegate, printerDelegate, RArray)) {

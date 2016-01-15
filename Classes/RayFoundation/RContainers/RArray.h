@@ -458,11 +458,22 @@ RArray* initFromArrayWithSizes(pointer pointerToArray, size_t *sizesArray); // i
  *    deleter(array, RArray);
  * @endcode
  *
+ * @param firstObject Argument list of pointers, last must be nil.
+ *
  * @return Created RArray instance, and sizeToFit'ed.
 */
 
 RArray* arrayFromArray(pointer firstObject, ...); // array from array of pointers, last must be nil
 
+/**
+ * Creates const RArray instance from pointers array, with known size.
+ *
+ * @param pointerToArray Constant array of pointers.
+ * @param count          Count of pointers in array.
+ *
+ * @return Created RArray instance, with 0 multiplier.
+*/
+const RArray* initRArrayConst(const pointer *pointerToArray, const size_t count); // not must be used with add object, etc
 //----------------------------------------------------------------------------------
 
 #define makeRArray()                          $(nil, c(RArray)), nil)
