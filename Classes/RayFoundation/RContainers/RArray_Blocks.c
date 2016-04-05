@@ -1,7 +1,11 @@
 /**
- * RArray_Blocks.c
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 9/29/15 Ukraine Kharkiv
+ * @file RArray_Blocks.c
+ * @brief Block category to RArray operations.
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 9/29/2015
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -10,7 +14,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
 
 #include "RArray_Blocks.h"
 

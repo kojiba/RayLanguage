@@ -322,7 +322,9 @@ method(void,               bubbleSortWithDelegate,    RArray),    rbool (*compar
 
 /**
  * Preform a quick sort using comparator.
- * One pivot quicksort with first and last index.
+ * One-pivot quicksort with first and last index.
+ *
+ * Note: recursive,
  * NOT check bounds.
  *
  * @param comparator    Function to check objects.
