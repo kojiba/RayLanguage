@@ -36,7 +36,7 @@ inline RCompareFlags compareRRange(RRange first, RRange second) {
         if(first.size > second.size) {
             return longer;
         } else if(first.size < second.size) {
-            return smaller;
+            return shorter;
         } else {
             return equals;
         }
@@ -68,32 +68,6 @@ inline rbool isOverlappingRRange(RRange first, RRange second) {
 
 printer(RRange) {
     RPrintf("[ %lu ; %lu ]", object->start, object->start + object->size);
-}
-
-#pragma mark RBounds
-
-inline RBounds makeRBounds(char startSymbol, char endSymbol) {
-    RBounds bounds;
-    bounds.startSymbol = startSymbol;
-    bounds.endSymbol = endSymbol;
-    return bounds;
-}
-
-inline rbool isValueInBounds(RBounds bounds, char value) {
-    if(value >= bounds.startSymbol && value <= bounds.endSymbol) {
-        return yes;
-    } else {
-        return no;
-    }
-}
-
-inline rbool compareRBounds(RBounds first, RBounds second) {
-    if(first.startSymbol == second.startSymbol
-            && first.endSymbol == second.endSymbol) {
-        return yes;
-    } else {
-        return no;
-    }
 }
 
 inline RCompareFlags defaultComparator(pointer first, pointer second) {

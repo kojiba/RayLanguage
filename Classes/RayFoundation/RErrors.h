@@ -56,7 +56,7 @@
 
 #ifdef RAY_WARNINGS_ON
     #define RPleaseRemoveString                " Please, remove function call, or fix it!\n"
-    #define RWarning(string, object)          RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object)
+    #define RWarning(string, object)           RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object)
     #define RWarning1(string, object, arg1)    RPrintf(RYellow "%p Warning. " string RPleaseRemoveString RNC, object, (arg1))
 
     #define ifWarning(condition, warning)      if(condition) { warning; }

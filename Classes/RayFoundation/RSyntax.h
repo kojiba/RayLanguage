@@ -50,6 +50,7 @@
 typedef void*   pointer;
 
 #ifdef _WIN32
+    #warning Undefine windows 'byte' typedef
     #undef byte
 #endif
 typedef uint8_t  byte;
