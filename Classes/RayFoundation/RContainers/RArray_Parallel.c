@@ -1,8 +1,11 @@
 /**
- * RArray_Parallel.c
- * Threaded optimisation for RArray functions.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 2/27/15 Ukraine Kharkiv
+ * @file RArray_Parallel.c
+ * @brief Threaded optimisation for RArray functions.
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 2/27/2015
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -11,8 +14,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
-
+ */
 #include "RArray_Parallel.h"
 
 #ifndef RAY_EMBEDDED
@@ -47,6 +49,7 @@ typedef struct finderArgument {
 void privatePartFinder(finderArgument *argument) {
     size_t iterator;
     argument->result.object = nil;
+    printDebugTrace1("Argument (finderArgument) %p", argument);
     inRange(iterator, argument->partRange) {
         if(*(argument->isFound) == yes) {
             argument->selfIterator = 0;
@@ -90,9 +93,7 @@ method(RFindResult, findObjectParallel, RArray),    RCompareDelegate *delegate) 
             rbool allNotFound = no;
             *isFound = no;
 
-#ifdef RAY_SHORT_DEBUG
-            RPrintf("RArray findObjectParallel of %p\n", object);
-#endif
+            printDebugTrace();
             RMutexLockArray();
 
             forAll(iterator, coreCount) {
@@ -161,6 +162,7 @@ typedef struct executerArgument {
 
 void privatePartExecuter(executerArgument *argument) {
     size_t iterator;
+    printDebugTrace1("Argument (executerArgument) %p", argument);
     inRange(iterator, argument->partRange) {
         argument->delegate->virtualEnumerator(argument->delegate->context, argument->object->array[iterator], iterator);
     }
@@ -179,9 +181,7 @@ method(void, executeParallel, RArray), REnumerateDelegate *delegate) {
             size_t partForCore = object->count / coreCount;
             size_t additionalForLastCore = object->count - partForCore * coreCount;
 
-#ifdef RAY_SHORT_DEBUG
-            RPrintf("RArray executeParallel of %p\n", object);
-#endif
+            printDebugTrace();
             RMutexLockArray();
 
             forAll(iterator, coreCount) {
