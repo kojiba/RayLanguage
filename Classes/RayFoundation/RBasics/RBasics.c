@@ -1,8 +1,11 @@
 /**
- * RBasics.c
- * Some workers structures for Ray.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 2014 Ukraine Kharkiv
+ * @file RBasics.с
+ * @brief Some workers structures for Ray.
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 10/21/2014
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -11,7 +14,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
 
 #include "RBasics.h"
 
