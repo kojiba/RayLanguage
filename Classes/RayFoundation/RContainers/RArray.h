@@ -354,7 +354,7 @@ method(void,               shift,                     RArray),    rbool isToLeft
  *
  * @param index    Index to check
  *
- * @returns index_exists or index_does_not_exist.
+ * @return index_exists or index_does_not_exist.
  */
 static inline
 constMethod(byte,          checkIfIndexIn,            RArray),    size_t index);
@@ -364,7 +364,7 @@ constMethod(byte,          checkIfIndexIn,            RArray),    size_t index);
 /**
  * Function to change store struct type.
  *
- * @returns Created RList with copy of pointers of current array, delegates also copied, or nil if creation fails.
+ * @return Created RList with copy of pointers of current array, delegates also copied, or nil if creation fails.
  */
 method(struct RList *,     toRList,                   RArray));
 
@@ -373,7 +373,7 @@ method(struct RList *,     toRList,                   RArray));
 /**
  * Function to copmare pointers
  *
- * @returns yes if pointers is equal, and no if not equal
+ * @return yes if pointers is equal, and no if not equal
  */
 byte RArrayDefaultComparator(pointer first, pointer second);
 

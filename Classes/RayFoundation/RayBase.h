@@ -114,6 +114,7 @@ extern volatile Deallocator RFreePtr;
 #define RFSeek            fseek
 #define RFTell            ftell
 #define RRewind           rewind
+#define RRemove           remove
 
 // Memory operations
 #define RMemCpy           memcpy

@@ -117,7 +117,7 @@ typedef void (* PrinterDelegate)(pointer);    ///< default printer function sign
  * @param      first    First object to compare
  * @param      second   Second object to compare
  *
- * @returns one of RCompareFlags
+ * @return one of RCompareFlags
  */
 typedef RCompareFlags (* ComparatorDelegate)(pointer first, pointer second);
 
@@ -129,7 +129,7 @@ typedef RCompareFlags (* ComparatorDelegate)(pointer first, pointer second);
  * @param      object    Enumerating object
  * @param      iterator  Current iterator/index of enumerating object
  *
- * @returns yes for continue enumerating, no for stop enumerating
+ * @return yes for continue enumerating, no for stop enumerating
  */
 typedef rbool         (* EnumeratorDelegate)(pointer context, pointer object, size_t iterator);
 
@@ -146,7 +146,7 @@ endOf(RCompareDelegate)
  * @param      first     Object to compare
  * @param      second    Object to compare
  *
- * @returns RCompareFlags.equals if pointers are equal
+ * @return RCompareFlags.equals if pointers are equal
  */
 extern RCompareFlags defaultComparator(pointer first, pointer second);
 

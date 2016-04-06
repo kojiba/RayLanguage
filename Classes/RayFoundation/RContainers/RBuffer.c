@@ -1,9 +1,13 @@
 /**
- * RBuffer.c
- * Realization of C dynamic memory buffer, in Ray additions.
- * May use like array of sized elements.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 2014 Ukraine Kharkiv
+ * @file RBuffer.c
+ * @brief Realization of continuous C dynamic
+ *        memory buffer, in Ray additions.
+ *        May be used like array of sized elements.
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 11/7/2014
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -12,7 +16,8 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
+
 
 #include "RBuffer.h"
 #include "RayFoundation/RClassTable/RClassTable.h"
@@ -306,7 +311,7 @@ constMethod(RArray *, toRArray, RBuffer)) {
                     $(object, m(getDataCopy, RBuffer)), iterator));
         }
         RMutexUnlockBuffer();
-        result->destructorDelegate = free;
+        result->destructorDelegate = getRFree();
     }
     return result;
 }
@@ -315,8 +320,8 @@ constMethod(RArray *, toRArray, RBuffer)) {
 
 RBuffer* RBufferFromFile(const char *filename) {
     ssize_t  fileSize;
-    RData *buffer  = contentOfFile(filename);
-    RBuffer    *result = nil;
+    RData   *buffer = contentOfFile(filename);
+    RBuffer *result = nil;
 
     if(buffer != nil) {
         // create variables
@@ -367,7 +372,7 @@ RBuffer* RBufferFromFile(const char *filename) {
 constMethod(void, saveToFile, RBuffer), const char* filename) {
     FILE *file = fopen(filename, "r");
     if (file != nil) {
-        if (remove(filename) != 0) {
+        if (RRemove(filename) != 0) {
             RError("RBuffer. Can't delete existing file with buffer", object);
         }
     }
@@ -378,7 +383,7 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
 
         // dump fist byte sizeof(size_t)
         size_t result = sizeof(size_t);
-        result = fwrite(&result, 1, 1, file);
+        result = RFWrite(&result, 1, 1, file);
 
         ifError(result != 1, RError("RBuffer. Failed save init data to file. Breaking processLine.", object) );
 
@@ -409,7 +414,7 @@ constMethod(void, saveToFile, RBuffer), const char* filename) {
 
             // cleanup
             deallocator(tempSizes);
-            fclose(file);
+            RFClose(file);
 
         } elseError(RError("RBuffer. Allocation of temp sizes array failed.", object) );
 
