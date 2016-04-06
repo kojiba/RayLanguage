@@ -21,7 +21,7 @@
 #include "RayFoundation/RClassTable/RClassTable.h"
 
 #ifdef RAY_LIST_THREAD_SAFE
-    #define listMutex &object->mutex
+    #define listMutex (RMutex*)(&object->mutex)
     #define RMutexLockList() RMutexLock(listMutex)
     #define RMutexUnlockList() RMutexUnlock(listMutex)
 #else
