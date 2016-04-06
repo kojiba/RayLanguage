@@ -1,8 +1,14 @@
 /**
- * RDictionary.c
- * Realization of C dictionary(map) pair, in Ray additions.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 2014 Ukraine Kharkiv
+ * @file RDictionary.c
+ * @brief Realization of C dynamic dictionary
+ *        (not full std::map, NSDictionary analog), in Ray additions.
+ *        Not use hashmaps pattern, or trees.
+ *
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 9/25/2014
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -11,7 +17,8 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
+
 
 #include "RDictionary.h"
 #include "RayFoundation/RClassTable/RClassTable.h"

@@ -4,6 +4,7 @@
  *        Not uses RThreadPool.
  *        Operations is synchronous.
  *        Can't be used when RAY_EMBEDDED in ON in RayConfig.h
+ *
  * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 2/27/2015
  * @par Ukraine Kharkiv

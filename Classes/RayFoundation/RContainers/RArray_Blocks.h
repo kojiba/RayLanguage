@@ -2,6 +2,7 @@
  * @file RArray_Blocks.h
  * @brief Block category to RArray operations.
  *        For use it uncomment RAY_BLOCKS_ON in RayConfig.h.
+ *
  * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 9/29/2015
  * @par Ukraine Kharkiv

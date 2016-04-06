@@ -2,6 +2,7 @@
  * @file RArray.h
  * @brief Realization of C dynamic array of pointers.
  *        In Ray additions.
+ *
  * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 9/10/2014
  * @par Ukraine Kharkiv

@@ -3,6 +3,7 @@
  * @brief Realization of continuous C dynamic
  *        memory buffer, in Ray additions.
  *        May be used like array of sized elements.
+ *
  * @author Kucheruavyu Ilya (kojiba@protonmail.com)
  * @date 11/7/2014
  * @par Ukraine Kharkiv
