@@ -1,9 +1,13 @@
 /**
- * RList.h
- * Realization of C dynamic
- * double-linked list, in Ray additions.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 1/23/15 Ukraine Kharkiv
+ * @file RList.c
+ * @brief Realization of C dynamic double-linked list.
+ *        In Ray additions.
+ *
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 1/23/2015
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -12,7 +16,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
 
 #define copyDelegatesToResult() result->destructorDelegate = object->destructorDelegate; \
                                 result->printerDelegate    = object->printerDelegate
@@ -152,9 +156,9 @@ constMethod(RNode *, nodeAtIndex, RList), size_t index) {
                 iterator = iterator->next;
             }
         }
-    } else {
-        RWarning("RList. Bad index for node.", object);
-    }
+    } elseWarning(
+        RWarning("RList. Bad index for node.", object)
+    );
     RMutexUnlockList();
     return iterator;
 }
