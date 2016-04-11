@@ -61,6 +61,22 @@ typedef byte    rbool;
 #define no                                                ((rbool)   0)
 #define nil                                               ((pointer) 0)
 
+#define allocator(className)                              RAlloc(sizeof(className))
+#define arrayAllocator(className, size)                   RAlloc(sizeof(className) * (size))
+#define arraySize(className, size)                        (sizeof(className) * (size))
+#define deallocator(object)                               RFree(object)
+
+// calls
+#define c(className)                                      concatenate(constructorOf, className)                                       // constructor function name
+#define d(className)                                      concatenate(destructorOf,  className)                                       // destructor function name
+#define p(className)                                      concatenate(printerOf,     className)                                       // printer function name
+#define m(methodName, className)                          concatenate(methodName,    className) // concatenate(concatenate(className, _), methodName) // some method function name
+#define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className)) // static method function name
+#define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))            // call to masterClassObject
+#define singletonCall(className)                          concatenate(singletonOf,className)()                                        // singleton call
+#define deleter(object, className)                        $(object, d(className))); deallocator(object)
+#define nilDeleter(object, className)                     if(object != nil) { deleter(object, className); }                            // fast check if not nil -> delete
+
 // declarations
 #define class(className)                                  typedef struct className { \
                                                           size_t classId;
@@ -70,33 +86,18 @@ typedef byte    rbool;
 #define discipleOf(className)                             className *concatenate(master, concatenate(className, Object));
 #define endOf(className)                                  } className;
 
-#define allocator(className)                              RAlloc(sizeof(className))
-#define arrayAllocator(className, size)                   RAlloc(sizeof(className) * (size))
-#define arraySize(className, size)                        (sizeof(className) * (size))
-#define deallocator(object)                               RFree(object)
+#define method(returnValue, methodName, className)        returnValue m(methodName, className)(className *object
+#define constMethod(returnValue, methodName, className)   returnValue m(methodName, className)(const className *const object
 
-#define method(returnValue, methodName, className)        returnValue concatenate(methodName, className)(className *object
-#define constMethod(returnValue, methodName, className)   returnValue concatenate(methodName, className)(const className *const object
+#define constructor(className)                            className* c(className)(className *object
+#define destructor(className)                             void d(className)(className *object)
+#define printer(className)                                void p(className)(className *object)
 
-#define constructor(className)                            className* concatenate(constructorOf,className) (className *object
-#define destructor(className)                             void concatenate(destructorOf,className) (className *object)
-#define printer(className)                                method(void, printerOf, className))
-
-#define singleton(className)                              className* concatenate(singletonOf,className)(void)
-#define staticMethod(returnValue, methodName, className)  returnValue concatenate(concatenate(staticMethod, methodName), concatenate(Of, className))(className *deprecatedObject
+#define singleton(className)                              className* singletonCall(className)
+#define staticMethod(returnValue, methodName, className)  returnValue sm(methodName, className)(className *deprecatedObject
 #define virtualMethod(returnValue, methodName)            returnValue (*methodName)
 #define linkMethod(object, virtualName, realName)         object->virtualName = realName;
 
-// calls
-#define c(className)                                      concatenate(constructorOf, className)                                       // constructor function name
-#define d(className)                                      concatenate(destructorOf,  className)                                       // destructor function name
-#define p(className)                                      concatenate(printerOf,     className)                                       // printer function name
-#define m(methodName, className)                          concatenate(methodName,    className)                                       // some method function name
-#define sm(methodName, className)                         concatenate(concatenate(staticMethod,methodName),concatenate(Of,className)) // static method function name
-#define master(object, masterClassName)                   object->concatenate(master,concatenate(masterClassName, Object))            // call to masterClassObject
-#define singletonCall(className)                          concatenate(singletonOf,className)()                                        // singleton call
-#define deleter(object, className)                        $(object, d(className))); deallocator(object)
-#define nilDeleter(object, className)                     if(object != nil) { deleter(object, className); }                            // fast check if not nil -> delete
 
 #define setter(propertyName, propertyType, className)     method(void, concatenate(set_, propertyName), className), propertyType toSet)
 #define getter(propertyName, propertyType, className)     method(propertyType, concatenate(get_, propertyName), className))
