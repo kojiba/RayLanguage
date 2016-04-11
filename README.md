@@ -49,6 +49,9 @@ All based on defines and can use diff code style (RSyntax.h).
 1. Simple VM with Brainfuck compiler and execution visualization in Curses  
 2. Simple TCP multi-threaded text-chat with 'nc' util client 
 
+#### Change code style guide:  
+[Howto 4 change code style](https://github.com/kojiba/RayLanguage/blob/master/ChangeCodestyle.md)  
+
 Work with RArray:  
 
 ```C
