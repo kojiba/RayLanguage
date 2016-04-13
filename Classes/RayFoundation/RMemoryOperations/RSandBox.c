@@ -16,6 +16,7 @@
  *         |__/
  **/
 
+#include <unistd.h>
 #include "RSandBox.h"
 
 #define toSandboxPtrs() setRMalloc (object->innerMalloc);\
@@ -214,7 +215,10 @@ method(size_t, rangeForPointer, RSandBox), pointer ptr) {
 
 #pragma mark Main methods
 
+#define sleepTime 10000
+
 method(pointer, malloc, RSandBox), size_t sizeInBytes) {
+    usleep(sleepTime);
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     if(isMutexDeadLocked) {
         return object->innerMalloc(sizeInBytes);
@@ -287,6 +291,7 @@ method(pointer, malloc, RSandBox), size_t sizeInBytes) {
 }
 
 method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
+    usleep(sleepTime);
     if(ptr == nil) {
         return $(object, m(malloc, RSandBox)), newSize);
     } else if (newSize == 0) {
@@ -322,6 +327,7 @@ method(pointer, realloc, RSandBox), pointer ptr, size_t newSize) {
 }
 
 method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
+    usleep(sleepTime);
 #ifdef RAY_SAND_BOX_THREAD_SAFE
     if(isMutexDeadLocked) {
         return object->innerCalloc(blockCount, blockSize);
@@ -338,6 +344,7 @@ method(pointer, calloc, RSandBox), size_t blockCount, size_t blockSize) {
 }
 
 method(void, free, RSandBox), pointer ptr) {
+    usleep(sleepTime);
     if(ptr != nil) {
 #ifdef RAY_SAND_BOX_THREAD_SAFE
         if(isMutexDeadLocked) {

@@ -55,7 +55,7 @@ int RClassTableTest(void){
     registerClassOnce("Han Solo");
     // try once more, but here is only one record
 
-    forAll(iterator, 100) {
+    forAll(iterator, 20) {
         registerClassOnce("Leia");
         registerClassOnce("Dart");
         registerClassOnce("Luke");
@@ -148,10 +148,12 @@ int RListTest(void) {
 
     RList *list = constructorOfRList(nil);
 
-    forAll(iterator, 20) {
+#define listObjectsCount 40
+
+    forAll(iterator, listObjectsCount) {
         $(list, m(addHead, RList)), (pointer) iterator);
     }
-    RAY_TEST(list->count != 20, "RList. Bad add head.", -1);
+    RAY_TEST(list->count != listObjectsCount, "RList. Bad add head.", -1);
 
     RList* result = $(list, m(subList, RList)), makeRRange(5, 5));
     RAY_TEST(!result, "RList. Bad sublist.", -2);
@@ -159,17 +161,17 @@ int RListTest(void) {
 
     RFindResult founded = $(result, m(enumerate, RList)), &finder, yes);
 
-    RAY_TEST(!founded.object, "RList. Bad founded object.", -4);
+    RAY_TEST(founded.object == nil, "RList. Bad founded object.", -4);
     RAY_TEST(founded.index == list->count, "RList. Bad finded index.", -5);
 
     deleter(result, RList);
 
     $(list, m(deleteObjects, RList)), makeRRange(10, 10));
-    RAY_TEST(list->count != 10, "RList. Bad count on delete.", -6);
+    RAY_TEST(list->count != listObjectsCount - 10, "RList. Bad count on delete.", -6);
 
     RArray *array = $(list, m(toRArray, RList)));
     RAY_TEST(!array, "RList. Bad array from list", -7);
-    RAY_TEST(list->count != array->count && array->count != 10, "RList. Bad count of array from list.", -8);
+    RAY_TEST(list->count != array->count && array->count != listObjectsCount - 10, "RList. Bad count of array from list.", -8);
 
     deleter(array, RArray);
     deleter(list, RList);
@@ -347,7 +349,7 @@ void ComplexTest() {
     int testNumber = 0;
     srand((unsigned int) time(nil));
 
-    RPrintSystemInfo();
+//    RPrintSystemInfo();
 
     if(
            !(++testNumber, code = RDynamicArrayTest())
@@ -363,7 +365,7 @@ void ComplexTest() {
         && !(++testNumber, code = RThreadPoolTest())
         && !(++testNumber, code = RByteApiTest())
     ) {
-        RPrintLn("All tests passed successfully\n");
+//        RPrintLn("All tests passed successfully\n");
     } else {
         RError("TESTS ERROR!", nil);
         RPrintf("TESTS ERROR, code: %d , testNo: %d!\n\n", code, testNumber);
