@@ -349,7 +349,7 @@ void ComplexTest() {
     int testNumber = 0;
     srand((unsigned int) time(nil));
 
-//    RPrintSystemInfo();
+    RPrintSystemInfo();
 
     if(
            !(++testNumber, code = RDynamicArrayTest())
@@ -365,7 +365,7 @@ void ComplexTest() {
         && !(++testNumber, code = RThreadPoolTest())
         && !(++testNumber, code = RByteApiTest())
     ) {
-//        RPrintLn("All tests passed successfully\n");
+        RPrintLn("All tests passed successfully\n");
     } else {
         RError("TESTS ERROR!", nil);
         RPrintf("TESTS ERROR, code: %d , testNo: %d!\n\n", code, testNumber);
