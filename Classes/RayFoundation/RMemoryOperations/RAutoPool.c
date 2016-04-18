@@ -1,10 +1,14 @@
 /**
- * RAutoPool.c
- * Memory management instrument.
- * Self-longs array, stores malloc-calloc-realloced pointers.
- * Free it if needs.
- * Author Kucheruavyu Ilya (kojiba@protonmail.com)
- * 12/1/14 2014 Ukraine Kharkiv
+ * @file  RAutoPool.c
+ * @brief Memory management instrument, that
+ *        stores malloc-calloc-realloced pointers.
+ *        Free it if drain called.
+ *
+ * @author Kucheruavyu Ilya (kojiba@protonmail.com)
+ * @date 12/1/14
+ * @par Ukraine Kharkiv
+ *
+ *//*
  *  _         _ _ _
  * | |       (_|_) |
  * | | _____  _ _| |__   __ _
@@ -13,7 +17,7 @@
  * |_|\_\___/| |_|_.__/ \__,_|
  *          _/ |
  *         |__/
- **/
+ */
 
 #include "RAutoPool.h"
 
