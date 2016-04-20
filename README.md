@@ -1,8 +1,6 @@
 ![RayFoundation](https://raw.githubusercontent.com/kojiba/RayLanguage/master/foundation.logo.png "RayFoundation")
 ===========
 
-**If You have some ideas, or found bugs - create issues here, on Github, or email me.**
-
 #### Firstly:
 Runtime components, creates open and secure integrated library  
 for application development(like NextStep.CoreFoundation for POSIX + winAPI).  
