@@ -46,8 +46,11 @@ generateDeleter(Variable)
 printer(Variable) {
     purePrint(object->name);
     RPrintf(" = ");
-    if(object->type == 2) { // size_t
-        RPrintf("%lu \n", (size_t) *object->value->data);
+    if(object->type == 1) {
+        RPrintf("%li \n", *((ssize_t*) object->value->data) );
+        return;
+    } else if(object->type == 2) {
+        RPrintf("%lu \n", *((size_t*) object->value->data) );
         return;
     } else {
         RError1("Unknown type %lu \n", object, object->type);
@@ -60,8 +63,11 @@ class(Interpreter)
 
     REnumerateDelegate linesEnumerator;
     REnumerateDelegate tokensEnumerator;
+    REnumerateDelegate variablesEnumerator;
 
     RArray *variables;
+
+    RString *variableNameToFind;
 
 // raw rayTokens, that be separated only by ' ' and '\n'
     RArray *lineTokens;
@@ -78,8 +84,9 @@ endOf(Interpreter)
 
 #define equalStrings(string1, string2) ($(string1, m(isEqualTo, RString)), string2))
 
-method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index);
-    method(rbool, linesEnumerator, Interpreter), RString *line, size_t index);
+method(rbool, stringsTokenEnumerator,        Interpreter), RString *token, size_t index);
+method(rbool, linesEnumerator,               Interpreter), RString *line, size_t index);
+method(rbool, variablesEnumerator, Interpreter), Variable *variable, size_t index);
 
 constructor(Interpreter)) {
     object = allocator(Interpreter);
@@ -92,9 +99,6 @@ constructor(Interpreter)) {
         if(object->typesTable != nil
                 && object->typesSizes) {
             object->classId = registerClassOnce(toString(Interpreter));
-
-            object->linesEnumerator.virtualEnumerator = (EnumeratorDelegate) m(linesEnumerator, Interpreter);
-            object->tokensEnumerator.virtualEnumerator = (EnumeratorDelegate) m(stringsTokenEnumerator, Interpreter);
 
             $(object->typesSizes, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RString));
             $(object->typesTable, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RString));
@@ -123,23 +127,31 @@ constructor(Interpreter)) {
             // register some sizes
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) 0, (pointer) RS(toString(ERROR_TYPE_UNUSED)) ); // must be 0
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(ssize_t), (pointer) RS("Int")); // must be 1 - ssize_t
-            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(size_t), (pointer) RS("UInt")); // size_t
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(size_t),  (pointer) RS("UInt")); // size_t
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(RString), (pointer) RS("String"));
 
-            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint8_t), (pointer) RS("u8"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint8_t),  (pointer) RS("u8"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint16_t), (pointer) RS("u16"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint32_t), (pointer) RS("u32"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint64_t), (pointer) RS("u64"));
 
-            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int8_t), (pointer) RS("i8"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int8_t),  (pointer) RS("i8"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int16_t), (pointer) RS("i16"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int32_t), (pointer) RS("i32"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int64_t), (pointer) RS("i64"));
 
-            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(float), (pointer) RS("float"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(float),    (pointer) RS("float"));
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint32_t), (pointer) RS("f32")); // 32 bit
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint64_t), (pointer) RS("f64")); // 64 bit
 
+
+            object->linesEnumerator.virtualEnumerator = (EnumeratorDelegate) m(linesEnumerator, Interpreter);
+            object->tokensEnumerator.virtualEnumerator = (EnumeratorDelegate) m(stringsTokenEnumerator, Interpreter);
+            object->variablesEnumerator.virtualEnumerator = (EnumeratorDelegate) m(variablesEnumerator, Interpreter);
+
+            object->linesEnumerator.context = object;
+            object->tokensEnumerator.context = object;
+            object->variablesEnumerator.context = object;
         }
     }
 
@@ -153,36 +165,63 @@ method(void, setValueFromToken, Interpreter), Variable *var, RString *token, rbo
     pointer value = nil;
 
     if equalStrings(typeString, RS("UInt")) { // size_t
-        size_t sizetValue = $(token, m(toSystemUInt, RString)), isConverted);
+        size_t uintValue = $(token, m(toSystemUInt, RString)), isConverted);
         if (*isConverted) {
-            value = &sizetValue;
+            value = &uintValue;
+            RMemCpy(var->value->data, value, typeSize);
+            return;
         }
-        RMemCpy(var->value->data, value, typeSize);
-        return;
+    }
+    if equalStrings(typeString, RS("Int")) { // size_t
+        ssize_t intValue = $(token, m(toSystemInt, RString)), isConverted);
+        if (*isConverted) {
+            value = &intValue;
+            RMemCpy(var->value->data, value, typeSize);
+            return;
+        }
+
     }
 }
 
+method(Variable*, variableWithName, Interpreter), RString *name) {
+    object->variableNameToFind = name;
+    RFindResult result = $(object->variables, m(enumerate, RArray)), &object->variablesEnumerator, yes);
+    return result.object;
+}
+
 method(Variable*, addValueFromToken, Interpreter), RString *varName, size_t type) {
-    Variable *var = c(Variable)(nil);
-    if (var != nil) {
-        $(object->variables, m(addObject, RArray)), var);
-        var->type = type;
-        var->name = $(varName, m(copy, RString)));
+    if ( $(object, m(variableWithName, Interpreter)), varName) == nil ) {
+        Variable *var = c(Variable)(nil);
+        if (var != nil) {
+            $(object->variables, m(addObject, RArray)), var);
+            var->type = type;
+            var->name = $(varName, m(copy, RString)));
 
-        RString *typeString = $(object->typesTable->keys, m(objectAtIndex, RArray)), type);
-        size_t typeSize = (size_t) $(object->typesSizes, m(getObjectForKey, RDictionary)), typeString);
+            RString *typeString = $(object->typesTable->keys, m(objectAtIndex, RArray)), type);
+            size_t typeSize = (size_t) $(object->typesSizes, m(getObjectForKey, RDictionary)), typeString);
 
-        if(typeSize != 0) {
-            var->value->data = arrayAllocator(byte, typeSize);
-            var->value->size = typeSize;
-            return var;
+            if(typeSize != 0) {
+                var->value->data = arrayAllocator(byte, typeSize);
+                var->value->size = typeSize;
+                return var;
+            } else {
+                RError1("Bad type [%lu] size 0.", object, type);
+                p(RString)(typeString);
+            }
         } else {
-            RError1("Bad type[%lu] size 0.", object, type);
+            RError("Not enough memory for variables.", object);
         }
     } else {
-        RError("Not enough memory for variables.", object);
+        RError1("Variable with name %s already exists", object, varName->data);
     }
     return nil;
+}
+
+method(rbool, variablesEnumerator, Interpreter), Variable *variable, size_t index) {
+    if equalStrings(object->variableNameToFind, variable->name) {
+        return no;
+    }
+    return yes;
 }
 
 method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index) {
@@ -207,7 +246,6 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
             object->nextTokenIsVariableValue = yes;
             return yes;
         } else {
-            RError("Something wrong with last var", object);
             return no;
         }
     }
@@ -288,7 +326,7 @@ method(rbool, linesEnumerator, Interpreter), RString *line, size_t index) {
         object->lastVariableType = 0;
         RFindResult enumerationResult = $(object->lineTokens, m(enumerate, RArray)), &object->tokensEnumerator, yes);
         if(enumerationResult.object != nil) {
-            RPrintf("Token -> ");
+            RPrintf("Token: ");
             p(RString)(enumerationResult.object);
             return no;
         }
@@ -315,12 +353,9 @@ method(void, runString, Interpreter), RString *source) {
 
         if(object->linesStatements != nil
                 && object->linesStatements->count > 0) {
-
-            object->linesEnumerator.context = object;
-            object->tokensEnumerator.context = object;
             RFindResult enumerationResult = $(object->linesStatements, m(enumerate, RArray)), &object->linesEnumerator, yes);
             if(enumerationResult.object != nil) {
-                RPrintf("Line -> ");
+                RPrintf("Line [%lu]: ", enumerationResult.index);
                 p(RString)(enumerationResult.object);
             }
 
@@ -354,6 +389,24 @@ int main(int argc, const char *argv[]) {
 
     deleter(string, RString);
     deleter(interpreter, Interpreter);
+
+
+//    RPrintf("Input signed:\n");
+//    RString *input = getInputString();
+//    while(!equalStrings(input, RS("exit"))) {
+//        rbool isConverted = yes;
+//
+//        ssize_t result = $(input, m(toSystemInt, RString)), &isConverted);
+//        if(isConverted) {
+//            RPrintf("result is - %li \n", result);
+//        } else {
+//            RError("cant convert", input);
+//        }
+//
+//        deleter(input, RString);
+//        RPrintf("Input signed:\n");
+//        input = getInputString();
+//    }
 
     endRay();
 }

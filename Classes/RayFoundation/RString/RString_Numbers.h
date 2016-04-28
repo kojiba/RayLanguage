@@ -36,6 +36,7 @@ typedef enum RNumberSystemBase { //--------------------------
 constMethod(const RString *,        toRString, RNumberSystemBase));
 
 constMethod(size_t, toSystemUInt, RString), rbool *isConvertedNormal);
+constMethod(ssize_t, toSystemInt, RString), rbool *isConvertedNormal);
 
 //-----------------------------------------------------------
 

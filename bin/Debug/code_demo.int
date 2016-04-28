@@ -1,3 +1,4 @@
 UInt some , variable , andOneMore , e = 0
 UInt b = 13
 UInt d = 1
+Int someInt = -121

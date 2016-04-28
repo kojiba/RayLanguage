@@ -187,3 +187,45 @@ error:
     }
     return 0;
 }
+
+constMethod(ssize_t, toSystemInt, RString), rbool *isConvertedNormal) {
+    if(object->type == RDataTypeASCII
+       && object->size > 0) {
+
+        ssize_t result = 0;
+        size_t iterator = 0;
+        byte currentDigit;
+        rbool isSigned = no;
+
+        forAll(iterator, object->size) { // from begin
+
+            if(iterator == 0 && object->data[iterator] == '-') {
+                if(object->size > 1) {
+                    isSigned = yes;
+                    continue;
+                } else {
+                    goto error;
+                }
+            }
+
+            currentDigit = decimalDigitFromChar(object->data[iterator]);
+            if (currentDigit != 10) {
+                if (currentDigit != 0) {
+                    result += (currentDigit * powerUnsigned(10, object->size - 1 - iterator));
+                }
+            } else {
+                goto error;
+            }
+        }
+
+        return isSigned ? -result : result;
+    } else {
+        RError("Only ASCII compatible", object);
+    }
+
+    error:
+    if(isConvertedNormal != nil) {
+        *isConvertedNormal = no;
+    }
+    return 0;
+}
