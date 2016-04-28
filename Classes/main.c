@@ -29,7 +29,8 @@ constructor(Variable)) {
     object = allocator(Variable);
     if(object != nil) {
         object->type = 0;
-        object->value = makeRDataAllocated(0);
+        object->value = makeRDataBytes(1, 0);
+        object->name = nil;
     }
     return object;
 }
@@ -44,7 +45,7 @@ generateDeleter(Variable)
 
 printer(Variable) {
     purePrint(object->name);
-    RPrintf(" : ");
+    RPrintf(" = ");
     if(object->type == 2) { // size_t
         RPrintf("%lu \n", (size_t) *object->value->data);
         return;
@@ -55,6 +56,7 @@ printer(Variable) {
 
 class(Interpreter)
     RDictionary *typesTable;
+    RDictionary *typesSizes;
 
     REnumerateDelegate linesEnumerator;
     REnumerateDelegate tokensEnumerator;
@@ -68,6 +70,7 @@ class(Interpreter)
 // string added when file is read
     RString *sourceFileString;
 
+    size_t lastVariableType;
     rbool isInDeclarationCode;
     rbool nextTokenIsVariableName;
     rbool nextTokenIsVariableValue;
@@ -81,16 +84,19 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
 constructor(Interpreter)) {
     object = allocator(Interpreter);
     if(object != nil) {
-        flushAllToByte(object, sizeof(Interpreter), 0);
+        flushAllToByte((byte *) object, sizeof(Interpreter), 0);
 
         object->typesTable = makeRDictionary();
+        object->typesSizes = makeRDictionary();
 
-        if(object->typesTable != nil) {
+        if(object->typesTable != nil
+                && object->typesSizes) {
             object->classId = registerClassOnce(toString(Interpreter));
 
             object->linesEnumerator.virtualEnumerator = (EnumeratorDelegate) m(linesEnumerator, Interpreter);
             object->tokensEnumerator.virtualEnumerator = (EnumeratorDelegate) m(stringsTokenEnumerator, Interpreter);
 
+            $(object->typesSizes, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RString));
             $(object->typesTable, m(initDelegate, RDictionary)), (ComparatorDelegate) m(compareWith, RString));
 
             // register some basic c types
@@ -113,6 +119,27 @@ constructor(Interpreter)) {
             $(object->typesTable, m(setObjectForKey, RDictionary)), (pointer) object->typesTable->keys->count, (pointer) RS("f32")); // 32 bit
             $(object->typesTable, m(setObjectForKey, RDictionary)), (pointer) object->typesTable->keys->count, (pointer) RS("f64")); // 64 bit
 
+
+            // register some sizes
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) 0, (pointer) RS(toString(ERROR_TYPE_UNUSED)) ); // must be 0
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(ssize_t), (pointer) RS("Int")); // must be 1 - ssize_t
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(size_t), (pointer) RS("UInt")); // size_t
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(RString), (pointer) RS("String"));
+
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint8_t), (pointer) RS("u8"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint16_t), (pointer) RS("u16"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint32_t), (pointer) RS("u32"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint64_t), (pointer) RS("u64"));
+
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int8_t), (pointer) RS("i8"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int16_t), (pointer) RS("i16"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int32_t), (pointer) RS("i32"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(int64_t), (pointer) RS("i64"));
+
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(float), (pointer) RS("float"));
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint32_t), (pointer) RS("f32")); // 32 bit
+            $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(uint64_t), (pointer) RS("f64")); // 64 bit
+
         }
     }
 
@@ -120,12 +147,42 @@ constructor(Interpreter)) {
 }
 
 method(void, setValueFromToken, Interpreter), Variable *var, RString *token, rbool *isConverted) {
-    if(var->type == 2) { // size_t
-        size_t value = $(token, m(toSystemUInt, RString)), isConverted);
+    RString *typeString = $(object->typesTable->keys, m(objectAtIndex, RArray)), var->type);
+    size_t typeSize = (size_t) $(object->typesSizes, m(getObjectForKey, RDictionary)), typeString);
+
+    pointer value = nil;
+
+    if equalStrings(typeString, RS("UInt")) { // size_t
+        size_t sizetValue = $(token, m(toSystemUInt, RString)), isConverted);
         if (*isConverted) {
-            appendArray(&var->value->data, &var->value->size, (const byte *) &value, sizeof(size_t));
+            value = &sizetValue;
         }
+        RMemCpy(var->value->data, value, typeSize);
+        return;
     }
+}
+
+method(Variable*, addValueFromToken, Interpreter), RString *varName, size_t type) {
+    Variable *var = c(Variable)(nil);
+    if (var != nil) {
+        $(object->variables, m(addObject, RArray)), var);
+        var->type = type;
+        var->name = $(varName, m(copy, RString)));
+
+        RString *typeString = $(object->typesTable->keys, m(objectAtIndex, RArray)), type);
+        size_t typeSize = (size_t) $(object->typesSizes, m(getObjectForKey, RDictionary)), typeString);
+
+        if(typeSize != 0) {
+            var->value->data = arrayAllocator(byte, typeSize);
+            var->value->size = typeSize;
+            return var;
+        } else {
+            RError1("Bad type[%lu] size 0.", object, type);
+        }
+    } else {
+        RError("Not enough memory for variables.", object);
+    }
+    return nil;
 }
 
 method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index) {
@@ -137,12 +194,15 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
         isCommaSeparator = yes;
     }
 
-    if(object->nextTokenIsVariableName && !isCommaSeparator) { // set var name
-        Variable *lastDeclaredVar = $(object->variables, m(lastObject, RArray)));
+    if(object->isInDeclarationCode && isCommaSeparator) {
+        object->nextTokenIsVariableName = yes;
+        return yes;
+    }
 
-        if(lastDeclaredVar != nil) {
-            lastDeclaredVar->name = $(token, m(copy, RString)));
+    if(object->nextTokenIsVariableName && !isCommaSeparator) { // add var and set name
 
+        Variable *var = $(object, m(addValueFromToken, Interpreter)), token, object->lastVariableType);
+        if(var != nil) {
             object->nextTokenIsVariableName = no;
             object->nextTokenIsVariableValue = yes;
             return yes;
@@ -202,18 +262,14 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
 
     size_t type = (size_t) $(object->typesTable, m(getObjectForKey, RDictionary)), token);
 
-    if(type != 0 && object->isInDeclarationCode) { // add var and set var type
-
-        Variable *var = c(Variable)(nil);
-        if (var != nil) {
-
-            var->type = type;
-            $(object->variables, m(addObject, RArray)), var);
-            object->nextTokenIsVariableName = yes;
-
+    if(type != 0 && object->isInDeclarationCode) { // set type
+        object->nextTokenIsVariableName = yes;
+        if(object->lastVariableType == 0) {
+            object->lastVariableType = type;
             return yes;
+
         } else {
-            RError("Not enought memory for variables.", object);
+            RError("Another type declared, when last contains", object);
             return no;
         }
     }
@@ -229,6 +285,7 @@ method(rbool, linesEnumerator, Interpreter), RString *line, size_t index) {
         object->lineTokens->printerDelegate = (PrinterDelegate) p(RString);
 
         object->isInDeclarationCode = yes;
+        object->lastVariableType = 0;
         RFindResult enumerationResult = $(object->lineTokens, m(enumerate, RArray)), &object->tokensEnumerator, yes);
         if(enumerationResult.object != nil) {
             RPrintf("Token -> ");
@@ -282,6 +339,7 @@ destructor(Interpreter) {
     nilDeleter(object->lineTokens, RArray)
     nilDeleter(object->variables, RArray)
     deleter(object->typesTable, RDictionary);
+    deleter(object->typesSizes, RDictionary);
 }
 
 int main(int argc, const char *argv[]) {
@@ -289,7 +347,6 @@ int main(int argc, const char *argv[]) {
 
     ComplexTest();
 
-//
     Interpreter *interpreter = c(Interpreter)(nil);
     RString *string = stringFromFile("code_demo.int");
 
