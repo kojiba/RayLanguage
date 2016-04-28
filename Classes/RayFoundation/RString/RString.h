@@ -33,6 +33,8 @@ char *    vcstringWithFormat(const char *format, va_list list);
 extern destructor(RString);
 extern printer   (RString);
 
+extern void purePrint(RString *object);
+
 RString * stringWithFormat(char *format, ...); // ASCII
 #define   RStringDeleter RDataDeleter
 

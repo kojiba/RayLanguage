@@ -41,7 +41,7 @@ extern void RDataDeleter(RData* object);
 
 extern printer(RData);
 
-constMethod(void, printInFile,           RData), FILE *file);
+constMethod(void, printInFile,           RData), FILE *file, rbool appendNewline);
 
 
 extern      method(void,   insert,          RData),    const RData *data, size_t place);

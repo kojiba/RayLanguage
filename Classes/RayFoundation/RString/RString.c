@@ -87,6 +87,10 @@ inline printer(RString) {
     p(RData)(object);
 }
 
+extern void purePrint(RString *object) {
+    $(object, m(printInFile, RData)), stdout, no);
+}
+
 method(RString*, setConstantString, RString), const char *nullTerminatedString) {
     if(object != nil) {
         object->data = (byte *) nullTerminatedString;
@@ -229,7 +233,7 @@ inline constMethod(RArray *, substringsSeparatedBySymbols, RString), const RStri
 }
 
 inline constMethod(RArray *, substringsSeparatedByString, RString), const RString * const separatorString) {
-    return $(object, m(dataSeparatedByArray ,RData)), separatorString);
+    return $(object, m(dataSeparatedByArray, RData)), separatorString);
 }
 
 inline constMethod(RArray *, separatedByStringWithShield, RString), const RString * const separatorString, const RString * const shield) {

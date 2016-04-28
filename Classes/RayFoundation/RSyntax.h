@@ -76,6 +76,7 @@ typedef byte    rbool;
 #define singletonCall(className)                          concatenate(singletonOf,className)()                                        // singleton call
 #define deleter(object, className)                        $(object, d(className))); deallocator(object)
 #define nilDeleter(object, className)                     if(object != nil) { deleter(object, className); }                            // fast check if not nil -> delete
+#define deleterName(className)                            concatenate(className,Deleter)
 
 // declarations
 #define class(className)                                  typedef struct className { \
@@ -92,6 +93,7 @@ typedef byte    rbool;
 #define constructor(className)                            className* c(className)(className *object
 #define destructor(className)                             void d(className)(className *object)
 #define printer(className)                                void p(className)(className *object)
+#define generateDeleter(className)                        void deleterName(className)(className *object) { deleter(object, className); }
 
 #define singleton(className)                              className* singletonCall(className)
 #define staticMethod(returnValue, methodName, className)  returnValue sm(methodName, className)(className *deprecatedObject
@@ -103,7 +105,7 @@ typedef byte    rbool;
 #define getter(propertyName, propertyType, className)     method(propertyType, concatenate(get_, propertyName), className))
 
 #define setterImpl(propertyName, propertyType, className) setter(propertyName, propertyType, className) { object->propertyName = toSet; }
-#define getterImpl(propertyName, propertyType, className) getter(propertyName, propertyType, className){ return object->propertyName; }
+#define getterImpl(propertyName, propertyType, className) getter(propertyName, propertyType, className) { return object->propertyName; }
 
 #define setterImplMutex(propertyName, propertyType,\
                         className, mutex)                setter(propertyName, propertyType, className) { RMutexLock(mutex); object->propertyName = toSet; RMutexUnlock(mutex);}

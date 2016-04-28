@@ -26,6 +26,13 @@ static inline rbool isDecimalDigit(char character) {
     }
 }
 
+static inline byte decimalDigitFromChar(char character) {
+    if(isDecimalDigit(character)) {
+        return (byte) character - (byte)'0';
+    }
+    return 10;
+}
+
 static inline rbool isOctalDigit(char character) {
     if(character < '0' || character > '7') {
         return no;
@@ -132,4 +139,51 @@ constMethod(RNumberSystemBase, isNumber, RString)) {
         return RNotNumber;
     }
     return RNotNumber;
+}
+
+size_t powerUnsigned(size_t number, size_t power) {
+    if(power == 0) {
+        return 1;
+    } else if (power == 1) {
+        return number;
+    } else {
+        size_t result = number;
+        size_t iterator;
+        forAll(iterator, power - 1) {
+            result *= number;
+        }
+        return result;
+    }
+}
+
+constMethod(size_t, toSystemUInt, RString), rbool *isConvertedNormal) {
+    if(object->type == RDataTypeASCII
+            && object->size > 0) {
+
+        size_t result = 0;
+        size_t iterator = 0;
+        byte currentDigit;
+
+
+        forAll(iterator, object->size) { // from begin
+            currentDigit = decimalDigitFromChar(object->data[iterator]);
+            if (currentDigit != 10) {
+                if (currentDigit != 0) {
+                    result += (currentDigit * powerUnsigned(10, object->size - 1 - iterator));
+                }
+            } else {
+                goto error;
+            }
+        }
+
+        return result;
+    } else {
+        RError("Only ASCII compatible", object);
+    }
+
+error:
+    if(isConvertedNormal != nil) {
+        *isConvertedNormal = no;
+    }
+    return 0;
 }

@@ -33,7 +33,7 @@ destructor(RData) {
     deallocator(object->data);
 }
 
-constMethod(void, printInFile, RData), FILE *file) {
+constMethod(void, printInFile, RData), FILE *file, rbool appendNewline) {
     if(object != nil && object->data != nil) {
         if (object->type == RDataTypeBytes
             || object->type == RDataTypeOther) {
@@ -43,7 +43,7 @@ constMethod(void, printInFile, RData), FILE *file) {
         } else {
             // write string full
             fwrite(object->data, object->size, 1, file);
-            if(object->type == RDataTypeASCII){
+            if(object->type == RDataTypeASCII && appendNewline) {
                 fwrite("\n", sizeof("\n") - 1, 1, file);
             }
         }
@@ -53,7 +53,7 @@ constMethod(void, printInFile, RData), FILE *file) {
 }
 
 inline printer(RData) {
-    $(object, m(printInFile, RData)), stdout);
+    $(object, m(printInFile, RData)), stdout, yes);
 }
 
 inline void RDataDeleter(RData* object) {
@@ -185,18 +185,21 @@ constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separa
                         break;
                     }
                 }
-                if(inner == separator->size
-                   && shield != nil
-                   && iterator >= shield->size) { // if separator than
+                if(inner == separator->size) { // if separator than
+                    rbool noShieldBehind = yes;
 
-                    // check if shield behind
-                    for(inner = 0; inner < shield->size; ++inner) {
-                        if(object->data[iterator - inner - 1] != shield->data[shield->size - inner - 1]) {
-                            break;
+                    if (shield != nil
+                        && iterator >= shield->size) {
+                        // check if shield behind
+                        for (inner = 0; inner < shield->size; ++inner) {
+                            if (object->data[iterator - inner - 1] != shield->data[shield->size - inner - 1]) {
+                                break;
+                            }
                         }
+                        noShieldBehind = (rbool) (inner != shield->size);
                     }
 
-                    if(inner != shield->size) { // if there are no shield
+                    if(noShieldBehind) { // if there are no shield
                         RRange range = makeRRangeTo(startOfSubstring, iterator);
                         substring = makeRData(subArrayInRange(object->data, object->size, range), range.size, object->type);
                         if(result == nil) {
@@ -208,7 +211,7 @@ constMethod(RArray*, dataSeparatedByArrayWithShield, RData), const RData *separa
 
                                 // exit if allocation fails
                             } else {
-                                RError("RAata. dataSeparatedByArrayWithShield. Bad array for substrings allocation.", object);
+                                RError("RData. dataSeparatedByArrayWithShield. Bad array for substrings allocation.", object);
                                 return nil;
                             }
                         }
@@ -260,7 +263,7 @@ RArray* DataSeparatedByArrayWithShield(const byte *array, size_t size, const byt
      RData *tempSeparator = makeRData(separatorArray, separatorSize, RDataTypeBytes);
      RData *tempShield = nil;
     if(shield != nil) {
-        RData *tempShield = makeRData(shield, shieldSize, RDataTypeBytes);
+        tempShield = makeRData(shield, shieldSize, RDataTypeBytes);
     }
     result = $(temp, m(dataSeparatedByArrayWithShield, RData)), tempSeparator, tempShield);
     deallocator(temp);
