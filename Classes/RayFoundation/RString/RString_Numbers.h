@@ -20,7 +20,7 @@
 
 // Basics
 static inline rbool isDecimalDigit (char character);
-static inline byte decimalDigitFromChar(char character); // [0; 9] or 10 if error
+static inline byte  decimalDigitFromChar(char character); // [0; 9] or 10 if error
 static inline rbool isOctalDigit   (char character);
 static inline rbool isHexDigit     (char character);
 static inline rbool isBinaryDigit  (char character);
@@ -33,10 +33,10 @@ typedef enum RNumberSystemBase { //--------------------------
     RHex,
 } RNumberSystemBase; //--------------------------------------
 
-constMethod(const RString *,        toRString, RNumberSystemBase));
+constMethod(const RString *, toRString, RNumberSystemBase));
 
-constMethod(size_t, toSystemUInt, RString), rbool *isConvertedNormal);
-constMethod(ssize_t, toSystemInt, RString), rbool *isConvertedNormal);
+constMethod(size_t,  toSystemUInt, RString), rbool *isConvertedNormal);
+constMethod(ssize_t, toSystemInt,  RString), rbool *isConvertedNormal);
 
 //-----------------------------------------------------------
 

@@ -43,6 +43,8 @@ destructor(Variable) {
 
 generateDeleter(Variable)
 
+#define UIntFromVariable(object) *( (size_t*)object->value->data)
+
 printer(Variable) {
     purePrint(object->name);
     RPrintf(" = ");
@@ -50,12 +52,22 @@ printer(Variable) {
         RPrintf("%li \n", *((ssize_t*) object->value->data) );
         return;
     } else if(object->type == 2) {
-        RPrintf("%lu \n", *((size_t*) object->value->data) );
+        RPrintf("%lu \n", UIntFromVariable(object) );
         return;
     } else {
         RError1("Unknown type %lu \n", object, object->type);
     }
 }
+
+typedef enum InterpreterOperation {
+    InterpreterOperationNone,
+
+    InterpreterOperationAssigment,
+
+    InterpreterOperationAddition,
+    InterpreterOperationSubstraction,
+    InterpreterOperationMultiplication
+} InterpreterOperation;
 
 class(Interpreter)
     RDictionary *typesTable;
@@ -76,8 +88,14 @@ class(Interpreter)
 // string added when file is read
     RString *sourceFileString;
 
-    size_t lastVariableType;
+    InterpreterOperation currentOperation;
+    Variable *lastOperatingVariable;
+    Variable *lastOperatingResult;
+
     rbool isInDeclarationCode;
+    rbool isInExecutionCode;
+
+    size_t lastVariableType;
     rbool nextTokenIsVariableName;
     rbool nextTokenIsVariableValue;
 endOf(Interpreter)
@@ -123,7 +141,6 @@ constructor(Interpreter)) {
             $(object->typesTable, m(setObjectForKey, RDictionary)), (pointer) object->typesTable->keys->count, (pointer) RS("f32")); // 32 bit
             $(object->typesTable, m(setObjectForKey, RDictionary)), (pointer) object->typesTable->keys->count, (pointer) RS("f64")); // 64 bit
 
-
             // register some sizes
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) 0, (pointer) RS(toString(ERROR_TYPE_UNUSED)) ); // must be 0
             $(object->typesSizes, m(setObjectForKey, RDictionary)), (pointer) sizeof(ssize_t), (pointer) RS("Int")); // must be 1 - ssize_t
@@ -158,6 +175,14 @@ constructor(Interpreter)) {
     return object;
 }
 
+printer(Interpreter) {
+    RPrintf("%p - %s object {\n", object, toString(Interpreter));
+    RPrintf("Variables : ");
+    p(RArray)(object->variables);
+
+    RPrintf("} - %p\n", object);
+}
+
 method(void, setValueFromToken, Interpreter), Variable *var, RString *token, rbool *isConverted) {
     RString *typeString = $(object->typesTable->keys, m(objectAtIndex, RArray)), var->type);
     size_t typeSize = (size_t) $(object->typesSizes, m(getObjectForKey, RDictionary)), typeString);
@@ -181,6 +206,30 @@ method(void, setValueFromToken, Interpreter), Variable *var, RString *token, rbo
         }
 
     }
+}
+
+method(Variable*, performAdditionOperation, Interpreter), Variable *first, Variable *second) {
+    Variable *var = nil;
+    if (first->type == second->type && second->type == 2) {
+        size_t firstValue = UIntFromVariable(first);
+        size_t secondValue = UIntFromVariable(second);
+        size_t result = firstValue + secondValue;
+
+        var = c(Variable)(nil);
+        if (var != nil) {
+            RMemCpy(var->value->data, &result, sizeof(size_t));
+        } else {
+            RError("Can't allocate result var", nil);
+        }
+    }
+    return var;
+}
+
+method(Variable*, performOperationOnVariables, Interpreter), Variable *first, Variable *second, InterpreterOperation operation) {
+    if (operation == InterpreterOperationAddition) {
+        return $(object, m(performAdditionOperation, Interpreter)), first, second);
+    }
+
 }
 
 method(Variable*, variableWithName, Interpreter), RString *name) {
@@ -228,6 +277,7 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
 
     rbool isCommaSeparator = no;
     rbool isEqualsSeparator = no;
+    rbool isPlusSeparator = no;
 
     if equalStrings(token, RS(",")) {
         isCommaSeparator = yes;
@@ -251,10 +301,15 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
     }
 
     if equalStrings(token, RS("+")) {
-
+        isPlusSeparator = yes;
+        if (object->isInExecutionCode) {
+            object->currentOperation = InterpreterOperationAddition;
+        }
     }
     if equalStrings(token, RS("-")) {
-
+        if (object->isInExecutionCode) {
+            object->currentOperation = InterpreterOperationSubstraction;
+        }
     }
     if equalStrings(token, RS("/")) {
 
@@ -274,7 +329,48 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
 
     if equalStrings(token, RS("=")) {
         isEqualsSeparator = yes;
-        object->nextTokenIsVariableValue = yes;
+        if (object->isInExecutionCode) {
+            object->currentOperation = InterpreterOperationAssigment;
+        } else {
+            object->nextTokenIsVariableValue = yes;
+        }
+    }
+
+    if (object->isInExecutionCode) {
+
+        // if current token is var name we can be in begin of operation, or in some
+        Variable *variable = $(object, m(variableWithName, Interpreter)), token);
+
+        if(variable != nil) {
+            object->nextTokenIsVariableName = no;
+            object->nextTokenIsVariableValue = no;
+            object->isInDeclarationCode = no;
+
+            if (object->lastOperatingVariable == nil) {
+                object->lastOperatingVariable = variable;
+                object->currentOperation = InterpreterOperationNone;
+                return yes;
+            } else {
+
+                if (object->currentOperation == InterpreterOperationAddition) {
+
+                    if (object->lastOperatingVariable != nil) {
+
+                    }
+
+                    if (object->lastOperatingResult != nil) {
+                        Variable *var = $(object, m(variableWithName, Interpreter)), token);
+                        if(var != nil) {
+                            object->lastOperatingResult = $(object, m(performOperationOnVariables, Interpreter)), object->lastOperatingResult, var, object->currentOperation);
+                            object->currentOperation = InterpreterOperationNone;
+                        }
+                    }
+
+                } else if (object->currentOperation == InterpreterOperationAssigment) {
+                    object->lastOperatingVariable = object->lastOperatingResult;
+                }
+            }
+        }
     }
 
     if (object->nextTokenIsVariableValue && !isEqualsSeparator) { // set value here
@@ -302,6 +398,7 @@ method(rbool, stringsTokenEnumerator, Interpreter), RString *token, size_t index
 
     if(type != 0 && object->isInDeclarationCode) { // set type
         object->nextTokenIsVariableName = yes;
+        object->isInExecutionCode = no;
         if(object->lastVariableType == 0) {
             object->lastVariableType = type;
             return yes;
@@ -323,6 +420,7 @@ method(rbool, linesEnumerator, Interpreter), RString *line, size_t index) {
         object->lineTokens->printerDelegate = (PrinterDelegate) p(RString);
 
         object->isInDeclarationCode = yes;
+        object->isInExecutionCode = yes;
         object->lastVariableType = 0;
         RFindResult enumerationResult = $(object->lineTokens, m(enumerate, RArray)), &object->tokensEnumerator, yes);
         if(enumerationResult.object != nil) {
@@ -359,7 +457,7 @@ method(void, runString, Interpreter), RString *source) {
                 p(RString)(enumerationResult.object);
             }
 
-            p(RArray)(object->variables);
+            p(Interpreter)(object);
 
             deleter(object->linesStatements, RArray);
             object->linesStatements = nil;
