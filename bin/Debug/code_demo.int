@@ -3,4 +3,4 @@ UInt b = 13
 UInt d = 1
 Int someInt = -121
 
-some = some + b
+some + b = some
