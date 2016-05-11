@@ -76,6 +76,9 @@ extern constMethod(RArray *,      substringsSeparatedBySymbols, RString),    con
 extern constMethod(RArray *,      substringsSeparatedByString,  RString),    const RString * const separatorString);  // separatorString length > 1, not use for one symbol
 extern constMethod(RArray *,      separatedByStringWithShield,  RString),    const RString * const separatorString, const RString * const shield);
 
+extern constMethod(RArray *,      separatedByStrings,            RString),    const RArray * const separators);
+extern constMethod(RArray *,      separatedByStringsWithShield,  RString),    const RArray * const separators, const RString * const shield);
+
        constMethod(RString *,     copy,                         RString));
 
 // Comparator - universal encoding

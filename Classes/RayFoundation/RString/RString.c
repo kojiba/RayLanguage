@@ -240,6 +240,14 @@ inline constMethod(RArray *, separatedByStringWithShield, RString), const RStrin
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separatorString, shield);
 }
 
+inline constMethod(RArray *, separatedByStrings, RString), const RArray * const separators) {
+      return $(object, m(dataSeparatedBySeparatorsArray, RData)), separators);
+}
+
+inline constMethod(RArray *, separatedByStringsWithShield, RString), const RArray * const separators, const RString * const shield) {
+      return $(object, m(dataSeparatedBySeparatorsArrayWithShield, RData)), separators, shield);
+}
+
 inline constMethod(RString *, copy, RString)) {
     RString *copy = $(object, m(substringInRange, RString)), makeRRange(0, object->size));
     return copy;

@@ -246,6 +246,121 @@ constMethod(RArray*, dataSeparatedByArray, RData), const RData *separator) {
     return $(object, m(dataSeparatedByArrayWithShield, RData)), separator, nil);
 }
 
+rbool privateRDataSeparatorFirstSymbolChecker(byte *currentDataSymbol, RData *currentSeparator, size_t index) {
+    if(currentSeparator->size > 0
+          && *currentDataSymbol == currentSeparator->data[0]) {
+        return no;
+    }
+    return yes;
+}
+
+constMethod(size_t, isRDataSeparatorFirstSymbol, RData), const RArray *separators, size_t index) { // index of separator or RNotFound
+    REnumerateDelegate enumerator;
+    enumerator.virtualEnumerator = (EnumeratorDelegate) privateRDataSeparatorFirstSymbolChecker;
+    enumerator.context = (pointer) object->data + index; // pointer to byte at index
+
+    RFindResult result = $(separators, m(enumerate, RArray)), &enumerator, yes);
+    return result.index;
+}
+
+rbool privateRDataMinimalSizeEnumerator(size_t *currentMinimalSize, RData *currentData, size_t index) {
+    if(currentData->size < *currentMinimalSize
+            && currentData->size > 0) {
+        *currentMinimalSize = currentData->size;
+    }
+    return yes;
+}
+
+constMethod(size_t, minimalRDataSize, RArray)) { // index of separator or RNotFound
+    REnumerateDelegate enumerator;
+    size_t minimalSize = RNotFound;
+    enumerator.virtualEnumerator = (EnumeratorDelegate) privateRDataMinimalSizeEnumerator;
+    enumerator.context = &minimalSize;
+    $(object, m(enumerate, RArray)), &enumerator, yes);
+    return minimalSize;
+}
+
+constMethod(RArray*, dataSeparatedBySeparatorsArray, RData), const RArray *separators) {
+    return $(object, m(dataSeparatedBySeparatorsArrayWithShield, RData)), separators, nil);
+}
+
+constMethod(RArray*, dataSeparatedBySeparatorsArrayWithShield, RData), const RArray *separators, const RData *shield) {
+    RArray *result = nil;
+    size_t minimalSeparatorSize = $(separators, m(minimalRDataSize, RArray)));
+
+    if(object->size >= minimalSeparatorSize) {
+        size_t iterator;
+        size_t startOfSubstring = 0;
+        size_t inner;
+        RData *substring = nil;
+
+        forAll(iterator, object->size) {
+            if(object->size - iterator >= minimalSeparatorSize) {
+                // check if separator
+                size_t separatorIndex = $(object, m(isRDataSeparatorFirstSymbol, RData)), separators, iterator);
+                if(separatorIndex != RNotFound) {
+                    RData *currentSeparator = $(separators, m(objectAtIndex, RArray)), separatorIndex);
+
+                    // compare others
+                    if(currentSeparator->size <= object->size - iterator) {
+                        inner = compareMemory(object->data + iterator + 1, currentSeparator->data + 1, currentSeparator->size - 1);
+
+                        if(inner == REquals) { // if separator than
+                            rbool noShieldBehind = yes;
+
+                            if (shield != nil
+                                && iterator >= shield->size) {
+                                // check if shield behind
+                                noShieldBehind = (rbool) (compareMemory(object->data + iterator - shield->size, shield->data, shield->size) != REquals);
+                            }
+
+                            if(noShieldBehind) { // if there are no shield
+                                RRange range = makeRRangeTo(startOfSubstring, iterator);
+                                substring = makeRData(subArrayInRange(object->data, object->size, range), range.size, object->type);
+                                if(result == nil) {
+                                    result = makeRArray();
+                                    if(result != nil) {
+                                        // set-up delegates
+                                        result->printerDelegate = (PrinterDelegate) p(RData);
+                                        result->destructorDelegate = (DestructorDelegate) RDataDeleter;
+
+                                        // exit if allocation fails
+                                    } else {
+                                        RError("RData. dataSeparatedByArrayWithShield. Bad array for substrings allocation.", object);
+                                        return nil;
+                                    }
+                                }
+                                $(result, m(addObject, RArray)), substring);
+                                startOfSubstring = iterator + currentSeparator->size;
+                            }
+                            iterator += currentSeparator->size - 1;
+                        } else {
+                            iterator += inner;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(result != nil) {
+            // if last is not separator - add whole last word
+            if(startOfSubstring < object->size && iterator == object->size) {
+                // add last
+                RRange range = makeRRangeTo(startOfSubstring, iterator);
+                substring = makeRData(subArrayInRange(object->data, object->size, range), range.size, object->type);
+                if(substring != nil) {
+                    $(result, m(addObject, RArray)), substring);
+                }
+            }
+            $(result, m(sizeToFit, RArray)));
+        }
+    } elseWarning(
+            RWarning("RData. dataSeparatedBySeparatorsArrayWithShield. Bad separator size, or array size.", object)
+    );
+
+    return result;
+}
+
 RArray* DataSeparatedByBytes(const byte *array, size_t size, const byte *separatorsArray, size_t separatorsSize) {
     RArray *result;
      RData *temp = makeRData(array, size, RDataTypeBytes);
