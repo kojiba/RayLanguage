@@ -129,6 +129,7 @@ extern volatile Deallocator RFreePtr;
 #define RStringToInt      atoi
 #define RStringToDouble   atof
 #define RIntToString      itoa
+#define RStringCompare    strcmp
 
 
 #ifdef __WIN32 // key delay for win

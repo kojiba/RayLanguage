@@ -103,7 +103,8 @@
 #define RPrintCurrentSystem() RPrintLn("System : " RSystemType)
 
 #ifdef RAY_EMBEDDED
-    #define RPrintSystemInfo() RPrintCurrentSystem()
+    #define RPrintSystemInfo() RPrintf(RLibName"\n");\
+                               RPrintCurrentSystem()
 #else
     #define RPrintSystemInfo() RPrintf(RLibName"\n");\
                                RPrintCurrentSystem();\
