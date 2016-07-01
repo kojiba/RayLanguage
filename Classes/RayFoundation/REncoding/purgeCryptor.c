@@ -24,7 +24,9 @@ void printCryptorHelp() {
                     "        -p password          password to decrypt/encrypt\n"
                     "        -e                   option for manual encrypt mode\n"
                     "        -d                   option for manual decrypt mode\n"
-                    "        -v                   prints version string\n");
+                    "        -v                   prints version string\n"
+                    "        -h                   prints base64 hash of file\n"
+                    "        -hh                  prints hex hash of file\n");
 }
 
 int main(int argc, const char *argv[]) {
@@ -116,6 +118,12 @@ int main(int argc, const char *argv[]) {
             isHexHash = yes;
             continue;
         }
+    }
+
+    if(filename == nil) {
+        RPrintf("Error. Filename empty.");
+        ++error;
+        goto help;
     }
 
     if(isHash) {
