@@ -1,28 +1,19 @@
 /**
- *  _____
- * |  __ \
- * | |__) | __ _  _   _
- * |  _  / / _` || | | |
- * | | \ \| (_| || |_| |
- * |_|  \_\\__,_| \__, |
- *                 __/ |
- *                |___/
- *  ______                        _         _    _
- * |  ____|                      | |       | |  (_)
- * | |__  ___   _   _  _ __    __| |  __ _ | |_  _   ___   _ __
- * |  __|/ _ \ | | | || '_ \  / _` | / _` || __|| | / _ \ | '_ \
- * | |  | (_) || |_| || | | || (_| || (_| || |_ | || (_) || | | |
- * |_|   \___/  \__,_||_| |_| \__,_| \__,_| \__||_| \___/ |_| |_|
- *
+ *  __________ ____ _____________  ___________________
+ *  \______   \    |   \______   \/  _____/\_   _____/
+ *   |     ___/    |   /|       _/   \  ___ |    __)_
+ *   |    |   |    |  / |    |   \    \_\  \|        \
+ *   |____|   |______/  |____|_  /\______  /_______  /
+ *                            \/        \/        \/
  **/
 
 #include <RayFoundation/RayFoundation.h>
 #include "Tests.h"
 
-static const char *versionString = "1.0";
+static const char *versionString = "1.1";
 
 void printCryptorVersion() {
-    RPrintf("Purge, evasion ciphering util\n v%s \n(c) kojiba 2016", versionString);
+    RPrintf("Purge, evasion util\nv%s\n(c) kojiba 2016\n", versionString);
 }
 
 void printCryptorHelp() {
@@ -48,6 +39,9 @@ int main(int argc, const char *argv[]) {
     rbool isManualDecrypt = no;
     rbool isSetManualMode = no;
     rbool isPasswordEncryption = yes;
+    rbool isHash = no;
+    rbool isStringHash = no;
+    rbool isHexHash = no;
 
     rbool decrypt = yes;
     RData *data = nil;
@@ -70,7 +64,7 @@ int main(int argc, const char *argv[]) {
             continue;
         }
 
-        if (!RStringCompare(currentArgument, "-f")) { // encr/decr file
+        if (!RStringCompare(currentArgument, "-f")) { // encr/decr/hash file
             if (iterator + 1 <= argc) {
                 filename = argv[iterator + 1];
             } else {
@@ -111,93 +105,134 @@ int main(int argc, const char *argv[]) {
             printCryptorVersion();
             return 0;
         }
+
+        if (!RStringCompare(currentArgument, "-h")) { // base64 hash
+            isHash = yes;
+            continue;
+        }
+
+        if (!RStringCompare(currentArgument, "-hh")) { // hex hash
+            isHash = yes;
+            isHexHash = yes;
+            continue;
+        }
     }
 
-    isSetManualMode = (rbool) (isManualEncrypt || isManualDecrypt);
+    if(isHash) {
+        data = contentOfFile(filename);
+        if(data == nil) {
+            RPrintf("Error. Can't read file.");
+            ++error;
+            goto help;
+        }
 
-    if(passwordFilename != nil) {
-        key = contentOfFile(passwordFilename);
+        RData *hexData = $(data, m(evasionHash, RData)));
+
+        if (hexData == nil) {
+            deleter(data, RData);
+            RPrintf("Error. Can't get hash.");
+            ++error;
+            goto help;
+        }
+
+        if (!isHexHash) {
+            RString *hexString = $(hexData, m(encodeBase64, RString)));
+            $(hexString, p(RString)));
+            deleter(hexString, RString);
+        } else {
+            printByteArrayInHex(hexData->data, hexData->size);
+        }
+
+        deleter(data, RData);
+        deleter(hexData, RData);
+
     } else {
-        key = $(RS(passwordString), m(copy, RString)));
-    }
+        isSetManualMode = (rbool) (isManualEncrypt || isManualDecrypt);
 
-    if(key == nil) {
-        RPrintf("Error. Can't read key.");
-        ++error; //  4;
-        goto help;
-    }
-
-    if(isPasswordEncryption) {
-        RString *tempKeyToDelete = key;
-        key = $(key, m(evasionHash, RData)));
-        deleter(tempKeyToDelete, RData);
-    }
-
-    if(key == nil) {
-        RPrintf("Error. Can't hash key.");
-        ++error; //  4;
-        goto help;
-    }
-
-    data = contentOfFile(filename);
-    if(data == nil) {
-        RPrintf("Error. Can't read file.");
-        ++error; //  5;
-        goto help;
-    }
-
-
-    fileName = $(RS(filename), m(copy, RString)));
-
-    if(!isSetManualMode) {
-        if (!$(fileName, m(endsOn, RString)), RS(".purge"))) { // decrypt
-            decrypt = no;
+        if(passwordFilename != nil) {
+            key = contentOfFile(passwordFilename);
+        } else {
+            key = $(RS(passwordString), m(copy, RString)));
         }
-    } else {
-        if(isManualDecrypt) {
-            decrypt = yes;
-        }
-        if(isManualEncrypt) {
-            decrypt = no;
-        }
-    }
 
-    if (decrypt) {
+        if(key == nil) {
+            RPrintf("Error. Can't read key.");
+            ++error; //  4;
+            goto help;
+        }
 
-        RData *decrypted = $(data, m(decryptPurgeEvasion, RData)), key);
-        if (decrypted != nil) {
-            if (isManualDecrypt) {
-                $(fileName, m(concatenate, RString)), RS(".purgeDecrypted"));
-            } else {
-                $(fileName, m(trimHead, RString)), 6); // remove .purge
+        if(isPasswordEncryption) {
+            RString *tempKeyToDelete = key;
+            key = $(key, m(evasionHash, RData)));
+            deleter(tempKeyToDelete, RData);
+        }
+
+        if(key == nil) {
+            RPrintf("Error. Can't hash key.");
+            ++error; //  4;
+            goto help;
+        }
+
+        data = contentOfFile(filename);
+        if(data == nil) {
+            deleter(key, RData);
+            RPrintf("Error. Can't read file.");
+            ++error; //  5;
+            goto help;
+        }
+
+        fileName = $(RS(filename), m(copy, RString)));
+
+        if(!isSetManualMode) {
+            if (!$(fileName, m(endsOn, RString)), RS(".purge"))) { // decrypt
+                decrypt = no;
             }
-            appendArray(&fileName->data, &fileName->size, &nullTerminator, 1); // add \0
-
-            $(decrypted, m(saveToFile, RData)), (const char *) fileName->data);
-            deleter(decrypted, RData);
         } else {
-            RPrintf("Error. Can't decrypt.");
-            ++error; //  6;
-            goto help;
+            if(isManualDecrypt) {
+                decrypt = yes;
+            }
+            if(isManualEncrypt) {
+                decrypt = no;
+            }
         }
-    } else {
-        RData *encrypted = $(data, m(encryptPurgeEvasion, RData)), key);
-        if (encrypted != nil) {
-            $(fileName, m(concatenate, RString)), RS(".purge"));
-            appendArray(&fileName->data, &fileName->size, &nullTerminator, 1); // add \0
 
-            $(encrypted, m(saveToFile, RData)), (const char *) fileName->data);
-            deleter(encrypted, RData);
+        if (decrypt) {
+
+            RData *decrypted = $(data, m(decryptPurgeEvasion, RData)), key);
+            if (decrypted != nil) {
+                if (isManualDecrypt) {
+                    $(fileName, m(concatenate, RString)), RS(".purgeDecrypted"));
+                } else {
+                    $(fileName, m(trimHead, RString)), 6); // remove .purge
+                }
+                appendArray(&fileName->data, &fileName->size, &nullTerminator, 1); // add \0
+
+                $(decrypted, m(saveToFile, RData)), (const char *) fileName->data);
+                deleter(decrypted, RData);
+            } else {
+                RPrintf("Error. Can't decrypt.");
+                ++error; //  6;
+                goto help;
+            }
         } else {
-            RPrintf("Error. Can't encrypt.");
-            ++error; //  7;
-            goto help;
+            RData *encrypted = $(data, m(encryptPurgeEvasion, RData)), key);
+            if (encrypted != nil) {
+                $(fileName, m(concatenate, RString)), RS(".purge"));
+                appendArray(&fileName->data, &fileName->size, &nullTerminator, 1); // add \0
+
+                $(encrypted, m(saveToFile, RData)), (const char *) fileName->data);
+                deleter(encrypted, RData);
+            } else {
+                RPrintf("Error. Can't encrypt.");
+                ++error; //  7;
+                goto help;
+            }
         }
+
+        deleter(data, RData);
+        deleter(key, RData);
+        deleter(fileName, RData);
     }
-
-    deleter(data, RData);
-    deleter(key, RData);
-    deleter(fileName, RData);
 
     help:
     if (error) {
