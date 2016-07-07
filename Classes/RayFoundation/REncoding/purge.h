@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-static const uint8_t purgeBytesCount = 64;
+#define purgeBytesCount 64
 
 static const uint8_t purgeRoundsCount = 31;
 

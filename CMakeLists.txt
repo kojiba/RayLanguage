@@ -210,7 +210,6 @@ add_executable(${EXECUTABLE_NAME} Classes/main.c Classes/Tests.h
 
                                                  target_link_libraries(
                                                          ${EXECUTABLE_NAME}
-                                                         curses              #fixme when unused
                                                      )
 
 if(copyResources)
@@ -232,6 +231,7 @@ if(NOT ${DebugFlag})
     if(WIN32)
         target_link_libraries(${LIBRARY_NAME} wsock32 ws2_32)
     else()
+        target_link_libraries(${EXECUTABLE_NAME} curses)
         target_link_libraries(${LIBRARY_NAME} pthread)
     endif()
 

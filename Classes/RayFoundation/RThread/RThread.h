@@ -46,6 +46,8 @@
     #define RMutexNormal                     PTHREAD_MUTEX_NORMAL
     #define RMutexErrorCheck                 PTHREAD_MUTEX_ERRORCHECK
 #else
+    #define _WIN32_WINNT 0x0600
+    #define WINVER 0x0600
     #include <windows.h>
     #include <winbase.h>
 
@@ -61,7 +63,10 @@
     typedef LPSECURITY_ATTRIBUTES     RMutexAttributes;
     typedef DWORD            (WINAPI* RThreadFunction)(pointer);
     typedef DWORD                     RThreadId;
+//#define windows_conditions_enabled
+#ifdef windows_conditions_enabled
     typedef CONDITION_VARIABLE        RCondition;
+#endif
 
     #define RStackRecursiveMutexInitializer  PTHREAD_RECURSIVE_MUTEX_INITIALIZER
     #define RMutexAttributeInit              pthread_mutexattr_init
@@ -111,13 +116,14 @@ extern int RMutexDestroy (RMutex *mutex);
 extern rbool lockOrDeadlocked(RMutex *mutex); // no if deadlocked
 
 #pragma mark Conditions
-
+#ifdef windows_conditions_enabled
 extern int RConditionInit      (RCondition *condition);
 extern int RConditionSignal    (RCondition *condition);
 extern int RConditionBroadcast (RCondition *condition);
 extern int RConditionWait      (RCondition *condition, RMutex *mutex);
 extern int RConditionWaitTimed (RCondition *condition, RMutex *mutex, long milliseconds);
 extern int RConditionDestroy   (RCondition *condition);
+#endif
 
 
 

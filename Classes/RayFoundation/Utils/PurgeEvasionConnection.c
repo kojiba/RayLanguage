@@ -185,8 +185,8 @@ struct PEConnection {
 const byte networkOperationErrorCryptConst = 2;
 const byte networkOperationErrorAllocationConst = 3;
 
-const byte packetEndSize = 24;
-const byte packetEndShieldSize = 12;
+#define packetEndSize 24
+#define packetEndShieldSize 12
 
 
 const byte packetEndString[packetEndSize]             = "PEPacketEND PEPacketEND ";

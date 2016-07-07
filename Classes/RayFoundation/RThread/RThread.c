@@ -240,57 +240,58 @@ inline rbool lockOrDeadlocked(RMutex *mutex) {
 }
 
 #pragma mark Conditions
+#ifdef windows_conditions_enabled
+    inline int RConditionInit(RCondition *condition) {
+    #ifndef _WIN32
+        return pthread_cond_init(condition, nil);
+    #else
+        return (int)InitializeConditionVariable(condition);
+    #endif
+    }
 
-inline int RConditionInit(RCondition *condition) {
-#ifndef _WIN32
-    return pthread_cond_init(condition, nil);
-#else
-    return (int)InitializeConditionVariable(condition);
-#endif
-}
+    inline int RConditionSignal(RCondition *condition) {
+    #ifndef _WIN32
+        return pthread_cond_signal(condition);
+    #else
+        return (int)WakeConditionVariable(condition);
+    #endif
+    }
 
-inline int RConditionSignal(RCondition *condition) {
-#ifndef _WIN32
-    return pthread_cond_signal(condition);
-#else
-    return (int)WakeConditionVariable(condition);
-#endif
-}
+    inline int RConditionBroadcast(RCondition *condition) {
+    #ifndef _WIN32
+        return pthread_cond_broadcast(condition);
+    #else
+        return (int)WakeAllConditionVariable(condition);
+    #endif
+    }
 
-inline int RConditionBroadcast(RCondition *condition) {
-#ifndef _WIN32
-    return pthread_cond_broadcast(condition);
-#else
-    return (int)WakeAllConditionVariable(condition);
-#endif
-}
+    inline int RConditionWait(RCondition *condition, RMutex *mutex) {
+    #ifndef _WIN32
+        return pthread_cond_wait(condition, mutex);
+    #else
+        return (int)SleepConditionVariableCS(condition, mutex, INFINITE);
+    #endif
+    }
 
-inline int RConditionWait(RCondition *condition, RMutex *mutex) {
-#ifndef _WIN32
-    return pthread_cond_wait(condition, mutex);
-#else
-    return (int)SleepConditionVariableCS(condition, mutex, INFINITE);
-#endif
-}
+    inline int RConditionWaitTimed(RCondition *condition, RMutex *mutex, long milliseconds) {
+    #ifndef _WIN32
+        struct timespec time;
+        time.tv_nsec = milliseconds * 100;
+        return pthread_cond_timedwait(condition, mutex, &time);
+    #else
+        return (int)SleepConditionVariableCS(condition, mutex, milliseconds);
+    #endif
+    }
 
-inline int RConditionWaitTimed(RCondition *condition, RMutex *mutex, long milliseconds) {
-#ifndef _WIN32
-    struct timespec time;
-    time.tv_nsec = milliseconds * 100;
-    return pthread_cond_timedwait(condition, mutex, &time);
-#else
-    return (int)SleepConditionVariableCS(condition, mutex, milliseconds);
+    inline int RConditionDestroy(RCondition *condition) {
+    #ifndef _WIN32
+        return pthread_cond_destroy(condition);
+    #else
+        #warning "fixme, testme"
+        return 0;
+    #endif
+    }
 #endif
-}
-
-inline int RConditionDestroy(RCondition *condition) {
-#ifndef _WIN32
-    return pthread_cond_destroy(condition);
-#else
-    #warning "fixme, testme"
-    return 0;
-#endif
-}
 
 
 #endif

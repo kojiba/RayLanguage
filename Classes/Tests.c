@@ -362,7 +362,9 @@ void ComplexTest() {
         && !(++testNumber, code = RBufferTest())
         && !(++testNumber, code = RStringTest())
         && !(++testNumber, code = RThreadTest())
+    #ifndef WIN32
         && !(++testNumber, code = RThreadPoolTest())
+    #endif
         && !(++testNumber, code = RByteApiTest())
     ) {
         RPrintLn("All tests passed successfully\n");
