@@ -10,7 +10,7 @@
 #include <RayFoundation/RayFoundation.h>
 #include "Tests.h"
 
-static const char *versionString = "1.1";
+static const char *versionString = "1.2";
 
 void printCryptorVersion() {
     RPrintf("Purge, evasion util\nv%s\n(c) kojiba 2016\n", versionString);
@@ -69,9 +69,9 @@ int main(int argc, const char *argv[]) {
         if (!RStringCompare(currentArgument, "-f")) { // encr/decr/hash file
             if (iterator + 1 <= argc) {
                 filename = argv[iterator + 1];
+                ++error;
             } else {
                 RPrintf("Error. File name not found.");
-                ++error; //  2;
                 goto help;
             }
             continue;
@@ -80,9 +80,9 @@ int main(int argc, const char *argv[]) {
         if (!RStringCompare(currentArgument, "-p")) { // password string
             if (iterator + 1 <= argc) {
                 passwordString = argv[iterator + 1];
+                ++error;
             } else {
                 RPrintf("Error. Password string not found.");
-                ++error; //  3;
                 goto help;
             }
             continue;
@@ -128,18 +128,18 @@ int main(int argc, const char *argv[]) {
 
     if(isHash) {
         data = contentOfFile(filename);
+        ++error;
         if(data == nil) {
             RPrintf("Error. Can't read file.");
-            ++error;
             goto help;
         }
 
         RData *hexData = $(data, m(evasionHash, RData)));
 
+        ++error;
         if (hexData == nil) {
             deleter(data, RData);
             RPrintf("Error. Can't get hash.");
-            ++error;
             goto help;
         }
 
@@ -160,12 +160,17 @@ int main(int argc, const char *argv[]) {
         if(passwordFilename != nil) {
             key = contentOfFile(passwordFilename);
         } else {
+            ++error;
+            if(passwordString == nil) {
+                RPrintf("Error. Empty password.");
+                goto help;
+            }
             key = $(RS(passwordString), m(copy, RString)));
         }
 
+        ++error;
         if(key == nil) {
             RPrintf("Error. Can't read key.");
-            ++error; //  4;
             goto help;
         }
 
@@ -175,9 +180,9 @@ int main(int argc, const char *argv[]) {
             deleter(tempKeyToDelete, RData);
         }
 
+        ++error;
         if(key == nil) {
             RPrintf("Error. Can't hash key.");
-            ++error; //  4;
             goto help;
         }
 
@@ -207,6 +212,7 @@ int main(int argc, const char *argv[]) {
         if (decrypt) {
 
             RData *decrypted = $(data, m(decryptPurgeEvasion, RData)), key);
+            ++error;
             if (decrypted != nil) {
                 if (isManualDecrypt) {
                     $(fileName, m(concatenate, RString)), RS(".purgeDecrypted"));
@@ -219,11 +225,11 @@ int main(int argc, const char *argv[]) {
                 deleter(decrypted, RData);
             } else {
                 RPrintf("Error. Can't decrypt.");
-                ++error; //  6;
                 goto help;
             }
         } else {
             RData *encrypted = $(data, m(encryptPurgeEvasion, RData)), key);
+            ++error;
             if (encrypted != nil) {
                 $(fileName, m(concatenate, RString)), RS(".purge"));
                 appendArray(&fileName->data, &fileName->size, &nullTerminator, 1); // add \0
@@ -232,7 +238,6 @@ int main(int argc, const char *argv[]) {
                 deleter(encrypted, RData);
             } else {
                 RPrintf("Error. Can't encrypt.");
-                ++error; //  7;
                 goto help;
             }
         }
