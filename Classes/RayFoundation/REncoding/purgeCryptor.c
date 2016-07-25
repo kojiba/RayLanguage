@@ -58,9 +58,9 @@ int main(int argc, const char *argv[]) {
         if (!RStringCompare(currentArgument, "-pf")) { // password file
             if (iterator + 1 <= argc) {
                 passwordFilename = argv[iterator + 1];
+                ++error;
             } else {
                 RPrintf("Error. Password filename not found.");
-                ++error; //  1;
                 goto help;
             }
             continue;
@@ -120,9 +120,9 @@ int main(int argc, const char *argv[]) {
         }
     }
 
+    ++error;
     if(filename == nil) {
         RPrintf("Error. Filename empty.");
-        ++error;
         goto help;
     }
 
