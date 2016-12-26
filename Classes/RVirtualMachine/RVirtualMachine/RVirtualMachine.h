@@ -10,12 +10,17 @@ typedef enum RVirtualCodes {
 
     r_end,                  // work-end-code
 
-// algebra operations (address 1, address 2)
+// algebra operations (address 1, address 2 one of 16 regs, result store in first reg)
     r_addition,
+    r_addition_b,
+    r_addition_w,
+    r_addition_d,
+
     r_subtraction,
     r_multiplication,
     r_division,
 
+    r_copy_to_reg,
     r_copy,
 
 // binary operations (address 1, address 2)
@@ -63,9 +68,10 @@ typedef enum RVirtualCodes {
 } RInstructions;
 
 static const size_t memorySizeOfRVM = 4096; // in bytes
+#define registersCountOfRVM 16 // in bytes
 
 class(RVirtualMachine)
-    RData            *memory;               // memory 1 kB size
+    RData            *memory;               // memory memorySizeOfRVM size
     RVirtualFunction *functionExecuting;    // pointer to function
 
     byte             *dataRegister;         // pointer to memory element               (data    segment)
@@ -75,6 +81,19 @@ class(RVirtualMachine)
 
     size_t          tickCount;
     rbool           breakFlag;              // for stop
+
+
+    /*
+     * +--------------------------------+
+     * |R1B  8| R1W  16| R1D          32|
+     * +--------------------------------+
+     */
+
+    size_t REGS[registersCountOfRVM]; // registers
+
+    byte *REGS_B[registersCountOfRVM];     // pointers to byte registers
+    u16 *REGS_W[registersCountOfRVM];      // pointers to u16 registers
+    unsigned *REGS_D[registersCountOfRVM]; // pointers to u32 registers
 
 endOf(RVirtualMachine)
 

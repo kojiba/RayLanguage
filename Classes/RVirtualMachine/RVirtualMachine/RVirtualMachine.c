@@ -1,6 +1,6 @@
 #include "RVirtualMachine.h"
 
-#define VISUALIZE
+//#define VISUALIZE
 #ifdef VISUALIZE
     #include "ncurses.h"
 
@@ -29,8 +29,18 @@ destructor(RVirtualMachine) {
 method(void, setUpDataBlock, RVirtualMachine)) {
     if(object->functionExecuting != nil) {
         // set-up break flag
+        size_t iterator;
         object->breakFlag = no;
         $(object->memory, m(flushAllToByte, RData)), 0x00);
+
+        flushAllToByte((byte *) &object->REGS, sizeof(size_t) * registersCountOfRVM, 0x00);
+
+        forAll(iterator, registersCountOfRVM) {
+            object->REGS_B[iterator] = (byte *) &object->REGS[iterator];
+            object->REGS_W[iterator] = (u16 *) &object->REGS[iterator];
+            object->REGS_D[iterator] = (unsigned int *) &object->REGS[iterator];
+        }
+
     } elseWarning(
         RWarning("RVM. Set-up function is nil.", object)
     )
@@ -144,6 +154,17 @@ method(size_t, executeCode, RVirtualMachine)) {
             RPrintf("\nEnd work of RVM.\n");
             return 1;
         }
+// math
+        case r_addition: {
+            object->command += 1;
+            byte addresses = *object->command;
+            byte first = addresses >> 4 & (byte) 0x0F;
+            byte second = addresses & (byte) 0x0F;
+            object->REGS[first] += object->REGS[second];
+
+            object->command += 1;
+        } break;
+
 
 // bad situation
         default: {
@@ -218,6 +239,7 @@ method(void, setUpFunction, RVirtualMachine), RVirtualFunction *function) {
 
 method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     size_t result = 0;
+    size_t iterator;
 
     $(object, m(setUpFunction, RVirtualMachine)), function);
 
@@ -251,6 +273,14 @@ method(void, executeFunction, RVirtualMachine), RVirtualFunction *function) {
     RPrintf("\n");
 
     RPrintf("Ticks count for executing is - %lu\n", object->tickCount);
+
+    RPrintf("Registers : {\n");
+    forAll(iterator, registersCountOfRVM) {
+        RPrintf("    REG %u : %lu - ", (unsigned int) iterator, object->REGS[iterator]);
+        printByteArrayInHex((const byte *) &object->REGS[iterator], sizeof(size_t));
+    }
+    RPrintf("}\n");
+
     RPrintf("Memory snapshot : {\n");
     $(object->memory, p(RData)) );
     RPrintf("} end memory snapshot\n");

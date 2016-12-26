@@ -5,6 +5,7 @@ constructor(RVirtualFunction)) {
     object = allocator(RVirtualFunction);
     if(object != nil) {
         object->classId = registerClassOnce(toString(RVirtualFunction));
+        object->name = nil;
     }
     return object;
 }
@@ -43,6 +44,14 @@ printer(RVirtualFunction) {
 
             case r_print_char : {
                 RPrintLn("p char");
+            } break;
+
+            case r_addition: {
+                RPrintf("add ");
+                byte addresses = master(object, RData)->data[iterator += 1];
+                byte first = addresses >> 4 & (byte) 0x0F;
+                byte second = addresses & (byte) 0x0F;
+                RPrintf("%d, %d \n", first, second);
             } break;
 
 

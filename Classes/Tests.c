@@ -178,7 +178,7 @@ int RListTest(void) {
     return 0;
 }
 
-#define TEST_COUNT 10
+#define TEST_COUNT 20
 
 RArray *arrayTest;
 
