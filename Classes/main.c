@@ -34,7 +34,7 @@ int main(int argc, const char *argv[]) {
                                   " ------.--------.>+.>.");
 
     RVirtualFunction *function = c(RVirtualFunction)(nil);
-    function->name = nil;
+    function->name = RSC("Hello");
     function->masterRDataObject = makeRDataAllocated(5);
     function->masterRDataObject->data[0] = r_addition;
     function->masterRDataObject->data[1] = 0x01;
